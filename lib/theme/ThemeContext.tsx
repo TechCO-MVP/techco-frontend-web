@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useCallback, useMemo } from "react";
 
 export interface Theme {
   background?: string;
@@ -16,14 +16,16 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const setTheme = (theme: Theme) => {
+  const setTheme = useCallback((theme: Theme) => {
     Object.entries(theme).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value);
     });
-  };
+  }, []);
+
+  const contexValue = useMemo(() => ({ setTheme }), [setTheme]);
 
   return (
-    <ThemeContext.Provider value={{ setTheme }}>
+    <ThemeContext.Provider value={contexValue}>
       {children}
     </ThemeContext.Provider>
   );

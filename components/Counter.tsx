@@ -4,11 +4,10 @@ import { useState } from "react";
 import { type getDictionary } from "@/get-dictionary";
 import { Button } from "./ui/button";
 
-export default function Counter({
-  dictionary,
-}: {
+interface CounterProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>;
-}) {
+}
+export default function Counter({ dictionary }: Readonly<CounterProps>) {
   const [count, setCount] = useState(0);
   return (
     <p>
