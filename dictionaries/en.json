@@ -1,9 +1,6 @@
 {
   "server-component": {
+    "currentLang": "Current language",
     "welcome": "Welcome"
-  },
-  "counter": {
-    "increment": "Increment",
-    "decrement": "Decrement"
   }
 }
