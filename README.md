@@ -1,5 +1,3 @@
-Aquí tienes un README actualizado según la información proporcionada, incluyendo los scripts del proyecto, Storybook y Vitest para pruebas:
-
 ## Tecnoloías principales
 
 - **Framework**: [Next.js v15](https://nextjs.org/) 
