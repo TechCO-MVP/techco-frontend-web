@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Aquí tienes un README actualizado según la información proporcionada, incluyendo los scripts del proyecto, Storybook y Vitest para pruebas:
 
-## Getting Started
+## Tecnoloías principales
 
-First, run the development server:
+- **Framework**: [Next.js v15](https://nextjs.org/) 
+- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/) 
+- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
+- **Gestión de estado**: [Redux](https://redux.js.org/) 
+- **Validación**: [Zod](https://zod.dev/)
+- **Gestión de datos**: [Tanstack React Query](https://tanstack.com/query/latest)
+- **Internacionalización (i18n)**: Soporte multilingüe con middleware + `@formatjs/intl-localematcher` y `negotiator`.
+- **Pruebas**: [Vitest](https://vitest.dev/).
+- **Storybook**: [Storybook](https://storybook.js.org/)
+
+---
+
+## Requisitos previos
+
+- Node.js v18 o superior.
+- npm
+
+---
+
+## Instalación
+
+Clona el repositorio y ejecuta los siguientes comandos:
+
+```bash
+# Clonar el repositorio
+git clone [URL del repositorio]
+
+# Entrar en el directorio
+cd [nombre-del-proyecto]
+
+# Instalar dependencias
+npm install
+
+```
+
+---
+
+## Uso
+
+Ejecuta el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estructura del proyecto [TBD]
 
-## Learn More
+```plaintext
+├── components/       # Componentes reutilizables de la aplicación
+├── pages/            # Rutas y páginas de Next.js
+├── redux/            # Configuración y slices de Redux
+├── dictionaries/     # Archivos de traducción para i18n
+├── lib/              # Funciones y utilidades reutilizables
+├── __tests__/        # Pruebas unitarias con Vitest
+└── stories/          # Historias para Storybook
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Storybook
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Este proyecto utiliza [Storybook](https://storybook.js.org/) para documentar y probar componentes.
 
-## Deploy on Vercel
+### Ejecutar Storybook
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run storybook
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Abre [http://localhost:6006](http://localhost:6006) para explorar los componentes.
+
+## Pruebas
+
+Este proyecto utiliza [Vitest](https://vitest.dev/) para realizar pruebas unitarias y de cobertura.
+
+### Ejecutar todas las pruebas
+
+```bash
+npm run test
+```
+
+### Generar reporte de cobertura
+
+```bash
+npm run test:coverage
+```
+
+Los resultados se guardarán en la carpeta `coverage/`.
+
+---
+
+## Scripts disponibles
+
+- `dev`: Inicia el servidor de desarrollo.
+- `build`: Construye la aplicación para producción.
+- `start`: Inicia la aplicación en modo de producción.
+- `lint`: Ejecuta ESLint para verificar problemas en el código.
+- `test`: Ejecuta las pruebas con Vitest.
+- `test:coverage`: Genera el reporte de cobertura de pruebas.
+- `storybook`: Inicia Storybook en modo de desarrollo.
+- `build-storybook`: Genera una versión estática de Storybook.
