@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 const meta = {
   title: "Components/Button",
   component: Button,
+  tags: ["autodocs"],
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",

@@ -2,5 +2,11 @@
   "server-component": {
     "currentLang": "Current language",
     "welcome": "Welcome"
+  },
+  "signUp": {
+    "otpInstructions": "We sent you a message to your email with your one-time password. ",
+    "otpTimerStart": "You have until ",
+    "otpTimerEnd": " to enter it.",
+    "email": "Your email"
   }
 }

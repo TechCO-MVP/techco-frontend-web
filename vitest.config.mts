@@ -13,7 +13,7 @@ export default defineConfig({
       reporter: ["text", "lcov", "json-summary"],
       reportsDirectory: "coverage",
       exclude: [
-        "stories/*.stories.{ts,tsx}",
+        "**/*.stories.{ts,tsx}",
         "components/ui/**",
         ".storybook",
         ".next",
