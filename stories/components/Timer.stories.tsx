@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Timer } from "./Timer";
+import { Timer } from "@/components/Timer/Timer";
 
 const meta: Meta<typeof Timer> = {
   title: "Components/Timer",
   component: Timer,
   parameters: {
     layout: "centered",
+    design: {
+      type: "figspec",
+      url: "https://www.figma.com/design/vK1TDQJRm1caluullnxHo6/Untitled?node-id=915-766&t=S4PR01pyHUHbz5kZ-4",
+    },
   },
   tags: ["autodocs"],
   argTypes: {

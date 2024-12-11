@@ -1,6 +1,9 @@
 import React from "react";
-import { StoryFn, StoryContext } from "@storybook/react";
+import { ReactRenderer, StoryContext } from "@storybook/react";
 import { ThemeProvider, Theme, useTheme } from "@/lib/theme";
+import { StoreProvider } from "@/lib/store/StoreProvider";
+
+import type { PartialStoryFn as StoryFn } from "@storybook/types";
 
 const themes: Record<string, Theme> = {
   light: {
@@ -41,7 +44,21 @@ const themes: Record<string, Theme> = {
   },
 };
 
-export const withTheme = (Story: StoryFn, context: StoryContext) => {
+export const withRedux = (
+  Story: StoryFn<ReactRenderer>,
+  context: StoryContext,
+) => {
+  return (
+    <StoreProvider>
+      <Story />
+    </StoreProvider>
+  );
+};
+
+export const withTheme = (
+  Story: StoryFn<ReactRenderer>,
+  context: StoryContext,
+) => {
   const { theme } = context.globals;
   const selectedTheme = themes[theme] || themes.light;
   return (
@@ -57,3 +74,5 @@ export const withTheme = (Story: StoryFn, context: StoryContext) => {
     </ThemeProvider>
   );
 };
+
+export const globalDecorators = [withRedux, withTheme];

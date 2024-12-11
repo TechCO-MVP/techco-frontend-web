@@ -10,7 +10,13 @@ describe("OTPInstructionText Component", () => {
     render(<OTPInstructionText dictionary={dictionary} />);
 
     expect(screen.getByTestId("otp-instructions")).toHaveTextContent(
-      `${dictionary.signUp.otpInstructions}${dictionary.signUp.otpTimerStart}02:00${dictionary.signUp.otpTimerEnd}`,
+      `${dictionary.otpPage.otpInstructions}`,
+    );
+    expect(screen.getByTestId("otp-instructions")).toHaveTextContent(
+      `${dictionary.otpPage.otpTimerStart}`,
+    );
+    expect(screen.getByTestId("otp-instructions")).toHaveTextContent(
+      `${dictionary.otpPage.otpTimerEnd}`,
     );
   });
 });

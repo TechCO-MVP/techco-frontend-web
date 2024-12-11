@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { OTPInstructionText } from "./OTPInstructionText";
+import { OTPInstructionText } from "@/components/OTPInstructionText/OTPInstructionText";
 
 const meta: Meta<typeof OTPInstructionText> = {
   title: "Components/OTPInstructionText",

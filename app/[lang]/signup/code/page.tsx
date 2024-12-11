@@ -1,9 +1,12 @@
-"use client";
-import { useAppSelector } from "@/lib/store/hooks";
-import { selectSignUpState } from "@/lib/store/features/auth/sign-up-slice";
+import { getDictionary } from "@/get-dictionary";
+import { Locale } from "@/i18n-config";
+import { OTPForm } from "@/components/OTPForm/OTPForm";
 
-export default function CodePage() {
-  const signUpState = useAppSelector(selectSignUpState);
-  console.log(signUpState.email);
-  return <h1>CODE</h1>;
+export default async function OTPPage(props: {
+  readonly params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await props.params;
+
+  const dictionary = await getDictionary(lang);
+  return <OTPForm dictionary={dictionary} />;
 }

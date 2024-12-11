@@ -3,10 +3,44 @@
     "currentLang": "Current language",
     "welcome": "Welcome"
   },
-  "signUp": {
-    "otpInstructions": "We sent you a message to your email with your one-time password. ",
-    "otpTimerStart": "You have until ",
+  "validationErrors": {
+    "emailError": "Email is not valid.",
+    "companyError": "Company is not valid.",
+    "roleError": "The role is not valid.",
+    "companySizeError": "Company size is not valid.",
+    "countryError": "Country is not valid."
+  },
+  "otpPage": {
+    "otpInputLabel": "Enter the 4 digits code:",
+    "formHeading": "Confirm your identity with the code we sent.",
+    "otpInstructions": "We sent you a 4 digits code to your email. ",
+    "otpTimerStart": "You have ",
+    "otpTimerMinutes": " minutes",
     "otpTimerEnd": " to enter it.",
-    "email": "Your email"
+    "otpTimeExpired": "Didn't receive the code?",
+    "otpResendCode": "Resend code"
+  },
+  "signUp": {
+    "signInLinkText": "Sign In",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@company.com",
+    "companyLabel": "Company Name",
+    "companyPlaceholder": "Tech Solutions LLC.",
+    "countryLabel": "Select your country",
+    "countryPlaceholder": "Type or select a country...",
+    "countrySearchPlaceholder": "Search",
+    "countryNotFound": "No results",
+    "companySizeLabel": "How many employees does your company have?",
+    "companySizePlaceholder": "Select a range",
+    "companyRoleLabel": "What is your role in the company?",
+    "companyRolePlaceholder": "Select your role",
+    "createAccountLabel": "create Account",
+    "termsMessage": "By clicking \"Create my account\", you agree to our",
+    "termsOfService": "Terms of Service",
+    "and": " and ",
+    "privacyPolicy": "Privacy Policy.",
+    "welcomeTitle": "Welcome!",
+    "welcomeMessage": "Let's build together the future of your team.",
+    "callToActionText": "Start now and simplify hiring process."
   }
 }

@@ -3,10 +3,45 @@
     "currentLang": "Lenguaje actual",
     "welcome": "Bienvenido"
   },
-  "signUp": {
-    "otpInstructions": "Te enviamos un mensaje a tu correo con un one-time password. ",
-    "otpTimerStart": "Tienes hasta ",
+  "validationErrors": {
+    "emailError": "El correo no es válido.",
+    "companyError": "La compañía no es válida.",
+    "roleError": "El rol en la compañía no es válido.",
+    "companySizeError": "El tamaño de la compañía no es válido.",
+    "countryError": "El país no es válido."
+  },
+  "otpPage": {
+    "otpInputLabel": "Ingresa el código de 4 dígitos:",
+    "formHeading": "Confirma tu identidad con el código que te enviamos.",
+    "otpInstructions": "Acabamos de enviarte un código de 4 dígitos a tu correo electrónico.",
+    "otpTimerStart": "Tienes ",
+    "otpTimerMinutes": " minutos",
     "otpTimerEnd": " para ingresarlo.",
-    "email": "Tu email"
+    "otpTimeExpired": "¿No recibiste el código?",
+    "otpResendCode": "Reenviar código"
+  },
+  "signUp": {
+    "signInLinkText": "Iniciar sesión",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "nombre@empresa.com",
+    "companyLabel": "Nombre de la compañía",
+    "companyPlaceholder": "Tech Solutions S.A.",
+    "countryLabel": "Selecciona el país de operación:",
+    "countryPlaceholder": "Escribe o selecciona un país...",
+    "countrySearchPlaceholder": "Buscar",
+    "countryNotFound": "Sin resultados",
+    "companySizeLabel": "¿Cuántos empleados tiene tu empresa?",
+    "companySizePlaceholder": "Selecciona un rango",
+    "companyRoleLabel": "¿Cuál es tu rol en la empresa?",
+    "companyRolePlaceholder": "Selecciona tu rol",
+    "createAccountLabel":"Crear mi cuenta",
+    "termsMessage": "Al hacer clic en \"Crear mi cuenta\", aceptas nuestros .",
+    "termsOfService": "Términos de servicio",
+    "and": " y ",
+    "privacyPolicy": "Política de privacidad.",
+    "welcomeTitle": "¡Bienvenido/a!",
+    "welcomeMessage": "Construyamos juntos el futuro de tu equipo.",
+    "callToActionText": "Empieza ahora y simplifica el proceso de contratación."
+
   }
 }

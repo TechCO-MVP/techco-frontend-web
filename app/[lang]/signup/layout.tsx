@@ -1,38 +1,36 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { getDictionary } from "@/get-dictionary";
+import { Locale } from "@/i18n-config";
 import Link from "next/link";
 
 interface SignUpLayoutProps {
   children: React.ReactNode;
+  params: Promise<{ lang: Locale }>;
 }
 
-export default function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
-  const { children } = props;
-
+export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
+  const { children, params } = props;
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  const { signUp: i18n } = dictionary;
   return (
-    <div className="flex h-screen flex-col md:flex-row">
-      <div className="relative hidden h-full bg-cover bg-center md:block md:w-1/2">
-        <Image
-          src="https://picsum.photos/800/600"
-          alt="Placeholder"
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
-      </div>
-
-      <div className="flex h-full w-full flex-col bg-gray-50 md:w-1/2">
+    <div className="relative flex h-screen items-center justify-center bg-gray-50">
+      <div
+        className="flex h-full w-full flex-col bg-gray-50"
+        style={{
+          background:
+            "linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url('/assets/background.png')",
+          backgroundBlendMode: "luminosity",
+        }}
+      >
         <header className="w-full p-4">
           <nav>
             <ul className="flex justify-end space-x-4">
               <li>
-                <Link href="/signup" className="text-blue-600 hover:underline">
-                  <Button variant="link">Sign Up</Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/signin" className="text-blue-600 hover:underline">
-                  <Button variant="link">Sign In</Button>
+                <Link href="/signin">
+                  <Button className="rounded bg-background text-foreground hover:bg-foreground hover:text-background">
+                    {i18n.signInLinkText}
+                  </Button>
                 </Link>
               </li>
             </ul>

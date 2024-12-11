@@ -4,6 +4,7 @@ import React from "react";
 
 interface OTPInstructionTextProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>;
+  onExpire?: () => void;
 }
 
 /**
@@ -13,15 +14,18 @@ interface OTPInstructionTextProps {
  */
 export const OTPInstructionText: React.FC<
   Readonly<OTPInstructionTextProps>
-> = ({ dictionary }) => {
-  const strings = dictionary.signUp;
+> = ({ dictionary, onExpire }) => {
+  const { otpPage: i18n } = dictionary;
   return (
     <div>
-      <p data-testid="otp-instructions">
-        {strings.otpInstructions}
-        {strings.otpTimerStart}
-        {<Timer duration={120} />}
-        {strings.otpTimerEnd}
+      <p className="text-center" data-testid="otp-instructions">
+        {i18n.otpInstructions}
+        <span className="font-bold">
+          {i18n.otpTimerStart}
+          {<Timer onExpire={onExpire} duration={120} />}
+          {i18n.otpTimerMinutes}
+        </span>
+        {i18n.otpTimerEnd}
       </p>
     </div>
   );
