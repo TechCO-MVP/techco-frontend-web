@@ -1,44 +1,43 @@
 "use client";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { getDictionary } from "@/get-dictionary";
+
 import { Heading } from "../Typography/Heading";
 import { OTPInstructionText } from "../OTPInstructionText/OTPInstructionText";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
-import { usePathname } from "next/navigation";
 
-const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
-});
+import { OTPFormInput } from "../OTPFormInput/OTPFormInput";
+import { Dictionary } from "@/types/i18n";
+import { getErrorMessage } from "@/lib/utils";
+import { OTPFormData, OTPFormSchema } from "@/lib/schemas";
 
-export function OTPForm({
-  dictionary,
-}: {
-  readonly dictionary: Awaited<ReturnType<typeof getDictionary>>;
-}) {
-  const pathname = usePathname();
-  console.log(pathname);
+export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   const { otpPage: i18n } = dictionary;
   const [resendBtnEnabled, _resendBtnEnabled] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<OTPFormData>({
+    mode: "onChange",
+    resolver: zodResolver(OTPFormSchema),
     defaultValues: {
-      pin: "",
+      code: "",
     },
   });
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, dirtyFields },
+  } = form;
+
+  const onSubmit = async (data: OTPFormData) => {
+    startTransition(async () => {
+      console.log(data);
+    });
+  };
   return (
     <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
       {/* Top Section */}
@@ -55,26 +54,21 @@ export function OTPForm({
         />
       </div>
       <Form {...form}>
-        <form className="mb-4 flex w-full max-w-md flex-col items-center">
-          <FormItem>
-            <FormLabel>{i18n.otpInputLabel}</FormLabel>
-            <FormControl>
-              <InputOTP maxLength={4} pattern={REGEXP_ONLY_DIGITS}>
-                <InputOTPGroup className="mr-4">
-                  <InputOTPSlot index={0} />
-                </InputOTPGroup>
-                <InputOTPGroup className="mr-4">
-                  <InputOTPSlot index={1} />
-                </InputOTPGroup>
-                <InputOTPGroup className="mr-4">
-                  <InputOTPSlot index={2} />
-                </InputOTPGroup>
-                <InputOTPGroup>
-                  <InputOTPSlot index={3} />
-                </InputOTPGroup>
-              </InputOTP>
-            </FormControl>
-          </FormItem>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mb-4 flex w-full max-w-md flex-col items-center"
+        >
+          <OTPFormInput
+            testId="otp-code-input"
+            pattern={REGEXP_ONLY_DIGITS}
+            name="code"
+            label={i18n.otpInputLabel}
+            maxLength={4}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
         </form>
       </Form>
       <div className="flex items-center">

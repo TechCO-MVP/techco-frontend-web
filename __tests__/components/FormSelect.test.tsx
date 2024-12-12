@@ -35,6 +35,7 @@ function TestForm({
         className="mb-4 flex w-full max-w-md flex-col items-center"
       >
         <FormSelect
+          testId="country-select"
           name="country"
           label="Country"
           placeholder="Select your country"

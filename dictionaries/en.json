@@ -8,7 +8,8 @@
     "companyError": "Company is not valid.",
     "roleError": "The role is not valid.",
     "companySizeError": "Company size is not valid.",
-    "countryError": "Country is not valid."
+    "countryError": "Country is not valid.",
+    "otpCodeError": "The code is not valid."
   },
   "otpPage": {
     "otpInputLabel": "Enter the 4 digits code:",

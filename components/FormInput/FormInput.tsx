@@ -21,6 +21,7 @@ type FormInputProps<TSchema extends FieldValues> = {
   label: string;
   placeholder?: string;
   type?: string;
+  testId: string;
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
   dirtyFields: UseFormStateReturn<TSchema>["dirtyFields"];
@@ -32,6 +33,7 @@ export function FormInput<TSchema extends FieldValues>({
   label,
   placeholder,
   type = "text",
+  testId,
   control,
   errors,
   dirtyFields,
@@ -52,6 +54,7 @@ export function FormInput<TSchema extends FieldValues>({
               <Input
                 {...field}
                 type={type}
+                data-testid={testId}
                 placeholder={placeholder}
                 className={cn(
                   isTouched &&

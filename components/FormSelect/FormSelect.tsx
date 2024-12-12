@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 type FormSelectProps<TSchema extends FieldValues> = {
   name: Path<TSchema>;
   label: string;
+  testId: string;
   placeholder?: string;
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
@@ -38,6 +39,7 @@ export function FormSelect<TSchema extends FieldValues>({
   placeholder,
   control,
   errors,
+  testId,
   dirtyFields,
   options,
   getErrorMessage,
@@ -62,7 +64,7 @@ export function FormSelect<TSchema extends FieldValues>({
                   hasError && "border-red-500 focus-visible:ring-red-500",
                 )}
               >
-                <SelectTrigger>
+                <SelectTrigger data-testId={testId}>
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>

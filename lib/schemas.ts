@@ -12,3 +12,9 @@ export const SignUpFormSchema = z.object({
 });
 
 export type SignUpFormData = z.infer<typeof SignUpFormSchema>;
+
+export const OTPFormSchema = z.object({
+  code: z.string().min(4, { message: VALIDATION_ERROR_KEYS.otpCodeError }),
+});
+
+export type OTPFormData = z.infer<typeof OTPFormSchema>;

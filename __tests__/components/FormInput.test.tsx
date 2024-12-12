@@ -35,6 +35,7 @@ function TestForm({
         className="mb-4 flex w-full max-w-md flex-col items-center"
       >
         <FormInput
+          testId="email-input"
           name="email"
           label="Email"
           placeholder="Enter your email"

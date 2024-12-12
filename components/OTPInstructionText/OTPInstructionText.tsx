@@ -1,9 +1,9 @@
-import { getDictionary } from "@/get-dictionary";
 import { Timer } from "@/components/Timer/Timer";
 import React from "react";
+import { Dictionary } from "@/types/i18n";
 
 interface OTPInstructionTextProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>;
+  dictionary: Dictionary;
   onExpire?: () => void;
 }
 

@@ -1,8 +1,6 @@
 "use client";
 import { useTransition } from "react";
 import * as actions from "@/actions";
-import { VALIDATION_ERROR_KEYS } from "@/constants";
-import { getDictionary } from "@/get-dictionary";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpFormSchema, SignUpFormData } from "@/lib/schemas";
@@ -15,19 +13,15 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { COUNTRIES } from "@/lib/data/countries";
 import { Form } from "../ui/form";
+import { getErrorMessage } from "@/lib/utils";
+import { Dictionary } from "@/types/i18n";
 export function SignUpForm({
   dictionary,
 }: {
-  readonly dictionary: Awaited<ReturnType<typeof getDictionary>>;
+  readonly dictionary: Dictionary;
 }) {
   const { signUp: i18n } = dictionary;
   const [isPending, startTransition] = useTransition();
-
-  function getErrorMessage(key?: string): string {
-    return dictionary.validationErrors[
-      VALIDATION_ERROR_KEYS[key as keyof typeof VALIDATION_ERROR_KEYS]
-    ];
-  }
 
   const form = useForm<SignUpFormData>({
     mode: "onChange",
@@ -75,6 +69,7 @@ export function SignUpForm({
         >
           {/* Form Row */}
           <FormInput
+            testId="signup-email-input"
             name="email"
             label={i18n.emailLabel}
             placeholder={i18n.emailPlaceholder}
@@ -82,10 +77,11 @@ export function SignUpForm({
             control={control}
             errors={errors}
             dirtyFields={dirtyFields}
-            getErrorMessage={getErrorMessage}
+            getErrorMessage={getErrorMessage(dictionary)}
           />
           {/* Form Row */}
           <FormInput
+            testId="signup-company-input"
             name="company"
             label={i18n.companyLabel}
             placeholder={i18n.companyPlaceholder}
@@ -93,7 +89,7 @@ export function SignUpForm({
             control={control}
             errors={errors}
             dirtyFields={dirtyFields}
-            getErrorMessage={getErrorMessage}
+            getErrorMessage={getErrorMessage(dictionary)}
           />
           {/* Form Row */}
           <FormCombobox
@@ -107,10 +103,11 @@ export function SignUpForm({
             errors={errors}
             dirtyFields={dirtyFields}
             options={COUNTRIES}
-            getErrorMessage={getErrorMessage}
+            getErrorMessage={getErrorMessage(dictionary)}
           />
           {/* Form Row */}
           <FormSelect
+            testId="signup-company-select"
             name="companySize"
             label={i18n.companySizeLabel}
             placeholder={i18n.companySizePlaceholder}
@@ -123,10 +120,11 @@ export function SignUpForm({
               { value: "Entre 50 y 200", label: "Entre 50 y 200" },
               { value: "Más de 200", label: "Más de 200" },
             ]}
-            getErrorMessage={getErrorMessage}
+            getErrorMessage={getErrorMessage(dictionary)}
           />
           {/* Form Row */}
           <FormSelect
+            testId="signup-role-select"
             name="role"
             label={i18n.companyRoleLabel}
             placeholder={i18n.companyRolePlaceholder}
@@ -145,7 +143,7 @@ export function SignUpForm({
                 label: "Talent Acquisition Manager",
               },
             ]}
-            getErrorMessage={getErrorMessage}
+            getErrorMessage={getErrorMessage(dictionary)}
           />
           <Button
             disabled={!isValid}
