@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Providers from "../providers";
 import localFont from "next/font/local";
 import { i18n, type Locale } from "../../i18n-config";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./globals.css";
 
@@ -41,6 +42,7 @@ export default async function RootLayout(props: Readonly<RootLayoutProps>) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );

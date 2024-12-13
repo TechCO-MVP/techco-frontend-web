@@ -28,7 +28,8 @@
     "otpTimerMinutes": " minutos",
     "otpTimerEnd": " para ingresarlo.",
     "otpTimeExpired": "¿No recibiste el código?",
-    "otpResendCode": "Reenviar código"
+    "otpResendCode": "Reenviar código",
+    "otpNewCodeMessage": "Un nuevo código ha sido enviado a tu correo. Por favor, revisa nuevamente."
   },
   "signUp": {
     "signInLinkText": "Iniciar sesión",
