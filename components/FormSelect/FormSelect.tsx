@@ -64,7 +64,7 @@ export function FormSelect<TSchema extends FieldValues>({
                   hasError && "border-red-500 focus-visible:ring-red-500",
                 )}
               >
-                <SelectTrigger data-testId={testId}>
+                <SelectTrigger data-testid={testId}>
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>

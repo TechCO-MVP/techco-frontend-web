@@ -4,22 +4,26 @@ import * as actions from "@/actions";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpFormSchema, SignUpFormData } from "@/lib/schemas";
-import { FormInput } from "../FormInput/FormInput";
-import { FormSelect } from "../FormSelect/FormSelect";
+import { FormInput } from "@/components/FormInput/FormInput";
+import { FormSelect } from "@/components/FormSelect/FormSelect";
 import { Heading } from "@/components/Typography/Heading";
 import { Text } from "@/components/Typography/Text";
 import { FormCombobox } from "../FormCombobox/FormCombobox";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { COUNTRIES } from "@/lib/data/countries";
-import { Form } from "../ui/form";
 import { getErrorMessage } from "@/lib/utils";
 import { Dictionary } from "@/types/i18n";
+import { useRouter } from "next/navigation";
+import { paths } from "@/lib/paths";
 export function SignUpForm({
   dictionary,
 }: {
   readonly dictionary: Dictionary;
 }) {
+  const router = useRouter();
+
   const { signUp: i18n } = dictionary;
   const [isPending, startTransition] = useTransition();
 
@@ -45,6 +49,7 @@ export function SignUpForm({
     startTransition(async () => {
       const response = await actions.signUp(data);
       console.log(response);
+      router.push(paths.codeValidation());
     });
   };
   return (

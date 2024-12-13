@@ -2,7 +2,7 @@
 import { startTransition, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+
 import { Form } from "@/components/ui/form";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
@@ -17,6 +17,8 @@ import { getErrorMessage } from "@/lib/utils";
 import { OTPFormData, OTPFormSchema } from "@/lib/schemas";
 
 export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
+  // fixed top-0 left-[50%] z-[100] flex max-h-screen w-full translate-x-[-50%] flex-col-reverse p-4 sm:right-0 sm:flex-col md:max-w-[420px]
+
   const { otpPage: i18n } = dictionary;
   const [resendBtnEnabled, _resendBtnEnabled] = useState(false);
   const form = useForm<OTPFormData>({

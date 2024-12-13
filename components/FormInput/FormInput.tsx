@@ -57,10 +57,12 @@ export function FormInput<TSchema extends FieldValues>({
                 data-testid={testId}
                 placeholder={placeholder}
                 className={cn(
+                  "focus-visible:ring-offset-0",
                   isTouched &&
                     !hasError &&
                     "border-green-500 focus-visible:ring-green-500",
-                  hasError && "border-red-500 focus-visible:ring-red-500",
+                  hasError &&
+                    "border-red-500 bg-red-50 focus-visible:ring-red-500",
                 )}
               />
             </FormControl>

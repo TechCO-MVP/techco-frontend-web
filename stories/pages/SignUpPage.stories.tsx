@@ -1,7 +1,7 @@
 import type { Meta, StoryObj, ReactRenderer } from "@storybook/react";
 import type { PartialStoryFn as StoryFn } from "@storybook/types";
-import SignUpPage from "@/app/[lang]/signup/page";
-import SignUpLayout from "@/app/[lang]/signup/layout";
+import SignUpPage from "@/app/[lang]/(auth)/signup/page";
+import SignUpLayout from "@/app/[lang]/(auth)/layout";
 
 const meta: Meta<typeof SignUpPage> = {
   title: "Pages/SignUpPage",
