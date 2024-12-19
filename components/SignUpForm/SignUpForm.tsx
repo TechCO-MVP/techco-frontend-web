@@ -151,6 +151,7 @@ export function SignUpForm({
             getErrorMessage={getErrorMessage(dictionary)}
           />
           <Button
+            data-testid="signup-submit-button"
             disabled={!isValid}
             type="submit"
             className="mx-auto w-full max-w-[22rem]"

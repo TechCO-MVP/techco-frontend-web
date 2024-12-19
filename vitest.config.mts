@@ -22,6 +22,8 @@ export default defineConfig({
       exclude: [
         "**/*.stories.{ts,tsx}",
         "components/ui/**",
+        "hooks/use-toast.ts", // hook from shadcn
+        "lib/paths.ts", // The helper is static
         ".storybook",
         ".next",
         "*.d.ts",
