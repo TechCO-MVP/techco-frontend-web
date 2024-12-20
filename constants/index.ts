@@ -9,4 +9,5 @@ export const VALIDATION_ERROR_KEYS: {
   roleError: "roleError",
   companySizeError: "companySizeError",
   otpCodeError: "otpCodeError",
+  otpCodeLengthError: "otpCodeLengthError",
 };

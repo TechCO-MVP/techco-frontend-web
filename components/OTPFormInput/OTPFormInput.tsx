@@ -26,6 +26,7 @@ type FormOTPInputProps<TSchema extends FieldValues> = {
   label: string;
   testId: string;
   maxLength?: number;
+  disabled?: boolean;
   pattern?: string;
   description?: string;
   control: Control<TSchema>;
@@ -38,13 +39,14 @@ export function OTPFormInput<TSchema extends FieldValues>({
   name,
   label,
   testId,
-  maxLength = 4,
+  maxLength = 6,
   pattern,
   description,
   control,
   errors,
   dirtyFields,
   getErrorMessage,
+  disabled,
 }: FormOTPInputProps<TSchema>) {
   return (
     <FormField
@@ -58,6 +60,7 @@ export function OTPFormInput<TSchema extends FieldValues>({
             <FormLabel>{label}</FormLabel>
             <FormControl>
               <InputOTP
+                disabled={disabled}
                 data-testid={testId}
                 maxLength={maxLength}
                 pattern={pattern}

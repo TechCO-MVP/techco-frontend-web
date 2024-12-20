@@ -1,5 +1,7 @@
 "use client";
-import { useTransition } from "react";
+import { setAuthState } from "@/lib/store/features/auth/auth";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { useState, useTransition } from "react";
 import * as actions from "@/actions";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,10 +25,10 @@ export function SignUpForm({
   readonly dictionary: Dictionary;
 }) {
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   const { signUp: i18n } = dictionary;
   const [isPending, startTransition] = useTransition();
-
+  const [error, setError] = useState<string | undefined>("");
   const form = useForm<SignUpFormData>({
     mode: "onChange",
     resolver: zodResolver(SignUpFormSchema),
@@ -45,17 +47,39 @@ export function SignUpForm({
     formState: { dirtyFields, errors, isValid },
   } = form;
 
+  const handleAuthError = (message?: string) => {
+    setError(message || "Something went wrong. Please try again.");
+  };
+
   const onSubmit = async (data: SignUpFormData) => {
-    startTransition(async () => {
-      const response = await actions.signUp(data);
-      console.log(response);
-      router.push(paths.codeValidation());
-    });
+    try {
+      startTransition(async () => {
+        const signUpResponse = await actions.signUp(data);
+
+        if (!signUpResponse.success) {
+          return handleAuthError(signUpResponse?.message);
+        }
+
+        const signInResponse = await actions.signIn(data);
+
+        if (!signInResponse.session) {
+          return handleAuthError(signInResponse?.message);
+        }
+        dispatch(
+          setAuthState({ email: data.email, session: signInResponse.session }),
+        );
+        router.push(paths.codeValidation());
+      });
+    } catch (error: unknown) {
+      handleAuthError(
+        error instanceof Error ? error.message : "Unexpected error occurred",
+      );
+    }
   };
   return (
     <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
       {/* Top Section */}
-      <div className="mb-10 flex flex-col items-center">
+      <div className="mb-5 flex flex-col items-center">
         <Heading level={1} className="text-2xl leading-8">
           {i18n.welcomeTitle}
         </Heading>
@@ -72,6 +96,13 @@ export function SignUpForm({
           onSubmit={handleSubmit(onSubmit)}
           className="mb-4 flex w-full max-w-md flex-col items-center"
         >
+          <div className="flex min-h-[20px] items-center">
+            {error && (
+              <Text size="small" type="span" className="m-0 text-red-500">
+                {error}
+              </Text>
+            )}
+          </div>
           {/* Form Row */}
           <FormInput
             testId="signup-email-input"

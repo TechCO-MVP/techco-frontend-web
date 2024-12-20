@@ -1,7 +1,8 @@
 {
   "server-component": {
     "currentLang": "Current language",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "logOut": "Log Out"
   },
   "signIn": {
     "formTitle": "Sign in to continue.",
@@ -18,12 +19,13 @@
     "roleError": "The role is not valid.",
     "companySizeError": "Company size is not valid.",
     "countryError": "Country is not valid.",
+    "otpCodeLengthError": "6 digits are required.",
     "otpCodeError": "The code is not valid."
   },
   "otpPage": {
-    "otpInputLabel": "Enter the 4 digits code:",
+    "otpInputLabel": "Enter the 6 digits code:",
     "formHeading": "Confirm your identity with the code we sent.",
-    "otpInstructions": "We sent you a 4 digits code to your email. ",
+    "otpInstructions": "We sent you a 6 digits code to your email. ",
     "otpTimerStart": "You have ",
     "otpTimerMinutes": " minutes",
     "otpTimerEnd": " to enter it.",

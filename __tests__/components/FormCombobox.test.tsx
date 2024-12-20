@@ -5,17 +5,6 @@ import { FormCombobox } from "@/components/FormCombobox/FormCombobox";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-vi.stubGlobal(
-  "ResizeObserver",
-  class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  },
-);
-
-Element.prototype.scrollIntoView = vi.fn();
-
 const SignUpSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });

@@ -5,6 +5,7 @@ import { i18n } from "./i18n-config";
 
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+const publicPaths = ["/signup", "/code", "/signin"];
 
 function getLocale(request: NextRequest): string | undefined {
   // Negotiator expects plain object so we need to transform headers
@@ -27,6 +28,8 @@ function getLocale(request: NextRequest): string | undefined {
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  const token = request.cookies.get("idToken");
+
   // // `/_next/` and `/api/` are ignored by the watcher, but we need to ignore files in `public` manually.
   // // If you have one
   // if (
@@ -37,18 +40,15 @@ export function middleware(request: NextRequest) {
   //   ].includes(pathname)
   // )
   //   return
-  console.log("pathname", pathname);
   // Check if there is any supported locale in the pathname
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) =>
       !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
   );
-  console.log("pathnameIsMissingLocale", pathnameIsMissingLocale);
 
   // Redirect if there is no locale
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-    console.log("locale", locale);
 
     // e.g. incoming request is /products
     // The new URL is now /en-US/products
@@ -58,6 +58,11 @@ export function middleware(request: NextRequest) {
         request.url,
       ),
     );
+  }
+
+  if (!token && !publicPaths.some((path) => pathname.includes(path))) {
+    const locale = pathname.split("/")[1] ?? getLocale(request);
+    return NextResponse.redirect(new URL(`/${locale}/signin`, request.url));
   }
 }
 

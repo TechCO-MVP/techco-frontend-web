@@ -12,7 +12,7 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
   const { children, params } = props;
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
-  const { signUp: i18n } = dictionary;
+  const { signUp, signIn } = dictionary;
   return (
     <div className="relative flex h-screen items-center justify-center bg-gray-50">
       <div
@@ -27,9 +27,17 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
           <nav>
             <ul className="flex justify-end space-x-4">
               <li>
-                <Link href="/signin">
+                <Link href="signin">
                   <Button className="rounded bg-background text-foreground hover:bg-foreground hover:text-background">
-                    {i18n.signInLinkText}
+                    {signUp.signInLinkText}
+                  </Button>
+                </Link>
+              </li>
+
+              <li>
+                <Link href="signup">
+                  <Button className="rounded bg-background text-foreground hover:bg-foreground hover:text-background">
+                    {signIn.createAccountLabel}
                   </Button>
                 </Link>
               </li>

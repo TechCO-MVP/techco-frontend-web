@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import signUpSlice from "@/lib/store/features/auth/sign-up-slice";
+import authSlice from "@/lib/store/features/auth/auth";
 
 export const makeStore = () => {
   return configureStore({
-    reducer: { signUp: signUpSlice },
+    reducer: { auth: authSlice },
   });
 };
 

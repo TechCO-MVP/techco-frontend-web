@@ -1,0 +1,107 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { signUp } from "@/actions";
+import { SignUpFormData } from "@/lib/schemas";
+
+const mockFetch = vi.fn();
+
+vi.stubGlobal("fetch", mockFetch);
+
+const mockData: SignUpFormData = {
+  email: "test@example.com",
+  company: "Tech",
+  role: "Recruiter",
+  companySize: "200+",
+  country: "Spain",
+};
+
+describe("signUp Server Action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return success when the API responds with status 200", async () => {
+    mockFetch.mockResolvedValueOnce({
+      json: async () => ({
+        statusCode: 200,
+        body: {
+          message: "Sign-up successful!",
+          data: {
+            UserConfirmed: true,
+            UserSub: "mock-user-sub",
+          },
+        },
+      }),
+    });
+
+    const response = await signUp(mockData);
+
+    expect(response).toEqual({
+      success: true,
+      message: "Sign-up successful!",
+      data: {
+        UserConfirmed: true,
+        UserSub: "mock-user-sub",
+      },
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${process.env.SERVERLESS_URL}/auth/signup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.API_KEY ?? "",
+        },
+        body: JSON.stringify({
+          email: mockData.email,
+          name: mockData.email,
+        }),
+      },
+    );
+  });
+
+  it("should return an error if the API responds with a non-200 status", async () => {
+    mockFetch.mockResolvedValueOnce({
+      json: async () => ({
+        statusCode: 400,
+        body: {
+          message: "Invalid email format",
+        },
+      }),
+    });
+
+    const response = await signUp(mockData);
+
+    expect(response).toEqual({
+      success: false,
+      message: "Invalid email format",
+    });
+  });
+
+  it("should return a generic error if the API response lacks a message", async () => {
+    mockFetch.mockResolvedValueOnce({
+      json: async () => ({
+        statusCode: 500,
+        body: {},
+      }),
+    });
+
+    const response = await signUp(mockData);
+
+    expect(response).toEqual({
+      success: false,
+      message: "Unexpected response from server.",
+    });
+  });
+
+  it("should return an error when fetch throws an exception", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+    const response = await signUp(mockData);
+
+    expect(response).toEqual({
+      success: false,
+      message: "Network error",
+    });
+  });
+});

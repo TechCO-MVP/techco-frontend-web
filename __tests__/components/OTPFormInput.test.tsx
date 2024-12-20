@@ -5,16 +5,6 @@ import { OTPFormInput } from "@/components/OTPFormInput/OTPFormInput";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-vi.stubGlobal(
-  "ResizeObserver",
-  class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  },
-);
-
-document.elementFromPoint = vi.fn(() => document.createElement("div"));
 const OTPFormSchema = z.object({
   otp: z
     .string()
