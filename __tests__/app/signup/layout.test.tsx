@@ -21,6 +21,9 @@ vi.mock("@/get-dictionary", () => ({
     signUp: {
       signInLinkText: lang === "en" ? "Sign In" : "Iniciar sesión",
     },
+    signIn: {
+      createAccountLabel: lang === "en" ? "Create Account" : "Crear cuenta",
+    },
   })),
 }));
 

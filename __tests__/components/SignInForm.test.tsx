@@ -105,6 +105,6 @@ describe("SignInForm (Integration Tests)", () => {
     });
 
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/signup");
+    expect(link).toHaveAttribute("href", "signup");
   });
 });

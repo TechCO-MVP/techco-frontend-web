@@ -13,6 +13,7 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
   const { signUp, signIn } = dictionary;
+
   return (
     <div className="relative flex h-screen items-center justify-center bg-gray-50">
       <div
