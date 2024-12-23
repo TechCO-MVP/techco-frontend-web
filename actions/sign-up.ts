@@ -1,6 +1,8 @@
 "use server";
 
 import { SignUpFormData } from "@/lib/schemas";
+import { apiEndpoints } from "@/lib/api-endpoints";
+
 
 interface SignUpResponse {
   success: boolean;
@@ -13,7 +15,9 @@ interface SignUpResponse {
 
 export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
   try {
-    const response = await fetch(`${process.env.SERVERLESS_URL}/auth/signup`, {
+
+    const response = await fetch(apiEndpoints.signUp(), {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",

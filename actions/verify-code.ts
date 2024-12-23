@@ -3,6 +3,8 @@
 import { OTPFormData } from "@/lib/schemas";
 import { cookies } from "next/headers";
 
+import { apiEndpoints } from "@/lib/api-endpoints";
+
 interface SignInResponse {
   success: boolean;
   message?: string;
@@ -12,21 +14,20 @@ interface SignInResponse {
 }
 export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
   try {
-    const response = await fetch(
-      `${process.env.SERVERLESS_URL}/verify_auth_otp_code`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.API_KEY ?? "",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          session: data.session,
-          otp: data.code,
-        }),
+
+    const response = await fetch(apiEndpoints.verifyOtpCode(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY ?? "",
       },
-    );
+      body: JSON.stringify({
+        email: data.email,
+        session: data.session,
+        otp: data.code,
+      }),
+    });
+
 
     const result = await response.json();
 
