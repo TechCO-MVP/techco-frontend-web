@@ -3,6 +3,7 @@
 import { SignUpFormData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
+
 interface SignUpResponse {
   success: boolean;
   message?: string;
@@ -14,7 +15,9 @@ interface SignUpResponse {
 
 export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
   try {
+
     const response = await fetch(apiEndpoints.signUp(), {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { signIn } from "@/actions";
 import { SignInFormData } from "@/lib/schemas";
+
 import { apiEndpoints } from "@/lib/api-endpoints";
+
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
@@ -30,6 +32,7 @@ describe("signIn Server Action", () => {
       session: "mock-session-token",
     });
 
+
     expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.startAuth(), {
       method: "POST",
       headers: {
@@ -40,6 +43,7 @@ describe("signIn Server Action", () => {
         email: mockData.email,
       }),
     });
+
   });
 
   it("should return an error if the API responds without a session", async () => {

@@ -3,6 +3,7 @@ import { signUp } from "@/actions";
 import { SignUpFormData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
+
 const mockFetch = vi.fn();
 
 vi.stubGlobal("fetch", mockFetch);
@@ -44,6 +45,7 @@ describe("signUp Server Action", () => {
         UserSub: "mock-user-sub",
       },
     });
+
 
     expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.signUp(), {
       method: "POST",

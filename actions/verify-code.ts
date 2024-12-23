@@ -2,7 +2,9 @@
 
 import { OTPFormData } from "@/lib/schemas";
 import { cookies } from "next/headers";
+
 import { apiEndpoints } from "@/lib/api-endpoints";
+
 interface SignInResponse {
   success: boolean;
   message?: string;
@@ -12,6 +14,7 @@ interface SignInResponse {
 }
 export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
   try {
+
     const response = await fetch(apiEndpoints.verifyOtpCode(), {
       method: "POST",
       headers: {
@@ -24,6 +27,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         otp: data.code,
       }),
     });
+
 
     const result = await response.json();
 
