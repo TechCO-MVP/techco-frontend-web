@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/lib/theme";
+import Providers from "../providers";
 import localFont from "next/font/local";
 import { i18n, type Locale } from "../../i18n-config";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./globals.css";
 
@@ -40,7 +41,8 @@ export default async function RootLayout(props: Readonly<RootLayoutProps>) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );

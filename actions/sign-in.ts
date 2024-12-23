@@ -1,0 +1,43 @@
+"use server";
+
+import { SignInFormData } from "@/lib/schemas";
+
+interface SignInResponse {
+  success: boolean;
+  message?: string;
+  session?: string;
+}
+export async function signIn(data: SignInFormData): Promise<SignInResponse> {
+  try {
+    const response = await fetch(`${process.env.SERVERLESS_URL}/start_auth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY ?? "",
+      },
+      body: JSON.stringify({ email: data.email }),
+    });
+
+    const result = await response.json();
+
+    if (result.session) {
+      return {
+        success: true,
+        message: result?.message,
+        session: result.session,
+      };
+    }
+
+    return {
+      success: false,
+      message: result?.message || "Unexpected response from server.",
+    };
+  } catch (error: unknown) {
+    console.error("Sign-In Error:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Unexpected error occurred",
+    };
+  }
+}

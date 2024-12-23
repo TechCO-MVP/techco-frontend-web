@@ -1,6 +1,59 @@
 {
   "server-component": {
     "currentLang": "Current language",
-    "welcome": "Welcome!!"
+    "welcome": "Welcome",
+    "logOut": "Log Out"
+  },
+  "signIn": {
+    "formTitle": "Sign in to continue.",
+    "formDescription": "Enter your email to access your account.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@company.com",
+     "continueBtnText": "Contine",
+     "noAccountText": "Don't have an account?",
+    "createAccountLabel": "Create Account"
+  },
+  "validationErrors": {
+    "emailError": "Email is not valid.",
+    "companyError": "Company is not valid.",
+    "roleError": "The role is not valid.",
+    "companySizeError": "Company size is not valid.",
+    "countryError": "Country is not valid.",
+    "otpCodeLengthError": "6 digits are required.",
+    "otpCodeError": "The code is not valid."
+  },
+  "otpPage": {
+    "otpInputLabel": "Enter the 6 digits code:",
+    "formHeading": "Confirm your identity with the code we sent.",
+    "otpInstructions": "We sent you a 6 digits code to your email. ",
+    "otpTimerStart": "You have ",
+    "otpTimerMinutes": " minutes",
+    "otpTimerEnd": " to enter it.",
+    "otpTimeExpired": "Didn't receive the code?",
+    "otpResendCode": "Resend code",
+    "otpNewCodeMessage": "A new code was sent to your email. Please check again."
+  },
+  "signUp": {
+    "signInLinkText": "Sign In",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@company.com",
+    "companyLabel": "Company Name",
+    "companyPlaceholder": "Tech Solutions LLC.",
+    "countryLabel": "Select your country",
+    "countryPlaceholder": "Type or select a country...",
+    "countrySearchPlaceholder": "Search",
+    "countryNotFound": "No results",
+    "companySizeLabel": "How many employees does your company have?",
+    "companySizePlaceholder": "Select a range",
+    "companyRoleLabel": "What is your role in the company?",
+    "companyRolePlaceholder": "Select your role",
+    "createAccountLabel": "Create Account",
+    "termsMessage": "By clicking \"Create my account\", you agree to our",
+    "termsOfService": "Terms of Service",
+    "and": " and ",
+    "privacyPolicy": "Privacy Policy.",
+    "welcomeTitle": "Welcome!",
+    "welcomeMessage": "Let's build together the future of your team.",
+    "callToActionText": "Start now and simplify hiring process."
   }
 }

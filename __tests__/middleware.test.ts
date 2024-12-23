@@ -18,7 +18,7 @@ describe("Middleware", () => {
   });
 
   it("should not redirect if the pathname includes a supported locale", () => {
-    const request = mockRequest("/en");
+    const request = mockRequest("/en/signin");
     const response = middleware(request);
 
     expect(response).toBeUndefined();

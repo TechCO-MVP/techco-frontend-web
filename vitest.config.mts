@@ -20,8 +20,10 @@ export default defineConfig({
         lines: 80,
       },
       exclude: [
-        "stories/*.stories.{ts,tsx}",
+        "**/*.stories.{ts,tsx}",
         "components/ui/**",
+        "hooks/use-toast.ts", // hook from shadcn
+        "lib/paths.ts", // The helper is static
         ".storybook",
         ".next",
         "*.d.ts",
