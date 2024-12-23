@@ -27,6 +27,7 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   const [error, setError] = useState<string | undefined>("");
   const router = useRouter();
   const authState = useAppSelector((state) => state.auth);
+  const [key, setKey] = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
   const { otpPage: i18n } = dictionary;
@@ -63,6 +64,7 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
     if (!authState.email) return;
     setError("");
     setValue("code", "");
+    setKey((prev) => prev + 1);
     const signInResponse = await actions.signIn({
       email: authState.email,
     });
@@ -95,6 +97,7 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
           {i18n.formHeading}
         </Heading>
         <OTPInstructionText
+          key={key}
           onExpire={() => _resendBtnEnabled(true)}
           dictionary={dictionary}
         />
