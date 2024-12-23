@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { signIn } from "@/actions";
 import { SignInFormData } from "@/lib/schemas";
-
+import { apiEndpoints } from "@/lib/api-endpoints";
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
@@ -30,19 +30,16 @@ describe("signIn Server Action", () => {
       session: "mock-session-token",
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      `${process.env.SERVERLESS_URL}/start_auth`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.API_KEY ?? "",
-        },
-        body: JSON.stringify({
-          email: mockData.email,
-        }),
+    expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.startAuth(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY ?? "",
       },
-    );
+      body: JSON.stringify({
+        email: mockData.email,
+      }),
+    });
   });
 
   it("should return an error if the API responds without a session", async () => {

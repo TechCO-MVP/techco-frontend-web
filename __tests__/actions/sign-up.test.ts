@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { signUp } from "@/actions";
 import { SignUpFormData } from "@/lib/schemas";
+import { apiEndpoints } from "@/lib/api-endpoints";
 
 const mockFetch = vi.fn();
 
@@ -44,20 +45,17 @@ describe("signUp Server Action", () => {
       },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      `${process.env.SERVERLESS_URL}/auth/signup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.API_KEY ?? "",
-        },
-        body: JSON.stringify({
-          email: mockData.email,
-          name: mockData.email,
-        }),
+    expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.signUp(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY ?? "",
       },
-    );
+      body: JSON.stringify({
+        email: mockData.email,
+        name: mockData.email,
+      }),
+    });
   });
 
   it("should return an error if the API responds with a non-200 status", async () => {

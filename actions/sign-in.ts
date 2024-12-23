@@ -1,6 +1,7 @@
 "use server";
 
 import { SignInFormData } from "@/lib/schemas";
+import { apiEndpoints } from "@/lib/api-endpoints";
 
 interface SignInResponse {
   success: boolean;
@@ -9,7 +10,7 @@ interface SignInResponse {
 }
 export async function signIn(data: SignInFormData): Promise<SignInResponse> {
   try {
-    const response = await fetch(`${process.env.SERVERLESS_URL}/start_auth`, {
+    const response = await fetch(apiEndpoints.startAuth(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
