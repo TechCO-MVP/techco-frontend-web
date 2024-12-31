@@ -3,7 +3,6 @@
 import { SignInFormData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
-
 interface SignInResponse {
   success: boolean;
   message?: string;
@@ -11,9 +10,7 @@ interface SignInResponse {
 }
 export async function signIn(data: SignInFormData): Promise<SignInResponse> {
   try {
-
     const response = await fetch(apiEndpoints.startAuth(), {
-
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,11 +21,11 @@ export async function signIn(data: SignInFormData): Promise<SignInResponse> {
 
     const result = await response.json();
 
-    if (result.session) {
+    if (result.body?.session) {
       return {
         success: true,
         message: result?.message,
-        session: result.session,
+        session: result.body.session,
       };
     }
 

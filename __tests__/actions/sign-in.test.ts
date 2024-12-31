@@ -19,7 +19,9 @@ describe("signIn Server Action", () => {
   it("should return success when the API responds with a valid session", async () => {
     mockFetch.mockResolvedValueOnce({
       json: async () => ({
-        session: "mock-session-token",
+        body: {
+          session: "mock-session-token",
+        },
         message: "Sign-in successful!",
       }),
     });
@@ -32,7 +34,6 @@ describe("signIn Server Action", () => {
       session: "mock-session-token",
     });
 
-
     expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.startAuth(), {
       method: "POST",
       headers: {
@@ -43,7 +44,6 @@ describe("signIn Server Action", () => {
         email: mockData.email,
       }),
     });
-
   });
 
   it("should return an error if the API responds without a session", async () => {
