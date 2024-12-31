@@ -2,7 +2,7 @@ import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 import * as actions from "@/actions";
 import { Button } from "@/components/ui/button";
-
+import UserInfo from "@/components/UserInfo/UserInfo";
 export default async function IndexPage(props: {
   readonly params: Promise<{ lang: Locale }>;
 }) {
@@ -32,6 +32,7 @@ export default async function IndexPage(props: {
             {dictionary["server-component"].currentLang}: {lang}
           </p>
           <p>{dictionary["server-component"].welcome}</p>
+          <UserInfo />
         </div>
       </div>
     </div>

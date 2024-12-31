@@ -130,7 +130,7 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
         </form>
       </Form>
       <div className="flex items-center">
-        <Text size="small" className="text-gray-400">
+        <Text size="small" className="text-muted-foreground">
           {i18n.otpTimeExpired}
         </Text>
         <Button

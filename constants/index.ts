@@ -10,4 +10,8 @@ export const VALIDATION_ERROR_KEYS: {
   companySizeError: "companySizeError",
   otpCodeError: "otpCodeError",
   otpCodeLengthError: "otpCodeLengthError",
+  companyNameError: "companyNameError",
+  companyDescriptionError: "companyDescriptionError",
+  companyLinkedinError: "companyLinkedinError",
+  companyWebsiteError: "companyWebsiteError",
 };

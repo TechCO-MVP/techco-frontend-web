@@ -4,13 +4,34 @@
     "welcome": "Welcome",
     "logOut": "Log Out"
   },
+  "companiesPage": {
+    "goBack": "Back",
+    "aboutCompanyTabTitle": "About the company",
+    "userSettingsTabTitle": "User settings",
+    "mainTabTitle": "Main panel",
+    "formTitle": "Complete your company details",
+    "formDescription": "With this information, we will personalize your experience and better organize your hiring processes.",
+    "companyNameLabel": "Company Name",
+    "companyNamePlaceholder": "E.g., Casa&Cosecha S.A",
+    "descriptionLabel": "Company Description",
+    "descriptionPlaceholder": "E.g., We provide technological solutions for agriculture",
+    "websiteLabel": "Website URL",
+    "websiteDescription": "Company's website",
+    "websitePlaceholder": "E.g., https://techO.com",
+    "linkedinLabel": "LinkedIn Profile",
+    "linkedinPlaceholder": "E.g., www.linkedin.com/company/companyname",
+    "submitButton": "Save Information",
+    "missingInfoTitle": "You haven't entered your company information yet!",
+    "missingInfoDescription": "Completing this information will help us personalize the experience and better organize your processes. It's quick and easy.",
+    "enterCompanyInfoButton": "Enter Company Information"
+  },
   "signIn": {
     "formTitle": "Sign in to continue.",
     "formDescription": "Enter your email to access your account.",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@company.com",
-     "continueBtnText": "Contine",
-     "noAccountText": "Don't have an account?",
+    "continueBtnText": "Contine",
+    "noAccountText": "Don't have an account?",
     "createAccountLabel": "Create Account"
   },
   "validationErrors": {
@@ -20,7 +41,11 @@
     "companySizeError": "Company size is not valid.",
     "countryError": "Country is not valid.",
     "otpCodeLengthError": "6 digits are required.",
-    "otpCodeError": "The code is not valid."
+    "otpCodeError": "The code is not valid.",
+    "companyNameError": "Company name is required.",
+    "companyDescriptionError": "Description must be at least 10 characters long.",
+    "companyWebsiteError": "Please enter a valid website URL.",
+    "companyLinkedinError": "Please enter a valid LinkedIn profile URL."
   },
   "otpPage": {
     "otpInputLabel": "Enter the 6 digits code:",

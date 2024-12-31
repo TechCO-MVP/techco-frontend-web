@@ -4,6 +4,27 @@
     "welcome": "Bienvenido",
     "logOut": "Cerrar Sesión"
   },
+  "companiesPage": {
+    "goBack": "Atrás",
+    "aboutCompanyTabTitle": "Acerca de la empresa",
+    "userSettingsTabTitle": "Configuración de usuario",
+    "mainTabTitle": "Panel principal",
+    "formTitle": "Completa los detalles de tu empresa",
+    "formDescription": "Con esta información, personalizaremos tu experiencia y organizaremos mejor tus procesos de contratación.",
+    "companyNameLabel": "Nombre de la Empresa",
+    "companyNamePlaceholder": "Ej., Casa&Cosecha S.A",
+    "descriptionLabel": "Descripción de la Empresa",
+    "descriptionPlaceholder": "Ej., Ofrecemos soluciones tecnológicas en agricultura",
+    "websiteLabel": "URL Sitio web",
+    "websiteDescription": "Página web de tu empresa",
+    "websitePlaceholder": "Ej., https://techO.com",
+    "linkedinLabel": "Perfil de LinkedIn",
+    "linkedinPlaceholder": "Ej., www.linkedin.com/company/nombreempresa",
+    "submitButton": "Guardar información",
+    "missingInfoTitle": "¡Aún no has ingresado la información de tu empresa!",
+    "missingInfoDescription": "Completar esta información nos ayudará a personalizar la experiencia y organizar mejor tus procesos. Es rápido y sencillo.",
+    "enterCompanyInfoButton": "Ingresar información de la empresa"
+  },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",
     "formDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
@@ -20,7 +41,11 @@
     "companySizeError": "El tamaño de la compañía no es válido.",
     "countryError": "El país no es válido.",
     "otpCodeLengthError": "Los 6 dígitos son requeridos.",
-    "otpCodeError": "El código ingresado no es válido."
+    "otpCodeError": "El código ingresado no es válido.",
+    "companyNameError": "El nombre de la empresa es obligatorio.",
+    "companyDescriptionError": "La descripción debe tener al menos 10 caracteres.",
+    "companyWebsiteError": "Por favor, introduce una URL válida del sitio web.",
+    "companyLinkedinError": "Por favor, introduce una URL válida del perfil de LinkedIn."
   },
   "otpPage": {
     "otpInputLabel": "Ingresa el código de 6 dígitos:",
@@ -47,7 +72,7 @@
     "companySizePlaceholder": "Selecciona un rango",
     "companyRoleLabel": "¿Cuál es tu rol en la empresa?",
     "companyRolePlaceholder": "Selecciona tu rol",
-    "createAccountLabel":"Crear mi cuenta",
+    "createAccountLabel": "Crear mi cuenta",
     "termsMessage": "Al hacer clic en \"Crear mi cuenta\", aceptas nuestros .",
     "termsOfService": "Términos de servicio",
     "and": " y ",
@@ -55,6 +80,5 @@
     "welcomeTitle": "¡Bienvenido/a!",
     "welcomeMessage": "Construyamos juntos el futuro de tu equipo.",
     "callToActionText": "Empieza ahora y simplifica el proceso de contratación."
-
   }
 }

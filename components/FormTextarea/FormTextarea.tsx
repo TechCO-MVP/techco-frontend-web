@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormDescription,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   Control,
@@ -17,12 +17,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Text } from "../Typography/Text";
 
-type FormInputProps<TSchema extends FieldValues> = {
+type FormTextareaProps<TSchema extends FieldValues> = {
   name: Path<TSchema>;
   label: string;
   placeholder?: string;
   description?: string;
-  type?: string;
   testId: string;
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
@@ -31,19 +30,18 @@ type FormInputProps<TSchema extends FieldValues> = {
   getErrorMessage: (key?: string) => string;
 };
 
-export function FormInput<TSchema extends FieldValues>({
+export function FormTextarea<TSchema extends FieldValues>({
   name,
   label,
   placeholder,
   description,
-  type = "text",
   testId,
   control,
   errors,
   dirtyFields,
   getErrorMessage,
   classNames,
-}: FormInputProps<TSchema>) {
+}: FormTextareaProps<TSchema>) {
   return (
     <FormField
       control={control}
@@ -57,9 +55,8 @@ export function FormInput<TSchema extends FieldValues>({
             <FormLabel>{label}</FormLabel>
             {description && <FormDescription>{description}</FormDescription>}
             <FormControl>
-              <Input
+              <Textarea
                 {...field}
-                type={type}
                 data-testid={testId}
                 placeholder={placeholder}
                 className={cn(

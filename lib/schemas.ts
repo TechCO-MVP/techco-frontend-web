@@ -37,3 +37,21 @@ export const SignInFormSchema = z.object({
 });
 
 export type SignInFormData = z.infer<typeof SignInFormSchema>;
+
+/**
+ * Company Details Form
+ */
+
+export const CompanyDetailsSchema = z.object({
+  description: z
+    .string()
+    .min(10, { message: VALIDATION_ERROR_KEYS.companyDescriptionError }),
+  website: z
+    .string()
+    .url({ message: VALIDATION_ERROR_KEYS.companyWebsiteError }),
+  linkedin: z
+    .string()
+    .url({ message: VALIDATION_ERROR_KEYS.companyLinkedinError }),
+});
+
+export type CompanyDetailsData = z.infer<typeof CompanyDetailsSchema>;

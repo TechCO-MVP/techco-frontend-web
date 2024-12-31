@@ -62,7 +62,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
         >
           {i18n.formTitle}
         </Heading>
-        <Text className="text-gray-400" type="span" size="small">
+        <Text className="text-muted-foreground" type="span" size="small">
           {i18n.formDescription}
         </Text>
       </div>
@@ -102,7 +102,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
         </form>
       </Form>
       <div className="flex items-center">
-        <Text size="small" className="text-gray-400">
+        <Text size="small" className="text-muted-foreground">
           {i18n.noAccountText}
         </Text>
         <Link href="signup">

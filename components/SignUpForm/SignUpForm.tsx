@@ -86,7 +86,7 @@ export function SignUpForm({
         <Text className="mb-4 leading-8" type="p" size="large">
           {i18n.welcomeMessage}
         </Text>
-        <Text className="text-gray-400" type="span" size="small">
+        <Text className="text-muted-foreground" type="span" size="small">
           {i18n.callToActionText}
         </Text>
       </div>
@@ -193,10 +193,10 @@ export function SignUpForm({
         </form>
       </Form>
       <div className="flex max-w-[22rem] flex-col items-center justify-center">
-        <Text type="p" size="small" className="text-gray-400">
+        <Text type="p" size="small" className="text-muted-foreground">
           {i18n.termsMessage}
         </Text>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           <Link className="underline" href="www.google.com">
             {i18n.termsOfService}
           </Link>
