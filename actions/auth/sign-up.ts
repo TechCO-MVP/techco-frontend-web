@@ -3,7 +3,6 @@
 import { SignUpFormData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
-
 interface SignUpResponse {
   success: boolean;
   message?: string;
@@ -15,9 +14,7 @@ interface SignUpResponse {
 
 export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
   try {
-
     const response = await fetch(apiEndpoints.signUp(), {
-
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,21 +24,20 @@ export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
     });
 
     const result = await response.json();
-
-    if (result.statusCode === 200) {
+    if (response.status === 200) {
       return {
         success: true,
-        message: result.body.message,
+        message: result?.message,
         data: {
-          UserConfirmed: result.body.data.UserConfirmed,
-          UserSub: result.body.data.UserSub,
+          UserConfirmed: result.body.UserConfirmed,
+          UserSub: result.body.UserSub,
         },
       };
     }
 
     return {
       success: false,
-      message: result.body?.message || "Unexpected response from server.",
+      message: result?.message || "Unexpected response from server.",
     };
   } catch (error: unknown) {
     console.error("Sign-Up Error:", error);

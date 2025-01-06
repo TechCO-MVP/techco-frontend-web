@@ -3,7 +3,6 @@ import { signUp } from "@/actions";
 import { SignUpFormData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
-
 const mockFetch = vi.fn();
 
 vi.stubGlobal("fetch", mockFetch);
@@ -23,14 +22,12 @@ describe("signUp Server Action", () => {
 
   it("should return success when the API responds with status 200", async () => {
     mockFetch.mockResolvedValueOnce({
+      status: 200,
       json: async () => ({
-        statusCode: 200,
+        message: "Sign-up successful!",
         body: {
-          message: "Sign-up successful!",
-          data: {
-            UserConfirmed: true,
-            UserSub: "mock-user-sub",
-          },
+          UserConfirmed: true,
+          UserSub: "mock-user-sub",
         },
       }),
     });
@@ -45,7 +42,6 @@ describe("signUp Server Action", () => {
         UserSub: "mock-user-sub",
       },
     });
-
 
     expect(mockFetch).toHaveBeenCalledWith(apiEndpoints.signUp(), {
       method: "POST",
@@ -62,11 +58,9 @@ describe("signUp Server Action", () => {
 
   it("should return an error if the API responds with a non-200 status", async () => {
     mockFetch.mockResolvedValueOnce({
+      status: 400,
       json: async () => ({
-        statusCode: 400,
-        body: {
-          message: "Invalid email format",
-        },
+        message: "Invalid email format",
       }),
     });
 

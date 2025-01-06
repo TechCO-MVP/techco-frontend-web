@@ -14,7 +14,6 @@ interface SignInResponse {
 }
 export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
   try {
-
     const response = await fetch(apiEndpoints.verifyOtpCode(), {
       method: "POST",
       headers: {
@@ -27,7 +26,6 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         otp: data.code,
       }),
     });
-
 
     const result = await response.json();
 
