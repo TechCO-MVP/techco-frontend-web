@@ -55,3 +55,17 @@ export const CompanyDetailsSchema = z.object({
 });
 
 export type CompanyDetailsData = z.infer<typeof CompanyDetailsSchema>;
+
+/**
+ * Create Form
+ */
+
+export const CreateUserSchema = z.object({
+  company: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  position: z.string(),
+  role: z.string(),
+});
+
+export type CreateUserData = z.infer<typeof CreateUserSchema>;

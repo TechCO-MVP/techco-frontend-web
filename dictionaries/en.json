@@ -4,6 +4,24 @@
     "welcome": "Welcome",
     "logOut": "Log Out"
   },
+  "userSettingsPage": {
+    "formTitle": "Configuración de los usuarios de tu organización",
+    "formDescription": "Agrega o elimina usuarios de tu organización",
+    "createUserFormTitle": "Create user",
+    "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
+    "companyLabel": "Empresa",
+    "companyPlaceholder": "Empresa",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Nombre",
+    "positionLabel": "Cargo",
+    "positionPlaceholder": "Cargo",
+    "roleLabel": "Rol",
+    "rolePlaceholder": "Rol",
+    "continueBtnText": "Continuar",
+    "cancelBtnText": "Cancelar"
+  },
   "companiesPage": {
     "goBack": "Back",
     "aboutCompanyTabTitle": "About the company",

@@ -4,8 +4,9 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AboutCompanyTab } from "@/components/AboutCompanyTab/AboutCompanyTab";
+import { UserSettingsTab } from "@/components/UserSettingsTab/UserSettingsTab";
 // We use this server component as a wrapper to be able to receive the lang attribute since it's a promise
-export default async function SignUp(props: {
+export default async function CompaniesPage(props: {
   readonly params: Promise<{ lang: Locale }>;
 }) {
   const { lang } = await props.params;
@@ -44,13 +45,11 @@ export default async function SignUp(props: {
             {dictionary.companiesPage.mainTabTitle}
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="about" className="h-full">
+        <TabsContent value="about" className="h-full w-full max-w-screen-lg">
           <AboutCompanyTab dictionary={dictionary} />
         </TabsContent>
-        <TabsContent value="user" className="h-full">
-          <div className="mx-auto -mt-8 flex h-full max-w-md flex-col items-center justify-center gap-4">
-            Change your password here.
-          </div>
+        <TabsContent value="user" className="h-full w-full max-w-screen-lg">
+          <UserSettingsTab dictionary={dictionary} />
         </TabsContent>
         <TabsContent value="main" className="h-full">
           <div className="mx-auto -mt-8 flex h-full max-w-md flex-col items-center justify-center gap-4">
