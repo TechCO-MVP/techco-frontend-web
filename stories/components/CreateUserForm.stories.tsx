@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { CreateUserForm } from "@/components/CreateUserDialog/CreateUserDialog";
+import { CreateUserDialog } from "@/components/CreateUserDialog/CreateUserDialog";
 
-const meta: Meta<typeof CreateUserForm> = {
-  title: "Components/CreateUserForm",
-  component: CreateUserForm,
+const meta: Meta<typeof CreateUserDialog> = {
+  title: "Components/CreateUserDialog",
+  component: CreateUserDialog,
   render: (args, { loaded: { dictionary } }) => (
-    <CreateUserForm {...args} dictionary={dictionary} />
+    <CreateUserDialog {...args} dictionary={dictionary} />
   ),
   parameters: {
     layout: "centered",
@@ -19,6 +19,6 @@ const meta: Meta<typeof CreateUserForm> = {
 
 export default meta;
 
-type Story = StoryObj<typeof CreateUserForm>;
+type Story = StoryObj<typeof CreateUserDialog>;
 
 export const Default: Story = {};
