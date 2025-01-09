@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Image } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import { Text } from "../Typography/Text";
 
 interface FileDropzoneProps {
@@ -64,7 +64,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
         onDragOver={handleDragOver}
         className="flex h-32 w-64 flex-col items-center justify-center gap-6 border-2 border-dotted border-black text-gray-600 hover:border-gray-600"
       >
-        <Image className="h-8 w-8 text-muted-foreground" />
+        <ImageIcon className="h-8 w-8 text-muted-foreground" />
         <Text className="text-lg font-semibold text-foreground">
           Arrastra tu imagen aqui
         </Text>

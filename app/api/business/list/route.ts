@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { apiEndpoints } from "@/lib/api-endpoints";
 import { ListBusinessApiResponse } from "@/types";
 
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("idToken")?.value;
 

@@ -1,7 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-import Link from "next/link";
 import { TopBar } from "@/components/TopBar/TopBar";
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -11,10 +8,7 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout(
   props: Readonly<DashboardLayoutProps>,
 ) {
-  const { children, params } = props;
-  const { lang } = await params;
-  const dictionary = await getDictionary(lang);
-  const { signUp, signIn } = dictionary;
+  const { children } = props;
 
   return (
     <div className="relative flex h-full items-center justify-center bg-gray-50">

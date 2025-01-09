@@ -29,8 +29,8 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
   dictionary,
 }) => {
   const { userSettingsPage: i18n } = dictionary;
-  const [error, setError] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
+  const [error] = useState<string | undefined>("");
+  const [isPending] = useTransition();
   const [open, setOpen] = useState(false);
   const form = useForm<CreateUserData>({
     mode: "onChange",

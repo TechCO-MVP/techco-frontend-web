@@ -14,7 +14,7 @@ export const AboutCompanyTab: FC<Readonly<CompaniesTabProps>> = ({
 }) => {
   const [companies, setCompanies] = useState<Business[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const fetchCompanies = async () => {
     try {
       setLoading(true);
@@ -31,9 +31,11 @@ export const AboutCompanyTab: FC<Readonly<CompaniesTabProps>> = ({
       }
       setCompanies(data.body);
       setError(null);
-    } catch (err: any) {
-      console.error("Failed to fetch companies:", err);
-      setError(err.message || "An unexpected error occurred");
+    } catch (error: unknown) {
+      console.error("Failed to fetch companies:", error);
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+      );
     } finally {
       setLoading(false);
     }
@@ -44,10 +46,12 @@ export const AboutCompanyTab: FC<Readonly<CompaniesTabProps>> = ({
   if (loading) return <LoadingSkeleton />;
   return (
     <>
-      <CompanyDetailsForm
-        rootBusiness={companies?.[0]}
-        dictionary={dictionary}
-      />
+      {companies?.length ? (
+        <CompanyDetailsForm
+          rootBusiness={companies?.[0]}
+          dictionary={dictionary}
+        />
+      ) : null}
     </>
   );
 };

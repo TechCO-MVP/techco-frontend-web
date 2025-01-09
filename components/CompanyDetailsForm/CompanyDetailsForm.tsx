@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog";
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
-  rootBusiness?: Business;
+  rootBusiness: Business;
 };
 
 export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
@@ -67,7 +67,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
       startTransition(async () => {
         const updateResponse = await updateCompanyAction(
           { ...data, logo: logo || rootBusiness?.logo },
-          rootBusiness?._id!,
+          rootBusiness._id,
         );
         if (updateResponse.success) {
           console.log("Updated!");
