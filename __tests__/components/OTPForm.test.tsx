@@ -12,6 +12,7 @@ import { makeStore } from "@/lib/store";
 import { Dictionary } from "@/types/i18n";
 import { getDictionary } from "@/get-dictionary";
 import mockRouter from "next-router-mock";
+import { paths } from "@/lib/paths";
 
 vi.mock(
   "next/navigation",
@@ -96,7 +97,7 @@ describe("OTPForm (Integration Tests)", () => {
         session: "mock-session",
         code: "123456",
       });
-      expect(mockRouter.pathname).toBe("/");
+      expect(mockRouter.pathname).toBe(`/${paths.home()}`);
     });
   });
 

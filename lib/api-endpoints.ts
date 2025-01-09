@@ -13,7 +13,13 @@ export const apiEndpoints = {
   verifyOtpCode() {
     return `${BASE_URL}/auth/verify_auth_otp_code`;
   },
-  updateCompany(id?: string) {
+  verifyOtpCodeSignUp() {
+    return `${BASE_URL}/auth/verify_auth_otp_code_signup`;
+  },
+  updateBusiness(id?: string) {
     return `${BASE_URL}/business/update/${id}`;
+  },
+  listBusiness() {
+    return `${BASE_URL}/business/list`;
   },
 };

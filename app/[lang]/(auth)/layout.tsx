@@ -15,12 +15,12 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
   const { signUp, signIn } = dictionary;
 
   return (
-    <div className="relative flex h-screen items-center justify-center bg-gray-50">
+    <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">
       <div
-        className="flex h-full w-full flex-col bg-gray-50"
+        className="min-h-100vh flex h-full min-h-screen w-full flex-col bg-gray-50"
         style={{
           background:
-            "linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url('/assets/background.png')",
+            "linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url('/assets/background.jpeg')",
           backgroundBlendMode: "luminosity",
         }}
       >

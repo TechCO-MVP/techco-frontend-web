@@ -19,6 +19,8 @@ import { getErrorMessage } from "@/lib/utils";
 import { Dictionary } from "@/types/i18n";
 import { useRouter } from "next/navigation";
 import { paths } from "@/lib/paths";
+import { Loader2 } from "lucide-react";
+
 export function SignUpForm({
   dictionary,
 }: {
@@ -33,6 +35,7 @@ export function SignUpForm({
     mode: "onChange",
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
+      name: "",
       email: "",
       company: "",
       country: "",
@@ -66,9 +69,16 @@ export function SignUpForm({
           return handleAuthError(signInResponse?.message);
         }
         dispatch(
-          setAuthState({ email: data.email, session: signInResponse.session }),
+          setAuthState({
+            email: data.email,
+            session: signInResponse.session,
+            company: data.company,
+            companySize: data.companySize,
+            country: data.country,
+            role: data.role,
+          }),
         );
-        router.push(paths.codeValidation());
+        router.push(paths.codeValidationSignUp());
       });
     } catch (error: unknown) {
       handleAuthError(
@@ -103,6 +113,18 @@ export function SignUpForm({
               </Text>
             )}
           </div>
+          {/* Form Row */}
+          <FormInput
+            testId="signup-name-input"
+            name="name"
+            label={i18n.nameLabel}
+            placeholder={i18n.namePlaceholder}
+            type="string"
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
           {/* Form Row */}
           <FormInput
             testId="signup-email-input"
@@ -151,10 +173,10 @@ export function SignUpForm({
             errors={errors}
             dirtyFields={dirtyFields}
             options={[
-              { value: "Entre 1 y 10", label: "Entre 1 y 10" },
-              { value: "Entre 11 y 50", label: "Entre 11 y 50" },
-              { value: "Entre 50 y 200", label: "Entre 50 y 200" },
-              { value: "Más de 200", label: "Más de 200" },
+              { value: "A", label: "Entre 1 y 10" },
+              { value: "B", label: "Entre 11 y 50" },
+              { value: "C", label: "Entre 50 y 200" },
+              { value: "D", label: "Más de 200" },
             ]}
             getErrorMessage={getErrorMessage(dictionary)}
           />
@@ -183,12 +205,17 @@ export function SignUpForm({
           />
           <Button
             data-testid="signup-submit-button"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             type="submit"
             className="mx-auto w-full max-w-[22rem]"
           >
-            {i18n.createAccountLabel}
-            {isPending && `...`}
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+              </>
+            ) : (
+              i18n.createAccountLabel
+            )}
           </Button>
         </form>
       </Form>

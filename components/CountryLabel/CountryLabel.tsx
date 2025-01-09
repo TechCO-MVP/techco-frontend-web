@@ -1,10 +1,11 @@
 import { FC } from "react";
 
 interface CountryLabelProps {
-  label: string;
+  label: string | null;
 }
 export const CountryLabel: FC<Readonly<CountryLabelProps>> = ({ label }) => {
   const renderLabel = () => {
+    if (!label) return null;
     const [flag, ...name] = label.split(" ");
     return `${name.join(" ")} ${flag}`;
   };

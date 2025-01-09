@@ -4,6 +4,7 @@ export const VALIDATION_ERROR_KEYS: {
   [K in keyof ValidationErrorMessages]: K;
 } = {
   emailError: "emailError",
+  nameError: "nameError",
   companyError: "companyError",
   countryError: "countryError",
   roleError: "roleError",

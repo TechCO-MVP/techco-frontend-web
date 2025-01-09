@@ -20,10 +20,14 @@ export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY ?? "",
       },
-      body: JSON.stringify({ email: data.email, name: data.email }),
+      body: JSON.stringify({
+        email: data.email,
+        name: data.name,
+      }),
     });
 
     const result = await response.json();
+    console.log("signUpResponse", result);
     if (response.status === 200) {
       return {
         success: true,
@@ -37,7 +41,8 @@ export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
 
     return {
       success: false,
-      message: result?.message || "Unexpected response from server.",
+      message:
+        result?.error || result?.message || "Unexpected response from server.",
     };
   } catch (error: unknown) {
     console.error("Sign-Up Error:", error);

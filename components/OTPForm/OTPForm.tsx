@@ -19,6 +19,8 @@ import { OTPFormData, OTPFormSchema } from "@/lib/schemas";
 import { paths } from "@/lib/paths";
 import { setAuthState } from "@/lib/store/features/auth/auth";
 import { useAppDispatch } from "@/lib/store/hooks";
+import { Loader2 } from "lucide-react";
+
 export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   const dispatch = useAppDispatch();
 
@@ -79,9 +81,6 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   };
 
   useEffect(() => {
-    if (!authState.email) {
-      router.push(paths.signIn());
-    }
     if (code.length === 6) {
       formRef.current?.requestSubmit();
     }
@@ -124,6 +123,14 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
             {error && (
               <Text size="small" type="span" className="m-0 text-red-500">
                 {error}
+              </Text>
+            )}
+            {isPending && (
+              <Text
+                size="small"
+                className="flex items-center justify-center gap-2 text-muted-foreground"
+              >
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
               </Text>
             )}
           </div>

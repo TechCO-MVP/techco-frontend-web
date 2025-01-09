@@ -10,20 +10,34 @@ import { Form } from "@/components/ui/form";
 import { CompanyDetailsData, CompanyDetailsSchema } from "@/lib/schemas";
 import { FormInput } from "../FormInput/FormInput";
 import { FormTextarea } from "../FormTextarea/FormTextarea";
-import { getErrorMessage } from "@/lib/utils";
+import { countryLabelLookup, getErrorMessage, formatDate } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { updateCompanyAction } from "@/actions/companies/update";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Business } from "@/types";
+import { FormSelect } from "../FormSelect/FormSelect";
+import { Loader2 } from "lucide-react";
+import { FileDropzone } from "../FileDropzone/FileDropzone";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
+  DialogTitle,
+} from "@/components/ui/dialog";
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
+  rootBusiness?: Business;
 };
 
 export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
+  rootBusiness,
   dictionary,
 }) => {
   const [error, setError] = useState<string | undefined>("");
-
+  const [logo, setLogo] = useState(rootBusiness?.logo);
+  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { companiesPage: i18n } = dictionary;
   const form = useForm<CompanyDetailsData>({
@@ -33,6 +47,8 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
       description: "",
       website: "",
       linkedin: "",
+      companySize: rootBusiness?.company_size,
+      industry: rootBusiness?.industry || "",
     },
   });
   const {
@@ -40,12 +56,23 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
     handleSubmit,
     formState: { dirtyFields, errors, isValid },
   } = form;
+
+  const getCountryLabel = () => {
+    if (!rootBusiness?.country_code) return null;
+    const label = countryLabelLookup(rootBusiness?.country_code);
+    return label;
+  };
   const onSubmit = async (data: CompanyDetailsData) => {
     try {
       startTransition(async () => {
-        const updateResponse = await updateCompanyAction(data);
+        const updateResponse = await updateCompanyAction(
+          { ...data, logo: logo || rootBusiness?.logo },
+          rootBusiness?._id!,
+        );
         if (updateResponse.success) {
           console.log("Updated!");
+        } else {
+          setError(updateResponse.message);
         }
       });
     } catch (error: unknown) {
@@ -69,22 +96,52 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
           {i18n.formDescription}
         </Text>
         <div className="mt-6 flex items-center justify-center gap-6">
-          <div>
+          <div className="flex flex-col">
             <Avatar className="h-20 w-20">
               <AvatarImage
-                src="https://picsum.photos/200/200"
+                src={
+                  rootBusiness?.logo || logo || "https://picsum.photos/200/200"
+                }
                 alt="@username"
               />
-              <AvatarFallback>UN</AvatarFallback>
+              <AvatarFallback>{rootBusiness?.name}</AvatarFallback>
             </Avatar>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger>
+                <Button asChild variant="ghost">
+                  <span>Editar</span>
+                </Button>
+              </DialogTrigger>
+
+              <DialogTitle className="hidden">Upload Image</DialogTitle>
+
+              <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
+                <FileDropzone
+                  onImageProcessed={(value) => {
+                    setLogo(value);
+                    setOpen(false);
+                  }}
+                />
+                <DialogClose asChild>
+                  <Button
+                    variant="ghost"
+                    data-testid="create-user-cancel-button"
+                    type="button"
+                    className="mx-auto"
+                  >
+                    Cerrar
+                  </Button>
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
           </div>
           <div>
             <div className="flex items-center gap-1">
-              <Text fontWeight="bold">Casa&Cosecha  S.A</Text>
-              <CountryLabel label="🇪🇸 Spain" />
+              <Text fontWeight="bold">{rootBusiness?.name}</Text>
+              <CountryLabel label={getCountryLabel()} />
             </div>
             <Text className="text-muted-foreground">
-              Creado por: Mao Molina | 17 Feb 2023
+              Creado por: Mao Molina | {formatDate(rootBusiness?.created_at)}
             </Text>
           </div>
         </div>
@@ -139,11 +196,98 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             dirtyFields={dirtyFields}
             getErrorMessage={getErrorMessage(dictionary)}
           />
+          {/* Form Row */}
+          <FormSelect
+            classNames="max-w-full"
+            testId="company-size-select"
+            name="companySize"
+            label={i18n.companySizeLabel}
+            placeholder={i18n.companySizePlaceholder}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            options={[
+              { value: "A", label: "Entre 1 y 10" },
+              { value: "B", label: "Entre 11 y 50" },
+              { value: "C", label: "Entre 50 y 200" },
+              { value: "D", label: "Más de 200" },
+            ]}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
+          {/* Form Row */}
+          <FormSelect
+            classNames="max-w-full"
+            testId="company-industry-select"
+            name="industry"
+            label={i18n.companyIndustryLabel}
+            placeholder={i18n.companyIndustryPlaceholder}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            options={[
+              { value: "Fintech", label: "Fintech" },
+              { value: "Healthcare", label: "Healthcare" },
+              {
+                value: "Education",
+                label: "Education",
+              },
+              {
+                value: "E-commerce",
+                label: "E-commerce",
+              },
+              { value: "Real Estate", label: "Real Estate" },
+              {
+                value: "Technology",
+                label: "Technology",
+              },
+              { value: "Manufacturing", label: "Manufacturing" },
+            ]}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
+          {/* Form Row */}
+          <FormSelect
+            classNames="max-w-full"
+            testId="company-segment-select"
+            name="segment"
+            label={i18n.companySegmentLabel}
+            placeholder={i18n.companySegmentPlaceholder}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            options={[
+              { value: "Empresa Pública", label: "Empresa Pública" },
+              { value: "Autónomo", label: "Autónomo" },
+              {
+                value: "Organismo gubernamental",
+                label: "Organismo gubernamental",
+              },
+              {
+                value: "Organización sin ánimo de lucro",
+                label: "Organización sin ánimo de lucro",
+              },
+              { value: "Empresa individual", label: "Empresa individual" },
+              {
+                value: "De financiación privada",
+                label: "De financiación privada",
+              },
+              { value: "Asociación", label: "Asociación" },
+            ]}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
 
           {/* Submit Button */}
-          <Button disabled={!isValid} type="submit" className="w-full max-w-40">
-            {i18n.submitButton}
-            {isPending && `...`}
+          <Button
+            disabled={!isValid || isPending}
+            type="submit"
+            className="w-full max-w-40"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+              </>
+            ) : (
+              i18n.submitButton
+            )}
           </Button>
         </form>
       </Form>

@@ -9,10 +9,10 @@
     "formDescription": "Agrega o elimina usuarios de tu organización",
     "createUserFormTitle": "Crear usuario",
     "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
-    "companyLabel": "Empresa",
-    "companyPlaceholder": "Empresa",
-    "emailLabel": "Email",
-    "emailPlaceholder": "Email",
+    "companyLabel": "Nombre de la compañía",
+    "companyPlaceholder": "Tech Solutions S.A.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "nombre@empresa.com",
     "nameLabel": "Nombre",
     "namePlaceholder": "Nombre",
     "positionLabel": "Cargo",
@@ -38,10 +38,17 @@
     "websitePlaceholder": "Ej., https://techO.com",
     "linkedinLabel": "Perfil de LinkedIn",
     "linkedinPlaceholder": "Ej., www.linkedin.com/company/nombreempresa",
+    "companySizeLabel": "¿Cuántos empleados tiene tu empresa?",
+    "companySizePlaceholder": "Selecciona un rango",
+    "companyIndustryLabel": "Sector",
+    "companyIndustryPlaceholder": "Selecciona un sector",
+    "companySegmentLabel": "Tipo de empresa",
+    "companySegmentPlaceholder": "Selecciona un tipo",
     "submitButton": "Guardar información",
     "missingInfoTitle": "¡Aún no has ingresado la información de tu empresa!",
     "missingInfoDescription": "Completar esta información nos ayudará a personalizar la experiencia y organizar mejor tus procesos. Es rápido y sencillo.",
-    "enterCompanyInfoButton": "Ingresar información de la empresa"
+    "enterCompanyInfoButton": "Ingresar información de la empresa",
+    "loadingMessage": "Espere for favor"
   },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",
@@ -50,9 +57,11 @@
     "emailPlaceholder": "nombre@empresa.com",
     "continueBtnText": "Continuar",
     "noAccountText": "¿No tiene cuenta?",
-    "createAccountLabel": "Crear cuenta"
+    "createAccountLabel": "Crear cuenta",
+    "loadingMessage": "Espere for favor"
   },
   "validationErrors": {
+    "nameError": "El nombre no es válido.",
     "emailError": "El correo no es válido.",
     "companyError": "La compañía no es válida.",
     "roleError": "El rol en la compañía no es válido.",
@@ -74,12 +83,15 @@
     "otpTimerEnd": " para ingresarlo.",
     "otpTimeExpired": "¿No recibiste el código?",
     "otpResendCode": "Reenviar código",
-    "otpNewCodeMessage": "Un nuevo código ha sido enviado a tu correo. Por favor, revisa nuevamente."
+    "otpNewCodeMessage": "Un nuevo código ha sido enviado a tu correo. Por favor, revisa nuevamente.",
+    "loadingMessage": "Espere for favor"
   },
   "signUp": {
     "signInLinkText": "Iniciar sesión",
     "emailLabel": "Correo electrónico",
     "emailPlaceholder": "nombre@empresa.com",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "John Doe",
     "companyLabel": "Nombre de la compañía",
     "companyPlaceholder": "Tech Solutions S.A.",
     "countryLabel": "Selecciona el país de operación:",
@@ -97,6 +109,7 @@
     "privacyPolicy": "Política de privacidad.",
     "welcomeTitle": "¡Bienvenido/a!",
     "welcomeMessage": "Construyamos juntos el futuro de tu equipo.",
-    "callToActionText": "Empieza ahora y simplifica el proceso de contratación."
+    "callToActionText": "Empieza ahora y simplifica el proceso de contratación.",
+    "loadingMessage": "Espere for favor"
   }
 }

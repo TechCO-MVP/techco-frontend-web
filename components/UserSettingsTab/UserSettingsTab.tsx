@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { CreateUserDialog } from "../CreateUserDialog/CreateUserDialog";
@@ -19,54 +19,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { Input } from "../ui/input";
 import { ArrowUpDown, SlidersHorizontal, MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-const users = [
-  {
-    name: "Carlos Hernandez",
-    email: "carloshernandez@techo.pe",
-    position: "VP operaciones",
-    role: "Super Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Maria Lopez",
-    email: "marialopez@techo.pe",
-    position: "Gerente Financiero",
-    role: "Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Juan Perez",
-    email: "juanperez@techo.pe",
-    position: "Jefe de Proyectos",
-    role: "Editor",
-    status: "Activo",
-  },
-  {
-    name: "Lucia Gomez",
-    email: "luciagomez@techo.pe",
-    position: "Coordinadora de Ventas",
-    role: "Colaborador",
-    status: "Inactivo",
-  },
-  {
-    name: "Pedro Martinez",
-    email: "pedromartinez@techo.pe",
-    position: "Analista de Datos",
-    role: "Colaborador",
-    status: "Activo",
-  },
-  {
-    name: "Ana Torres",
-    email: "anatorres@techo.pe",
-    position: "Asistente Administrativo",
-    role: "Colaborador",
-    status: "Activo",
-  },
-];
+import LoadingSkeleton from "./LoadingSkeleton";
+
+import { User } from "@/types";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -76,7 +36,16 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
 }) => {
   const { userSettingsPage: i18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await fetch("/api/user/list");
+      const result = await response.json();
+      setUsers(result);
+    };
+    fetchUsers();
+  }, []);
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -85,6 +54,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
       return "asc";
     });
   };
+  if (!users.length) return <LoadingSkeleton />;
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()),

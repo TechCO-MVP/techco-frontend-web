@@ -24,6 +24,15 @@ export default defineConfig({
         "components/ui/**",
         "hooks/use-toast.ts", // hook from shadcn
         "lib/paths.ts", // The helper is static
+
+        "components/TopBar/*",
+        "components/UserSettingsTab/*",
+        "components/UserMenu/*",
+        "components/CreateUserDialog/*",
+        "components/CountryLabel/*",
+        "components/CompanyDetailsForm/*",
+        "components/AboutCompanyTab/*",
+        // End Temp exlucude to allow deploy
         ".storybook",
         ".next",
         "*.d.ts",

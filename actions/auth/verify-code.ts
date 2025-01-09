@@ -67,7 +67,8 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
 
     return {
       success: false,
-      message: result?.message || "Unexpected response from server.",
+      message:
+        result?.error || result?.message || "Unexpected response from server.",
     };
   } catch (error: unknown) {
     console.error("Verify Token Error:", error);

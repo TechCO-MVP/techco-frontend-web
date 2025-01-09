@@ -29,6 +29,7 @@ type FormSelectProps<TSchema extends FieldValues> = {
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
   dirtyFields: UseFormStateReturn<TSchema>["dirtyFields"];
+  classNames?: string;
   options: { value: string; label: string }[];
   getErrorMessage: (key?: string) => string;
 };
@@ -43,6 +44,7 @@ export function FormSelect<TSchema extends FieldValues>({
   dirtyFields,
   options,
   getErrorMessage,
+  classNames,
 }: FormSelectProps<TSchema>) {
   return (
     <FormField
@@ -53,7 +55,7 @@ export function FormSelect<TSchema extends FieldValues>({
         const hasError = !!errors[name];
 
         return (
-          <FormItem className="mx-auto mb-3 w-full max-w-xs">
+          <FormItem className={cn("mx-auto mb-3 w-full max-w-xs", classNames)}>
             <FormLabel>{label}</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl

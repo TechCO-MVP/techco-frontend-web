@@ -38,10 +38,17 @@
     "websitePlaceholder": "E.g., https://techO.com",
     "linkedinLabel": "LinkedIn Profile",
     "linkedinPlaceholder": "E.g., www.linkedin.com/company/companyname",
+    "companySizeLabel": "How many employees does your company have?",
+    "companySizePlaceholder": "Select a range",
+    "companyIndustryLabel": "Sector",
+    "companyIndustryPlaceholder": "Select a sector",
+    "companySegmentLabel": "Company type",
+    "companySegmentPlaceholder": "Select a type",
     "submitButton": "Save Information",
     "missingInfoTitle": "You haven't entered your company information yet!",
     "missingInfoDescription": "Completing this information will help us personalize the experience and better organize your processes. It's quick and easy.",
-    "enterCompanyInfoButton": "Enter Company Information"
+    "enterCompanyInfoButton": "Enter Company Information",
+    "loadingMessage": "Please wait"
   },
   "signIn": {
     "formTitle": "Sign in to continue.",
@@ -50,10 +57,12 @@
     "emailPlaceholder": "name@company.com",
     "continueBtnText": "Contine",
     "noAccountText": "Don't have an account?",
-    "createAccountLabel": "Create Account"
+    "createAccountLabel": "Create Account",
+    "loadingMessage": "Please wait"
   },
   "validationErrors": {
     "emailError": "Email is not valid.",
+    "nameError": "Name is not valid.",
     "companyError": "Company is not valid.",
     "roleError": "The role is not valid.",
     "companySizeError": "Company size is not valid.",
@@ -74,12 +83,15 @@
     "otpTimerEnd": " to enter it.",
     "otpTimeExpired": "Didn't receive the code?",
     "otpResendCode": "Resend code",
-    "otpNewCodeMessage": "A new code was sent to your email. Please check again."
+    "otpNewCodeMessage": "A new code was sent to your email. Please check again.",
+    "loadingMessage": "Please wait"
   },
   "signUp": {
     "signInLinkText": "Sign In",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@company.com",
+    "nameLabel": "Name",
+    "namePlaceholder": "John Doe",
     "companyLabel": "Company Name",
     "companyPlaceholder": "Tech Solutions LLC.",
     "countryLabel": "Select your country",
@@ -97,6 +109,7 @@
     "privacyPolicy": "Privacy Policy.",
     "welcomeTitle": "Welcome!",
     "welcomeMessage": "Let's build together the future of your team.",
-    "callToActionText": "Start now and simplify hiring process."
+    "callToActionText": "Start now and simplify hiring process.",
+    "loadingMessage": "Please wait"
   }
 }
