@@ -31,6 +31,7 @@ export default defineConfig({
         "components/CreateUserDialog/*",
         "components/CountryLabel/*",
         "components/CompanyDetailsForm/*",
+        "components/UserInfo/*",
         "components/AboutCompanyTab/*",
         // End Temp exlucude to allow deploy
         ".storybook",
