@@ -24,6 +24,9 @@ vi.mock("@/get-dictionary", () => ({
     signIn: {
       createAccountLabel: lang === "en" ? "Create Account" : "Crear cuenta",
     },
+    footer: {
+      message: "Hello",
+    },
   })),
 }));
 
