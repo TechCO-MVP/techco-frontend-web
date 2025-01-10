@@ -1,3 +1,4 @@
+import { Text } from "@/components/Typography/Text";
 import { Button } from "@/components/ui/button";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
@@ -12,16 +13,16 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
   const { children, params } = props;
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
-  const { signUp, signIn } = dictionary;
+  const { signUp, signIn, footer } = dictionary;
 
   return (
     <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">
       <div
         className="min-h-100vh flex h-full min-h-screen w-full flex-col bg-gray-50"
         style={{
-          background:
-            "linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url('/assets/background.jpeg')",
-          backgroundBlendMode: "luminosity",
+          backgroundImage: "url('/assets/background.jpeg')",
+          backgroundBlendMode: "lighten",
+          backgroundColor: "rgba(255,255,255,0.9)",
         }}
       >
         <header className="w-full p-4">
@@ -45,9 +46,14 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
             </ul>
           </nav>
         </header>
-        <main className="flex flex-1 items-center justify-center">
+        <main className="mb-24 flex flex-1 items-center justify-center">
           {children}
         </main>
+        <footer className="flex h-[60px] items-center justify-center bg-[#B3B3B3]">
+          <Text size="small" type="p" color="#322F35">
+            {footer.message}
+          </Text>
+        </footer>
       </div>
     </div>
   );

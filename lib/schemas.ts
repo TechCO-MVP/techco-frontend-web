@@ -44,6 +44,8 @@ export type SignInFormData = z.infer<typeof SignInFormSchema>;
  */
 
 export const CompanyDetailsSchema = z.object({
+  name: z.string(),
+  countryCode: z.string(),
   description: z
     .string()
     .min(10, { message: VALIDATION_ERROR_KEYS.companyDescriptionError }),

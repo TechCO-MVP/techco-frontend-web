@@ -4,6 +4,9 @@
     "welcome": "Welcome",
     "logOut": "Log Out"
   },
+  "footer": {
+    "message": "All rights reserved - company name 2025"
+  },
   "userSettingsPage": {
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
@@ -48,7 +51,8 @@
     "missingInfoTitle": "You haven't entered your company information yet!",
     "missingInfoDescription": "Completing this information will help us personalize the experience and better organize your processes. It's quick and easy.",
     "enterCompanyInfoButton": "Enter Company Information",
-    "loadingMessage": "Please wait"
+    "loadingMessage": "Please wait",
+    "updateSucess": "Company information updated sucessfully"
   },
   "signIn": {
     "formTitle": "Sign in to continue.",

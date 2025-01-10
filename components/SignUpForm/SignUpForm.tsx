@@ -87,9 +87,9 @@ export function SignUpForm({
     }
   };
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl bg-white px-12 py-14 shadow-md">
       {/* Top Section */}
-      <div className="mb-5 flex flex-col items-center">
+      <div className="mb-3 flex flex-col items-center">
         <Heading level={1} className="text-2xl leading-8">
           {i18n.welcomeTitle}
         </Heading>

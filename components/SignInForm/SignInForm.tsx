@@ -55,7 +55,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
     });
   };
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+    <div className="flex w-full max-w-[29rem] flex-col items-center justify-center rounded-2xl bg-white px-12 py-14 shadow-md">
       {/* Top Section */}
       <div className="mb-5 flex flex-col items-center">
         <Heading

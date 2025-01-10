@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { CreateUserDialog } from "../CreateUserDialog/CreateUserDialog";
@@ -26,7 +26,7 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import LoadingSkeleton from "./LoadingSkeleton";
 
-import { User } from "@/types";
+import { useUsers } from "@/hooks/use-users";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -36,16 +36,10 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
 }) => {
   const { userSettingsPage: i18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await fetch("/api/user/list");
-      const result = await response.json();
-      setUsers(result);
-    };
-    fetchUsers();
-  }, []);
+
+  const { users, isLoading } = useUsers();
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -54,7 +48,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
       return "asc";
     });
   };
-  if (!users.length) return <LoadingSkeleton />;
+  if (isLoading) return <LoadingSkeleton />;
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()),

@@ -20,6 +20,7 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useBusinesses } from "@/hooks/use-businesses";
 
 type CreateUserDialogProps = {
   dictionary: Dictionary;
@@ -28,6 +29,7 @@ type CreateUserDialogProps = {
 export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
   dictionary,
 }) => {
+  const { rootBusiness } = useBusinesses();
   const { userSettingsPage: i18n } = dictionary;
   const [error] = useState<string | undefined>("");
   const [isPending] = useTransition();
@@ -38,7 +40,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
     defaultValues: {
       email: "",
       name: "",
-      company: "",
+      company: rootBusiness?.name || "",
       position: "",
       role: "",
     },
@@ -64,7 +66,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
       <DialogTitle className="hidden">{i18n.createUserFormTitle}</DialogTitle>
 
       <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
-        <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+        <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white p-12">
           {/* Top Section */}
           <div className="mb-5 flex flex-col items-center">
             <Heading
@@ -92,6 +94,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
               </div>
               {/* Form Row */}
               <FormInput
+                disabled={true}
                 testId="create-user-company-input"
                 name="company"
                 label={i18n.companyLabel}

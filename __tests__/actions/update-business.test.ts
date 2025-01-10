@@ -31,6 +31,7 @@ describe("updateCompanyAction", () => {
     mockFetch.mockResolvedValueOnce(mockResponse as any);
 
     const data = {
+      name: "Company name",
       description: "Updated company description",
       segment: "Technology",
       industry: "Software",
@@ -38,6 +39,7 @@ describe("updateCompanyAction", () => {
       linkedin: "https://linkedin.com/company",
       companySize: "11-50",
       logo: "https://company.com/logo.png",
+      countryCode: "es",
     };
 
     const response = await updateCompanyAction(data, "123");
@@ -45,16 +47,18 @@ describe("updateCompanyAction", () => {
     expect(mockFetch).toHaveBeenCalledWith(
       "https://api.example.com/business/123",
       {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": process.env.API_KEY ?? "",
-          Authorization: "Bearer mock-token",
+          Authorization: "mock-token",
         },
         body: JSON.stringify({
+          name: "Company name",
+          country_code: "es",
           description: "Updated company description",
           segment: "Technology",
-          industr: "Software",
+          industry: "Software",
           url: "https://company.com",
           linkedin_url: "https://linkedin.com/company",
           company_size: "11-50",

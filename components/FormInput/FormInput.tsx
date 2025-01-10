@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Text } from "../Typography/Text";
 
 type FormInputProps<TSchema extends FieldValues> = {
+  disabled?: boolean;
   name: Path<TSchema>;
   label: string;
   placeholder?: string;
@@ -43,6 +44,7 @@ export function FormInput<TSchema extends FieldValues>({
   dirtyFields,
   getErrorMessage,
   classNames,
+  disabled = false,
 }: FormInputProps<TSchema>) {
   return (
     <FormField
@@ -59,6 +61,7 @@ export function FormInput<TSchema extends FieldValues>({
             <FormControl>
               <Input
                 {...field}
+                disabled={disabled}
                 type={type}
                 data-testid={testId}
                 placeholder={placeholder}

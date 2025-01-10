@@ -17,26 +17,20 @@ export async function updateCompanyAction(
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("idToken")?.value;
-    console.log({
-      description: data.description,
-      segment: data.segment,
-      industr: data.industry,
-      url: data.website,
-      linkedin_url: data.linkedin,
-      company_size: data.companySize,
-      logo: data.logo,
-    });
+
     const response = await fetch(apiEndpoints.updateBusiness(id), {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY ?? "",
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
       body: JSON.stringify({
+        name: data.name,
+        country_code: data.countryCode,
         description: data.description,
         segment: data.segment,
-        industr: data.industry,
+        industry: data.industry,
         url: data.website,
         linkedin_url: data.linkedin,
         company_size: data.companySize,

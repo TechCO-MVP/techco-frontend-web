@@ -4,6 +4,9 @@
     "welcome": "Bienvenido",
     "logOut": "Cerrar Sesión"
   },
+  "footer": {
+    "message": "Todos los derechos reservados - nombre de la empresa 2025"
+  },
   "userSettingsPage": {
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
@@ -48,7 +51,8 @@
     "missingInfoTitle": "¡Aún no has ingresado la información de tu empresa!",
     "missingInfoDescription": "Completar esta información nos ayudará a personalizar la experiencia y organizar mejor tus procesos. Es rápido y sencillo.",
     "enterCompanyInfoButton": "Ingresar información de la empresa",
-    "loadingMessage": "Espere for favor"
+    "loadingMessage": "Espere for favor",
+    "updateSucess": "Datos actualizados con éxito"
   },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",

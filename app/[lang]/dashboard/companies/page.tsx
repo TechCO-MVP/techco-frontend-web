@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AboutCompanyTab } from "@/components/AboutCompanyTab/AboutCompanyTab";
 import { UserSettingsTab } from "@/components/UserSettingsTab/UserSettingsTab";
+
 // We use this server component as a wrapper to be able to receive the lang attribute since it's a promise
 export default async function CompaniesPage(props: {
   readonly params: Promise<{ lang: Locale }>;

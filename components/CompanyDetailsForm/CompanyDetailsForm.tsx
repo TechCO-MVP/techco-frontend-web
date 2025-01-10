@@ -1,5 +1,6 @@
 "use client";
 import { FC, useTransition, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Dictionary } from "@/types/i18n";
 import { Heading } from "../Typography/Heading";
@@ -26,6 +27,9 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { QUERIES } from "@/constants/queries";
+
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
   rootBusiness: Business;
@@ -39,16 +43,21 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
   const [logo, setLogo] = useState(rootBusiness?.logo);
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { companiesPage: i18n } = dictionary;
   const form = useForm<CompanyDetailsData>({
     mode: "onChange",
     resolver: zodResolver(CompanyDetailsSchema),
     defaultValues: {
-      description: "",
-      website: "",
-      linkedin: "",
+      description: rootBusiness.description || "",
+      website: rootBusiness.url || "",
+      linkedin: rootBusiness.linkedin_url || "",
       companySize: rootBusiness?.company_size,
       industry: rootBusiness?.industry || "",
+      segment: rootBusiness?.segment || "",
+      name: rootBusiness.name,
+      countryCode: rootBusiness.country_code,
     },
   });
   const {
@@ -59,7 +68,9 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
 
   const getCountryLabel = () => {
     if (!rootBusiness?.country_code) return null;
-    const label = countryLabelLookup(rootBusiness?.country_code);
+    const label = countryLabelLookup(
+      rootBusiness?.country_code?.toLocaleLowerCase(),
+    );
     return label;
   };
   const onSubmit = async (data: CompanyDetailsData) => {
@@ -70,7 +81,8 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
           rootBusiness._id,
         );
         if (updateResponse.success) {
-          console.log("Updated!");
+          toast({ description: i18n.updateSucess });
+          queryClient.invalidateQueries({ queryKey: QUERIES.COMPANY_LIST });
         } else {
           setError(updateResponse.message);
         }
@@ -100,7 +112,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             <Avatar className="h-20 w-20">
               <AvatarImage
                 src={
-                  rootBusiness?.logo || logo || "https://picsum.photos/200/200"
+                  logo || rootBusiness?.logo || "https://picsum.photos/200/200"
                 }
                 alt="@username"
               />
