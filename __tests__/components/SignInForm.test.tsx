@@ -93,7 +93,7 @@ describe("SignInForm (Integration Tests)", () => {
       expect(signIn).toHaveBeenCalledWith({
         email: "test@example.com",
       });
-      expect(mockRouter.pathname).toBe(paths.codeValidation());
+      expect(mockRouter.pathname).toBe(`/${paths.codeValidation()}`);
     });
   });
 

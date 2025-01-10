@@ -19,6 +19,8 @@ import { OTPFormData, OTPFormSchema } from "@/lib/schemas";
 import { paths } from "@/lib/paths";
 import { setAuthState } from "@/lib/store/features/auth/auth";
 import { useAppDispatch } from "@/lib/store/hooks";
+import { Loader2 } from "lucide-react";
+
 export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   const dispatch = useAppDispatch();
 
@@ -79,15 +81,12 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
   };
 
   useEffect(() => {
-    if (!authState.email) {
-      router.push(paths.signIn());
-    }
     if (code.length === 6) {
       formRef.current?.requestSubmit();
     }
   }, [code, authState.email, router]);
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-12 py-14 shadow-md">
       {/* Top Section */}
       <div className="mb-10 flex flex-col items-center">
         <Heading
@@ -126,11 +125,19 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
                 {error}
               </Text>
             )}
+            {isPending && (
+              <Text
+                size="small"
+                className="flex items-center justify-center gap-2 text-muted-foreground"
+              >
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+              </Text>
+            )}
           </div>
         </form>
       </Form>
       <div className="flex items-center">
-        <Text size="small" className="text-gray-400">
+        <Text size="small" className="text-muted-foreground">
           {i18n.otpTimeExpired}
         </Text>
         <Button

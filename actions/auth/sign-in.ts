@@ -20,7 +20,7 @@ export async function signIn(data: SignInFormData): Promise<SignInResponse> {
     });
 
     const result = await response.json();
-
+    console.log("signInResponse", result);
     if (result.body?.session) {
       return {
         success: true,
@@ -31,7 +31,8 @@ export async function signIn(data: SignInFormData): Promise<SignInResponse> {
 
     return {
       success: false,
-      message: result?.message || "Unexpected response from server.",
+      message:
+        result?.error || result?.message || "Unexpected response from server.",
     };
   } catch (error: unknown) {
     console.error("Sign-In Error:", error);

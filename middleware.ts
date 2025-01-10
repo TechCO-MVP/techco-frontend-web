@@ -5,7 +5,7 @@ import { i18n } from "./i18n-config";
 
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-const publicPaths = ["/signup", "/code", "/signin"];
+const publicPaths = ["/signup", "/code", "/signin", "/verify-otp-signup"];
 
 function getLocale(request: NextRequest): string | undefined {
   // Negotiator expects plain object so we need to transform headers

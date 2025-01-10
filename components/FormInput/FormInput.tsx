@@ -3,6 +3,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
@@ -17,14 +18,17 @@ import { cn } from "@/lib/utils";
 import { Text } from "../Typography/Text";
 
 type FormInputProps<TSchema extends FieldValues> = {
+  disabled?: boolean;
   name: Path<TSchema>;
   label: string;
   placeholder?: string;
+  description?: string;
   type?: string;
   testId: string;
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
   dirtyFields: UseFormStateReturn<TSchema>["dirtyFields"];
+  classNames?: string;
   getErrorMessage: (key?: string) => string;
 };
 
@@ -32,12 +36,15 @@ export function FormInput<TSchema extends FieldValues>({
   name,
   label,
   placeholder,
+  description,
   type = "text",
   testId,
   control,
   errors,
   dirtyFields,
   getErrorMessage,
+  classNames,
+  disabled = false,
 }: FormInputProps<TSchema>) {
   return (
     <FormField
@@ -48,11 +55,13 @@ export function FormInput<TSchema extends FieldValues>({
         const hasError = !!errors[name];
 
         return (
-          <FormItem className="mx-auto mb-3 w-full max-w-xs">
+          <FormItem className={cn("mx-auto mb-3 w-full max-w-xs", classNames)}>
             <FormLabel>{label}</FormLabel>
+            {description && <FormDescription>{description}</FormDescription>}
             <FormControl>
               <Input
                 {...field}
+                disabled={disabled}
                 type={type}
                 data-testid={testId}
                 placeholder={placeholder}

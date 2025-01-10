@@ -4,23 +4,79 @@
     "welcome": "Welcome",
     "logOut": "Log Out"
   },
+  "footer": {
+    "message": "All rights reserved - company name 2025"
+  },
+  "userSettingsPage": {
+    "formTitle": "Configuración de los usuarios de tu organización",
+    "formDescription": "Agrega o elimina usuarios de tu organización",
+    "createUserFormTitle": "Create user",
+    "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
+    "companyLabel": "Empresa",
+    "companyPlaceholder": "Empresa",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Nombre",
+    "positionLabel": "Cargo",
+    "positionPlaceholder": "Cargo",
+    "roleLabel": "Rol",
+    "rolePlaceholder": "Rol",
+    "continueBtnText": "Continuar",
+    "cancelBtnText": "Cancelar"
+  },
+  "companiesPage": {
+    "goBack": "Back",
+    "aboutCompanyTabTitle": "About the company",
+    "userSettingsTabTitle": "User settings",
+    "mainTabTitle": "Main panel",
+    "formTitle": "Complete your company details",
+    "formDescription": "With this information, we will personalize your experience and better organize your hiring processes.",
+    "companyNameLabel": "Company Name",
+    "companyNamePlaceholder": "E.g., Casa&Cosecha S.A",
+    "descriptionLabel": "Company Description",
+    "descriptionPlaceholder": "E.g., We provide technological solutions for agriculture",
+    "websiteLabel": "Website URL",
+    "websiteDescription": "Company's website",
+    "websitePlaceholder": "E.g., https://techO.com",
+    "linkedinLabel": "LinkedIn Profile",
+    "linkedinPlaceholder": "E.g., www.linkedin.com/company/companyname",
+    "companySizeLabel": "How many employees does your company have?",
+    "companySizePlaceholder": "Select a range",
+    "companyIndustryLabel": "Sector",
+    "companyIndustryPlaceholder": "Select a sector",
+    "companySegmentLabel": "Company type",
+    "companySegmentPlaceholder": "Select a type",
+    "submitButton": "Save Information",
+    "missingInfoTitle": "You haven't entered your company information yet!",
+    "missingInfoDescription": "Completing this information will help us personalize the experience and better organize your processes. It's quick and easy.",
+    "enterCompanyInfoButton": "Enter Company Information",
+    "loadingMessage": "Please wait",
+    "updateSucess": "Company information updated sucessfully"
+  },
   "signIn": {
     "formTitle": "Sign in to continue.",
     "formDescription": "Enter your email to access your account.",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@company.com",
-     "continueBtnText": "Contine",
-     "noAccountText": "Don't have an account?",
-    "createAccountLabel": "Create Account"
+    "continueBtnText": "Contine",
+    "noAccountText": "Don't have an account?",
+    "createAccountLabel": "Create Account",
+    "loadingMessage": "Please wait"
   },
   "validationErrors": {
     "emailError": "Email is not valid.",
+    "nameError": "Name is not valid.",
     "companyError": "Company is not valid.",
     "roleError": "The role is not valid.",
     "companySizeError": "Company size is not valid.",
     "countryError": "Country is not valid.",
     "otpCodeLengthError": "6 digits are required.",
-    "otpCodeError": "The code is not valid."
+    "otpCodeError": "The code is not valid.",
+    "companyNameError": "Company name is required.",
+    "companyDescriptionError": "Description must be at least 10 characters long.",
+    "companyWebsiteError": "Please enter a valid website URL.",
+    "companyLinkedinError": "Please enter a valid LinkedIn profile URL."
   },
   "otpPage": {
     "otpInputLabel": "Enter the 6 digits code:",
@@ -31,12 +87,15 @@
     "otpTimerEnd": " to enter it.",
     "otpTimeExpired": "Didn't receive the code?",
     "otpResendCode": "Resend code",
-    "otpNewCodeMessage": "A new code was sent to your email. Please check again."
+    "otpNewCodeMessage": "A new code was sent to your email. Please check again.",
+    "loadingMessage": "Please wait"
   },
   "signUp": {
     "signInLinkText": "Sign In",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@company.com",
+    "nameLabel": "Name",
+    "namePlaceholder": "John Doe",
     "companyLabel": "Company Name",
     "companyPlaceholder": "Tech Solutions LLC.",
     "countryLabel": "Select your country",
@@ -54,6 +113,7 @@
     "privacyPolicy": "Privacy Policy.",
     "welcomeTitle": "Welcome!",
     "welcomeMessage": "Let's build together the future of your team.",
-    "callToActionText": "Start now and simplify hiring process."
+    "callToActionText": "Start now and simplify hiring process.",
+    "loadingMessage": "Please wait"
   }
 }

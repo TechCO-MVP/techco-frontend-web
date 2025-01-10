@@ -80,6 +80,10 @@ describe("SignUpForm (Integration Tests)", () => {
 
     renderWithRedux(<SignUpForm dictionary={dictionary} />);
 
+    fireEvent.change(screen.getByTestId("signup-name-input"), {
+      target: { value: "User" },
+    });
+
     fireEvent.change(screen.getByTestId("signup-email-input"), {
       target: { value: "test@example.com" },
     });
@@ -119,12 +123,13 @@ describe("SignUpForm (Integration Tests)", () => {
     await waitFor(() => {
       expect(signUp).toHaveBeenCalledWith({
         email: "test@example.com",
+        name: "User",
         company: "Test Corp",
         country: "spain",
-        companySize: "Entre 1 y 10",
+        companySize: "A",
         role: "Talent Recruiter",
       });
-      expect(mockRouter.pathname).toBe(paths.codeValidation());
+      expect(mockRouter.pathname).toBe(`/${paths.codeValidationSignUp()}`);
     });
   });
 });

@@ -3,15 +3,21 @@
  */
 export const paths = {
   home() {
-    return "/";
+    return "dashboard/home";
+  },
+  companiesDashboard() {
+    return "dashboard/companies";
   },
   signIn() {
-    return "/signin";
+    return "signin";
   },
   signUp() {
-    return "/signup";
+    return "signup";
   },
   codeValidation() {
-    return "/code";
+    return "code";
+  },
+  codeValidationSignUp() {
+    return "verify-otp-signup";
   },
 };

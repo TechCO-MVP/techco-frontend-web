@@ -2,8 +2,9 @@
 
 import { OTPFormData } from "@/lib/schemas";
 import { cookies } from "next/headers";
-
+import { SignUpState } from "@/lib/store/features/auth/auth";
 import { apiEndpoints } from "@/lib/api-endpoints";
+import { countryCodeLookup } from "@/lib/utils";
 
 interface SignInResponse {
   success: boolean;
@@ -12,9 +13,14 @@ interface SignInResponse {
   accessToken?: string;
   refreshToken?: string;
 }
-export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
+
+export async function verifyCodeSignUp(
+  data: OTPFormData & Partial<SignUpState>,
+): Promise<SignInResponse> {
   try {
-    const response = await fetch(apiEndpoints.verifyOtpCode(), {
+    const countryCode = countryCodeLookup(data.country ?? "colombia");
+
+    const response = await fetch(apiEndpoints.verifyOtpCodeSignUp(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,15 +30,20 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         email: data.email,
         session: data.session,
         otp: data.code,
+        company_size: data.companySize,
+        country_code: countryCode,
+        company_name: data.company,
+        company_position: data.role,
+        role: data.role,
       }),
     });
 
     const result = await response.json();
-
-    if (result.accessToken) {
+    console.log("wow", result);
+    if (response.ok) {
       const cookieStore = await cookies();
 
-      cookieStore.set("idToken", result.idToken, {
+      cookieStore.set("idToken", result.body.idToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
@@ -40,7 +51,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         maxAge: 60 * 60,
       });
 
-      cookieStore.set("accessToken", result.accessToken, {
+      cookieStore.set("accessToken", result.body.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
@@ -48,7 +59,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         maxAge: 60 * 60,
       });
 
-      cookieStore.set("refreshToken", result.refreshToken, {
+      cookieStore.set("refreshToken", result.body.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
@@ -59,15 +70,16 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
       return {
         success: true,
         message: result?.message,
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
-        idToken: result.idToken,
+        accessToken: result.body.accessToken,
+        refreshToken: result.body.refreshToken,
+        idToken: result.body.idToken,
       };
     }
 
     return {
       success: false,
-      message: result?.message || "Unexpected response from server.",
+      message:
+        result?.error || result?.message || "Unexpected response from server.",
     };
   } catch (error: unknown) {
     console.error("Verify Token Error:", error);

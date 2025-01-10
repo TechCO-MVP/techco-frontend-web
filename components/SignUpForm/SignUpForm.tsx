@@ -19,6 +19,8 @@ import { getErrorMessage } from "@/lib/utils";
 import { Dictionary } from "@/types/i18n";
 import { useRouter } from "next/navigation";
 import { paths } from "@/lib/paths";
+import { Loader2 } from "lucide-react";
+
 export function SignUpForm({
   dictionary,
 }: {
@@ -33,6 +35,7 @@ export function SignUpForm({
     mode: "onChange",
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
+      name: "",
       email: "",
       company: "",
       country: "",
@@ -66,9 +69,16 @@ export function SignUpForm({
           return handleAuthError(signInResponse?.message);
         }
         dispatch(
-          setAuthState({ email: data.email, session: signInResponse.session }),
+          setAuthState({
+            email: data.email,
+            session: signInResponse.session,
+            company: data.company,
+            companySize: data.companySize,
+            country: data.country,
+            role: data.role,
+          }),
         );
-        router.push(paths.codeValidation());
+        router.push(paths.codeValidationSignUp());
       });
     } catch (error: unknown) {
       handleAuthError(
@@ -77,16 +87,16 @@ export function SignUpForm({
     }
   };
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl bg-white px-12 py-14 shadow-md">
       {/* Top Section */}
-      <div className="mb-5 flex flex-col items-center">
+      <div className="mb-3 flex flex-col items-center">
         <Heading level={1} className="text-2xl leading-8">
           {i18n.welcomeTitle}
         </Heading>
         <Text className="mb-4 leading-8" type="p" size="large">
           {i18n.welcomeMessage}
         </Text>
-        <Text className="text-gray-400" type="span" size="small">
+        <Text className="text-muted-foreground" type="span" size="small">
           {i18n.callToActionText}
         </Text>
       </div>
@@ -103,6 +113,18 @@ export function SignUpForm({
               </Text>
             )}
           </div>
+          {/* Form Row */}
+          <FormInput
+            testId="signup-name-input"
+            name="name"
+            label={i18n.nameLabel}
+            placeholder={i18n.namePlaceholder}
+            type="string"
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
           {/* Form Row */}
           <FormInput
             testId="signup-email-input"
@@ -151,10 +173,10 @@ export function SignUpForm({
             errors={errors}
             dirtyFields={dirtyFields}
             options={[
-              { value: "Entre 1 y 10", label: "Entre 1 y 10" },
-              { value: "Entre 11 y 50", label: "Entre 11 y 50" },
-              { value: "Entre 50 y 200", label: "Entre 50 y 200" },
-              { value: "Más de 200", label: "Más de 200" },
+              { value: "A", label: "Entre 1 y 10" },
+              { value: "B", label: "Entre 11 y 50" },
+              { value: "C", label: "Entre 50 y 200" },
+              { value: "D", label: "Más de 200" },
             ]}
             getErrorMessage={getErrorMessage(dictionary)}
           />
@@ -183,20 +205,25 @@ export function SignUpForm({
           />
           <Button
             data-testid="signup-submit-button"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             type="submit"
             className="mx-auto w-full max-w-[22rem]"
           >
-            {i18n.createAccountLabel}
-            {isPending && `...`}
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+              </>
+            ) : (
+              i18n.createAccountLabel
+            )}
           </Button>
         </form>
       </Form>
       <div className="flex max-w-[22rem] flex-col items-center justify-center">
-        <Text type="p" size="small" className="text-gray-400">
+        <Text type="p" size="small" className="text-muted-foreground">
           {i18n.termsMessage}
         </Text>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           <Link className="underline" href="www.google.com">
             {i18n.termsOfService}
           </Link>

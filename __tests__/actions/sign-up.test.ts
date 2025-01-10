@@ -8,6 +8,7 @@ const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 const mockData: SignUpFormData = {
+  name: "User",
   email: "test@example.com",
   company: "Tech",
   role: "Recruiter",
@@ -51,7 +52,7 @@ describe("signUp Server Action", () => {
       },
       body: JSON.stringify({
         email: mockData.email,
-        name: mockData.email,
+        name: mockData.name,
       }),
     });
   });

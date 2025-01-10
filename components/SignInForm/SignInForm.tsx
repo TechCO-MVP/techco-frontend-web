@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { paths } from "@/lib/paths";
 import { setAuthState } from "@/lib/store/features/auth/auth";
 import { useAppDispatch } from "@/lib/store/hooks";
+import { Loader2 } from "lucide-react";
+
 type SignInFormProps = {
   dictionary: Dictionary;
 };
@@ -53,7 +55,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
     });
   };
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6">
+    <div className="flex w-full max-w-[29rem] flex-col items-center justify-center rounded-2xl bg-white px-12 py-14 shadow-md">
       {/* Top Section */}
       <div className="mb-5 flex flex-col items-center">
         <Heading
@@ -62,7 +64,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
         >
           {i18n.formTitle}
         </Heading>
-        <Text className="text-gray-400" type="span" size="small">
+        <Text className="text-muted-foreground" type="span" size="small">
           {i18n.formDescription}
         </Text>
       </div>
@@ -92,17 +94,22 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
             getErrorMessage={getErrorMessage(dictionary)}
           />
           <Button
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             type="submit"
             className="mx-auto w-full max-w-[22rem]"
           >
-            {i18n.continueBtnText}
-            {isPending && `...`}
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+              </>
+            ) : (
+              i18n.continueBtnText
+            )}
           </Button>
         </form>
       </Form>
       <div className="flex items-center">
-        <Text size="small" className="text-gray-400">
+        <Text size="small" className="text-muted-foreground">
           {i18n.noAccountText}
         </Text>
         <Link href="signup">
