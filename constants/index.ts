@@ -8,6 +8,7 @@ export const VALIDATION_ERROR_KEYS: {
   companyError: "companyError",
   countryError: "countryError",
   companyRoleError: "companyRoleError",
+  roleError: "roleError",
   companySizeError: "companySizeError",
   otpCodeError: "otpCodeError",
   otpCodeLengthError: "otpCodeLengthError",

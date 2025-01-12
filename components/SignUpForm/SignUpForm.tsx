@@ -76,6 +76,7 @@ export function SignUpForm({
             companySize: data.companySize,
             country: data.country,
             role: data.role,
+            firstSignIn: true,
           }),
         );
         router.push(paths.codeValidationSignUp());

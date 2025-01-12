@@ -4,6 +4,9 @@
     "welcome": "Bienvenido",
     "logOut": "Cerrar Sesión"
   },
+  "homePage": {
+    "closeModalLabel": "Cerrar"
+  },
   "footer": {
     "message": "Todos los derechos reservados - nombre de la empresa 2025"
   },
