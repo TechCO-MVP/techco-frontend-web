@@ -8,6 +8,7 @@ export interface SignUpState {
   country?: string;
   companySize?: string;
   role?: string;
+  firstSignIn?: boolean;
 }
 
 const initialState: SignUpState = {
@@ -17,6 +18,7 @@ const initialState: SignUpState = {
   country: "",
   companySize: "",
   role: "",
+  firstSignIn: false,
 };
 
 export const authSlice = createSlice({

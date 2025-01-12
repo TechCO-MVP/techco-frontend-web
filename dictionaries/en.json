@@ -4,6 +4,9 @@
     "welcome": "Welcome",
     "logOut": "Log Out"
   },
+  "homePage": {
+    "closeModalLabel": "Close"
+  },
   "footer": {
     "message": "All rights reserved - company name 2025"
   },
@@ -11,19 +14,22 @@
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
     "createUserFormTitle": "Create user",
+    "createUserButtonLabel": "Create user",
     "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
-    "companyLabel": "Empresa",
-    "companyPlaceholder": "Empresa",
-    "emailLabel": "Email",
+    "companyLabel": "Company Name",
+    "companyPlaceholder": "Tech Solutions LLC.",
+    "emailLabel": "Email Address",
     "emailPlaceholder": "Email",
     "nameLabel": "Nombre",
     "namePlaceholder": "Nombre",
-    "positionLabel": "Cargo",
-    "positionPlaceholder": "Cargo",
-    "roleLabel": "Rol",
-    "rolePlaceholder": "Rol",
-    "continueBtnText": "Continuar",
-    "cancelBtnText": "Cancelar"
+    "positionLabel": "Position",
+    "positionPlaceholder": "Position",
+    "roleLabel": "Role",
+    "rolePlaceholder": "Role",
+    "continueBtnText": "Continue",
+    "cancelBtnText": "Cancel",
+    "loadingMessage": "Please wait",
+    "createSucessMessage": "User created successfully"
   },
   "companiesPage": {
     "goBack": "Back",
@@ -32,6 +38,8 @@
     "mainTabTitle": "Main panel",
     "formTitle": "Complete your company details",
     "formDescription": "With this information, we will personalize your experience and better organize your hiring processes.",
+    "editLogoLabel": "Edit",
+    "createdByLabel": "Created by:",
     "companyNameLabel": "Company Name",
     "companyNamePlaceholder": "E.g., Casa&Cosecha S.A",
     "descriptionLabel": "Company Description",
@@ -52,7 +60,10 @@
     "missingInfoDescription": "Completing this information will help us personalize the experience and better organize your processes. It's quick and easy.",
     "enterCompanyInfoButton": "Enter Company Information",
     "loadingMessage": "Please wait",
-    "updateSucess": "Company information updated sucessfully"
+    "updateSucess": "Company information updated sucessfully",
+    "closeButtonLabel": "Close",
+    "dragImageLabel": "Drag your image here",
+    "selectImageLabel": "Select an image from your computer"
   },
   "signIn": {
     "formTitle": "Sign in to continue.",
@@ -67,8 +78,9 @@
   "validationErrors": {
     "emailError": "Email is not valid.",
     "nameError": "Name is not valid.",
+    "roleError": "Use rol is not valid.",
     "companyError": "Company is not valid.",
-    "roleError": "The role is not valid.",
+    "companyRoleError": "The role is not valid.",
     "companySizeError": "Company size is not valid.",
     "countryError": "Country is not valid.",
     "otpCodeLengthError": "6 digits are required.",

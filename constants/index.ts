@@ -7,6 +7,7 @@ export const VALIDATION_ERROR_KEYS: {
   nameError: "nameError",
   companyError: "companyError",
   countryError: "countryError",
+  companyRoleError: "companyRoleError",
   roleError: "roleError",
   companySizeError: "companySizeError",
   otpCodeError: "otpCodeError",

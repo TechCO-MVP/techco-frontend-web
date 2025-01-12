@@ -13,6 +13,7 @@ import { FormInput } from "@/components/FormInput/FormInput";
 import { FormSelect } from "../FormSelect/FormSelect";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import * as actions from "@/actions";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +21,11 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { useBusinesses } from "@/hooks/use-businesses";
+import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
 
 type CreateUserDialogProps = {
   dictionary: Dictionary;
@@ -29,19 +34,22 @@ type CreateUserDialogProps = {
 export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
   dictionary,
 }) => {
+  const { toast } = useToast();
   const { rootBusiness } = useBusinesses();
   const { userSettingsPage: i18n } = dictionary;
-  const [error] = useState<string | undefined>("");
-  const [isPending] = useTransition();
+  const [error, setError] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
   const form = useForm<CreateUserData>({
     mode: "onChange",
     resolver: zodResolver(CreateUserSchema),
     defaultValues: {
+      businessId: rootBusiness?._id,
       email: "",
-      name: "",
-      company: rootBusiness?.name || "",
-      position: "",
+      fullName: "",
+      businessName: rootBusiness?.name || "",
+      companyPosition: "",
       role: "",
     },
   });
@@ -51,14 +59,32 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
     formState: { dirtyFields, errors, isValid },
   } = form;
   const onSubmit = async (data: CreateUserData) => {
-    console.log("submit", data);
+    try {
+      startTransition(async () => {
+        const createUserResponse = await actions.createUser(data);
+
+        if (createUserResponse.success) {
+          setOpen(false);
+          toast({ description: i18n.createSucessMessage });
+          queryClient.invalidateQueries({ queryKey: QUERIES.USER_LIST });
+        } else {
+          setError(createUserResponse.message);
+        }
+      });
+    } catch (error: unknown) {
+      console.log(error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unexpected error occurred";
+      setError(errorMessage);
+    }
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button asChild variant="ghost" className="bg-secondary">
           <span>
-            <Plus /> Crear Usuario
+            <Plus /> {i18n.createUserButtonLabel}
           </span>
         </Button>
       </DialogTrigger>
@@ -66,7 +92,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
       <DialogTitle className="hidden">{i18n.createUserFormTitle}</DialogTitle>
 
       <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
-        <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white p-12">
+        <div className="flex w-full max-w-[26rem] flex-col items-center justify-center rounded-md bg-white p-12">
           {/* Top Section */}
           <div className="mb-5 flex flex-col items-center">
             <Heading
@@ -85,18 +111,11 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
               onSubmit={handleSubmit(onSubmit)}
               className="mb-4 flex w-full max-w-md flex-col items-center"
             >
-              <div className="flex min-h-[20px] items-center">
-                {error && (
-                  <Text size="small" type="span" className="m-0 text-red-500">
-                    {error}
-                  </Text>
-                )}
-              </div>
               {/* Form Row */}
               <FormInput
                 disabled={true}
                 testId="create-user-company-input"
-                name="company"
+                name="businessName"
                 label={i18n.companyLabel}
                 placeholder={i18n.companyPlaceholder}
                 type="text"
@@ -108,7 +127,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
               {/* Form Row */}
               <FormInput
                 testId="create-user-name-input"
-                name="name"
+                name="fullName"
                 label={i18n.nameLabel}
                 placeholder={i18n.namePlaceholder}
                 type="text"
@@ -132,7 +151,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
               {/* Form Row */}
               <FormInput
                 testId="create-user-position-input"
-                name="position"
+                name="companyPosition"
                 label={i18n.positionLabel}
                 placeholder={i18n.positionPlaceholder}
                 type="text"
@@ -164,14 +183,30 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
                 ]}
                 getErrorMessage={getErrorMessage(dictionary)}
               />
+              <div className="flex min-h-[20px] items-center">
+                {error && (
+                  <Text
+                    size="small"
+                    type="span"
+                    className="m-0 mb-3 text-red-500"
+                  >
+                    {error}
+                  </Text>
+                )}
+              </div>
               <Button
                 data-testid="create-user-submit-button"
-                disabled={!isValid}
+                disabled={!isValid || isPending}
                 type="submit"
                 className="mx-auto mb-4 w-full max-w-[22rem]"
               >
-                {i18n.continueBtnText}
-                {isPending && `...`}
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+                  </>
+                ) : (
+                  i18n.continueBtnText
+                )}
               </Button>
               <DialogClose asChild>
                 <Button

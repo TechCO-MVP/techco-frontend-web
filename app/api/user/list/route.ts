@@ -1,58 +1,74 @@
 import { NextResponse } from "next/server";
-import { User } from "@/types";
-const users: User[] = [
-  {
-    name: "Carlos Hernandez",
-    email: "carloshernandez@techo.pe",
-    position: "VP operaciones",
-    role: "Super Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Maria Lopez",
-    email: "marialopez@techo.pe",
-    position: "Gerente Financiero",
-    role: "Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Juan Perez",
-    email: "juanperez@techo.pe",
-    position: "Jefe de Proyectos",
-    role: "Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Lucia Gomez",
-    email: "luciagomez@techo.pe",
-    position: "Coordinadora de Ventas",
-    role: "Administrador",
-    status: "Inactivo",
-  },
-  {
-    name: "Pedro Martinez",
-    email: "pedromartinez@techo.pe",
-    position: "Analista de Datos",
-    role: "Super Administrador",
-    status: "Activo",
-  },
-  {
-    name: "Ana Torres",
-    email: "anatorres@techo.pe",
-    position: "Asistente Administrativo",
-    role: "Super Administrador",
-    status: "Activo",
-  },
-];
-export async function GET() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  // const cookieStore = await cookies();
-  // const token = cookieStore.get("accessToken")?.value;
-  // const data = await fetch("http://example.com/users", {
-  //   headers: {
-  //     Authorization: `Bearer ${token}`,
-  //   },
-  // });
-  // const json = await data.json();
-  return NextResponse.json(users);
+import { cookies } from "next/headers";
+import { apiEndpoints } from "@/lib/api-endpoints";
+import { ListUserApiResponse } from "@/types";
+
+export async function GET(req: Request) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("idToken")?.value;
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "Unauthorized: Missing token" },
+      { status: 401 },
+    );
+  }
+
+  const url = new URL(req.url);
+  const businessId = url.searchParams.get("business_id");
+  const userId = url.searchParams.get("id");
+  const all = url.searchParams.get("all");
+
+  if (!businessId) {
+    return NextResponse.json(
+      { error: "Missing required query parameter: business_id" },
+      { status: 400 },
+    );
+  }
+
+  const queryParams = new URLSearchParams({ business_id: businessId });
+  if (userId) queryParams.append("id", userId);
+  if (all) queryParams.append("all", all);
+
+  try {
+    const response = await fetch(
+      `${apiEndpoints.listUsers()}?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.API_KEY ?? "",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          error: `Failed to fetch data: ${response.statusText}`,
+          message: await response.json(),
+          status: response.status,
+        },
+        { status: response.status },
+      );
+    }
+
+    const json: ListUserApiResponse = await response.json();
+
+    if (!json.body || !Array.isArray(json.body.data)) {
+      return NextResponse.json(
+        { error: "Unexpected API response format" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(json);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }

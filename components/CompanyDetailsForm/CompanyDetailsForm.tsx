@@ -121,7 +121,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger>
                 <Button asChild variant="ghost">
-                  <span>Editar</span>
+                  <span>{i18n.editLogoLabel}</span>
                 </Button>
               </DialogTrigger>
 
@@ -129,6 +129,8 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
 
               <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
                 <FileDropzone
+                  dragImageLabel={i18n.dragImageLabel}
+                  selectImageLabel={i18n.selectImageLabel}
                   onImageProcessed={(value) => {
                     setLogo(value);
                     setOpen(false);
@@ -141,7 +143,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
                     type="button"
                     className="mx-auto"
                   >
-                    Cerrar
+                    {i18n.closeButtonLabel}
                   </Button>
                 </DialogClose>
               </DialogContent>
@@ -153,7 +155,8 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
               <CountryLabel label={getCountryLabel()} />
             </div>
             <Text className="text-muted-foreground">
-              Creado por: Mao Molina | {formatDate(rootBusiness?.created_at)}
+              {i18n.createdByLabel} Mao Molina |
+              {formatDate(rootBusiness?.created_at)}
             </Text>
           </div>
         </div>

@@ -24,16 +24,11 @@ export default defineConfig({
         "components/ui/**",
         "hooks/use-toast.ts", // hook from shadcn
         "lib/paths.ts", // The helper is static
-
+        // Temp exlucude for WIP components
         "components/TopBar/*",
-        "components/UserSettingsTab/*",
         "components/UserMenu/*",
-        "components/CreateUserDialog/*",
-        "components/CountryLabel/*",
-        "components/CompanyDetailsForm/*",
         "components/UserInfo/*",
-        "components/AboutCompanyTab/*",
-        // End Temp exlucude to allow deploy
+        // End Temp exlucude for WIP components
         ".storybook",
         ".next",
         "*.d.ts",

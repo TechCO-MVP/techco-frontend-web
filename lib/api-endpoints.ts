@@ -22,4 +22,10 @@ export const apiEndpoints = {
   listBusiness() {
     return `${BASE_URL}/business/list`;
   },
+  listUsers() {
+    return `${BASE_URL}/user/list`;
+  },
+  createUser() {
+    return `${BASE_URL}/user/create`;
+  },
 };
