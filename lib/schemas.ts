@@ -12,7 +12,7 @@ export const SignUpFormSchema = z.object({
     .string()
     .min(1, { message: VALIDATION_ERROR_KEYS.companySizeError }),
   country: z.string().min(2, { message: VALIDATION_ERROR_KEYS.countryError }),
-  role: z.string().min(3, { message: VALIDATION_ERROR_KEYS.roleError }),
+  role: z.string().min(3, { message: VALIDATION_ERROR_KEYS.companyRoleError }),
 });
 
 export type SignUpFormData = z.infer<typeof SignUpFormSchema>;
@@ -69,11 +69,14 @@ export type CompanyDetailsData = z.infer<typeof CompanyDetailsSchema>;
  */
 
 export const CreateUserSchema = z.object({
-  company: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  position: z.string(),
-  role: z.string(),
+  businessName: z.string(),
+  businessId: z.string(),
+  fullName: z.string().min(3, { message: VALIDATION_ERROR_KEYS.nameError }),
+  email: z.string().email({ message: VALIDATION_ERROR_KEYS.emailError }),
+  companyPosition: z
+    .string()
+    .min(3, { message: VALIDATION_ERROR_KEYS.companyRoleError }),
+  role: z.string().min(3, { message: VALIDATION_ERROR_KEYS.roleError }),
 });
 
 export type CreateUserData = z.infer<typeof CreateUserSchema>;

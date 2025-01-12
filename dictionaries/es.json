@@ -11,8 +11,9 @@
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
     "createUserFormTitle": "Crear usuario",
+    "createUserButtonLabel": "Crear usuario",
     "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
-    "companyLabel": "Nombre de la compañía",
+    "companyLabel": "Empresa",
     "companyPlaceholder": "Tech Solutions S.A.",
     "emailLabel": "Correo electrónico",
     "emailPlaceholder": "nombre@empresa.com",
@@ -23,7 +24,9 @@
     "roleLabel": "Rol",
     "rolePlaceholder": "Rol",
     "continueBtnText": "Continuar",
-    "cancelBtnText": "Cancelar"
+    "cancelBtnText": "Cancelar",
+    "loadingMessage": "Espere for favor",
+    "createSucessMessage": "Se ha creado con éxito el usuario "
   },
   "companiesPage": {
     "goBack": "Atrás",
@@ -32,6 +35,8 @@
     "mainTabTitle": "Panel principal",
     "formTitle": "Completa los detalles de tu empresa",
     "formDescription": "Con esta información, personalizaremos tu experiencia y organizaremos mejor tus procesos de contratación.",
+    "editLogoLabel": "Editar",
+    "createdByLabel": "Creado por:",
     "companyNameLabel": "Nombre de la Empresa",
     "companyNamePlaceholder": "Ej., Casa&Cosecha S.A",
     "descriptionLabel": "Descripción de la Empresa",
@@ -52,7 +57,8 @@
     "missingInfoDescription": "Completar esta información nos ayudará a personalizar la experiencia y organizar mejor tus procesos. Es rápido y sencillo.",
     "enterCompanyInfoButton": "Ingresar información de la empresa",
     "loadingMessage": "Espere for favor",
-    "updateSucess": "Datos actualizados con éxito"
+    "updateSucess": "Datos actualizados con éxito",
+    "closeButtonLabel": "Cerrar"
   },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",
@@ -67,8 +73,9 @@
   "validationErrors": {
     "nameError": "El nombre no es válido.",
     "emailError": "El correo no es válido.",
+    "roleError": "El rol de usuario no es válido.",
     "companyError": "La compañía no es válida.",
-    "roleError": "El rol en la compañía no es válido.",
+    "companyRoleError": "El rol en la compañía no es válido.",
     "companySizeError": "El tamaño de la compañía no es válido.",
     "countryError": "El país no es válido.",
     "otpCodeLengthError": "Los 6 dígitos son requeridos.",

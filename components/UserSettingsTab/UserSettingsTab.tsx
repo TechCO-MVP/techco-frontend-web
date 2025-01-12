@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import LoadingSkeleton from "./LoadingSkeleton";
 
 import { useUsers } from "@/hooks/use-users";
+import { useBusinesses } from "@/hooks/use-businesses";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -36,10 +37,13 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
 }) => {
   const { userSettingsPage: i18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
-
+  const { rootBusiness } = useBusinesses();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
-  const { users, isLoading } = useUsers();
+  const { users, isLoading } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -51,7 +55,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   if (isLoading) return <LoadingSkeleton />;
 
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -121,15 +125,15 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
           <TableBody>
             {sortedUsers.map((user) => (
               <TableRow key={user.email}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user?.full_name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.position}</TableCell>
+                <TableCell>{user.company_position}</TableCell>
                 <TableCell>{user.role}</TableCell>
-                <TableCell className="flex items-center justify-center gap-4">
+                <TableCell className="flex items-center justify-start gap-4">
                   <span
                     className={cn(
-                      "rounded-sm border border-[#E4E4E7] px-2.5 py-0.5 font-semibold text-[#34C759]",
-                      user.status === "Inactivo" && "text-red-500",
+                      "rounded-sm border border-[#E4E4E7] px-2.5 py-0.5 font-semibold capitalize text-[#34C759]",
+                      user.status !== "enabled" && "text-red-500",
                     )}
                   >
                     {user.status}

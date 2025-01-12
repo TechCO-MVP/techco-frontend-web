@@ -5,11 +5,13 @@ export type Country = {
 };
 
 export type User = {
-  name: string;
+  _id: string;
+  full_name: string;
   email: string;
-  position?: string;
-  role?: string;
-  status: string;
+  company_position: string;
+  role: string;
+  business_id: string;
+  status: "enabled" | "disabled" | "pending";
 };
 
 export type Business = {
@@ -33,4 +35,11 @@ export type Business = {
 export type ListBusinessApiResponse = {
   message: string;
   body: Business[];
+};
+
+export type ListUserApiResponse = {
+  message: string;
+  body: {
+    data: User[];
+  };
 };

@@ -4,3 +4,4 @@ export * from "./auth/verify-code";
 export * from "./auth/verify-code-signup";
 export * from "./auth/sign-out";
 export * from "./companies/update";
+export * from "./users/create-user";
