@@ -26,8 +26,7 @@ describe("GET Function", () => {
       get: vi.fn().mockReturnValue(undefined),
     });
 
-    const request = new Request("https://localhost");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(401);
     const json = await response.json();
@@ -45,8 +44,7 @@ describe("GET Function", () => {
     };
     mockFetch.mockResolvedValueOnce(mockResponse as any);
 
-    const request = new Request("https://localhost");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(500);
     const json = await response.json();
@@ -66,8 +64,7 @@ describe("GET Function", () => {
     };
     mockFetch.mockResolvedValueOnce(mockResponse as any);
 
-    const request = new Request("https://localhost");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(200);
     const json = await response.json();
@@ -88,8 +85,7 @@ describe("GET Function", () => {
     };
     mockFetch.mockResolvedValueOnce(mockResponse as any);
 
-    const request = new Request("https://localhost");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(403);
     const json = await response.json();
@@ -106,8 +102,7 @@ describe("GET Function", () => {
 
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-    const request = new Request("https://localhost");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(500);
     const json = await response.json();

@@ -129,6 +129,8 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
 
               <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
                 <FileDropzone
+                  dragImageLabel={i18n.dragImageLabel}
+                  selectImageLabel={i18n.selectImageLabel}
                   onImageProcessed={(value) => {
                     setLogo(value);
                     setOpen(false);

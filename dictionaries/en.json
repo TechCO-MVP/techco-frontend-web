@@ -58,7 +58,9 @@
     "enterCompanyInfoButton": "Enter Company Information",
     "loadingMessage": "Please wait",
     "updateSucess": "Company information updated sucessfully",
-    "closeButtonLabel": "Close"
+    "closeButtonLabel": "Close",
+    "dragImageLabel": "Drag your image here",
+    "selectImageLabel": "Select an image from your computer"
   },
   "signIn": {
     "formTitle": "Sign in to continue.",

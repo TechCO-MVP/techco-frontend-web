@@ -4,10 +4,14 @@ import { Image as ImageIcon } from "lucide-react";
 import { Text } from "../Typography/Text";
 
 interface FileDropzoneProps {
-  onImageProcessed: (base64Value: string) => void; // Callback prop
+  onImageProcessed: (base64Value: string) => void;
+  dragImageLabel: string;
+  selectImageLabel: string;
 }
 export const FileDropzone: React.FC<FileDropzoneProps> = ({
   onImageProcessed,
+  dragImageLabel,
+  selectImageLabel,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -66,13 +70,12 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
       >
         <ImageIcon className="h-8 w-8 text-muted-foreground" />
         <Text className="text-lg font-semibold text-foreground">
-          Arrastra tu imagen aqui
+          {dragImageLabel}
         </Text>
       </div>
-      <Button onClick={handleButtonClick}>
-        Seleccionar una imagen de tu computador
-      </Button>
+      <Button onClick={handleButtonClick}>{selectImageLabel}</Button>
       <input
+        data-testid="hidden-file-input"
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}

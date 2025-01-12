@@ -26,7 +26,7 @@
     "continueBtnText": "Continuar",
     "cancelBtnText": "Cancelar",
     "loadingMessage": "Espere for favor",
-    "createSucessMessage": "Se ha creado con éxito el usuario "
+    "createSucessMessage": "Se ha creado con éxito el usuario"
   },
   "companiesPage": {
     "goBack": "Atrás",
@@ -58,7 +58,9 @@
     "enterCompanyInfoButton": "Ingresar información de la empresa",
     "loadingMessage": "Espere for favor",
     "updateSucess": "Datos actualizados con éxito",
-    "closeButtonLabel": "Cerrar"
+    "closeButtonLabel": "Cerrar",
+    "dragImageLabel": "Arrastra tu imagen aqui",
+    "selectImageLabel": "Seleccionar una imagen de tu computador"
   },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",
