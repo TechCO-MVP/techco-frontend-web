@@ -10,6 +10,9 @@
   "footer": {
     "message": "Todos los derechos reservados - nombre de la empresa 2025"
   },
+  "sideBar": {
+    "title": "Mis empresas"
+  },
   "userSettingsPage": {
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
@@ -63,7 +66,17 @@
     "updateSucess": "Datos actualizados con éxito",
     "closeButtonLabel": "Cerrar",
     "dragImageLabel": "Arrastra tu imagen aqui",
-    "selectImageLabel": "Seleccionar una imagen de tu computador"
+    "selectImageLabel": "Seleccionar una imagen de tu computador",
+    "companyPlaceholder": "Tech Solutions S.A.",
+    "countryLabel": "Selecciona el país de operación:",
+    "countryPlaceholder": "Escribe o selecciona un país...",
+    "countrySearchPlaceholder": "Buscar",
+    "countryNotFound": "Sin resultados",
+    "createBusinessButtonLabel": "Crear empresa",
+    "createBusinessFormTitle": "Crear empresa",
+    "continueBtnText": "Continuar",
+    "cancelBtnText": "Cancelar",
+    "createSucessMessage": "Se ha creado con éxito la empresa"
   },
   "signIn": {
     "formTitle": "Inicia sesión para continuar.",

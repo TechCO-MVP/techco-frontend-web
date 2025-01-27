@@ -19,6 +19,9 @@ export const apiEndpoints = {
   updateBusiness(id?: string) {
     return `${BASE_URL}/business/update/${id}`;
   },
+  createBusiness() {
+    return `${BASE_URL}/business/create`;
+  },
   listBusiness() {
     return `${BASE_URL}/business/list`;
   },

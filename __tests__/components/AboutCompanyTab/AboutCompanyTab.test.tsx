@@ -5,7 +5,8 @@ import { useBusinesses } from "@/hooks/use-businesses";
 import { Dictionary } from "@/types/i18n";
 import { getDictionary } from "@/get-dictionary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { Provider } from "react-redux";
+import { makeStore } from "@/lib/store/index";
 vi.mock("@/hooks/use-businesses");
 
 const mockUseBusinesses = vi.mocked(useBusinesses);
@@ -18,10 +19,12 @@ describe("AboutCompanyTab", () => {
     vi.clearAllMocks();
   });
 
-  const renderWithQueryClient = (component: React.ReactNode) =>
+  const renderWithProviders = (component: React.ReactNode) =>
     render(
       <QueryClientProvider client={queryClient}>
+         <Provider store={makeStore()}>
         {component}
+         </Provider>
       </QueryClientProvider>,
     );
 
@@ -31,11 +34,11 @@ describe("AboutCompanyTab", () => {
       rootBusiness: null,
     } as any);
 
-    const { container } = renderWithQueryClient(
+    const { container } = renderWithProviders(
       <AboutCompanyTab dictionary={mockDictionary} />,
     );
-    // Assert that the skeleton is rendered by checking its structure
-    expect(container.querySelectorAll(".skeleton")).toHaveLength(1); // Adjust the number based on your skeleton elements
+
+    expect(container.querySelectorAll(".skeleton")).toHaveLength(1); 
   });
 
   it("renders the CompanyDetailsForm when rootBusiness data is available", () => {
@@ -46,10 +49,10 @@ describe("AboutCompanyTab", () => {
       isLoading: false,
     } as any);
 
-    renderWithQueryClient(<AboutCompanyTab dictionary={mockDictionary} />);
+    renderWithProviders(<AboutCompanyTab dictionary={mockDictionary} />);
 
     expect(
-      screen.getByText(mockDictionary.companiesPage.formTitle), // Adjust this depending on how CompanyDetailsForm renders
+      screen.getByText(mockDictionary.companiesPage.formTitle),
     ).toBeInTheDocument();
   });
 
@@ -59,7 +62,7 @@ describe("AboutCompanyTab", () => {
       isLoading: false,
     } as any);
 
-    const { container } = renderWithQueryClient(
+    const { container } = renderWithProviders(
       <AboutCompanyTab dictionary={mockDictionary} />,
     );
 

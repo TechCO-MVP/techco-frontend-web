@@ -65,7 +65,7 @@ export const CompanyDetailsSchema = z.object({
 export type CompanyDetailsData = z.infer<typeof CompanyDetailsSchema>;
 
 /**
- * Create Form
+ * Create User Form
  */
 
 export const CreateUserSchema = z.object({
@@ -80,3 +80,18 @@ export const CreateUserSchema = z.object({
 });
 
 export type CreateUserData = z.infer<typeof CreateUserSchema>;
+
+/**
+ * Create Business Form
+ */
+
+export const CreateBusinessSchema = z.object({
+  parentBusinessId: z.string(),
+  name: z.string().min(3, { message: VALIDATION_ERROR_KEYS.companyError }),
+  country: z.string().min(2, { message: VALIDATION_ERROR_KEYS.countryError }),
+  companySize: z
+    .string()
+    .min(1, { message: VALIDATION_ERROR_KEYS.companySizeError }),
+});
+
+export type CreateBusinessData = z.infer<typeof CreateBusinessSchema>;
