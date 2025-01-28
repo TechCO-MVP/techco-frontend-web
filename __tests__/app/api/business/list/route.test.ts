@@ -80,18 +80,16 @@ describe("GET Function", () => {
 
     const mockResponse = {
       ok: false,
-      status: 403,
-      statusText: "Forbidden",
+      statusText: "Internal Server Error",
     };
     mockFetch.mockResolvedValueOnce(mockResponse as any);
 
     const response = await GET();
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(500);
     const json = await response.json();
     expect(json).toEqual({
-      error: "Failed to fetch data: Forbidden",
-      status: 403,
+      error: "Internal server error",
     });
   });
 

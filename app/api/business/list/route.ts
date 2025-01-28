@@ -25,9 +25,11 @@ export async function GET() {
     });
 
     if (!response.ok) {
+      const json = await response.json();
+      console.log("Business List", json);
       return NextResponse.json(
         {
-          error: `Failed to fetch data: ${response.statusText}`,
+          error: `Failed to fetch data: ${response.statusText}, ${json?.message}`,
           status: response.status,
         },
         { status: response.status },

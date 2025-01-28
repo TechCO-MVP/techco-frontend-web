@@ -10,6 +10,9 @@
   "footer": {
     "message": "All rights reserved - company name 2025"
   },
+  "sideBar": {
+    "title": "My Companies"
+  },
   "userSettingsPage": {
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
@@ -63,14 +66,23 @@
     "updateSucess": "Company information updated sucessfully",
     "closeButtonLabel": "Close",
     "dragImageLabel": "Drag your image here",
-    "selectImageLabel": "Select an image from your computer"
+    "selectImageLabel": "Select an image from your computer",
+    "countryLabel": "Select your country",
+    "countryPlaceholder": "Type or select a country...",
+    "countrySearchPlaceholder": "Search",
+    "countryNotFound": "No results",
+    "createBusinessButtonLabel": "Create company",
+    "createBusinessFormTitle": "Create company",
+    "continueBtnText": "Continue",
+    "cancelBtnText": "Cancel",
+    "createSucessMessage": "Company created successfully."
   },
   "signIn": {
     "formTitle": "Sign in to continue.",
     "formDescription": "Enter your email to access your account.",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@company.com",
-    "continueBtnText": "Contine",
+    "continueBtnText": "Continue",
     "noAccountText": "Don't have an account?",
     "createAccountLabel": "Create Account",
     "loadingMessage": "Please wait"

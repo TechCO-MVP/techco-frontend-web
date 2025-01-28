@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { QUERIES } from "@/constants/queries";
+import { CreateBusinessDialog } from "../CreateBusinessDialog/CreateBusinessDialog";
 
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
@@ -98,15 +99,20 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
       {/* Top Section */}
 
       <div className="mb-5 flex flex-col items-start">
-        <Heading
-          level={1}
-          className="text-center text-2xl font-normal leading-8"
-        >
-          {i18n.formTitle}
-        </Heading>
-        <Text className="text-muted-foreground" type="span" size="small">
-          {i18n.formDescription}
-        </Text>
+        <div className="flex w-full justify-between">
+          <div className="flex flex-col items-start">
+            <Heading
+              level={1}
+              className="text-center text-2xl font-normal leading-8"
+            >
+              {i18n.formTitle}
+            </Heading>
+            <Text className="text-muted-foreground" type="span" size="small">
+              {i18n.formDescription}
+            </Text>
+          </div>
+          <CreateBusinessDialog dictionary={dictionary} />
+        </div>
         <div className="mt-6 flex items-center justify-center gap-6">
           <div className="flex flex-col">
             <Avatar className="h-20 w-20">

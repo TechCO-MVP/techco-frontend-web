@@ -3,18 +3,29 @@ import DashboardLayout from "@/app/[lang]/dashboard/layout";
 import { describe, it, expect, vi } from "vitest";
 import { Locale } from "@/i18n-config";
 import { Suspense } from "react";
+import { Provider } from "react-redux";
+import { makeStore } from "@/lib/store/index";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock the TopBar component
 vi.mock("@/components/TopBar/TopBar", () => ({
   TopBar: vi.fn(() => <div data-testid="mocked-topbar">Mocked TopBar</div>),
 }));
 
+const queryClient = new QueryClient();
 describe("DashboardLayout", () => {
+  const renderWithProviders = (ui: React.ReactNode) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <Provider store={makeStore()}>{ui}</Provider>
+      </QueryClientProvider>,
+    );
+  };
   it("renders the layout with children and the TopBar component", async () => {
     const mockChildren = <div data-testid="mock-children">Mock Children</div>;
     const params = { lang: "en" as Locale };
 
-    render(
+    renderWithProviders(
       <Suspense>
         <DashboardLayout params={Promise.resolve(params)}>
           {mockChildren}

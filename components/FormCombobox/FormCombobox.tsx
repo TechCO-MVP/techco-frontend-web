@@ -45,6 +45,7 @@ type FormComboboxProps<TSchema extends FieldValues> = {
   dirtyFields: UseFormStateReturn<TSchema>["dirtyFields"];
   options: { label: string; value: string }[];
   getErrorMessage: (key?: string) => string;
+  containerRef?: React.RefObject<HTMLFormElement | null>;
 };
 
 export function FormCombobox<TSchema extends FieldValues>({
@@ -59,6 +60,7 @@ export function FormCombobox<TSchema extends FieldValues>({
   options,
   getErrorMessage,
   testId,
+  containerRef,
 }: FormComboboxProps<TSchema>) {
   const [open, setOpen] = useState(false);
 
@@ -101,10 +103,13 @@ export function FormCombobox<TSchema extends FieldValues>({
                     <ChevronsUpDown className="opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[250px] p-0">
+                <PopoverContent
+                  className="w-[250px] p-0"
+                  containerRef={containerRef}
+                >
                   <Command>
                     <CommandInput placeholder={searchPlaceholder} />
-                    <CommandList>
+                    <CommandList className="max-h-[150px]">
                       <CommandEmpty>{noResultsMessage}</CommandEmpty>
                       <CommandGroup>
                         {options.map((option) => (

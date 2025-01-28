@@ -11,8 +11,9 @@ type CompaniesTabProps = {
 export const AboutCompanyTab: FC<Readonly<CompaniesTabProps>> = ({
   dictionary,
 }) => {
-  const { rootBusiness, isLoading } = useBusinesses();
+  const { rootBusiness, isLoading, error } = useBusinesses();
 
+  if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading) return <LoadingSkeleton />;
   return (
     <>
