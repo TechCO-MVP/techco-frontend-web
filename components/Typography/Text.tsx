@@ -8,7 +8,7 @@ const fontSizeMap: Record<FontSize, string> = {
   large: "text-2xl",
   small: "text-sm",
   xs: "text-xs",
-  xxs: "text-[0.625rem]",
+  xxs: "text-[0.5625rem]",
 };
 
 const fontWeightMap: Record<FontWeight, string> = {

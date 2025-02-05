@@ -43,3 +43,19 @@ export type ListUserApiResponse = {
     data: User[];
   };
 };
+
+export interface Card {
+  id: string;
+  content: string;
+  position: number;
+}
+
+export interface Column {
+  id: string;
+  title: string;
+  cards: Card[];
+}
+
+export interface BoardState {
+  columns: Column[];
+}
