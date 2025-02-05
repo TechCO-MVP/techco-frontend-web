@@ -170,16 +170,10 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
                 errors={errors}
                 dirtyFields={dirtyFields}
                 options={[
-                  { value: "Talent Recruiter", label: "Talent Recruiter" },
-                  {
-                    value: "Talent Acquisition Specialist",
-                    label: "Talent Acquisition Specialist",
-                  },
-                  { value: "HR Consultant", label: "HR Consultant" },
-                  {
-                    value: "Talent Acquisition Manager",
-                    label: "Talent Acquisition Manager",
-                  },
+                  { value: "super_admin", label: "Super Admin" },
+                  { value: "business_admin", label: "Business Admin" },
+                  { value: "position_owner", label: "Position Owner" },
+                  { value: "recruiter", label: "Recruiter" },
                 ]}
                 getErrorMessage={getErrorMessage(dictionary)}
               />
