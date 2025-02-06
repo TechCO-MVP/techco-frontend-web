@@ -15,6 +15,8 @@ import {
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+import { SmilePlus } from "lucide-react";
+import { Progress } from "../ui/progress";
 
 const initialState: BoardState = {
   columns: [
@@ -41,6 +43,8 @@ const initialState: BoardState = {
 
 export const Board: React.FC = () => {
   const [board, setBoard] = useState<BoardState>(initialState);
+  const [isEmpty] = useState(false);
+  const [isLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [pendingMove, setPendingMove] = useState<{
     cardId: string;
@@ -145,7 +149,7 @@ export const Board: React.FC = () => {
 
   return (
     <>
-      <div className="flex gap-4 p-4">
+      <div className="relative flex gap-4 p-4">
         {board.columns.map((column) => (
           <BoardColumn
             key={column.id}
@@ -154,6 +158,41 @@ export const Board: React.FC = () => {
             onCardMove={onCardMove}
           />
         ))}
+        {isEmpty && (
+          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
+            <Text type="p" className="text-lg font-semibold">
+              Todavía no hay candidatos en este proceso
+            </Text>
+            <Text
+              type="p"
+              size="small"
+              className="max-w-md text-center text-muted-foreground"
+            >
+              Aquí verás a los postulantes en cuanto comiencen a aplicar a la
+              vacante. Comparte la oferta en distintos canales para atraer más
+              talento.
+            </Text>
+            <Button>Agregar candidato</Button>
+          </div>
+        )}
+        {isLoading && (
+          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
+            <Text type="p" className="text-lg font-semibold">
+              Buscando los mejores talentos para tu vacante…
+            </Text>
+            <Text
+              type="p"
+              size="small"
+              className="max-w-md text-center text-muted-foreground"
+            >
+              🔄 Esto tomará solo unos instantes. Pronto conocerás a los mejores
+              candidatos para tu búsqueda.
+            </Text>
+            <Progress value={33} className="max-w-md" />
+          </div>
+        )}
       </div>
       <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <DialogContent className="max-w-[26rem] p-12">
