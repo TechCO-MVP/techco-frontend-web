@@ -28,6 +28,11 @@ export default defineConfig({
         "components/TopBar/*",
         "components/UserMenu/*",
         "components/UserInfo/*",
+        "components/Openings/*",
+        "components/OpeningTracking/*",
+        "components/Board/*",
+        "components/BoardColumn/*",
+        "components/Board/UserCard*",
         // End Temp exlucude for WIP components
         ".storybook",
         ".next",

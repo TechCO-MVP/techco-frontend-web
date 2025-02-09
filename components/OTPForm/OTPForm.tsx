@@ -58,7 +58,7 @@ export function OTPForm({ dictionary }: { readonly dictionary: Dictionary }) {
       if (!response.success) {
         return setError(response.message);
       }
-      router.push(paths.home());
+      router.push(paths.openings());
     });
   };
 

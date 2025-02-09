@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { type BoardState, Card } from "@/types";
+import { type BoardState } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,6 @@ import {
 } from "../ui/dialog";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import { SmilePlus } from "lucide-react";
 import { Progress } from "../ui/progress";
 
@@ -76,7 +75,7 @@ export const Board: React.FC = () => {
   const confirmMove = () => {
     if (!pendingMove) return;
 
-    const { cardId, sourceColumnId, targetColumnId, newPosition } = pendingMove;
+    const { cardId, sourceColumnId, targetColumnId } = pendingMove;
 
     setBoard((prevBoard) => {
       const newColumns = prevBoard.columns.map((column) => {
@@ -204,19 +203,6 @@ export const Board: React.FC = () => {
               El candidato pasará de la fase actual a una nueva etapa del
               proceso. Puedes avanzar o retroceder cuando lo necesites.
             </DialogDescription>
-            <div className="!mb-2 !mt-10 flex items-center gap-2 font-medium">
-              <Checkbox data-testid="checkbox" />
-              <label
-                htmlFor="terms"
-                className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Notificar al candidato sobre este cambio de fase
-              </label>
-            </div>
-            <Text type="p" size="xs" className="text-muted-foreground">
-              Si esta opción está activada, el candidato recibirá un aviso sobre
-              su avance en el proceso.
-            </Text>
           </DialogHeader>
           <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
             <Button variant="default" onClick={confirmMove}>

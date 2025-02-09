@@ -25,11 +25,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Textarea } from "../ui/textarea";
-import { type BoardState, Card as CardType } from "@/types";
+import { Card as CardType } from "@/types";
 
 interface CardProps {
   card: CardType;
