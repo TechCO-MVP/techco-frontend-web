@@ -36,7 +36,7 @@ export const SideBar: FC<Readonly<SideBarProps>> = ({ dictionary }) => {
   return (
     <div className="p-2">
       <Sheet defaultOpen={isOpen} open={isOpen} onOpenChange={onOpenChange}>
-        <SheetTrigger>
+        <SheetTrigger className="hidden">
           <Menu />
         </SheetTrigger>
         <SheetContent side="left">

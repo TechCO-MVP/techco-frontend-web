@@ -97,7 +97,7 @@ describe("OTPForm (Integration Tests)", () => {
         session: "mock-session",
         code: "123456",
       });
-      expect(mockRouter.pathname).toBe(`/${paths.home()}`);
+      expect(mockRouter.pathname).toBe(`/${paths.openings()}`);
     });
   });
 

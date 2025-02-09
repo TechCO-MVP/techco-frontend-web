@@ -7,11 +7,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDown, LogOut } from "lucide-react";
+import * as actions from "@/actions";
+import { Locale } from "@/i18n-config";
+
 interface Props {
   username: string;
+  lang: Locale;
 }
 
-export const UserMenu: FC<Readonly<Props>> = ({ username }) => {
+export const UserMenu: FC<Readonly<Props>> = ({ username, lang }) => {
   return (
     <div className="flex items-center">
       <Avatar className="h-8 w-8">
@@ -43,13 +47,17 @@ export const UserMenu: FC<Readonly<Props>> = ({ username }) => {
               </div>
             </div>
             <div className="grid gap-2">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-red-600 hover:bg-red-100 hover:text-red-600"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </Button>
+              <form action={actions.signOut}>
+                <input type="hidden" name="lang" value={lang} />
+
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-red-600 hover:bg-red-100 hover:text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </form>
             </div>
           </div>
         </PopoverContent>

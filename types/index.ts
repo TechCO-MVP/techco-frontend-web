@@ -43,3 +43,64 @@ export type ListUserApiResponse = {
     data: User[];
   };
 };
+
+export interface Card {
+  id: string;
+  content: string;
+  position: number;
+}
+
+export interface Position {
+  id: number;
+  status: "Activa" | "Inactiva" | "Cancelada";
+  name: string;
+  created_at: Date;
+  candidates: number;
+  priority: "Alta" | "Media" | "Baja";
+  responsible: string;
+  recruiter: string;
+};
+
+export type ListPositionsApiResponse = {
+  message: string;
+  body: {
+    data: Position[];
+  };
+};
+
+
+export interface Column {
+  id: string;
+  title: string;
+  cards: Card[];
+}
+
+export interface BoardState {
+  columns: Column[];
+}
+
+export type PipefyPipe = {
+  id: string;
+  phases: PipefyPhase[];
+};
+
+export type PipefyPhase = {
+  id: string;
+  name: string;
+  cards_count: number;
+  cards: PipefyCard[];
+};
+
+export type PipefyCard = {
+  fields: PipefyField[];
+};
+
+export type PipefyField = {
+  name: string;
+  native_value: string | null;
+  indexName: string;
+};
+
+export type PipefyPipeResponse = {
+  pipe: PipefyPipe;
+};

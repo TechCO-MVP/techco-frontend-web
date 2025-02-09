@@ -1,7 +1,5 @@
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-import * as actions from "@/actions";
-import { Button } from "@/components/ui/button";
 import { WalkthroughDialog } from "@/components/WalkthroughDialog/WalkthroughDialog";
 export default async function IndexPage(props: {
   readonly params: Promise<{ lang: Locale }>;
@@ -13,20 +11,6 @@ export default async function IndexPage(props: {
   return (
     <div className="relative flex h-screen items-center justify-center bg-gray-50">
       <div className="flex h-full w-full flex-col bg-gray-50">
-        <header className="w-full p-4">
-          <nav>
-            <ul className="flex justify-end space-x-4">
-              <li>
-                <form action={actions.signOut}>
-                  <input type="hidden" name="lang" value={lang} />
-                  <Button variant="default" type="submit">
-                    {dictionary["server-component"].logOut}
-                  </Button>
-                </form>
-              </li>
-            </ul>
-          </nav>
-        </header>
         <div className="flex flex-col items-center justify-center">
           <WalkthroughDialog closeLabel={i18n.closeModalLabel} />
         </div>

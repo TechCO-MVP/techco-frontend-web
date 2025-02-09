@@ -20,4 +20,7 @@ export const paths = {
   codeValidationSignUp() {
     return "verify-otp-signup";
   },
+  openings() {
+    return "dashboard/openings";
+  },
 };
