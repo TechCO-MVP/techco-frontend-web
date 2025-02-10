@@ -1,10 +1,9 @@
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AboutCompanyTab } from "@/components/AboutCompanyTab/AboutCompanyTab";
 import { UserSettingsTab } from "@/components/UserSettingsTab/UserSettingsTab";
+import { BackButton } from "@/components/BackButton/BackButton";
 
 // We use this server component as a wrapper to be able to receive the lang attribute since it's a promise
 export default async function CompaniesPage(props: {
@@ -17,10 +16,7 @@ export default async function CompaniesPage(props: {
   return (
     <div className="flex w-full flex-col gap-8">
       <nav>
-        <Link className="flex w-fit items-center hover:underline" href="/">
-          <ChevronLeft />
-          {dictionary.companiesPage.goBack}
-        </Link>
+        <BackButton dictionary={dictionary} />
       </nav>
       <Tabs
         defaultValue="about"

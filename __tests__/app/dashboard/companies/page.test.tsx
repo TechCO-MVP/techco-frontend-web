@@ -15,7 +15,11 @@ vi.mock("@/get-dictionary", () => ({
     },
   }),
 }));
-
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    back: vi.fn(),
+  }),
+}));
 vi.mock("@/components/AboutCompanyTab/AboutCompanyTab", () => ({
   AboutCompanyTab: vi.fn(() => (
     <div data-testid="about-company-tab">About Company Content</div>
@@ -41,10 +45,6 @@ describe("CompaniesPage", () => {
     await waitFor(() => {
       // Ensure navigation link renders correctly
       expect(screen.getByText("Go back")).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "Go back" })).toHaveAttribute(
-        "href",
-        "/",
-      );
 
       // Ensure tabs render with correct titles
       expect(screen.getByText("About Company")).toBeInTheDocument();
