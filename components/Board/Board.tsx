@@ -14,8 +14,12 @@ import {
 } from "../ui/dialog";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
-import { SmilePlus } from "lucide-react";
+import { ChevronLeft, Plus, SlidersHorizontal, SmilePlus } from "lucide-react";
 import { Progress } from "../ui/progress";
+import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
+import { Heading } from "../Typography/Heading";
+import Link from "next/link";
 
 const initialState: BoardState = {
   columns: [
@@ -42,6 +46,7 @@ const initialState: BoardState = {
 
 export const Board: React.FC = () => {
   const [board, setBoard] = useState<BoardState>(initialState);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isEmpty] = useState(false);
   const [isLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -147,8 +152,51 @@ export const Board: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="relative flex gap-4 p-4">
+    <div className="flex w-full flex-col px-8">
+      <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
+        <Link href="openings">
+          <Button variant="ghost" className="-mx-8 text-sm">
+            <ChevronLeft className="h-4 w-4" />
+            Atrás
+          </Button>
+        </Link>
+        <Badge variant="secondary" className="rounded-md">
+          Mex 🇲🇽
+        </Badge>
+        <div className="flex items-center justify-center gap-2">
+          <Heading className="text-xl" level={1}>
+            Lead Arquitecto (0000000)
+          </Heading>
+          <Badge variant="secondary" className="rounded-md text-[#34C759]">
+            Activa
+          </Badge>
+          <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
+            Prioridad alta 🔥🔥
+          </Badge>
+        </div>
+        <div className="text-muted-foreground">
+          <span className="font-bold">Creado por:</span> Mao Molina | 17 Feb
+          2023 (Traking 33 dias)
+        </div>
+      </div>
+      <div className="mb-8 flex justify-between">
+        <Input
+          className="max-w-[18rem] shadow-sm"
+          type="tex"
+          placeholder="Buscar nombre del candidato..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <div className="flex gap-6">
+          <Button variant="ghost" className="border border-dashed shadow-sm">
+            <SlidersHorizontal /> Filtro
+          </Button>
+          <Button variant="ghost" className="bg-secondary">
+            <Plus /> Agregar Candidato
+          </Button>
+        </div>
+      </div>
+      <div className="relative flex gap-4">
         {board.columns.map((column) => (
           <BoardColumn
             key={column.id}
@@ -214,6 +262,6 @@ export const Board: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };

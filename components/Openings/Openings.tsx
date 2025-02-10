@@ -25,6 +25,7 @@ import {
   MoreHorizontal,
   Plus,
   SlidersHorizontal,
+  Settings,
 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
@@ -32,6 +33,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -119,7 +121,21 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             >
               Casa&Cosecha  S.A
             </Heading>
+
             <CountryLabel label={"Mex 🇲🇽 "} />
+            <Link href="companies">
+              <Button
+                variant="ghost"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F4F4F5]"
+              >
+                <Settings
+                  width={14}
+                  height={14}
+                  stroke="#09090B
+"
+                />
+              </Button>
+            </Link>
           </div>
           <Text className="text-muted-foreground">
             Creado por Mao Molina | 17 Feb 2023
