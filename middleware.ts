@@ -60,10 +60,10 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  // if (!token && !publicPaths.some((path) => pathname.includes(path))) {
-  //   const locale = pathname.split("/")[1] ?? getLocale(request);
-  //   return NextResponse.redirect(new URL(`/${locale}/signin`, request.url));
-  // }
+  if (!token && !publicPaths.some((path) => pathname.includes(path))) {
+    const locale = pathname.split("/")[1] ?? getLocale(request);
+    return NextResponse.redirect(new URL(`/${locale}/signin`, request.url));
+  }
 }
 
 export const config = {

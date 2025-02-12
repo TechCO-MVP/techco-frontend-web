@@ -1,9 +1,10 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useState } from "react";
+import { FC, useState, useTransition } from "react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { CreateUserDialog } from "../CreateUserDialog/CreateUserDialog";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -19,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import * as actions from "@/actions";
 
 import { Input } from "../ui/input";
 import { ArrowUpDown, SlidersHorizontal, MoreHorizontal } from "lucide-react";
@@ -28,6 +30,8 @@ import LoadingSkeleton from "./LoadingSkeleton";
 
 import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
+import { User } from "@/types";
+import { QUERIES } from "@/constants/queries";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -35,10 +39,12 @@ type UserSettingsTabProps = {
 export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   dictionary,
 }) => {
+  const queryClient = useQueryClient();
   const { userSettingsPage: i18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
   const { rootBusiness } = useBusinesses();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const { users, isLoading } = useUsers({
     businessId: rootBusiness?._id,
@@ -63,6 +69,23 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
     if (sortOrder === "asc") return a.status.localeCompare(b.status);
     return b.status.localeCompare(a.status);
   });
+
+  const onDisableUser = async (user: User) => {
+    try {
+      startTransition(async () => {
+        const updateUserResponse = await actions.updateUserStatus({
+          id: user._id,
+          email: user.email,
+          status: "disabled",
+        });
+        if (updateUserResponse.success) {
+          queryClient.invalidateQueries({ queryKey: QUERIES.USER_LIST });
+        }
+      });
+    } catch (error: unknown) {
+      console.error("Error@onDisableUser", error);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col px-8 py-6">
@@ -129,7 +152,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.company_position}</TableCell>
                 <TableCell>{user.role}</TableCell>
-                <TableCell className="flex items-center justify-start gap-4">
+                <TableCell className="flex items-center justify-between gap-4">
                   <span
                     className={cn(
                       "rounded-sm border border-[#E4E4E7] px-2.5 py-0.5 font-semibold capitalize text-[#34C759]",
@@ -150,8 +173,9 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                         Editar
                       </DropdownMenuItem>
                       <DropdownMenuItem
+                        disabled={isPending}
                         className="cursor-pointer"
-                        onClick={() => console.log("disbale")}
+                        onClick={() => onDisableUser(user)}
                       >
                         Inhabilitar
                       </DropdownMenuItem>

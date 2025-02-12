@@ -59,7 +59,7 @@ export interface Position {
   priority: "Alta" | "Media" | "Baja";
   responsible: string;
   recruiter: string;
-};
+}
 
 export type ListPositionsApiResponse = {
   message: string;
@@ -67,7 +67,6 @@ export type ListPositionsApiResponse = {
     data: Position[];
   };
 };
-
 
 export interface Column {
   id: string;
@@ -103,4 +102,10 @@ export type PipefyField = {
 
 export type PipefyPipeResponse = {
   pipe: PipefyPipe;
+};
+
+export type UpdateUserStatusData = {
+  email: string;
+  id: string;
+  status: "enabled" | "disabled";
 };

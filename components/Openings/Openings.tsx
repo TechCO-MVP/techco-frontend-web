@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import LoadingSkeleton from "./LoadingSkeleton";
 import {
@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, countryLabelLookup, formatDate } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu,
@@ -34,16 +34,27 @@ import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useBusinesses } from "@/hooks/use-businesses";
+import { Business } from "@/types";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  console.log(dictionary);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  console.log(dictionary);
+  const { rootBusiness, businesses } = useBusinesses();
   const { isLoading, error, positions } = useOpenPositions();
+  const [selectedCompany, setSelectedCompany] = useState<Business | null>(
+    rootBusiness,
+  );
+
+  useEffect(() => {
+    setSelectedCompany(rootBusiness);
+  }, [rootBusiness]);
+
   if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading) return <LoadingSkeleton />;
 
@@ -64,6 +75,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     if (sortOrder === "asc") return a.status.localeCompare(b.status);
     return b.status.localeCompare(a.status);
   });
+
   return (
     <div className="flex w-full flex-col px-8 py-6">
       {/* Top Section */}
@@ -79,50 +91,42 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <div className="h-8 border-b-[1px] border-b-[#E4E4E7] font-bold">
                   Tus empresas
                 </div>
-                <DropdownMenuItem
-                  className="flex cursor-pointer flex-col items-start gap-0"
-                  onClick={() => console.log("edit")}
-                >
-                  <div className="flex items-center gap-2">
-                    <Heading
-                      level={1}
-                      className="text-center text-xl font-bold leading-8"
+                {businesses.map((business) => {
+                  return (
+                    <DropdownMenuItem
+                      key={business._id}
+                      className="flex cursor-pointer flex-col items-start gap-0"
+                      onClick={() => setSelectedCompany(business)}
                     >
-                      Casa&Cosecha  S.A
-                    </Heading>
-                    <CountryLabel label={"Mex 🇲🇽 "} />
-                  </div>
-                  <Text className="text-muted-foreground">
-                    Creado por Mao Molina | 17 Feb 2023
-                  </Text>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex cursor-pointer flex-col items-start gap-0"
-                  onClick={() => console.log("edit")}
-                >
-                  <div className="flex items-center gap-2">
-                    <Heading
-                      level={1}
-                      className="text-center text-xl font-bold leading-8"
-                    >
-                      Empresa #2
-                    </Heading>
-                    <CountryLabel label={"Mex 🇲🇽 "} />
-                  </div>
-                  <Text className="text-muted-foreground">
-                    Creado por Mao Molina | 17 Feb 2023
-                  </Text>
-                </DropdownMenuItem>
+                      <div className="flex items-center gap-2">
+                        <Heading
+                          level={1}
+                          className="text-center text-xl font-bold leading-8"
+                        >
+                          {business.name}
+                        </Heading>
+                        <CountryLabel
+                          label={countryLabelLookup(business.country_code)}
+                        />
+                      </div>
+                      <Text className="text-muted-foreground">
+                        Creado por Mao Molina |{formatDate(business.created_at)}
+                      </Text>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
             <Heading
               level={1}
               className="text-center text-2xl font-bold leading-8"
             >
-              Casa&Cosecha  S.A
+              {selectedCompany?.name}
             </Heading>
 
-            <CountryLabel label={"Mex 🇲🇽 "} />
+            <CountryLabel
+              label={countryLabelLookup(selectedCompany?.country_code || "co")}
+            />
             <Link href="companies">
               <Button
                 variant="ghost"
@@ -138,7 +142,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </Link>
           </div>
           <Text className="text-muted-foreground">
-            Creado por Mao Molina | 17 Feb 2023
+            Creado por Mao Molina | {formatDate(rootBusiness?.created_at)}
           </Text>
           <div className="mt-4 flex gap-4">
             <span>

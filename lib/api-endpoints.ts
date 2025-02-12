@@ -31,4 +31,7 @@ export const apiEndpoints = {
   createUser() {
     return `${BASE_URL}/user/create`;
   },
+  updateUserStatus() {
+    return `${BASE_URL}/user/status`;
+  },
 };
