@@ -29,7 +29,7 @@ export async function updateUserStatus(
       }),
     });
     const result = await response.json();
-    console.log("updateUserStatus response", result);
+
     if (response.ok) {
       return {
         success: true,

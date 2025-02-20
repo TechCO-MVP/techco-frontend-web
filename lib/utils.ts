@@ -39,7 +39,9 @@ export function countryCodeLookup(value: string): string | null {
 }
 
 export function countryLabelLookup(code: string): string | null {
-  const country = COUNTRIES.find((c) => c.code === code);
+  const country = COUNTRIES.find(
+    (c) => c.code.toLowerCase() === code.toLowerCase(),
+  );
   return country ? country.label : null;
 }
 

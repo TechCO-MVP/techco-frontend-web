@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { type BoardState } from "@/types";
+import { PipefyPhase, type BoardState } from "@/types/pipefy";
 import {
   Dialog,
   DialogContent,
@@ -20,36 +20,44 @@ import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Heading } from "../Typography/Heading";
 import Link from "next/link";
-
-const initialState: BoardState = {
-  columns: [
-    {
-      id: "todo",
-      title: "Etapa 1",
-      cards: [
-        { id: "task1", content: "Task 1", position: 0 },
-        { id: "task2", content: "Task 2", position: 1 },
-      ],
-    },
-    {
-      id: "inprogress",
-      title: "Etapa 2",
-      cards: [{ id: "task3", content: "Task 3", position: 0 }],
-    },
-    {
-      id: "done",
-      title: "Etapa 3",
-      cards: [{ id: "task4", content: "Task 4", position: 0 }],
-    },
-  ],
-};
-
+import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
+import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
 export const Board: React.FC = () => {
-  const [board, setBoard] = useState<BoardState>(initialState);
+  const { mutate } = useMoveCardToPhase({
+    onSuccess: (data, variables) => {
+      console.log("Card moved successfully:", data.moveCardToPhase.card);
+      console.log(
+        "Moved from:",
+        variables.cardId,
+        "➡",
+        "To:",
+        variables.destinationPhaseId,
+      );
+    },
+    onError: (error, variables) => {
+      console.error(" Move failed:", error);
+      console.error(
+        "Failed to move from:",
+        variables.cardId,
+        "➡",
+        "To:",
+        variables.destinationPhaseId,
+      );
+    },
+    onSettled: (data, error, variables) => {
+      console.log(" Mutation Settled. Success:", !!data, "Error:", !!error);
+    },
+  });
+  const { isLoading, data } = usePipefyPipe({ pipeId: "305713420" });
+  const [board, setBoard] = useState<BoardState | undefined>(data);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEmpty] = useState(false);
-  const [isLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [draggedCard, setDraggedCard] = useState<{
+    id: string;
+    sourceColumn: PipefyPhase;
+  } | null>(null);
+
   const [pendingMove, setPendingMove] = useState<{
     cardId: string;
     sourceColumnId: string;
@@ -64,13 +72,14 @@ export const Board: React.FC = () => {
     newPosition: number,
   ) => {
     if (sourceColumnId === targetColumnId) return;
+    if (!board) return;
 
     const sourceColumn = board.columns.find((col) => col.id === sourceColumnId);
     const targetColumn = board.columns.find((col) => col.id === targetColumnId);
 
     if (!sourceColumn || !targetColumn) return;
 
-    const card = sourceColumn.cards.find((c) => c.id === cardId);
+    const card = sourceColumn.cards.nodes.find((c) => c.id === cardId);
     if (!card) return;
 
     setPendingMove({ cardId, sourceColumnId, targetColumnId, newPosition });
@@ -80,40 +89,59 @@ export const Board: React.FC = () => {
   const confirmMove = () => {
     if (!pendingMove) return;
 
-    const { cardId, sourceColumnId, targetColumnId } = pendingMove;
+    const { cardId, sourceColumnId, targetColumnId, newPosition } = pendingMove;
+    mutate({
+      cardId,
+      destinationPhaseId: targetColumnId,
+    });
 
     setBoard((prevBoard) => {
-      const newColumns = prevBoard.columns.map((column) => {
+      if (!prevBoard) return;
+
+      const updatedColumns = prevBoard.columns.map((column) => {
         if (column.id === sourceColumnId) {
+          // Remove the card from the source column
+          const filteredCards = column.cards.nodes.filter(
+            (card) => card.id !== cardId,
+          );
           return {
             ...column,
-            cards: column.cards
-              .filter((card) => card.id !== cardId)
-              .map((card, index) => ({ ...card, position: index })),
+            cards: {
+              nodes: filteredCards.map((card, index) => ({
+                ...card,
+                position: index,
+              })),
+            },
           };
         }
+
         if (column.id === targetColumnId) {
-          const [movedCard] = prevBoard.columns
-            .find((col) => col.id === sourceColumnId)!
-            .cards.filter((card) => card.id === cardId);
+          const sourceColumn = prevBoard.columns.find(
+            (col) => col.id === sourceColumnId,
+          );
+          if (!sourceColumn) return column;
 
-          const newCards = [
-            ...column.cards,
-            { ...movedCard, position: column.cards.length },
-          ].map((card, index) => ({
-            ...card,
-            position: index,
-          }));
+          const movedCard = sourceColumn.cards.nodes.find(
+            (card) => card.id === cardId,
+          );
+          if (!movedCard) return column;
+
+          const updatedCards = [
+            ...column.cards.nodes.slice(0, newPosition),
+            { ...movedCard, position: newPosition },
+            ...column.cards.nodes.slice(newPosition),
+          ].map((card, index) => ({ ...card, position: index }));
 
           return {
             ...column,
-            cards: newCards,
+            cards: { nodes: updatedCards },
           };
         }
+
         return column;
       });
 
-      return { ...prevBoard, columns: newColumns };
+      return { ...prevBoard, columns: updatedColumns };
     });
 
     setIsAlertOpen(false);
@@ -131,25 +159,37 @@ export const Board: React.FC = () => {
     targetId: string,
   ) => {
     setBoard((prevBoard) => {
-      const newColumns = prevBoard.columns.map((column) => {
+      if (!prevBoard) return;
+
+      const updatedColumns = prevBoard.columns.map((column) => {
         if (column.id === columnId) {
-          const cards = [...column.cards];
+          const cards = [...column.cards.nodes];
           const draggedIndex = cards.findIndex((card) => card.id === draggedId);
           const targetIndex = cards.findIndex((card) => card.id === targetId);
+
+          if (draggedIndex === -1 || targetIndex === -1) return column;
+
           const [draggedCard] = cards.splice(draggedIndex, 1);
           cards.splice(targetIndex, 0, draggedCard);
 
           return {
             ...column,
-            cards: cards.map((card, index) => ({ ...card, position: index })),
+            cards: {
+              nodes: cards.map((card, index) => ({ ...card, position: index })),
+            },
           };
         }
         return column;
       });
 
-      return { ...prevBoard, columns: newColumns };
+      return { ...prevBoard, columns: updatedColumns };
     });
   };
+
+  useEffect(() => {
+    console.log(data);
+    setBoard(data);
+  }, [data]);
 
   return (
     <div className="flex w-full flex-col px-8">
@@ -197,12 +237,14 @@ export const Board: React.FC = () => {
         </div>
       </div>
       <div className="relative flex gap-4">
-        {board.columns.map((column) => (
+        {board?.columns.map((column) => (
           <BoardColumn
             key={column.id}
             column={column}
             onDrop={onDrop}
             onCardMove={onCardMove}
+            draggedCard={draggedCard}
+            setDraggedCard={setDraggedCard}
           />
         ))}
         {isEmpty && (
