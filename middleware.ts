@@ -5,6 +5,7 @@ import { i18n } from "./i18n-config";
 
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+import { apiEndpoints } from "./lib/api-endpoints";
 const publicPaths = ["/signup", "/code", "/signin", "/verify-otp-signup"];
 
 function getLocale(request: NextRequest): string | undefined {
@@ -25,21 +26,12 @@ function getLocale(request: NextRequest): string | undefined {
   return locale;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  const token = request.cookies.get("idToken");
+  const token = request.cookies.get("idToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  // // `/_next/` and `/api/` are ignored by the watcher, but we need to ignore files in `public` manually.
-  // // If you have one
-  // if (
-  //   [
-  //     '/manifest.json',
-  //     '/favicon.ico',
-  //     // Your other files in `public`
-  //   ].includes(pathname)
-  // )
-  //   return
   // Check if there is any supported locale in the pathname
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) =>
@@ -59,11 +51,53 @@ export function middleware(request: NextRequest) {
       ),
     );
   }
-
-  // if (!token && !publicPaths.some((path) => pathname.includes(path))) {
-  //   const locale = pathname.split("/")[1] ?? getLocale(request);
-  //   return NextResponse.redirect(new URL(`/${locale}/signin`, request.url));
-  // }
+  if (!token && !publicPaths.some((path) => pathname.includes(path))) {
+    if (refreshToken) {
+      try {
+        const refreshResponse = await fetch(apiEndpoints.refreshTokens(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.API_KEY ?? "",
+          },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          const response = NextResponse.next();
+          console.log("data is", data);
+          response.cookies.set("idToken", data?.body?.id_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24,
+          });
+          response.cookies.set("accessToken", data?.body?.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24,
+          });
+          return response;
+        } else {
+          console.error("Token refresh failed:", await refreshResponse.json());
+        }
+      } catch (error: unknown) {
+        console.log("Error@middleware refresh token", error);
+      }
+    }
+    const locale = pathname.split("/")[1] ?? getLocale(request);
+    const response = NextResponse.redirect(
+      new URL(`/${locale}/signin`, request.url),
+    );
+    // If refresh token fails, clear invalid cookies to avoid infinite loop
+    // response.cookies.delete("idToken");
+    // response.cookies.delete("accessToken");
+    // response.cookies.delete("refreshToken");
+    return response;
+  }
 }
 
 export const config = {

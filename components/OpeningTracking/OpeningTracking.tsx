@@ -5,9 +5,6 @@ import { FC } from "react";
 type OpeningTrackingProps = {
   dictionary: Dictionary;
 };
-export const OpeningTracking: FC<Readonly<OpeningTrackingProps>> = ({
-  dictionary,
-}) => {
-  console.log(dictionary);
+export const OpeningTracking: FC<Readonly<OpeningTrackingProps>> = () => {
   return <Board />;
 };

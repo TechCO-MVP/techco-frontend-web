@@ -37,7 +37,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
       });
 
       cookieStore.set("accessToken", result.accessToken, {
@@ -45,7 +45,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
       });
 
       cookieStore.set("refreshToken", result.refreshToken, {
@@ -53,7 +53,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 5,
       });
 
       return {

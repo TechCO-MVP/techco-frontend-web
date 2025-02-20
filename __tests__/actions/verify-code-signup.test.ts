@@ -52,7 +52,7 @@ describe("verifyCode Server Action", () => {
       secure: process.env.NODE_ENV === "production",
       path: "/",
       sameSite: "strict",
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 24, // 1 day
     });
 
     expect(mockSetCookie).toHaveBeenCalledWith(
@@ -63,7 +63,7 @@ describe("verifyCode Server Action", () => {
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60, // 1 hour
+        maxAge: 60 * 60 * 24, // 1 day
       },
     );
 
@@ -75,7 +75,7 @@ describe("verifyCode Server Action", () => {
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: 60 * 60 * 24 * 5, // 5 days
       },
     );
   });

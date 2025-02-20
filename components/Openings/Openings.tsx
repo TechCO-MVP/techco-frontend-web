@@ -38,11 +38,11 @@ import Link from "next/link";
 type OpeningsProps = {
   dictionary: Dictionary;
 };
-export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+export const Openings: FC<Readonly<OpeningsProps>> = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  console.log(dictionary);
+
   const { isLoading, error, positions } = useOpenPositions();
   if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading) return <LoadingSkeleton />;

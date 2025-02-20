@@ -47,7 +47,7 @@ export async function verifyCodeSignUp(
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
       });
 
       cookieStore.set("accessToken", result.body.accessToken, {
@@ -55,7 +55,7 @@ export async function verifyCodeSignUp(
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
       });
 
       cookieStore.set("refreshToken", result.body.refreshToken, {
@@ -63,7 +63,7 @@ export async function verifyCodeSignUp(
         secure: process.env.NODE_ENV === "production",
         path: "/",
         sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 5,
       });
 
       return {
