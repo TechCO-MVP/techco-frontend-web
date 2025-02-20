@@ -7,6 +7,9 @@ export const apiEndpoints = {
   signUp() {
     return `${BASE_URL}/auth/signup`;
   },
+  signOut() {
+    return `${BASE_URL}/auth/sign_out`;
+  },
   startAuth() {
     return `${BASE_URL}/auth/start_auth`;
   },
@@ -33,5 +36,8 @@ export const apiEndpoints = {
   },
   updateUserStatus() {
     return `${BASE_URL}/user/status`;
+  },
+  refreshTokens() {
+    return `${BASE_URL}/auth/refresh_tokens`;
   },
 };

@@ -40,8 +40,7 @@ import { Business } from "@/types";
 type OpeningsProps = {
   dictionary: Dictionary;
 };
-export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
-  console.log(dictionary);
+export const Openings: FC<Readonly<OpeningsProps>> = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
