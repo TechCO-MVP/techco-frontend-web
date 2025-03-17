@@ -1,14 +1,19 @@
 "use client";
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { UserCard } from "../UserCard/UserCard";
-import type { PipefyPhase, PipefyNode } from "@/types/pipefy";
+import type { PipefyPhase, PipefyNode, PipefyPipe } from "@/types/pipefy";
 import { cn } from "@/lib/utils";
 
 interface ColumnProps {
-  draggedCard: { id: string; sourceColumn: PipefyPhase } | null;
+  pipe: PipefyPipe;
+  draggedCard: {
+    id: string;
+    node: PipefyNode;
+    sourceColumn: PipefyPhase;
+  } | null;
   setDraggedCard: (
-    card: { id: string; sourceColumn: PipefyPhase } | null,
+    card: { id: string; node: PipefyNode; sourceColumn: PipefyPhase } | null,
   ) => void;
   column: PipefyPhase;
   onDrop: (
@@ -21,14 +26,13 @@ interface ColumnProps {
 }
 
 export const BoardColumn: React.FC<ColumnProps> = ({
+  pipe,
   column,
   onDrop,
   onCardMove,
   draggedCard,
   setDraggedCard,
 }) => {
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
-
   const canDrop = useMemo(() => {
     if (!draggedCard) return false;
     if (draggedCard.sourceColumn.id === column.id) return true;
@@ -38,19 +42,16 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       );
     if (!isAllowed) return false;
     return true;
-  }, [draggedCard]);
+  }, [draggedCard, column.id]);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setIsDraggingOver(true);
   };
-  const handleDragLeave = () => {
-    setIsDraggingOver(false);
-  };
+  const handleDragLeave = () => {};
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setIsDraggingOver(false);
+
     if (!draggedCard) return;
 
     const cardData = e.dataTransfer.getData("text/plain");
@@ -67,10 +68,13 @@ export const BoardColumn: React.FC<ColumnProps> = ({
 
   return (
     <div
-      className={cn("w-[21.5rem] rounded-lg bg-gray-100 p-4 shadow-md", {
-        "border border-green-500 bg-green-200": draggedCard && canDrop,
-        "border border-red-500 bg-red-200": draggedCard && !canDrop,
-      })}
+      className={cn(
+        "w-[21.5rem] min-w-[21.5rem] rounded-lg bg-gray-100 p-4 shadow-md",
+        {
+          "border border-green-200 bg-green-200": draggedCard && canDrop,
+          "border border-red-500 bg-red-200": draggedCard && !canDrop,
+        },
+      )}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onDragLeave={handleDragLeave}
@@ -79,6 +83,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       <div className="min-h-[100px] space-y-6">
         {column.cards.nodes.map((card) => (
           <UserCard
+            pipe={pipe}
             key={card.id}
             card={card}
             column={column}

@@ -13,10 +13,10 @@ export default function LoadingSkeleton() {
         </div>
 
         <div className="flex items-center justify-between">
-          <Skeleton className="h-10 w-64 bg-gray-300" /> {/* Search input */}
+          <Skeleton className="h-10 w-64 bg-gray-300" />
           <div className="flex gap-2">
-            <Skeleton className="h-10 w-24 bg-gray-300" /> {/* Status filter */}
-            <Skeleton className="h-10 w-24 bg-gray-300" /> {/* Filter button */}
+            <Skeleton className="h-10 w-24 bg-gray-300" />
+            <Skeleton className="h-10 w-24 bg-gray-300" />
           </div>
         </div>
 
@@ -28,6 +28,9 @@ export default function LoadingSkeleton() {
               "Cargo",
               "Rol asignado",
               "Estado",
+              "Candidatos",
+              "Stakeholders",
+              "prioridad",
               "",
             ].map((_, i) => (
               <Skeleton
@@ -40,10 +43,13 @@ export default function LoadingSkeleton() {
 
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center gap-4 border-b p-4">
-              <Skeleton className="h-4 w-40 bg-gray-300" /> {/* Name */}
-              <Skeleton className="h-4 w-40 bg-gray-300" /> {/* Email */}
-              <Skeleton className="h-4 w-40 bg-gray-300" /> {/* Position */}
-              <Skeleton className="h-4 w-40 bg-gray-300" /> {/* Role */}
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
+              <Skeleton className="h-4 w-40 bg-gray-300" />
               <Skeleton className="h-6 w-16 rounded-full bg-gray-300" />{" "}
               <Skeleton className="ml-auto h-4 w-4 bg-gray-300" />{" "}
             </div>

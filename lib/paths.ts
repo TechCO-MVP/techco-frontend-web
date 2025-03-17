@@ -21,6 +21,6 @@ export const paths = {
     return "verify-otp-signup";
   },
   openings() {
-    return "dashboard/openings";
+    return "dashboard/positions";
   },
 };

@@ -4,8 +4,9 @@ import { GET_PIPE } from "@/lib/graphql/queries";
 import { BoardState, PipefyPipeResponse } from "@/types/pipefy";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { QUERIES } from "@/constants/queries";
+
 type QueryPipeParams = {
-  pipeId: string;
+  pipeId?: string;
 };
 
 export function usePipefyPipe({ pipeId }: QueryPipeParams) {

@@ -34,5 +34,5 @@ const PopoverContent = React.forwardRef<
   ),
 );
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
-
+export const PopoverAnchor = PopoverPrimitive.PopoverAnchor;
 export { Popover, PopoverTrigger, PopoverContent };

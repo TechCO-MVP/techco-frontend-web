@@ -17,6 +17,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import {
@@ -26,6 +31,7 @@ import {
   Plus,
   SlidersHorizontal,
   Settings,
+  BadgeInfo,
 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
@@ -35,7 +41,9 @@ import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
-import { Business } from "@/types";
+import { Business, HiringPositionData } from "@/types";
+import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
+import { Notifications } from "../Notifications/Notifications";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -44,8 +52,20 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  const { rootBusiness, businesses } = useBusinesses();
-  const { isLoading, error, positions } = useOpenPositions();
+  const {
+    rootBusiness,
+    businesses,
+    isLoading: loadingBusiness,
+  } = useBusinesses();
+
+  const { isLoading, error, positions, isPending } = useOpenPositions({
+    businessId: "679077da2d6626a2b007f8f9",
+  });
+
+  const { isLoading: loadingPipe, data } = usePipefyPipe({
+    pipeId: "305713420",
+  });
+
   const [selectedCompany, setSelectedCompany] = useState<Business | null>(
     rootBusiness,
   );
@@ -55,7 +75,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
   }, [rootBusiness]);
 
   if (error) return <div className="text-red-400"> {error.message}</div>;
-  if (isLoading) return <LoadingSkeleton />;
+  if (!data || isLoading || isPending || loadingBusiness || loadingPipe)
+    return <LoadingSkeleton />;
+  const { pipe } = data;
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -66,14 +88,41 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
   };
 
   const filteredPositions = positions.filter((position) =>
-    position.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    position.role?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const sortedPositions = [...filteredPositions].sort((a, b) => {
     if (!sortOrder) return 0; // No sorting
-    if (sortOrder === "asc") return a.status.localeCompare(b.status);
-    return b.status.localeCompare(a.status);
+    if (sortOrder === "asc")
+      return a.hiring_priority.localeCompare(b.hiring_priority);
+    return b.hiring_priority.localeCompare(a.hiring_priority);
   });
+
+  const getStakeHolders = (position: HiringPositionData) => {
+    if (position.responsible_users.length === 1)
+      return <span>{position.responsible_users[0].user_name}</span>;
+    return (
+      <div className="flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex gap-4">
+              <Badge className="border-[#E4E4E7] bg-white px-[10px] pt-[2px] text-foreground hover:bg-white">
+                {position.responsible_users.length}
+              </Badge>
+              <BadgeInfo />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {position.responsible_users.map((user) => (
+              <DropdownMenuItem key={user.user_id}>
+                {user.user_name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
 
   return (
     <div className="flex w-full flex-col px-8 py-6">
@@ -143,12 +192,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
           <Text className="text-muted-foreground">
             Creado por Mao Molina | {formatDate(rootBusiness?.created_at)}
           </Text>
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex items-center gap-4">
             <span>
               Vacantes activas <Badge>03</Badge>
             </span>
             <span>
-              Notificaciones <Badge>+9</Badge>
+              <Notifications />
             </span>
           </div>
         </div>
@@ -193,19 +242,22 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                 Fecha de Creación
               </TableHead>
               <TableHead className="font-bold text-black">Candidatos</TableHead>
-              <TableHead className="font-bold text-black">Proredad</TableHead>
+              <TableHead className="font-bold text-black">Prioridad</TableHead>
               <TableHead className="font-bold text-black">
                 Responsable
               </TableHead>
               <TableHead className="font-bold text-black">Reclutador</TableHead>
+              <TableHead className="font-bold text-black">
+                Stakeholders
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sortedPositions.map((position) => (
               <TableRow
-                key={position.id}
+                key={position._id}
                 className="cursor-pointer"
-                onClick={() => router.push("opening-tracking")}
+                onClick={() => router.push(`positions/${position._id}`)}
               >
                 <TableCell>
                   <Badge
@@ -220,15 +272,39 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                     {position.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{position.name}</TableCell>
+                <TableCell>{position.role}</TableCell>
+                <TableCell>{formatDate(new Date().toString())}</TableCell>
                 <TableCell>
-                  {formatDate(position.created_at.toString())}
+                  <div className="flex items-center gap-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <div className="flex items-center justify-center gap-4">
+                          {pipe.cards_count} <BadgeInfo />
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64">
+                        {pipe.phases.map((phase) => (
+                          <DropdownMenuItem
+                            onClick={(e) => e.preventDefault()}
+                            key={phase.id}
+                          >
+                            {phase.cards_count} Candidatos{" "}
+                            <strong>{phase.name}</strong>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
-                <TableCell>{position.candidates}</TableCell>
-                <TableCell>{position.priority}</TableCell>
-                <TableCell>{position.responsible}</TableCell>
+                <TableCell className="capitalize">
+                  {position.hiring_priority}
+                </TableCell>
+                <TableCell>{position.owner_position_user_name}</TableCell>
+                <TableCell>
+                  <span>{position.recruiter_user_name}</span>
+                </TableCell>
                 <TableCell className="flex items-center justify-between gap-4">
-                  <span>{position.recruiter}</span>
+                  {getStakeHolders(position)}
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <MoreHorizontal width="16" />
@@ -246,12 +322,21 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                       >
                         Duplicar
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => console.log("dupe")}
-                      >
-                        Eliminar
-                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          Cambiar de estado
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                            <DropdownMenuItem>Cancelada</DropdownMenuItem>
+                            <DropdownMenuItem>Activa</DropdownMenuItem>
+                            <DropdownMenuItem>Terminada</DropdownMenuItem>
+                            <DropdownMenuItem>Inactiva</DropdownMenuItem>
+                            <DropdownMenuItem>Borrador</DropdownMenuItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

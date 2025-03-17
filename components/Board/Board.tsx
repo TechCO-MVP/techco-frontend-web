@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { PipefyPhase, type BoardState } from "@/types/pipefy";
+import { PipefyNode, PipefyPhase, type BoardState } from "@/types/pipefy";
 import {
   Dialog,
   DialogContent,
@@ -11,20 +11,95 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Text } from "../Typography/Text";
-import { Button } from "../ui/button";
-import { ChevronLeft, Plus, SlidersHorizontal, SmilePlus } from "lucide-react";
-import { Progress } from "../ui/progress";
-import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
-import { Heading } from "../Typography/Heading";
+} from "@/components/ui/dialog";
+import { Text } from "@/components/Typography/Text";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, SlidersHorizontal, SmilePlus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Heading } from "@/components/Typography/Heading";
 import Link from "next/link";
 import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
 import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
+import { StartFormDialog } from "@/components/StartFormDialog/StartFormDialog";
+import { useToast } from "@/hooks/use-toast";
+import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
+import BoardSkeleton from "./Skeleton";
+import { useParams } from "next/navigation";
 export const Board: React.FC = () => {
+  const params = useParams<{ id: string }>();
+  const { id } = params;
+  const {
+    data: filterStatus,
+    isLoading: loadingProfiles,
+    isPending: pendingProfiles,
+  } = useProfileFilterStatus({
+    // positionId: "67d37ee3318bf870f6f64ad5",
+    positionId: id,
+  });
+
+  const { toast } = useToast();
   const { mutate } = useMoveCardToPhase({
     onSuccess: (data, variables) => {
+      if (!pendingMove) return;
+      toast({
+        title: "Cambio de Fase Correcto",
+        description: "El candidato ha sido movido a la siguiente fase.",
+      });
+      const { cardId, sourceColumnId, targetColumnId, newPosition } =
+        pendingMove;
+
+      setBoard((prevBoard) => {
+        if (!prevBoard) return;
+
+        const updatedColumns = prevBoard.columns.map((column) => {
+          if (column.id === sourceColumnId) {
+            // Remove the card from the source column
+            const filteredCards = column.cards.nodes.filter(
+              (card) => card.id !== cardId,
+            );
+            return {
+              ...column,
+              cards: {
+                nodes: filteredCards.map((card, index) => ({
+                  ...card,
+                  position: index,
+                })),
+              },
+            };
+          }
+
+          if (column.id === targetColumnId) {
+            const sourceColumn = prevBoard.columns.find(
+              (col) => col.id === sourceColumnId,
+            );
+            if (!sourceColumn) return column;
+
+            const movedCard = sourceColumn.cards.nodes.find(
+              (card) => card.id === cardId,
+            );
+            if (!movedCard) return column;
+
+            const updatedCards = [
+              ...column.cards.nodes.slice(0, newPosition),
+              { ...movedCard, position: newPosition },
+              ...column.cards.nodes.slice(newPosition),
+            ].map((card, index) => ({ ...card, position: index }));
+
+            return {
+              ...column,
+              cards: { nodes: updatedCards },
+            };
+          }
+
+          return column;
+        });
+
+        return { ...prevBoard, columns: updatedColumns };
+      });
+
+      setIsAlertOpen(false);
+      setPendingMove(null);
       console.log("Card moved successfully:", data.moveCardToPhase.card);
       console.log(
         "Moved from:",
@@ -35,6 +110,9 @@ export const Board: React.FC = () => {
       );
     },
     onError: (error, variables) => {
+      setShowPendingFieldsModal(true);
+      setIsAlertOpen(false);
+
       console.error(" Move failed:", error);
       console.error(
         "Failed to move from:",
@@ -44,17 +122,27 @@ export const Board: React.FC = () => {
         variables.destinationPhaseId,
       );
     },
-    onSettled: (data, error, variables) => {
+    onSettled: (data, error) => {
       console.log(" Mutation Settled. Success:", !!data, "Error:", !!error);
     },
   });
-  const { isLoading, data } = usePipefyPipe({ pipeId: "305713420" });
+  const {
+    data,
+    isLoading: loadingPipe,
+    isPending: pendingPipes,
+  } = usePipefyPipe({
+    pipeId:
+      filterStatus?.body.status === "completed"
+        ? filterStatus?.body.pipe_id
+        : undefined,
+  });
   const [board, setBoard] = useState<BoardState | undefined>(data);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isEmpty] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [showPendingFieldsModal, setShowPendingFieldsModal] = useState(false);
   const [draggedCard, setDraggedCard] = useState<{
     id: string;
+    node: PipefyNode;
     sourceColumn: PipefyPhase;
   } | null>(null);
 
@@ -83,73 +171,24 @@ export const Board: React.FC = () => {
     if (!card) return;
 
     setPendingMove({ cardId, sourceColumnId, targetColumnId, newPosition });
+
     setIsAlertOpen(true);
   };
 
   const confirmMove = () => {
     if (!pendingMove) return;
 
-    const { cardId, sourceColumnId, targetColumnId, newPosition } = pendingMove;
+    const { cardId, targetColumnId } = pendingMove;
     mutate({
       cardId,
       destinationPhaseId: targetColumnId,
     });
-
-    setBoard((prevBoard) => {
-      if (!prevBoard) return;
-
-      const updatedColumns = prevBoard.columns.map((column) => {
-        if (column.id === sourceColumnId) {
-          // Remove the card from the source column
-          const filteredCards = column.cards.nodes.filter(
-            (card) => card.id !== cardId,
-          );
-          return {
-            ...column,
-            cards: {
-              nodes: filteredCards.map((card, index) => ({
-                ...card,
-                position: index,
-              })),
-            },
-          };
-        }
-
-        if (column.id === targetColumnId) {
-          const sourceColumn = prevBoard.columns.find(
-            (col) => col.id === sourceColumnId,
-          );
-          if (!sourceColumn) return column;
-
-          const movedCard = sourceColumn.cards.nodes.find(
-            (card) => card.id === cardId,
-          );
-          if (!movedCard) return column;
-
-          const updatedCards = [
-            ...column.cards.nodes.slice(0, newPosition),
-            { ...movedCard, position: newPosition },
-            ...column.cards.nodes.slice(newPosition),
-          ].map((card, index) => ({ ...card, position: index }));
-
-          return {
-            ...column,
-            cards: { nodes: updatedCards },
-          };
-        }
-
-        return column;
-      });
-
-      return { ...prevBoard, columns: updatedColumns };
-    });
-
-    setIsAlertOpen(false);
-    setPendingMove(null);
   };
 
   const cancelMove = () => {
     setIsAlertOpen(false);
+    setShowPendingFieldsModal(false);
+    setDraggedCard(null);
     setPendingMove(null);
   };
 
@@ -185,16 +224,14 @@ export const Board: React.FC = () => {
       return { ...prevBoard, columns: updatedColumns };
     });
   };
-
   useEffect(() => {
-    console.log(data);
     setBoard(data);
   }, [data]);
 
   return (
-    <div className="flex w-full flex-col px-8">
+    <div className="flex w-full flex-col">
       <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
-        <Link href="openings">
+        <Link href="/dashboard/positions">
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
             Atrás
@@ -231,14 +268,51 @@ export const Board: React.FC = () => {
           <Button variant="ghost" className="border border-dashed shadow-sm">
             <SlidersHorizontal /> Filtro
           </Button>
-          <Button variant="ghost" className="bg-secondary">
-            <Plus /> Agregar Candidato
-          </Button>
+          <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
       </div>
       <div className="relative flex gap-4">
+        {!loadingPipe &&
+          !loadingProfiles &&
+          filterStatus?.body.status !== "completed" && (
+            <div className="absolute left-0 top-0 flex h-[687px] w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+              <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
+              <Text type="p" className="text-lg font-semibold">
+                🔄 Este proceso puede tardar hasta 10 minutos.{" "}
+              </Text>
+              <Text
+                type="p"
+                size="small"
+                className="mb-4 max-w-[563px] text-center text-muted-foreground"
+              >
+                📡 Estamos consultando bases de datos para traer a los mejores
+                candidatos para tu vacante. Este proceso toma un poco de tiempo
+                para asegurarnos de ofrecerte perfiles que mejor se ajusten a tu
+                empresa y a los requisitos del puesto.
+              </Text>
+              <Text
+                type="p"
+                size="small"
+                className="max-w-[563px] text-center text-muted-foreground"
+              >
+                💡 Puedes quedarte aquí o continuar con otras tareas. No te
+                preocupes, recibirás una notificación cuando los candidatos
+                estén disponibles.
+              </Text>
+            </div>
+          )}
+      </div>
+      {filterStatus?.body.status !== "in_progress" &&
+        (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles) && (
+          <div className="flex gap-4">
+            <BoardSkeleton />
+          </div>
+        )}
+
+      <div className="flex gap-4">
         {board?.columns.map((column) => (
           <BoardColumn
+            pipe={board.pipe}
             key={column.id}
             column={column}
             onDrop={onDrop}
@@ -247,41 +321,6 @@ export const Board: React.FC = () => {
             setDraggedCard={setDraggedCard}
           />
         ))}
-        {isEmpty && (
-          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
-            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
-            <Text type="p" className="text-lg font-semibold">
-              Todavía no hay candidatos en este proceso
-            </Text>
-            <Text
-              type="p"
-              size="small"
-              className="max-w-md text-center text-muted-foreground"
-            >
-              Aquí verás a los postulantes en cuanto comiencen a aplicar a la
-              vacante. Comparte la oferta en distintos canales para atraer más
-              talento.
-            </Text>
-            <Button>Agregar candidato</Button>
-          </div>
-        )}
-        {isLoading && (
-          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
-            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
-            <Text type="p" className="text-lg font-semibold">
-              Buscando los mejores talentos para tu vacante…
-            </Text>
-            <Text
-              type="p"
-              size="small"
-              className="max-w-md text-center text-muted-foreground"
-            >
-              🔄 Esto tomará solo unos instantes. Pronto conocerás a los mejores
-              candidatos para tu búsqueda.
-            </Text>
-            <Progress value={33} className="max-w-md" />
-          </div>
-        )}
       </div>
       <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <DialogContent className="max-w-[26rem] p-12">
@@ -297,6 +336,41 @@ export const Board: React.FC = () => {
           <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
             <Button variant="default" onClick={confirmMove}>
               Confirmar Cambio
+            </Button>
+            <Button variant="ghost" onClick={cancelMove}>
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={showPendingFieldsModal}
+        onOpenChange={setShowPendingFieldsModal}
+      >
+        <DialogContent className="max-w-[26rem] p-12">
+          <DialogHeader>
+            <DialogTitle className="mb-4 text-2xl font-normal">
+              Información incompleta.
+            </DialogTitle>
+            <DialogDescription>
+              Aún tienes información pendiente para esta fase.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
+            <Button
+              onClick={() => {
+                const element = document.querySelector(
+                  `#details-${pendingMove?.sourceColumnId}`,
+                ) as HTMLElement;
+
+                if (element) {
+                  element.click();
+                  cancelMove();
+                }
+              }}
+              variant="default"
+            >
+              Completar información
             </Button>
             <Button variant="ghost" onClick={cancelMove}>
               Cancelar

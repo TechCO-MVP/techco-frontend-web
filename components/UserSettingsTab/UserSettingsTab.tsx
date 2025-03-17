@@ -45,7 +45,6 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   const { rootBusiness } = useBusinesses();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [isPending, startTransition] = useTransition();
-
   const { users, isLoading } = useUsers({
     businessId: rootBusiness?._id,
     all: true,

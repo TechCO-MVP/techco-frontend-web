@@ -1,0 +1,249 @@
+import { FormEvent, useState, useTransition } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { PipefyFieldType } from "@/types/pipefy";
+import { Loader2, SquarePen } from "lucide-react";
+
+interface EditableFieldProps {
+  cardId: string;
+  label: string;
+  type: PipefyFieldType;
+  value: string | undefined;
+  options?: string[];
+  name: string;
+  action: (formData: FormData) => Promise<void>;
+}
+
+export const EditableField: React.FC<EditableFieldProps> = ({
+  cardId,
+  label,
+  type,
+  value,
+  options = [],
+  name,
+  action,
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    console.log("SUBMIT");
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+    startTransition(async () => {
+      action(formData);
+    });
+  };
+  const renderInput = () => {
+    switch (type) {
+      case "short_text":
+      case "email":
+      case "cpf":
+      case "cnpj":
+      case "currency":
+      case "number":
+      case "phone":
+        return (
+          <Input
+            id={name}
+            name={name}
+            defaultValue={value}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+
+      case "long_text":
+        return (
+          <Textarea
+            id={name}
+            name={name}
+            defaultValue={value}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+
+      case "statement":
+        return null;
+
+      case "select":
+      case "label_select":
+        return (
+          <Select name={name} defaultValue={value} disabled={!isEditing}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Seleccione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {options.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        );
+
+      case "radio_horizontal":
+      case "radio_vertical":
+        return (
+          <div className="flex space-x-2">
+            {options.map((option) => (
+              <label key={option} className="flex items-center space-x-1">
+                <input
+                  type="radio"
+                  name={name}
+                  value={option}
+                  defaultChecked={value === option}
+                  disabled={!isEditing}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+        );
+
+      case "checklist_horizontal":
+      case "checklist_vertical":
+        return (
+          <div className="flex flex-wrap gap-2">
+            {options.map((option) => (
+              <label key={option} className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  name={name}
+                  value={option}
+                  defaultChecked={value?.includes(option)}
+                  disabled={!isEditing}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+          </div>
+        );
+
+      case "date":
+      case "due_date": {
+        // Ensure value is a valid date, otherwise use an empty string
+        const dateValue = value ? format(new Date(value), "yyyy-MM-dd") : "";
+
+        return (
+          <Input
+            type="date"
+            id={name}
+            name={name}
+            defaultValue={dateValue}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+      }
+
+      case "datetime": {
+        // Ensure value is a valid datetime, otherwise use an empty string
+        const datetimeValue = value
+          ? format(new Date(value), "yyyy-MM-dd'T'HH:mm")
+          : "";
+
+        return (
+          <Input
+            type="datetime-local"
+            id={name}
+            name={name}
+            defaultValue={datetimeValue}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+      }
+
+      case "time":
+        return (
+          <Input
+            type="time"
+            id={name}
+            name={name}
+            defaultValue={value}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+
+      default:
+        return (
+          <Input
+            id={name}
+            name={name}
+            defaultValue={value}
+            disabled={!isEditing}
+            className="w-full"
+          />
+        );
+    }
+  };
+
+  if (type === "statement") return null;
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="relative flex w-full flex-col items-end justify-between space-y-4"
+    >
+      <div className="flex w-full flex-col items-start space-y-2">
+        <Label
+          htmlFor={name}
+          className="flex w-full items-center justify-between overflow-hidden"
+        >
+          <span className="flex-grow truncate">{label}</span>
+          {!isEditing && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsEditing(true);
+              }}
+              className="flex-shrink-0"
+            >
+              <SquarePen />
+            </Button>
+          )}
+        </Label>
+
+        {renderInput()}
+      </div>
+      <input type="hidden" value={cardId} name="card_id" />
+      <input type="hidden" value={name} name="field_id" />
+      {isEditing && (
+        <div className="flex w-full items-center justify-start gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsEditing(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button disabled={isPending} type="submit" variant="default">
+            {isPending && <Loader2 className="animate-spin" />} Save
+          </Button>
+        </div>
+      )}
+    </form>
+  );
+};

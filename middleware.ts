@@ -6,7 +6,7 @@ import { i18n } from "./i18n-config";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { apiEndpoints } from "./lib/api-endpoints";
-const publicPaths = ["/signup", "/code", "/signin", "/verify-otp-signup"];
+const protectedPaths = ["/dashboard"];
 
 function getLocale(request: NextRequest): string | undefined {
   // Negotiator expects plain object so we need to transform headers
@@ -28,6 +28,7 @@ function getLocale(request: NextRequest): string | undefined {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const searchParams = request.nextUrl.search;
 
   const token = request.cookies.get("idToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
@@ -46,12 +47,12 @@ export async function middleware(request: NextRequest) {
     // The new URL is now /en-US/products
     return NextResponse.redirect(
       new URL(
-        `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
+        `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}${searchParams}`,
         request.url,
       ),
     );
   }
-  if (!token && !publicPaths.some((path) => pathname.includes(path))) {
+  if (!token && protectedPaths.some((path) => pathname.includes(path))) {
     if (refreshToken) {
       try {
         const refreshResponse = await fetch(apiEndpoints.refreshTokens(), {

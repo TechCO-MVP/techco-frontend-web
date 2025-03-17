@@ -7,3 +7,4 @@ export * from "./companies/update";
 export * from "./companies/create";
 export * from "./users/create-user";
 export * from "./users/update-status";
+export * from "./pipefy/update-field";

@@ -1,59 +1,77 @@
 import { NextResponse } from "next/server";
-import { Position } from "@/types";
+import { cookies } from "next/headers";
+import { apiEndpoints } from "@/lib/api-endpoints";
 
-export async function GET() {
-  const positions: Position[] = [
-    {
-      id: 1,
-      status: "Activa",
-      name: "Lead Arquitecto",
-      created_at: new Date("2024-02-01"),
-      candidates: 100,
-      priority: "Alta",
-      responsible: "Andres Sanchez",
-      recruiter: "Jessica Trujillo",
-    },
-    {
-      id: 2,
-      status: "Inactiva",
-      name: "Senior Backend Developer",
-      created_at: new Date("2024-01-15"),
-      candidates: 50,
-      priority: "Media",
-      responsible: "Carlos Rodríguez",
-      recruiter: "Ana López",
-    },
-    {
-      id: 3,
-      status: "Activa",
-      name: "Product Manager",
-      created_at: new Date("2023-12-20"),
-      candidates: 30,
-      priority: "Alta",
-      responsible: "Mariana Pérez",
-      recruiter: "Fernando Gómez",
-    },
-    {
-      id: 4,
-      status: "Activa",
-      name: "UX/UI Designer",
-      created_at: new Date("2024-01-25"),
-      candidates: 75,
-      priority: "Baja",
-      responsible: "Sofía Martínez",
-      recruiter: "Daniela Ortega",
-    },
-    {
-      id: 5,
-      status: "Cancelada",
-      name: "DevOps Engineer",
-      created_at: new Date("2023-11-10"),
-      candidates: 40,
-      priority: "Media",
-      responsible: "Ricardo Fernández",
-      recruiter: "Gabriel Herrera",
-    },
-  ];
+export async function GET(req: Request) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("idToken")?.value;
 
-  return NextResponse.json(positions);
+  if (!token) {
+    return NextResponse.json(
+      { error: "Unauthorized: Missing token" },
+      { status: 401 },
+    );
+  }
+  const url = new URL(req.url);
+  const businessId = url.searchParams.get("business_id");
+  const positionId = url.searchParams.get("id");
+
+  const all = url.searchParams.get("all");
+
+  if (!businessId) {
+    return NextResponse.json(
+      { error: "Missing required query parameter: business_id" },
+      { status: 400 },
+    );
+  }
+
+  const queryParams = new URLSearchParams({
+    business_id: businessId,
+  });
+  if (positionId) queryParams.append("id", positionId);
+  if (all) queryParams.append("all", all);
+  try {
+    console.log(
+      "route",
+      `${apiEndpoints.listPositions()}?${queryParams.toString()}`,
+    );
+    const response = await fetch(
+      `${apiEndpoints.listPositions()}?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.API_KEY ?? "",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          error: `Failed to fetch data: ${response.statusText}`,
+          message: await response.json(),
+          status: response.status,
+        },
+        { status: response.status },
+      );
+    }
+    const json = await response.json();
+    console.log("/api/open-positions", json);
+
+    if (!json.body || !Array.isArray(json.body.data)) {
+      return NextResponse.json(
+        { error: "Unexpected API response format" },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json(json);
+  } catch (error: unknown) {
+    console.error("Error fetching data:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }
