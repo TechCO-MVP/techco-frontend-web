@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
 import { PipefyNode, PipefyPhase, type BoardState } from "@/types/pipefy";
 import {
@@ -26,6 +26,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
 import BoardSkeleton from "./Skeleton";
 import { useParams } from "next/navigation";
+import { countryLabelLookup } from "@/lib/utils";
+import { useOpenPositions } from "@/hooks/use-open-positions";
 export const Board: React.FC = () => {
   const params = useParams<{ id: string }>();
   const { id } = params;
@@ -34,9 +36,15 @@ export const Board: React.FC = () => {
     isLoading: loadingProfiles,
     isPending: pendingProfiles,
   } = useProfileFilterStatus({
-    // positionId: "67d37ee3318bf870f6f64ad5",
     positionId: id,
   });
+
+  const { positions } = useOpenPositions({
+    businessId: "679077da2d6626a2b007f8f9",
+  });
+  const selectedPosition = useMemo(() => {
+    return positions.find((position) => position._id === id);
+  }, [positions, id]);
 
   const { toast } = useToast();
   const { mutate } = useMoveCardToPhase({
@@ -228,6 +236,20 @@ export const Board: React.FC = () => {
     setBoard(data);
   }, [data]);
 
+  const getPriority = () => {
+    if (!selectedPosition?.hiring_priority) return "";
+    switch (selectedPosition.hiring_priority) {
+      case "high":
+        return "Prioridad alta 🔥🔥";
+      case "medium":
+        return "Prioridad media 🔥";
+      case "low":
+        return "Prioridad baja";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
@@ -238,17 +260,19 @@ export const Board: React.FC = () => {
           </Button>
         </Link>
         <Badge variant="secondary" className="rounded-md">
-          Mex 🇲🇽
+          {countryLabelLookup(
+            filterStatus?.body.process_filters.country_code || "",
+          )}
         </Badge>
         <div className="flex items-center justify-center gap-2">
           <Heading className="text-xl" level={1}>
-            Lead Arquitecto (0000000)
+            {filterStatus?.body.process_filters.role}
           </Heading>
           <Badge variant="secondary" className="rounded-md text-[#34C759]">
-            Activa
+            {selectedPosition?.status}
           </Badge>
           <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
-            Prioridad alta 🔥🔥
+            {getPriority()}
           </Badge>
         </div>
         <div className="text-muted-foreground">

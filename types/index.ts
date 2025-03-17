@@ -135,18 +135,20 @@ type HiringUser = {
   user_id: string;
 };
 
-type HiringResponsibleUser = HiringUser & {
+export type HiringResponsibleUser = HiringUser & {
   can_edit: boolean;
 };
 
 export type HiringPositionData = {
   _id: string;
   status: "STARTED" | "IN_PROGRESS" | "COMPLETED" | string; // Adjust possible statuses if known
+  owner_position_user_id: string;
   owner_position_user_name: string;
+  recruiter_user_id: string;
   recruiter_user_name: string;
   responsible_users: HiringResponsibleUser[];
   role: string;
-  hiring_priority: "high" | "medium" | "low" | string;
+  hiring_priority: "high" | "medium" | "low";
 };
 
 export type PositionFilterStatusResponse = {
@@ -154,6 +156,11 @@ export type PositionFilterStatusResponse = {
   body: {
     status: "pending" | "in_progress" | "completed" | "failed";
     pipe_id: string;
+    process_filters: {
+      city: string;
+      country_code: string;
+      role: string;
+    };
   };
 };
 

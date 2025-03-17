@@ -44,6 +44,7 @@ import { useBusinesses } from "@/hooks/use-businesses";
 import { Business, HiringPositionData } from "@/types";
 import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
 import { Notifications } from "../Notifications/Notifications";
+import { usePipefyPipes } from "@/hooks/use-pipefy-pipes";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -51,6 +52,10 @@ type OpeningsProps = {
 export const Openings: FC<Readonly<OpeningsProps>> = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const { pipes } = usePipefyPipes({
+    ids: ["305713420", "305713420"],
+  });
+  console.log("pipes", pipes);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const {
     rootBusiness,
@@ -272,7 +277,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                     {position.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{position.role}</TableCell>
+                <TableCell
+                  title={position.role}
+                  className="max-w-[100px] truncate"
+                >
+                  {position.role}
+                </TableCell>
                 <TableCell>{formatDate(new Date().toString())}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-4">
@@ -312,13 +322,13 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => console.log("edit")}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         Editar
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => console.log("disable")}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         Duplicar
                       </DropdownMenuItem>
@@ -329,11 +339,31 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
-                            <DropdownMenuItem>Cancelada</DropdownMenuItem>
-                            <DropdownMenuItem>Activa</DropdownMenuItem>
-                            <DropdownMenuItem>Terminada</DropdownMenuItem>
-                            <DropdownMenuItem>Inactiva</DropdownMenuItem>
-                            <DropdownMenuItem>Borrador</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Cancelada
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Activa
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Terminada
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Inactiva
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Borrador
+                            </DropdownMenuItem>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                       </DropdownMenuSub>

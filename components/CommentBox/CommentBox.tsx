@@ -15,13 +15,18 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { PopoverAnchor } from "@radix-ui/react-popover";
-import { useHiringProcess } from "@/hooks/use-hiring-process";
-import { Stakeholder } from "@/types";
+import { HiringResponsibleUser } from "@/types";
 interface CommentBoxProps {
+  pipeId: string;
   card: PipefyNode;
+  stakeHolders?: HiringResponsibleUser[];
 }
 
-export const CommentBox: FC<CommentBoxProps> = ({ card }) => {
+export const CommentBox: FC<CommentBoxProps> = ({
+  card,
+  stakeHolders,
+  pipeId,
+}) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const lastKeyRef = useRef("");
   const [showUsers, setShowUsers] = useState(false);
@@ -29,14 +34,11 @@ export const CommentBox: FC<CommentBoxProps> = ({ card }) => {
   const [canSubmit, setCanSubmit] = useState(false);
   const { currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
-  const { hiringProcess, isLoading } = useHiringProcess({
-    hiringProcessId: "67c930fe1ad8328f2a3184c2",
-  });
 
   const { mutate: addComment } = useCreateComment({
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: QUERIES.PIPE_DATA("305713420"),
+        queryKey: QUERIES.PIPE_DATA(pipeId),
       });
       if (!editorRef.current) return;
       editorRef.current.textContent = "";
@@ -46,27 +48,11 @@ export const CommentBox: FC<CommentBoxProps> = ({ card }) => {
     },
   });
 
-  if (isLoading || !hiringProcess) return <div>Loading</div>;
-  const { stakeholders } = hiringProcess;
-  const allUsers = [
-    {
-      stakeholder_name: hiringProcess.owner_name,
-      stakeholder_id: hiringProcess.owner_id,
-    },
-    {
-      stakeholder_name: hiringProcess.recruiter_name,
-      stakeholder_id: hiringProcess.recruiter_id,
-    },
-    ...stakeholders,
-  ];
-
-  const uniqueUsers = [
-    ...new Map(allUsers.map((user) => [user.stakeholder_id, user])).values(),
-  ];
   function convertToStorageFormat(text: string) {
+    if (!stakeHolders?.length) return "";
     return text.replace(/@([\w-]+(?:\s[\w-]+)?)/g, (match, name) => {
-      const user = uniqueUsers.find((u) => u.stakeholder_name === name);
-      return user ? `{{user:${user.stakeholder_id}}}` : match;
+      const user = stakeHolders.find((u) => u.user_name === name);
+      return user ? `{{user:${user.user_id}}}` : match;
     });
   }
   const handleAddComment = () => {
@@ -78,11 +64,11 @@ export const CommentBox: FC<CommentBoxProps> = ({ card }) => {
     });
   };
 
-  const onUserSelect = (user: Partial<Stakeholder>) => {
+  const onUserSelect = (user: HiringResponsibleUser) => {
     setShowUsers(false);
     setSearchQuery("");
     const mention = document.createElement("span");
-    mention.textContent = `${user.stakeholder_name}`;
+    mention.textContent = `${user.user_name}`;
     mention.classList.add("font-bold", "text-blue-600");
     mention.contentEditable = "false";
     mention.classList.add("mention");
@@ -133,12 +119,12 @@ export const CommentBox: FC<CommentBoxProps> = ({ card }) => {
               onValueChange={setSearchQuery}
             />
             <CommandList>
-              {uniqueUsers.map((user) => (
+              {stakeHolders?.map((user) => (
                 <CommandItem
-                  key={user.stakeholder_id}
+                  key={user.user_name}
                   onSelect={() => onUserSelect(user)}
                 >
-                  @{user.stakeholder_name}
+                  @{user.user_name}
                 </CommandItem>
               ))}
             </CommandList>

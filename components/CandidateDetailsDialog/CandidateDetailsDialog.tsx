@@ -1,5 +1,5 @@
 "use client";
-import { FC, Fragment, useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,8 @@ import { CommentBox } from "../CommentBox/CommentBox";
 import { PhaseHistory } from "../PhaseHistory/PhaseHistory";
 import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
 import { useToast } from "@/hooks/use-toast";
-import { useHiringProcess } from "@/hooks/use-hiring-process";
+import { useOpenPositions } from "@/hooks/use-open-positions";
+import { useParams } from "next/navigation";
 
 interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
@@ -37,16 +38,47 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   phase,
   pipe,
 }) => {
-  // const params = useParams<{ id: string }>();
-  // const { id: hiringProcessId } = params;
+  const params = useParams<{ id: string }>();
+  const { id } = params;
+  const { positions } = useOpenPositions({
+    businessId: "679077da2d6626a2b007f8f9",
+  });
+  const selectedPosition = useMemo(() => {
+    return positions.find((position) => position._id === id);
+  }, [positions, id]);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [publicFormUrl, setPublicFormUrl] = useState("");
-  const { hiringProcess } = useHiringProcess({
-    hiringProcessId: "67c930fe1ad8328f2a3184c2",
-  });
+  const stakeHolders = useMemo(() => {
+    if (!selectedPosition) return [];
+    const responsibles = selectedPosition.responsible_users;
+    const responsibleIds = responsibles.map(
+      (responsible) => responsible.user_id,
+    );
 
+    if (!responsibleIds.includes(selectedPosition.owner_position_user_id)) {
+      responsibleIds.push(selectedPosition.owner_position_user_id);
+      responsibles.push({
+        user_id: selectedPosition.owner_position_user_id,
+        user_name: selectedPosition.owner_position_user_name,
+        can_edit: true,
+      });
+    }
+    if (!responsibleIds.includes(selectedPosition.recruiter_user_id)) {
+      responsibleIds.push(selectedPosition.recruiter_user_id);
+
+      responsibles.push({
+        user_id: selectedPosition.recruiter_user_id,
+        user_name: selectedPosition.recruiter_user_name,
+        can_edit: true,
+      });
+    }
+    return responsibles;
+  }, [selectedPosition]);
+
+  console.log("stake", stakeHolders);
   const { mutate: moveCardToPhase, isPending: moveCardToPhasePending } =
     useMoveCardToPhase({
       onSuccess: () => {
@@ -332,7 +364,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   <Fragment key={comment.id}>
                     <div className="h-[1px] w-full bg-gray-200"></div>
                     <PhaseComment
-                      hiringProcess={hiringProcess}
+                      stakeHolders={stakeHolders}
                       date={comment.created_at}
                       phase="XXX"
                       comment={comment.text}
@@ -342,7 +374,11 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               })}
             </div>
             <div className="flex flex-col gap-6 p-6">
-              <CommentBox card={card} />
+              <CommentBox
+                stakeHolders={stakeHolders}
+                pipeId={pipe.id}
+                card={card}
+              />
             </div>
           </TabsContent>
           <TabsContent

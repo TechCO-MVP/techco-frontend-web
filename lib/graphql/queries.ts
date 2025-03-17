@@ -12,6 +12,19 @@ export const GET_CARD = gql`
     }
   }
 `;
+
+export const GET_PIPES = gql`
+  query GetPipes($ids: [ID]!) {
+    pipes(ids: $ids) {
+      id
+      cards_count
+      phases {
+        name
+        cards_count
+      }
+    }
+  }
+`;
 export const GET_PIPE = gql`
   query GetPipe($pipeId: ID!) {
     pipe(id: $pipeId) {

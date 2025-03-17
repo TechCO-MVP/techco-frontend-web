@@ -105,6 +105,17 @@ export type PipefyCardResponse = {
   };
 };
 
+export type PipefyPipesResponse = {
+  pipes: {
+    id: string;
+    cards_count: number;
+    phases: {
+      name: string;
+      cards_count: number;
+    }[];
+  }[];
+};
+
 export type UpdateFieldResponse = {
   success: boolean;
   message?: string;
