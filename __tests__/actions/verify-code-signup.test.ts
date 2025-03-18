@@ -51,7 +51,7 @@ describe("verifyCode Server Action", () => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 1 day
     });
 
@@ -62,7 +62,7 @@ describe("verifyCode Server Action", () => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24, // 1 day
       },
     );
@@ -74,7 +74,7 @@ describe("verifyCode Server Action", () => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24 * 5, // 5 days
       },
     );

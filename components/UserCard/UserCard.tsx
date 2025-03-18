@@ -30,8 +30,10 @@ import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { countryLabelLookup, formatDate } from "@/lib/utils";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { CandidateDetailsDialog } from "../CandidateDetailsDialog/CandidateDetailsDialog";
+import { Dictionary } from "@/types/i18n";
 
 interface CardProps {
+  dictionary: Dictionary;
   card: PipefyNode;
   column: PipefyPhase;
   pipe: PipefyPipe;
@@ -47,9 +49,10 @@ export const UserCard: React.FC<CardProps> = ({
   onCardMove,
   setDraggedCard,
   pipe,
+  dictionary,
 }) => {
+  const { userCard: i18n } = dictionary;
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
-
   const avatarUrl =
     fieldMap[PipefyFieldValues.Avatar] || "https://picsum.photos/200/200";
   const candidateName = fieldMap[PipefyFieldValues.CandidateName];
@@ -109,7 +112,7 @@ export const UserCard: React.FC<CardProps> = ({
       <div>
         <div className="mb-4 flex h-8 items-center justify-between">
           <Badge className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary">
-            Afinidad al cargo: {roleAlignment}
+            {i18n.roleAlignment}: {roleAlignment}
           </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -120,7 +123,9 @@ export const UserCard: React.FC<CardProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Mover de Etapa</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  {i18n.movePhase}
+                </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
                     {column.cards_can_be_moved_to_phases.map((phase) => (
@@ -167,7 +172,7 @@ export const UserCard: React.FC<CardProps> = ({
             {currentPosition && (
               <div className="space-y-1">
                 <Text type="p" className="text-xs text-gray-600">
-                  {currentPosition} en {currentCompany}
+                  {currentPosition} {i18n.inLabel} {currentCompany}
                 </Text>
                 <Text size="xxs">{yearsOfExperience}</Text>
               </div>
@@ -184,7 +189,7 @@ export const UserCard: React.FC<CardProps> = ({
           className="space-y-2 overflow-hidden"
         >
           <div className="mb-2 flex items-center gap-2">
-            <span className="text-muted-foreground">Contactar:</span>
+            <span className="text-muted-foreground">{i18n.contactLabel}:</span>
             <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
               <Linkedin />
             </a>
@@ -214,7 +219,7 @@ export const UserCard: React.FC<CardProps> = ({
                     type="span"
                     className="text-xs font-bold text-muted-foreground"
                   >
-                    Origen del candidato:
+                    {i18n.candidateSource}:
                   </Text>
                   <Text type="span" className="text-xs">
                     {candidateSource}
@@ -225,7 +230,7 @@ export const UserCard: React.FC<CardProps> = ({
                     type="span"
                     className="text-xs font-bold text-muted-foreground"
                   >
-                    Fecha de inicio de proceso:
+                    {i18n.processStartDate}:
                   </Text>
                   <Text type="span" className="text-xs">
                     {formatDate(processStartDate)}
@@ -233,7 +238,7 @@ export const UserCard: React.FC<CardProps> = ({
                 </div>
                 <div className="flex flex-col gap-2">
                   <Text className="text-foreground" size="xs">
-                    Último comentario sobre el candidato
+                    {i18n.lastCandidateComment}
                   </Text>
                   <Textarea
                     disabled
@@ -243,7 +248,12 @@ export const UserCard: React.FC<CardProps> = ({
                 </div>
               </div>
 
-              <CandidateDetailsDialog pipe={pipe} card={card} phase={column} />
+              <CandidateDetailsDialog
+                i18n={i18n}
+                pipe={pipe}
+                card={card}
+                phase={column}
+              />
             </div>
           </motion.div>
         </AnimatePresence>

@@ -4,8 +4,10 @@ import { useMemo } from "react";
 import { UserCard } from "../UserCard/UserCard";
 import type { PipefyPhase, PipefyNode, PipefyPipe } from "@/types/pipefy";
 import { cn } from "@/lib/utils";
+import { Dictionary } from "@/types/i18n";
 
 interface ColumnProps {
+  dictionary: Dictionary;
   pipe: PipefyPipe;
   draggedCard: {
     id: string;
@@ -32,6 +34,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
   onCardMove,
   draggedCard,
   setDraggedCard,
+  dictionary,
 }) => {
   const canDrop = useMemo(() => {
     if (!draggedCard) return false;
@@ -83,6 +86,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       <div className="min-h-[100px] space-y-6">
         {column.cards.nodes.map((card) => (
           <UserCard
+            dictionary={dictionary}
             pipe={pipe}
             key={card.id}
             card={card}

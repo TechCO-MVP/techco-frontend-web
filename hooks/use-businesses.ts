@@ -33,10 +33,7 @@ export function useBusinesses() {
 
   const rootBusiness =
     businesses.find((business) => business.parent_business_id === null) || null;
-  console.log("[Debug]", {
-    businesses,
-    rootBusiness,
-  });
+
   return {
     ...queryResult,
     businesses,

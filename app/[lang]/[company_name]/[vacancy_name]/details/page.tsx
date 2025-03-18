@@ -27,7 +27,6 @@ export default async function Page({
   const {
     body: { data: positionData },
   } = position;
-  console.log(positionData);
 
   const formatSalaryRange = () => {
     if (!positionData.position_salary_range) return "";

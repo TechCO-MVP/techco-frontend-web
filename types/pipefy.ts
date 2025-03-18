@@ -163,4 +163,7 @@ export enum PipefyFieldValues {
   ProcessStartDate = "field_1_datetime",
   LinkedInURL = "field_9_string",
   Avatar = "field_1_string",
+  PositionMatch = "field_21_string",
+  Recomendation = "field_23_string",
+  CandidateBio = "field_24_string",
 }

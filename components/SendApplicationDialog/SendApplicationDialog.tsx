@@ -28,7 +28,6 @@ export const SendApplicationDialog: FC<Readonly<Props>> = ({ cardId }) => {
     },
   });
   useEffect(() => {
-    console.log("mount");
     if (publicPhaseFormUrl) return;
     mutate({ cardId, enable: true });
   }, [publicPhaseFormUrl, cardId, mutate]);

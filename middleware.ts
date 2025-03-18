@@ -66,19 +66,19 @@ export async function middleware(request: NextRequest) {
         if (refreshResponse.ok) {
           const data = await refreshResponse.json();
           const response = NextResponse.next();
-          console.log("data is", data);
+
           response.cookies.set("idToken", data?.body?.id_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             path: "/",
-            sameSite: "strict",
+            sameSite: "lax",
             maxAge: 60 * 60 * 24,
           });
           response.cookies.set("accessToken", data?.body?.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             path: "/",
-            sameSite: "strict",
+            sameSite: "lax",
             maxAge: 60 * 60 * 24,
           });
           return response;

@@ -149,6 +149,7 @@ export type HiringPositionData = {
   responsible_users: HiringResponsibleUser[];
   role: string;
   hiring_priority: "high" | "medium" | "low";
+  pipe_id: string;
 };
 
 export type PositionFilterStatusResponse = {
@@ -156,6 +157,7 @@ export type PositionFilterStatusResponse = {
   body: {
     status: "pending" | "in_progress" | "completed" | "failed";
     pipe_id: string;
+    created_at: string;
     process_filters: {
       city: string;
       country_code: string;

@@ -49,7 +49,7 @@ export function useUsers({
 
   const users = queryResult.data || [];
   const localUser = users.find((user) => user.email === email);
-  console.log("[Debug]", { users, localUser });
+
   return {
     ...queryResult,
     users,

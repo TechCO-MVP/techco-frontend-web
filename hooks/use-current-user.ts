@@ -26,7 +26,7 @@ export function useCurrentUser() {
   });
 
   const currentUser = queryResult.data?.user || null;
-  console.log("[Debug]", currentUser);
+
   return {
     ...queryResult,
     currentUser,

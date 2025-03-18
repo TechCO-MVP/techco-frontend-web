@@ -37,13 +37,10 @@ export function useProfileFilterStatus({ positionId }: ProfileFilterParams) {
 
       if (!cachedData) return false;
 
-      console.log("apiResponse", cachedData);
-
       return cachedData.body.status === "completed" ? false : 10000;
     },
   });
 
-  console.log("[Debug] useProfileFilterStatus", queryResult.data);
   const positionStatus = queryResult.data?.body || [];
   return { ...queryResult, positionStatus };
 }

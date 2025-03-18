@@ -30,7 +30,7 @@ export default async function Page({
   const {
     body: { data: positionData },
   } = position;
-  console.log(positionData);
+
   return (
     <>
       <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">

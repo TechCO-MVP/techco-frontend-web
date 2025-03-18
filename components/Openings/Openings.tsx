@@ -42,20 +42,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { Business, HiringPositionData } from "@/types";
-import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
-import { Notifications } from "../Notifications/Notifications";
+import { Notifications } from "@/components/Notifications/Notifications";
 import { usePipefyPipes } from "@/hooks/use-pipefy-pipes";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
-export const Openings: FC<Readonly<OpeningsProps>> = () => {
+export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  const { positionsPage: i18n } = dictionary;
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const { pipes } = usePipefyPipes({
-    ids: ["305713420", "305713420"],
-  });
-  console.log("pipes", pipes);
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const {
     rootBusiness,
@@ -67,8 +64,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
     businessId: "679077da2d6626a2b007f8f9",
   });
 
-  const { isLoading: loadingPipe, data } = usePipefyPipe({
-    pipeId: "305713420",
+  const pipeIds = positions
+    .map((position) => position.pipe_id)
+    .filter((pipe_id) => pipe_id !== null);
+
+  const { pipes } = usePipefyPipes({
+    ids: pipeIds,
   });
 
   const [selectedCompany, setSelectedCompany] = useState<Business | null>(
@@ -79,10 +80,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
     setSelectedCompany(rootBusiness);
   }, [rootBusiness]);
 
+  useEffect(() => {
+    console.log("/position/list response", positions);
+  }, [positions]);
+
   if (error) return <div className="text-red-400"> {error.message}</div>;
-  if (!data || isLoading || isPending || loadingBusiness || loadingPipe)
-    return <LoadingSkeleton />;
-  const { pipe } = data;
+  if (isLoading || isPending || loadingBusiness) return <LoadingSkeleton />;
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -129,6 +132,34 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
     );
   };
 
+  const renderPipeData = (pipeId: string | null) => {
+    if (!pipeId) return <span>Pending...</span>;
+    const pipe = pipes?.find((p) => p.id === pipeId);
+    if (!pipe) return <span>Pending...</span>;
+    return (
+      <div className="flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center justify-center gap-4">
+              {pipe.cards_count} <BadgeInfo />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            {pipe.phases.map((phase) => (
+              <DropdownMenuItem
+                onClick={(e) => e.preventDefault()}
+                key={phase.name}
+              >
+                {phase.cards_count} {i18n.candidates}{" "}
+                <strong>{phase.name}</strong>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
   return (
     <div className="flex w-full flex-col px-8 py-6">
       {/* Top Section */}
@@ -142,7 +173,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="px-3 py-2.5">
                 <div className="h-8 border-b-[1px] border-b-[#E4E4E7] font-bold">
-                  Tus empresas
+                  {i18n.yourCompanies}
                 </div>
                 {businesses.map((business) => {
                   return (
@@ -163,7 +194,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                         />
                       </div>
                       <Text className="text-muted-foreground">
-                        Creado por Mao Molina |{formatDate(business.created_at)}
+                        {formatDate(business.created_at)}
                       </Text>
                     </DropdownMenuItem>
                   );
@@ -195,19 +226,19 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
             </Link>
           </div>
           <Text className="text-muted-foreground">
-            Creado por Mao Molina | {formatDate(rootBusiness?.created_at)}
+            {formatDate(rootBusiness?.created_at)}
           </Text>
           <div className="mt-4 flex items-center gap-4">
             <span>
-              Vacantes activas <Badge>03</Badge>
+              {i18n.activePositions} <Badge>{positions.length}</Badge>
             </span>
             <span>
-              <Notifications />
+              <Notifications label={i18n.notifications} />
             </span>
           </div>
         </div>
         <Button variant="ghost" className="flex items-center bg-secondary">
-          <Plus /> Crear vacante
+          <Plus /> {i18n.createPosition}
         </Button>
       </div>
       {/* Filters */}
@@ -215,7 +246,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
         <Input
           className="max-w-[18rem] shadow-sm"
           type="tex"
-          placeholder="Buscar vacante...."
+          placeholder={i18n.search}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -228,10 +259,10 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
               sortOrder && "bg-secondary/80",
             )}
           >
-            <ArrowUpDown /> Estado
+            <ArrowUpDown /> {i18n.stateLabel}
           </Button>
           <Button variant="ghost" className="border border-dashed shadow-sm">
-            <SlidersHorizontal /> Filtro
+            <SlidersHorizontal /> {i18n.filterLabel}
           </Button>
         </div>
       </div>
@@ -239,21 +270,27 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-black">Estado</TableHead>
+              <TableHead className="text-black">{i18n.stateLabel}</TableHead>
               <TableHead className="font-bold text-black">
-                Nombre de la vacante
+                {i18n.positionNameHeading}
               </TableHead>
               <TableHead className="font-bold text-black">
-                Fecha de Creación
+                {i18n.createAtHeading}
               </TableHead>
-              <TableHead className="font-bold text-black">Candidatos</TableHead>
-              <TableHead className="font-bold text-black">Prioridad</TableHead>
               <TableHead className="font-bold text-black">
-                Responsable
+                {i18n.candidatesHeading}
               </TableHead>
-              <TableHead className="font-bold text-black">Reclutador</TableHead>
               <TableHead className="font-bold text-black">
-                Stakeholders
+                {i18n.priorityHeading}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {i18n.responsibleHeading}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {i18n.recruiterHeading}
+              </TableHead>
+              <TableHead className="font-bold text-black">
+                {i18n.stakeholdersHeading}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -284,28 +321,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                   {position.role}
                 </TableCell>
                 <TableCell>{formatDate(new Date().toString())}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <div className="flex items-center justify-center gap-4">
-                          {pipe.cards_count} <BadgeInfo />
-                        </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-64">
-                        {pipe.phases.map((phase) => (
-                          <DropdownMenuItem
-                            onClick={(e) => e.preventDefault()}
-                            key={phase.id}
-                          >
-                            {phase.cards_count} Candidatos{" "}
-                            <strong>{phase.name}</strong>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
+                <TableCell>{renderPipeData(position.pipe_id)}</TableCell>
                 <TableCell className="capitalize">
                   {position.hiring_priority}
                 </TableCell>
@@ -324,45 +340,45 @@ export const Openings: FC<Readonly<OpeningsProps>> = () => {
                         className="cursor-pointer"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Editar
+                        {i18n.editLabel}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Duplicar
+                        {i18n.duplicateLabel}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
-                          Cambiar de estado
+                          {i18n.changeStateLabel}
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
                             <DropdownMenuItem
                               onClick={(e) => e.stopPropagation()}
                             >
-                              Cancelada
+                              {i18n.cancelStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => e.stopPropagation()}
                             >
-                              Activa
+                              {i18n.activeStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => e.stopPropagation()}
                             >
-                              Terminada
+                              {i18n.terminatedStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => e.stopPropagation()}
                             >
-                              Inactiva
+                              {i18n.inactiveStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => e.stopPropagation()}
                             >
-                              Borrador
+                              {i18n.draftStateLabel}
                             </DropdownMenuItem>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>

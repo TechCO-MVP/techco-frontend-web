@@ -43,7 +43,6 @@ export function useOpenPositions({
     enabled: !!businessId,
   });
 
-  console.log("[Debug] positions", queryResult.data);
   const positions = queryResult.data || [];
   return { ...queryResult, positions };
 }

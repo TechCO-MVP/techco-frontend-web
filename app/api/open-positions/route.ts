@@ -31,10 +31,6 @@ export async function GET(req: Request) {
   if (positionId) queryParams.append("id", positionId);
   if (all) queryParams.append("all", all);
   try {
-    console.log(
-      "route",
-      `${apiEndpoints.listPositions()}?${queryParams.toString()}`,
-    );
     const response = await fetch(
       `${apiEndpoints.listPositions()}?${queryParams.toString()}`,
       {
@@ -58,7 +54,6 @@ export async function GET(req: Request) {
       );
     }
     const json = await response.json();
-    console.log("/api/open-positions", json);
 
     if (!json.body || !Array.isArray(json.body.data)) {
       return NextResponse.json(

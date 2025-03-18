@@ -27,7 +27,7 @@ export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
     });
 
     const result = await response.json();
-    console.log("signUpResponse", result);
+
     if (response.status === 200) {
       return {
         success: true,

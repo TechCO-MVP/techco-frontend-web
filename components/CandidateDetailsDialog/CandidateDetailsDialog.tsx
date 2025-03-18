@@ -12,12 +12,17 @@ import { Text } from "../Typography/Text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { countryLabelLookup } from "@/lib/utils";
+import { countryLabelLookup, formatDate } from "@/lib/utils";
 import { Linkedin } from "@/icons";
 import { ChevronRight, Loader2, Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhaseComment from "./PhaseComment";
-import { PipefyNode, PipefyPhase, PipefyPipe } from "@/types/pipefy";
+import {
+  PipefyFieldValues,
+  PipefyNode,
+  PipefyPhase,
+  PipefyPipe,
+} from "@/types/pipefy";
 import { usePublicPhaseFormLink } from "@/hooks/use-public-phase-form-link";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
@@ -27,17 +32,41 @@ import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
 import { useToast } from "@/hooks/use-toast";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import { useParams } from "next/navigation";
+import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
+import { Dictionary } from "@/types/i18n";
 
 interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
   card: PipefyNode;
   pipe: PipefyPipe;
+  i18n: Dictionary["userCard"];
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
   phase,
   pipe,
+  i18n,
 }) => {
+  const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
+  const candidateBio = fieldMap[PipefyFieldValues.CandidateBio];
+  const timeInPosition = fieldMap[PipefyFieldValues.TimeInPosition];
+  const recomendation = fieldMap[PipefyFieldValues.Recomendation];
+  const positionMatch = fieldMap[PipefyFieldValues.PositionMatch];
+  const candidateName = fieldMap[PipefyFieldValues.CandidateName];
+  const avatarUrl =
+    fieldMap[PipefyFieldValues.Avatar] || "https://picsum.photos/200/200";
+  const candidateCountry = fieldMap[PipefyFieldValues.CandidateCountry] || "CO";
+  const candidateCity =
+    fieldMap[PipefyFieldValues.CandidateCityA] ||
+    fieldMap[PipefyFieldValues.CandidateCityB] ||
+    "Bogotá";
+  const currentPosition = fieldMap[PipefyFieldValues.CurrentPosition];
+  const currentCompany = fieldMap[PipefyFieldValues.CurrentCompany];
+  const processStartDate =
+    fieldMap[PipefyFieldValues.ProcessStartDate] || undefined;
+  const candidateSource = fieldMap[PipefyFieldValues.CandidateSource];
+  const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
+  const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
   const params = useParams<{ id: string }>();
   const { id } = params;
   const { positions } = useOpenPositions({
@@ -78,7 +107,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     return responsibles;
   }, [selectedPosition]);
 
-  console.log("stake", stakeHolders);
   const { mutate: moveCardToPhase, isPending: moveCardToPhasePending } =
     useMoveCardToPhase({
       onSuccess: () => {
@@ -128,10 +156,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     <Dialog modal open={open} onOpenChange={setOpen}>
       <DialogTrigger id={`details-${phase.id}`} className="w-full">
         <Button asChild variant="secondary" className="h-8 w-full">
-          <span>Detalles del candidato</span>
+          <span>{i18n.candidateDetails}</span>
         </Button>
       </DialogTrigger>
-      <DialogTitle className="hidden">Candidate Info</DialogTitle>
+      <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
 
       <DialogContent className="flex max-h-[80vh] min-h-[80vh] max-w-[70vw]">
         <Tabs
@@ -143,25 +171,25 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
               value="about"
             >
-              Perfil Candidato
+              {i18n.profileTabTitle}
             </TabsTrigger>
             <TabsTrigger
               className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
               value="documents"
             >
-              Documentos
+              {i18n.documentsTabTitle}
             </TabsTrigger>
             <TabsTrigger
               className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
               value="comments"
             >
-              Comentarios
+              {i18n.commentsTabTitle}
             </TabsTrigger>
             <TabsTrigger
               className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
               value="history"
             >
-              Historial
+              {i18n.historyTabTitle}
             </TabsTrigger>
           </TabsList>
           <TabsContent
@@ -172,13 +200,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               <div className="mb-2 flex gap-4">
                 <div className="flex flex-col items-center justify-center gap-1.5">
                   <Avatar className="h-16 w-16">
-                    <AvatarImage
-                      src="https://picsum.photos/200/200"
-                      alt="Profile picture"
-                    />
-                    <AvatarFallback>
-                      {"Sofia Cabrera Londono".charAt(0)}
-                    </AvatarFallback>
+                    <AvatarImage src={avatarUrl} alt="Profile picture" />
+                    <AvatarFallback>{candidateName.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <Badge
                     variant="outline"
@@ -191,34 +214,40 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs">
-                        CDMX &nbsp; -
+                        {candidateCity} &nbsp; -
                         <CountryLabel
-                          code="MX"
-                          label={countryLabelLookup("mx")}
+                          code={candidateCountry}
+                          label={countryLabelLookup(candidateCountry)}
                         />
                       </span>
                     </div>
                     <Heading level={3} className="text-base">
-                      Sofia Cabrera Londono
+                      {candidateName}
                     </Heading>
                   </div>
 
                   <div className="space-y-1">
                     <Text type="p" className="text-xs text-gray-600">
-                      Training lead en Globant
+                      {currentPosition} {i18n.inLabel} {currentCompany}
                     </Text>
-                    <Text size="xxs">Enero 2022 - Actual · 3 años</Text>
+                    <Text size="xxs">{timeInPosition}</Text>
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex flex-col gap-2 py-4">
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-muted-foreground">Contactar:</span>
-                <a href="#" target="_blank" rel="noopener noreferrer">
+                <span className="text-muted-foreground">
+                  {i18n.contactLabel}:
+                </span>
+                <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
                   <Linkedin />
                 </a>
-                <a href={`mailto:#`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`mailto:${email}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Mail className="h-4 w-4" />
                 </a>
               </div>
@@ -226,24 +255,23 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             <div className="h-[1px] w-full bg-gray-200"></div>
             <div className="flex flex-col gap-2 pt-4">
               <Text className="text-xs text-muted-foreground">
-                <b>Origen del candidato:</b> Recomendado
+                <b>{i18n.candidateSource}:</b> {candidateSource}
               </Text>
               <Text className="mb-4 text-xs text-muted-foreground">
-                <b>Fecha de inicio de proceso:</b> 2 Feb 2025
+                <b>{i18n.processStartDate}:</b>
+                {formatDate(processStartDate)}
               </Text>
               <Heading className="text-sm" level={2}>
-                ¿Qué tanto coincide el candidato con la vacante?
+                {i18n.candidateMatchLabel}
               </Heading>
               <Text className="mb-4 text-sm text-muted-foreground" type="p">
-                El candidato tiene experiencia en el sector y habilidades clave
-                para el rol, pero le falta dominio en liderazgo de equipos. Con
-                algo de formación, podría encajar bien en la vacante.
+                {positionMatch}
               </Text>
             </div>
 
             <div className="flex flex-col gap-2">
               <Heading className="text-sm" level={2}>
-                Habilidades que no pudimos evidenciar en el candidato
+                {i18n.missingSkillsLabel}
               </Heading>
               <Text className="mb-4 text-sm text-muted-foreground" type="p">
                 No se lograron evidenciar algunas habilidades técnicas como
@@ -254,55 +282,34 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </div>
             <div className="mb-8 flex flex-col gap-2">
               <Heading className="text-sm" level={2}>
-                Recomendación:
+                {i18n.recommendationLabel}:
               </Heading>
               <Text className="text-sm text-muted-foreground" type="p">
-                ✅ El candidato tiene alto match: El candidato cumple con los
-                requisitos clave y encaja bien en la organización. Recomendamos
-                avanzar a la siguiente fase del proceso.
+                {recomendation}
               </Text>
             </div>
             <div className="h-[1px] w-full bg-gray-200"></div>
-            <div className="mt-8 flex flex-col gap-2">
-              <Heading className="text-sm" level={2}>
-                Ingeniero de sistemas | Desarrollador FullStack | Scrum master |
-                DevOps
-              </Heading>
-            </div>
-            <div className="mt-4 flex flex-col gap-2">
-              <Heading className="text-base font-bold" level={1}>
-                Acerca de:
-              </Heading>
-              <Text className="text-sm text-muted-foreground" type="p">
-                Ingeniera de Sistemas con experiencia en desarrollo de software,
-                especializada en el diseño e implementación de productos de
-                software empresariales escalables, mantenibles y robustos,
-                siempre enfocada en agregar valor añadido al negocio.
-              </Text>
-              <Text className="text-sm text-muted-foreground" type="p">
-                Con experiencia en el desarrollo de aplicaciones web y
-                microservicios, manejo un amplio stack tecnológico que incluye
-                Java (Spring, JSF, JPA, Hibernate), PHP, Python y JavaScript
-                (Angular, jQuery). Tengo también sólidos conocimientos en diseño
-                y programación de bases de datos relacionales (Oracle, MySQL,
-                PostgreSQL) y no relacionales (MongoDB, Firebase).
-                Adicionalmente, cuento con experiencia en el diseño y creación
-                de reportes e informes utilizando JasperReports
-              </Text>
-              <Text className="mb-8 text-sm text-muted-foreground" type="p">
-                Soy apasionada por los aspectos organizativos internos de las
-                empresas, promoviendo el trabajo en equipo y participando
-                activamente en la creación de un ambiente laboral saludable y
-                colaborativo. Hago uso de metodologías de trabajo ágiles y
-                herramientas colaborativas, me adapto con facilidad a nuevas
-                responsabilidades, siempre dispuesto a ampliar mis
-                conocimientos.
-              </Text>
-            </div>
+            {candidateBio && (
+              <>
+                <div className="mt-8 flex flex-col gap-2">
+                  <Heading className="text-sm" level={2}>
+                    {currentPosition}
+                  </Heading>
+                </div>
+                <div className="mt-4 flex flex-col gap-2">
+                  <Heading className="text-base font-bold" level={1}>
+                    {i18n.aboutLabel}:
+                  </Heading>
+                  <Text className="mb-8 text-sm text-muted-foreground" type="p">
+                    {candidateBio}
+                  </Text>
+                </div>
+              </>
+            )}
             <div className="h-[1px] w-full bg-gray-200"></div>
             <div className="mt-4 flex flex-col gap-8">
               <Heading className="text-base font-bold" level={1}>
-                Experiencia
+                {i18n.experienceLabel}
               </Heading>
               <div className="flex items-center gap-4">
                 <div className="h-14 w-14 rounded-full bg-[#D9D9D9]"></div>
@@ -336,7 +343,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             <div className="h-[1px] w-full bg-gray-200"></div>
             <div className="mt-4 flex flex-col gap-8">
               <Heading className="text-base font-bold" level={1}>
-                Educación
+                {i18n.educationLabel}
               </Heading>
               <div className="flex items-center gap-4">
                 <div className="h-14 w-14 rounded-full bg-[#D9D9D9]"></div>
@@ -396,7 +403,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
         <div className="max-h-[75vh] w-[285px] overflow-hidden">
           <div className="flex flex-col gap-4">
             <Heading className="text-sm font-bold" level={2}>
-              Mover tarjera a fase
+              {i18n.moveToPhase}
             </Heading>
             {phase.cards_can_be_moved_to_phases.map(
               (newPhase) =>

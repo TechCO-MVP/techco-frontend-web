@@ -37,7 +37,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    console.log("SUBMIT");
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);

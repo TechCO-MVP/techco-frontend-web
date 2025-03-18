@@ -129,14 +129,15 @@ export function NotificationItem({
 
 interface NotificationsProps {
   count?: number;
+  label: string;
 }
 
-export function Notifications({ count = 9 }: NotificationsProps) {
+export function Notifications({ count = 9, label }: NotificationsProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
-          Notificaciones <Badge>{count}</Badge>
+          {label} <Badge>{count}</Badge>
         </span>
       </SheetTrigger>
       <SheetContent className="w-full p-0 sm:max-w-md">
@@ -144,7 +145,7 @@ export function Notifications({ count = 9 }: NotificationsProps) {
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Notificaciones
+              {label}
             </SheetTitle>
           </div>
         </SheetHeader>

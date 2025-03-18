@@ -49,7 +49,6 @@ export async function GET(req: Request) {
       );
     }
     const json = await response.json();
-    console.log("/api/profile/filter", json);
 
     if (!json.body) {
       return NextResponse.json(

@@ -22,8 +22,6 @@ export async function updateField(data: FormData): Promise<void> {
         },
       },
     );
-
-    console.log("GraphQL Response:", response);
   } catch (error) {
     console.error("GraphQL Error:", error);
   }

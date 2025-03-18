@@ -26,9 +26,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
 import BoardSkeleton from "./Skeleton";
 import { useParams } from "next/navigation";
-import { countryLabelLookup } from "@/lib/utils";
+import { countryLabelLookup, timeAgo } from "@/lib/utils";
 import { useOpenPositions } from "@/hooks/use-open-positions";
-export const Board: React.FC = () => {
+import { Notifications } from "@/components/Notifications/Notifications";
+import { Dictionary } from "@/types/i18n";
+type BoardProps = {
+  dictionary: Dictionary;
+};
+export const Board: React.FC<BoardProps> = ({ dictionary }) => {
+  const { positionDetailsPage: i18n } = dictionary;
   const params = useParams<{ id: string }>();
   const { id } = params;
   const {
@@ -236,18 +242,36 @@ export const Board: React.FC = () => {
     setBoard(data);
   }, [data]);
 
+  useEffect(() => {
+    console.log("/profile/filter response", filterStatus);
+  }, [filterStatus]);
+
+  useEffect(() => {
+    console.log("get pipe response", data);
+  }, [data]);
+
   const getPriority = () => {
     if (!selectedPosition?.hiring_priority) return "";
     switch (selectedPosition.hiring_priority) {
       case "high":
-        return "Prioridad alta 🔥🔥";
+        return `${i18n.highPriority} 🔥🔥`;
       case "medium":
-        return "Prioridad media 🔥";
+        return `${i18n.mediumPriority} 🔥`;
       case "low":
-        return "Prioridad baja";
+        return `${i18n.lowPriority}`;
       default:
         return "";
     }
+  };
+
+  const calculateTime = (dateString: string | undefined) => {
+    if (!dateString) return null;
+    const givenDate = new Date(dateString);
+    const currentDate = new Date();
+
+    const diffInMs = currentDate.getTime() - givenDate.getTime();
+
+    return timeAgo(diffInMs, dictionary);
   };
 
   return (
@@ -256,7 +280,7 @@ export const Board: React.FC = () => {
         <Link href="/dashboard/positions">
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
-            Atrás
+            {i18n.goBack}
           </Button>
         </Link>
         <Badge variant="secondary" className="rounded-md">
@@ -276,21 +300,21 @@ export const Board: React.FC = () => {
           </Badge>
         </div>
         <div className="text-muted-foreground">
-          <span className="font-bold">Creado por:</span> Mao Molina | 17 Feb
-          2023 (Traking 33 dias)
+          {i18n.trackingLabel} {calculateTime(filterStatus?.body.created_at)}
         </div>
+        <Notifications label={i18n.notifications} />
       </div>
       <div className="mb-8 flex justify-between">
         <Input
           className="max-w-[18rem] shadow-sm"
           type="tex"
-          placeholder="Buscar nombre del candidato..."
+          placeholder={i18n.search}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="flex gap-6">
           <Button variant="ghost" className="border border-dashed shadow-sm">
-            <SlidersHorizontal /> Filtro
+            <SlidersHorizontal /> {i18n.filterLabel}
           </Button>
           <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
@@ -299,29 +323,24 @@ export const Board: React.FC = () => {
         {!loadingPipe &&
           !loadingProfiles &&
           filterStatus?.body.status !== "completed" && (
-            <div className="absolute left-0 top-0 flex h-[687px] w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+            <div className="absolute left-0 top-0 z-20 flex h-[687px] w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
               <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
               <Text type="p" className="text-lg font-semibold">
-                🔄 Este proceso puede tardar hasta 10 minutos.{" "}
+                🔄 {i18n.inProgressTitle}
               </Text>
               <Text
                 type="p"
                 size="small"
                 className="mb-4 max-w-[563px] text-center text-muted-foreground"
               >
-                📡 Estamos consultando bases de datos para traer a los mejores
-                candidatos para tu vacante. Este proceso toma un poco de tiempo
-                para asegurarnos de ofrecerte perfiles que mejor se ajusten a tu
-                empresa y a los requisitos del puesto.
+                📡 {i18n.inProgressDetails}
               </Text>
               <Text
                 type="p"
                 size="small"
                 className="max-w-[563px] text-center text-muted-foreground"
               >
-                💡 Puedes quedarte aquí o continuar con otras tareas. No te
-                preocupes, recibirás una notificación cuando los candidatos
-                estén disponibles.
+                💡 {i18n.inProgressMessage}
               </Text>
             </div>
           )}
@@ -336,6 +355,7 @@ export const Board: React.FC = () => {
       <div className="flex gap-4">
         {board?.columns.map((column) => (
           <BoardColumn
+            dictionary={dictionary}
             pipe={board.pipe}
             key={column.id}
             column={column}
@@ -350,19 +370,16 @@ export const Board: React.FC = () => {
         <DialogContent className="max-w-[26rem] p-12">
           <DialogHeader>
             <DialogTitle className="mb-4 text-2xl font-normal">
-              ¿Seguro que quieres mover al candidato a la siguiente fase?
+              {i18n.moveToPhaseDialogTitle}
             </DialogTitle>
-            <DialogDescription>
-              El candidato pasará de la fase actual a una nueva etapa del
-              proceso. Puedes avanzar o retroceder cuando lo necesites.
-            </DialogDescription>
+            <DialogDescription>{i18n.moveToPhaseDialogInfo}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
             <Button variant="default" onClick={confirmMove}>
-              Confirmar Cambio
+              {i18n.confirmMove}
             </Button>
             <Button variant="ghost" onClick={cancelMove}>
-              Cancelar
+              {i18n.cancelMove}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -374,10 +391,10 @@ export const Board: React.FC = () => {
         <DialogContent className="max-w-[26rem] p-12">
           <DialogHeader>
             <DialogTitle className="mb-4 text-2xl font-normal">
-              Información incompleta.
+              {i18n.missingFieldsDialogTitle}
             </DialogTitle>
             <DialogDescription>
-              Aún tienes información pendiente para esta fase.
+              {i18n.missingFieldsDialogInfo}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
@@ -394,10 +411,10 @@ export const Board: React.FC = () => {
               }}
               variant="default"
             >
-              Completar información
+              {i18n.completeMissingFieldsLabel}
             </Button>
             <Button variant="ghost" onClick={cancelMove}>
-              Cancelar
+              {i18n.cancelMove}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -44,7 +44,7 @@ export const CancelApplicationDialog: FC<Readonly<Props>> = ({ cardId }) => {
     const finalPhase = card?.pipe.phases.find(
       (phase) => phase.name === "No está interesado",
     );
-    console.log("finalPhase", finalPhase);
+
     if (!finalPhase) return;
     moveCardToPhase({ cardId, destinationPhaseId: finalPhase.id });
   }, [open, cardId, moveCardToPhase, publicPhaseFormUrl, card?.pipe.phases]);
