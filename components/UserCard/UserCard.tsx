@@ -249,7 +249,7 @@ export const UserCard: React.FC<CardProps> = ({
               </div>
 
               <CandidateDetailsDialog
-                i18n={i18n}
+                dictionary={dictionary}
                 pipe={pipe}
                 card={card}
                 phase={column}

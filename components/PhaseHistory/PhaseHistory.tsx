@@ -16,6 +16,7 @@ import {
 import { formatDateToShort, timeAgo } from "@/lib/utils";
 import * as actions from "@/actions";
 import { EditableField } from "@/components/EditableField/EditableField";
+import { Dictionary } from "@/types/i18n";
 // Extend the AccordionTrigger to include our custom layout
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof BaseTrigger>,
@@ -48,9 +49,14 @@ AccordionTrigger.displayName = "AccordionTrigger";
 interface PhaseHistoryProps {
   card: PipefyNode;
   pipe: PipefyPipe;
+  dictionary: Dictionary;
 }
 
-export const PhaseHistory: React.FC<PhaseHistoryProps> = ({ card, pipe }) => {
+export const PhaseHistory: React.FC<PhaseHistoryProps> = ({
+  card,
+  pipe,
+  dictionary,
+}) => {
   const isStartForm = (id: string): boolean => {
     return id === pipe.startFormPhaseId;
   };
@@ -106,7 +112,7 @@ export const PhaseHistory: React.FC<PhaseHistoryProps> = ({ card, pipe }) => {
                 <p className="text-gray-500">
                   Duracion &nbsp;
                   <span className="text-gray-600">
-                    {timeAgo(history.duration)}
+                    {timeAgo(history.duration, dictionary)}
                   </span>
                 </p>
               )}

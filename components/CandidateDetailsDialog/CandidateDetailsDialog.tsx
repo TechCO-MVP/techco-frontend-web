@@ -39,14 +39,15 @@ interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
   card: PipefyNode;
   pipe: PipefyPipe;
-  i18n: Dictionary["userCard"];
+  dictionary: Dictionary;
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
   phase,
   pipe,
-  i18n,
+  dictionary,
 }) => {
+  const { userCard: i18n } = dictionary;
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
   const candidateBio = fieldMap[PipefyFieldValues.CandidateBio];
   const timeInPosition = fieldMap[PipefyFieldValues.TimeInPosition];
@@ -392,7 +393,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             value="history"
             className="max-h-[70vh] w-full max-w-screen-lg overflow-y-auto"
           >
-            <PhaseHistory pipe={pipe} card={card} />
+            <PhaseHistory dictionary={dictionary} pipe={pipe} card={card} />
           </TabsContent>
         </Tabs>
         <div className="max-h-[75vh] w-[540px] overflow-hidden">
