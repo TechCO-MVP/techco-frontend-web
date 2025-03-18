@@ -8,8 +8,14 @@ interface TopBarProps {
 }
 export const TopBar: FC<TopBarProps> = ({ lang }) => {
   return (
-    <nav className="relative flex h-20 w-full items-center justify-between bg-gray-200 px-8">
-      <Image width={200} height={40} src="/assets/logo.png" alt="TechCo" />
+    <nav className="relative flex h-20 w-full items-center justify-between bg-gray-200 px-28">
+      <Image
+        priority
+        width={200}
+        height={40}
+        src="/assets/logo.png"
+        alt="TechCo"
+      />
       <UserMenu lang={lang} username="Jesus D" />
     </nav>
   );

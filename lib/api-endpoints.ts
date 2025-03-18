@@ -31,10 +31,25 @@ export const apiEndpoints = {
   listUsers() {
     return `${BASE_URL}/user/list`;
   },
+  listPositions() {
+    return `${BASE_URL}/position/list`;
+  },
+  getHiringProcess() {
+    return `${BASE_URL}/hiring_process/id`;
+  },
   createUser() {
     return `${BASE_URL}/user/create`;
   },
+  updateUserStatus() {
+    return `${BASE_URL}/user/status`;
+  },
   refreshTokens() {
     return `${BASE_URL}/auth/refresh_tokens`;
+  },
+  positionDetails(token: string) {
+    return `${BASE_URL}/position/token?token=${token}`;
+  },
+  getProfileFilterStatus() {
+    return `${BASE_URL}/profile/filter`;
   },
 };

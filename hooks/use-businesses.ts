@@ -2,7 +2,6 @@ import { QUERIES } from "@/constants/queries";
 import { ListBusinessApiResponse } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-
 export function useBusinesses() {
   const queryResult = useQuery({
     queryKey: QUERIES.COMPANY_LIST,
@@ -34,6 +33,7 @@ export function useBusinesses() {
 
   const rootBusiness =
     businesses.find((business) => business.parent_business_id === null) || null;
+
   return {
     ...queryResult,
     businesses,

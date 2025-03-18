@@ -36,7 +36,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24,
       });
 
@@ -44,7 +44,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24,
       });
 
@@ -52,7 +52,7 @@ export async function verifyCode(data: OTPFormData): Promise<SignInResponse> {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24 * 5,
       });
 

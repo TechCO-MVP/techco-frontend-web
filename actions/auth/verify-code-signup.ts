@@ -38,7 +38,7 @@ export async function verifyCodeSignUp(
     });
 
     const result = await response.json();
-    console.log("wow", result);
+
     if (response.ok) {
       const cookieStore = await cookies();
 
@@ -46,7 +46,7 @@ export async function verifyCodeSignUp(
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24,
       });
 
@@ -54,7 +54,7 @@ export async function verifyCodeSignUp(
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24,
       });
 
@@ -62,7 +62,7 @@ export async function verifyCodeSignUp(
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 60 * 60 * 24 * 5,
       });
 

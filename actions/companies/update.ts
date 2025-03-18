@@ -39,7 +39,7 @@ export async function updateCompanyAction(
     });
 
     const result = await response.json();
-    console.log("updateCompanyAction", result);
+
     if (response.ok) {
       return {
         success: true,

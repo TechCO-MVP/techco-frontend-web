@@ -8,7 +8,12 @@ type QueryUsersParams = {
   all?: boolean;
 };
 
-export function useUsers({ businessId, userId, all }: QueryUsersParams) {
+export function useUsers({
+  businessId,
+  userId,
+  all,
+  email,
+}: QueryUsersParams & { email?: string }) {
   const queryResult = useQuery({
     queryKey: QUERIES.USER_LIST,
     queryFn: async () => {
@@ -43,8 +48,11 @@ export function useUsers({ businessId, userId, all }: QueryUsersParams) {
   });
 
   const users = queryResult.data || [];
+  const localUser = users.find((user) => user.email === email);
+
   return {
     ...queryResult,
     users,
+    localUser,
   };
 }

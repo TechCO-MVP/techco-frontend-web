@@ -63,7 +63,7 @@ export const CreateBusinessDialog: FC<Readonly<CreateBusinessDialogProps>> = ({
     handleSubmit,
     formState: { dirtyFields, errors, isValid },
   } = form;
-  console.log({ isValid, isPending });
+
   const onSubmit = async (data: CreateBusinessData) => {
     try {
       startTransition(async () => {

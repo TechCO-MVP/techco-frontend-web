@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { type BoardState } from "@/types";
+import { PipefyNode, PipefyPhase, type BoardState } from "@/types/pipefy";
 import {
   Dialog,
   DialogContent,
@@ -11,45 +11,156 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Text } from "../Typography/Text";
-import { Button } from "../ui/button";
-import { ChevronLeft, Plus, SlidersHorizontal, SmilePlus } from "lucide-react";
-import { Progress } from "../ui/progress";
-import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
-import { Heading } from "../Typography/Heading";
+} from "@/components/ui/dialog";
+import { Text } from "@/components/Typography/Text";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, SlidersHorizontal, SmilePlus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Heading } from "@/components/Typography/Heading";
 import Link from "next/link";
-
-const initialState: BoardState = {
-  columns: [
-    {
-      id: "todo",
-      title: "Etapa 1",
-      cards: [
-        { id: "task1", content: "Task 1", position: 0 },
-        { id: "task2", content: "Task 2", position: 1 },
-      ],
-    },
-    {
-      id: "inprogress",
-      title: "Etapa 2",
-      cards: [{ id: "task3", content: "Task 3", position: 0 }],
-    },
-    {
-      id: "done",
-      title: "Etapa 3",
-      cards: [{ id: "task4", content: "Task 4", position: 0 }],
-    },
-  ],
+import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
+import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
+import { StartFormDialog } from "@/components/StartFormDialog/StartFormDialog";
+import { useToast } from "@/hooks/use-toast";
+import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
+import BoardSkeleton from "./Skeleton";
+import { useParams } from "next/navigation";
+import { countryLabelLookup, timeAgo } from "@/lib/utils";
+import { useOpenPositions } from "@/hooks/use-open-positions";
+import { Notifications } from "@/components/Notifications/Notifications";
+import { Dictionary } from "@/types/i18n";
+import { useBusinesses } from "@/hooks/use-businesses";
+type BoardProps = {
+  dictionary: Dictionary;
 };
+export const Board: React.FC<BoardProps> = ({ dictionary }) => {
+  const { positionDetailsPage: i18n } = dictionary;
+  const params = useParams<{ id: string }>();
+  const { id } = params;
+  const {
+    data: filterStatus,
+    isLoading: loadingProfiles,
+    isPending: pendingProfiles,
+  } = useProfileFilterStatus({
+    positionId: id,
+  });
+  const { rootBusiness } = useBusinesses();
+  const { positions } = useOpenPositions({
+    businessId: rootBusiness?._id,
+  });
+  const selectedPosition = useMemo(() => {
+    return positions.find((position) => position._id === id);
+  }, [positions, id]);
 
-export const Board: React.FC = () => {
-  const [board, setBoard] = useState<BoardState>(initialState);
+  const { toast } = useToast();
+  const { mutate } = useMoveCardToPhase({
+    onSuccess: (data, variables) => {
+      if (!pendingMove) return;
+      toast({
+        title: "Cambio de Fase Correcto",
+        description: "El candidato ha sido movido a la siguiente fase.",
+      });
+      const { cardId, sourceColumnId, targetColumnId, newPosition } =
+        pendingMove;
+
+      setBoard((prevBoard) => {
+        if (!prevBoard) return;
+
+        const updatedColumns = prevBoard.columns.map((column) => {
+          if (column.id === sourceColumnId) {
+            // Remove the card from the source column
+            const filteredCards = column.cards.nodes.filter(
+              (card) => card.id !== cardId,
+            );
+            return {
+              ...column,
+              cards: {
+                nodes: filteredCards.map((card, index) => ({
+                  ...card,
+                  position: index,
+                })),
+              },
+            };
+          }
+
+          if (column.id === targetColumnId) {
+            const sourceColumn = prevBoard.columns.find(
+              (col) => col.id === sourceColumnId,
+            );
+            if (!sourceColumn) return column;
+
+            const movedCard = sourceColumn.cards.nodes.find(
+              (card) => card.id === cardId,
+            );
+            if (!movedCard) return column;
+
+            const updatedCards = [
+              ...column.cards.nodes.slice(0, newPosition),
+              { ...movedCard, position: newPosition },
+              ...column.cards.nodes.slice(newPosition),
+            ].map((card, index) => ({ ...card, position: index }));
+
+            return {
+              ...column,
+              cards: { nodes: updatedCards },
+            };
+          }
+
+          return column;
+        });
+
+        return { ...prevBoard, columns: updatedColumns };
+      });
+
+      setIsAlertOpen(false);
+      setPendingMove(null);
+      console.log("Card moved successfully:", data.moveCardToPhase.card);
+      console.log(
+        "Moved from:",
+        variables.cardId,
+        "➡",
+        "To:",
+        variables.destinationPhaseId,
+      );
+    },
+    onError: (error, variables) => {
+      setShowPendingFieldsModal(true);
+      setIsAlertOpen(false);
+
+      console.error(" Move failed:", error);
+      console.error(
+        "Failed to move from:",
+        variables.cardId,
+        "➡",
+        "To:",
+        variables.destinationPhaseId,
+      );
+    },
+    onSettled: (data, error) => {
+      console.log(" Mutation Settled. Success:", !!data, "Error:", !!error);
+    },
+  });
+  const {
+    data,
+    isLoading: loadingPipe,
+    isPending: pendingPipes,
+  } = usePipefyPipe({
+    pipeId:
+      filterStatus?.body.status === "completed"
+        ? filterStatus?.body.pipe_id
+        : undefined,
+  });
+  const [board, setBoard] = useState<BoardState | undefined>(data);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isEmpty] = useState(false);
-  const [isLoading] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [showPendingFieldsModal, setShowPendingFieldsModal] = useState(false);
+  const [draggedCard, setDraggedCard] = useState<{
+    id: string;
+    node: PipefyNode;
+    sourceColumn: PipefyPhase;
+  } | null>(null);
+
   const [pendingMove, setPendingMove] = useState<{
     cardId: string;
     sourceColumnId: string;
@@ -64,64 +175,35 @@ export const Board: React.FC = () => {
     newPosition: number,
   ) => {
     if (sourceColumnId === targetColumnId) return;
+    if (!board) return;
 
     const sourceColumn = board.columns.find((col) => col.id === sourceColumnId);
     const targetColumn = board.columns.find((col) => col.id === targetColumnId);
 
     if (!sourceColumn || !targetColumn) return;
 
-    const card = sourceColumn.cards.find((c) => c.id === cardId);
+    const card = sourceColumn.cards.nodes.find((c) => c.id === cardId);
     if (!card) return;
 
     setPendingMove({ cardId, sourceColumnId, targetColumnId, newPosition });
+
     setIsAlertOpen(true);
   };
 
   const confirmMove = () => {
     if (!pendingMove) return;
 
-    const { cardId, sourceColumnId, targetColumnId } = pendingMove;
-
-    setBoard((prevBoard) => {
-      const newColumns = prevBoard.columns.map((column) => {
-        if (column.id === sourceColumnId) {
-          return {
-            ...column,
-            cards: column.cards
-              .filter((card) => card.id !== cardId)
-              .map((card, index) => ({ ...card, position: index })),
-          };
-        }
-        if (column.id === targetColumnId) {
-          const [movedCard] = prevBoard.columns
-            .find((col) => col.id === sourceColumnId)!
-            .cards.filter((card) => card.id === cardId);
-
-          const newCards = [
-            ...column.cards,
-            { ...movedCard, position: column.cards.length },
-          ].map((card, index) => ({
-            ...card,
-            position: index,
-          }));
-
-          return {
-            ...column,
-            cards: newCards,
-          };
-        }
-        return column;
-      });
-
-      return { ...prevBoard, columns: newColumns };
+    const { cardId, targetColumnId } = pendingMove;
+    mutate({
+      cardId,
+      destinationPhaseId: targetColumnId,
     });
-
-    setIsAlertOpen(false);
-    setPendingMove(null);
   };
 
   const cancelMove = () => {
     setIsAlertOpen(false);
+    setShowPendingFieldsModal(false);
+    setDraggedCard(null);
     setPendingMove(null);
   };
 
@@ -131,133 +213,209 @@ export const Board: React.FC = () => {
     targetId: string,
   ) => {
     setBoard((prevBoard) => {
-      const newColumns = prevBoard.columns.map((column) => {
+      if (!prevBoard) return;
+
+      const updatedColumns = prevBoard.columns.map((column) => {
         if (column.id === columnId) {
-          const cards = [...column.cards];
+          const cards = [...column.cards.nodes];
           const draggedIndex = cards.findIndex((card) => card.id === draggedId);
           const targetIndex = cards.findIndex((card) => card.id === targetId);
+
+          if (draggedIndex === -1 || targetIndex === -1) return column;
+
           const [draggedCard] = cards.splice(draggedIndex, 1);
           cards.splice(targetIndex, 0, draggedCard);
 
           return {
             ...column,
-            cards: cards.map((card, index) => ({ ...card, position: index })),
+            cards: {
+              nodes: cards.map((card, index) => ({ ...card, position: index })),
+            },
           };
         }
         return column;
       });
 
-      return { ...prevBoard, columns: newColumns };
+      return { ...prevBoard, columns: updatedColumns };
     });
+  };
+  useEffect(() => {
+    setBoard(data);
+  }, [data]);
+
+  useEffect(() => {
+    console.log("/profile/filter response", filterStatus);
+  }, [filterStatus]);
+
+  useEffect(() => {
+    console.log("get pipe response", data);
+  }, [data]);
+
+  const getPriority = () => {
+    if (!selectedPosition?.hiring_priority) return "";
+    switch (selectedPosition.hiring_priority) {
+      case "high":
+        return `${i18n.highPriority} 🔥🔥`;
+      case "medium":
+        return `${i18n.mediumPriority} 🔥`;
+      case "low":
+        return `${i18n.lowPriority}`;
+      default:
+        return "";
+    }
+  };
+
+  const calculateTime = (dateString: string | undefined) => {
+    if (!dateString) return null;
+    const givenDate = new Date(dateString);
+    const currentDate = new Date();
+
+    const diffInMs = currentDate.getTime() - givenDate.getTime();
+
+    return timeAgo(diffInMs, dictionary);
   };
 
   return (
-    <div className="flex w-full flex-col px-8">
+    <div className="flex w-full flex-col">
       <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
-        <Link href="openings">
+        <Link href="/dashboard/positions">
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
-            Atrás
+            {i18n.goBack}
           </Button>
         </Link>
         <Badge variant="secondary" className="rounded-md">
-          Mex 🇲🇽
+          {countryLabelLookup(
+            filterStatus?.body.process_filters.country_code || "",
+          )}
         </Badge>
         <div className="flex items-center justify-center gap-2">
           <Heading className="text-xl" level={1}>
-            Lead Arquitecto (0000000)
+            {filterStatus?.body.process_filters.role}
           </Heading>
           <Badge variant="secondary" className="rounded-md text-[#34C759]">
-            Activa
+            {selectedPosition?.status}
           </Badge>
           <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
-            Prioridad alta 🔥🔥
+            {getPriority()}
           </Badge>
         </div>
         <div className="text-muted-foreground">
-          <span className="font-bold">Creado por:</span> Mao Molina | 17 Feb
-          2023 (Traking 33 dias)
+          {i18n.trackingLabel} {calculateTime(filterStatus?.body.created_at)}
         </div>
+        <Notifications label={i18n.notifications} />
       </div>
       <div className="mb-8 flex justify-between">
         <Input
           className="max-w-[18rem] shadow-sm"
           type="tex"
-          placeholder="Buscar nombre del candidato..."
+          placeholder={i18n.search}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="flex gap-6">
           <Button variant="ghost" className="border border-dashed shadow-sm">
-            <SlidersHorizontal /> Filtro
+            <SlidersHorizontal /> {i18n.filterLabel}
           </Button>
-          <Button variant="ghost" className="bg-secondary">
-            <Plus /> Agregar Candidato
-          </Button>
+          <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
       </div>
       <div className="relative flex gap-4">
-        {board.columns.map((column) => (
+        {!loadingPipe &&
+          !loadingProfiles &&
+          filterStatus?.body.status !== "completed" && (
+            <div className="absolute left-0 top-0 z-20 flex h-[687px] w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+              <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
+              <Text type="p" className="text-lg font-semibold">
+                🔄 {i18n.inProgressTitle}
+              </Text>
+              <Text
+                type="p"
+                size="small"
+                className="mb-4 max-w-[563px] text-center text-muted-foreground"
+              >
+                📡 {i18n.inProgressDetails}
+              </Text>
+              <Text
+                type="p"
+                size="small"
+                className="max-w-[563px] text-center text-muted-foreground"
+              >
+                💡 {i18n.inProgressMessage}
+              </Text>
+            </div>
+          )}
+      </div>
+      {filterStatus?.body.status !== "in_progress" &&
+        (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles) && (
+          <div className="flex gap-4">
+            <BoardSkeleton />
+          </div>
+        )}
+
+      <div className="flex gap-4">
+        {board?.columns.map((column) => (
           <BoardColumn
+            dictionary={dictionary}
+            pipe={board.pipe}
             key={column.id}
             column={column}
             onDrop={onDrop}
             onCardMove={onCardMove}
+            draggedCard={draggedCard}
+            setDraggedCard={setDraggedCard}
           />
         ))}
-        {isEmpty && (
-          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
-            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
-            <Text type="p" className="text-lg font-semibold">
-              Todavía no hay candidatos en este proceso
-            </Text>
-            <Text
-              type="p"
-              size="small"
-              className="max-w-md text-center text-muted-foreground"
-            >
-              Aquí verás a los postulantes en cuanto comiencen a aplicar a la
-              vacante. Comparte la oferta en distintos canales para atraer más
-              talento.
-            </Text>
-            <Button>Agregar candidato</Button>
-          </div>
-        )}
-        {isLoading && (
-          <div className="absolute bottom-0 left-4 flex h-[88%] w-[calc(100%-2rem)] flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
-            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
-            <Text type="p" className="text-lg font-semibold">
-              Buscando los mejores talentos para tu vacante…
-            </Text>
-            <Text
-              type="p"
-              size="small"
-              className="max-w-md text-center text-muted-foreground"
-            >
-              🔄 Esto tomará solo unos instantes. Pronto conocerás a los mejores
-              candidatos para tu búsqueda.
-            </Text>
-            <Progress value={33} className="max-w-md" />
-          </div>
-        )}
       </div>
       <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <DialogContent className="max-w-[26rem] p-12">
           <DialogHeader>
             <DialogTitle className="mb-4 text-2xl font-normal">
-              ¿Seguro que quieres mover al candidato a la siguiente fase?
+              {i18n.moveToPhaseDialogTitle}
             </DialogTitle>
-            <DialogDescription>
-              El candidato pasará de la fase actual a una nueva etapa del
-              proceso. Puedes avanzar o retroceder cuando lo necesites.
-            </DialogDescription>
+            <DialogDescription>{i18n.moveToPhaseDialogInfo}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
             <Button variant="default" onClick={confirmMove}>
-              Confirmar Cambio
+              {i18n.confirmMove}
             </Button>
             <Button variant="ghost" onClick={cancelMove}>
-              Cancelar
+              {i18n.cancelMove}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={showPendingFieldsModal}
+        onOpenChange={setShowPendingFieldsModal}
+      >
+        <DialogContent className="max-w-[26rem] p-12">
+          <DialogHeader>
+            <DialogTitle className="mb-4 text-2xl font-normal">
+              {i18n.missingFieldsDialogTitle}
+            </DialogTitle>
+            <DialogDescription>
+              {i18n.missingFieldsDialogInfo}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
+            <Button
+              onClick={() => {
+                const element = document.querySelector(
+                  `#details-${pendingMove?.sourceColumnId}`,
+                ) as HTMLElement;
+
+                if (element) {
+                  element.click();
+                  cancelMove();
+                }
+              }}
+              variant="default"
+            >
+              {i18n.completeMissingFieldsLabel}
+            </Button>
+            <Button variant="ghost" onClick={cancelMove}>
+              {i18n.cancelMove}
             </Button>
           </DialogFooter>
         </DialogContent>

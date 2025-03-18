@@ -20,7 +20,7 @@ export async function signIn(data: SignInFormData): Promise<SignInResponse> {
     });
 
     const result = await response.json();
-    console.log("signInResponse", result);
+
     if (result.body?.session) {
       return {
         success: true,

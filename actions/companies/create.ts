@@ -34,7 +34,7 @@ export async function createCompanyAction(
     });
 
     const result = await response.json();
-    console.log("createCompanyAction", result);
+
     if (response.ok) {
       return {
         success: true,

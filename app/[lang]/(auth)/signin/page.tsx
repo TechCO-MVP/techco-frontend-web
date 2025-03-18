@@ -9,7 +9,6 @@ export default async function SignIn(props: {
   const { lang } = await props.params;
 
   const dictionary = await getDictionary(lang);
-
   // To handle the form, we use the "useActionState" hook, this means the SignUpPage needs to be a "client" component
   return <SignInForm dictionary={dictionary} />;
 }
