@@ -17,7 +17,7 @@ export function usePipefyPipes({ ids }: QueryPipesParams) {
   };
 
   const queryResult = useQuery({
-    queryKey: QUERIES.PIPES_DATA(ids?.toString()),
+    queryKey: QUERIES.PIPES_DATA(ids?.join("-")),
     queryFn: fetchPipe,
     enabled: !!ids,
     staleTime: 1000 * 60 * 5,

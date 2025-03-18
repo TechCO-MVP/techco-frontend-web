@@ -34,6 +34,7 @@ import { useOpenPositions } from "@/hooks/use-open-positions";
 import { useParams } from "next/navigation";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { Dictionary } from "@/types/i18n";
+import { useBusinesses } from "@/hooks/use-businesses";
 
 interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
@@ -48,6 +49,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   dictionary,
 }) => {
   const { userCard: i18n } = dictionary;
+  const { rootBusiness } = useBusinesses();
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
   const candidateBio = fieldMap[PipefyFieldValues.CandidateBio];
   const timeInPosition = fieldMap[PipefyFieldValues.TimeInPosition];
@@ -71,7 +73,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const params = useParams<{ id: string }>();
   const { id } = params;
   const { positions } = useOpenPositions({
-    businessId: "679077da2d6626a2b007f8f9",
+    businessId: rootBusiness?._id,
   });
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);

@@ -61,7 +61,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   } = useBusinesses();
 
   const { isLoading, error, positions, isPending } = useOpenPositions({
-    businessId: "679077da2d6626a2b007f8f9",
+    businessId: rootBusiness?._id,
   });
 
   const pipeIds = positions

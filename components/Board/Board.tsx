@@ -30,6 +30,7 @@ import { countryLabelLookup, timeAgo } from "@/lib/utils";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import { Notifications } from "@/components/Notifications/Notifications";
 import { Dictionary } from "@/types/i18n";
+import { useBusinesses } from "@/hooks/use-businesses";
 type BoardProps = {
   dictionary: Dictionary;
 };
@@ -44,9 +45,9 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   } = useProfileFilterStatus({
     positionId: id,
   });
-
+  const { rootBusiness } = useBusinesses();
   const { positions } = useOpenPositions({
-    businessId: "679077da2d6626a2b007f8f9",
+    businessId: rootBusiness?._id,
   });
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);
