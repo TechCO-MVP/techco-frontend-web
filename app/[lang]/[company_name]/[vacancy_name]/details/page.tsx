@@ -1,16 +1,22 @@
 import { CancelApplicationDialog } from "@/components/CancelApplicationDialog/CancelApplicationDialog";
 import { SendApplicationDialog } from "@/components/SendApplicationDialog/SendApplicationDialog";
+import { getDictionary } from "@/get-dictionary";
+import { Locale } from "@/i18n-config";
 import { apiEndpoints } from "@/lib/api-endpoints";
 import { countryNameLookup } from "@/lib/utils";
 import { PositionResponse } from "@/types";
 
 export default async function Page({
+  params,
   searchParams,
 }: {
-  params: Promise<{ company_name: string; vacancy_name: string }>;
+  params: Promise<{ lang: Locale; company_name: string; vacancy_name: string }>;
   searchParams: Promise<{ token?: string }>;
 }) {
+  const { lang } = await params;
   const { token } = await searchParams;
+  const dictionary = await getDictionary(lang);
+  const { positionOfferPage: i18n } = dictionary;
   if (!token) return <p>Missing token</p>;
   const response = await fetch(apiEndpoints.positionDetails(token), {
     method: "GET",
@@ -58,14 +64,14 @@ export default async function Page({
 
             <div className="flex items-center gap-2 text-gray-600">
               <span>
-                📍 Ubicación: {positionData.position_city} /{" "}
+                📍 {i18n.locationLabel}: {positionData.position_city} /{" "}
                 {countryNameLookup(positionData.position_country)}
               </span>
             </div>
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
-                <h2> 🌍 Sobre nosotros</h2>
+                <h2> 🌍 {i18n.aboutUsLabel}</h2>
               </div>
               <p className="leading-relaxed text-gray-600">
                 {positionData.business_description}
@@ -74,7 +80,7 @@ export default async function Page({
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
-                <h2> 💻 Descripción del puesto</h2>
+                <h2> 💻 {i18n.jobDescriptionLabel}</h2>
               </div>
               <div className="space-y-4 text-gray-600">
                 <p>{positionData.position_description}</p>
@@ -83,7 +89,7 @@ export default async function Page({
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
-                <h2>🚀 Responsabilidades</h2>
+                <h2>🚀 {i18n.responsabilitiesLabel}</h2>
               </div>
               <ul className="space-y-2">
                 {positionData.position_responsabilities.map((item, index) => (
@@ -99,7 +105,7 @@ export default async function Page({
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
-                <h2>🎯Requisitos clave</h2>
+                <h2>🎯{i18n.requirementsLabel}</h2>
               </div>
               <ul className="space-y-2 text-gray-600">
                 {positionData.position_skills.map((item, index) => (
@@ -113,20 +119,19 @@ export default async function Page({
             {positionData.position_salary_range && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 font-semibold">
-                  <h2> 💰 Rango salarial</h2>
+                  <h2> 💰 {i18n.salaryRangeLabel}</h2>
                 </div>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    📌 La compensación para este rol está dentro del rango de{" "}
-                    {formatSalaryRange()} anuales, según experiencia y
-                    habilidades del candidato.
+                    📌 {i18n.salaryDescriptionStart}
+                    {formatSalaryRange()} {i18n.salaryDescriptionEnd}
                   </p>
                 </div>
               </section>
             )}
             <section className="space-y-3 pb-16">
               <div className="flex items-center gap-2 font-semibold">
-                <h2> 🎁Lo que ofrecemos</h2>
+                <h2> 🎁 {i18n.whatWeOfferLabel}</h2>
               </div>
               {positionData.position_benefits && (
                 <ul className="space-y-2">
@@ -145,17 +150,16 @@ export default async function Page({
               <div className="absolute -left-[35vw] top-0 h-[1px] w-[100vw] bg-gray-200"></div>
             </div>
             <div className="flex flex-col items-center pt-16">
-              {/* <iframe
-                className="mb-4 min-h-[400px] w-full"
-                src="https://app.pipefy.com/public/phase_redirect/eff20bb5-38ea-4e36-8fe9-20707bd729e2?origin=share"
-              ></iframe> */}
-              <SendApplicationDialog cardId={positionData.hiring_card_id} />
-              <CancelApplicationDialog cardId={positionData.hiring_card_id} />
+              <SendApplicationDialog
+                dictionary={dictionary}
+                cardId={positionData.hiring_card_id}
+              />
+              <CancelApplicationDialog
+                dictionary={dictionary}
+                cardId={positionData.hiring_card_id}
+              />
               <p className="text-center text-sm text-muted-foreground">
-                📌 Al enviar este formulario, aceptas nuestra política de
-                privacidad y tratamiento de datos personales. Tus datos serán
-                utilizados exclusivamente para fines de reclutamiento y no serán
-                compartidos con terceros sin tu consentimiento.
+                📌 {i18n.disclaimerText}
               </p>
             </div>
           </div>

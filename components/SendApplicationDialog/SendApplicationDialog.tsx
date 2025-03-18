@@ -9,12 +9,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { usePublicPhaseFormLink } from "@/hooks/use-public-phase-form-link";
+import { Dictionary } from "@/types/i18n";
 
 type Props = {
   cardId: string;
+  dictionary: Dictionary;
 };
 
-export const SendApplicationDialog: FC<Readonly<Props>> = ({ cardId }) => {
+export const SendApplicationDialog: FC<Readonly<Props>> = ({
+  cardId,
+  dictionary,
+}) => {
+  const { positionOfferPage: i18n } = dictionary;
+
   const [open, setOpen] = useState(false);
   const [publicPhaseFormUrl, setPublicPhaseFormUrl] = useState("");
   const { mutate, isPending } = usePublicPhaseFormLink({
@@ -34,10 +41,10 @@ export const SendApplicationDialog: FC<Readonly<Props>> = ({ cardId }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="mb-4 h-10 w-full max-w-md rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800">
-        Enviar mi aplicación
+        {i18n.sendApplicationLabel}
       </DialogTrigger>
 
-      <DialogTitle className="hidden">Enviar mi aplicación</DialogTitle>
+      <DialogTitle className="hidden">{i18n.sendApplicationLabel}</DialogTitle>
 
       <DialogContent className="max-h-[80vh] min-h-[80vh] max-w-[70vw] overflow-y-auto">
         <div className="flex w-full flex-col items-center justify-center rounded-md bg-white">

@@ -4,15 +4,21 @@ import { apiEndpoints } from "@/lib/api-endpoints";
 import { countryNameLookup } from "@/lib/utils";
 import Link from "next/link";
 import { PositionResponse } from "@/types";
+import { getDictionary } from "@/get-dictionary";
+import { Locale } from "@/i18n-config";
+import { CancelApplicationDialog } from "@/components/CancelApplicationDialog/CancelApplicationDialog";
 
 export default async function Page({
   params,
   searchParams,
 }: {
-  params: Promise<{ company_name: string; vacancy_name: string }>;
+  params: Promise<{ lang: Locale; company_name: string; vacancy_name: string }>;
   searchParams: Promise<{ token?: string }>;
 }) {
-  const { vacancy_name, company_name } = await params;
+  const { vacancy_name, company_name, lang } = await params;
+
+  const dictionary = await getDictionary(lang);
+  const { positionOfferPage: i18n } = dictionary;
   const { token } = await searchParams;
   if (!token) return <p>Missing token</p>;
   const response = await fetch(apiEndpoints.positionDetails(token), {
@@ -70,8 +76,7 @@ export default async function Page({
             </h1>
 
             <p className="mb-6 text-xl">
-              ¡{positionData.hiring_profile_name}, queremos que formes parte de
-              nuestro equipo de innovación!
+              ¡{positionData.hiring_profile_name}, {i18n.joinOurTeam}!
             </p>
 
             <p className="mb-8 max-w-prose text-muted-foreground">
@@ -88,20 +93,17 @@ export default async function Page({
                   query: { token },
                 }}
               >
-                Sí me interesa, aplicar ya
+                {i18n.applyLabel}
               </Link>
             </Button>
 
             <p className="text-sm text-muted-foreground">
-              Te responderemos en menos de 24 horas
+              {i18n.responseTimeInfo}
             </p>
-            <Button
-              variant="secondary"
-              className="mt-4 w-full max-w-md bg-secondary"
-              size="lg"
-            >
-              Prefiero no aplicar
-            </Button>
+            <CancelApplicationDialog
+              dictionary={dictionary}
+              cardId={positionData.hiring_card_id}
+            />
           </div>
         </div>
       </div>

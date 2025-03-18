@@ -219,5 +219,25 @@
     "months": "months",
     "aYear": "a Year",
     "years": "years"
+  },
+  "positionOfferPage": {
+    "joinOurTeam": "we want you to be part of our innovation team.",
+    "applyLabel": "Yes, I'm interested, apply now",
+    "skipLabel": "I prefer not to apply",
+    "confirmSkipMessage": "Are you sure you want to cancel your application?",
+    "confirmLabel": "Confirm",
+    "cancelLabel": "Cancel",
+    "responseTimeInfo": "We will respond to you within 24 hours.",
+    "disclaimerText": "By submitting this form, you agree to our privacy policy and personal data processing. Your data will be used exclusively for recruitment purposes and will not be shared with third parties without your consent.",
+    "locationLabel": "Location",
+    "aboutUsLabel": "About us",
+    "jobDescriptionLabel": "Job description",
+    "responsabilitiesLabel": "Responsibilities",
+    "requirementsLabel": "Key Requirements",
+    "salaryRangeLabel": "Salary Range",
+    "salaryDescriptionStart": "Compensation for this role is within the range of",
+    "salaryDescriptionEnd": "annual, based on the candidate's experience and skills.",
+    "whatWeOfferLabel": "What we offer",
+    "sendApplicationLabel": "Send my application"
   }
 }
