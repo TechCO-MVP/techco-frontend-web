@@ -43,6 +43,9 @@ export const apiEndpoints = {
   updateUserStatus() {
     return `${BASE_URL}/user/status`;
   },
+  updatePositionStatus() {
+    return `${BASE_URL}/position/status`;
+  },
   refreshTokens() {
     return `${BASE_URL}/auth/refresh_tokens`;
   },

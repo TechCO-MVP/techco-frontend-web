@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState, useTransition } from "react";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import LoadingSkeleton from "./LoadingSkeleton";
 import {
@@ -41,14 +41,25 @@ import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
-import { Business, HiringPositionData } from "@/types";
+import {
+  Business,
+  HiringPositionData,
+  UpdatePositionStatusData,
+} from "@/types";
 import { Notifications } from "@/components/Notifications/Notifications";
 import { usePipefyPipes } from "@/hooks/use-pipefy-pipes";
+import * as actions from "@/actions";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
+import { useUsers } from "@/hooks/use-users";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
   const { positionsPage: i18n } = dictionary;
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,7 +71,22 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     isLoading: loadingBusiness,
   } = useBusinesses();
 
-  const { isLoading, error, positions, isPending } = useOpenPositions({
+  const { currentUser } = useCurrentUser();
+
+  const { users } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
+
+  const localUser = useMemo(() => {
+    return users.find((user) => user.email === currentUser?.email);
+  }, [users, currentUser]);
+  const {
+    isLoading,
+    error,
+    positions,
+    isPending: pendingPositions,
+  } = useOpenPositions({
     businessId: rootBusiness?._id,
   });
 
@@ -85,7 +111,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   }, [positions]);
 
   if (error) return <div className="text-red-400"> {error.message}</div>;
-  if (isLoading || isPending || loadingBusiness) return <LoadingSkeleton />;
+  if (isLoading || pendingPositions || loadingBusiness)
+    return <LoadingSkeleton />;
 
   const handleSort = () => {
     setSortOrder((prev) => {
@@ -93,6 +120,30 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       if (prev === "desc") return null;
       return "asc";
     });
+  };
+
+  const onUpdateState = async (
+    position: HiringPositionData,
+    status: UpdatePositionStatusData["status"],
+  ) => {
+    try {
+      if (!localUser) return;
+      startTransition(async () => {
+        const updatePositionResponse = await actions.updatePositionStatus({
+          status,
+          positionId: position._id,
+          userId: localUser?._id,
+        });
+        console.log("updatePositionResponse", updatePositionResponse);
+        if (updatePositionResponse.success) {
+          queryClient.invalidateQueries({
+            queryKey: QUERIES.POSITION_LIST(rootBusiness?._id),
+          });
+        }
+      });
+    } catch (error: unknown) {
+      console.error("Error@onUpdateState", error);
+    }
   };
 
   const filteredPositions = positions.filter((position) =>
@@ -350,33 +401,58 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
+                        <DropdownMenuSubTrigger className="cursor-pointer">
                           {i18n.changeStateLabel}
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-pointer"
+                              disabled={isPending}
+                              onClick={(e) => {
+                                onUpdateState(position, "CANCELED");
+                                e.stopPropagation();
+                              }}
                             >
                               {i18n.cancelStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-pointer"
+                              disabled={isPending}
+                              onClick={(e) => {
+                                onUpdateState(position, "ACTIVE");
+                                e.stopPropagation();
+                              }}
                             >
                               {i18n.activeStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-pointer"
+                              disabled={isPending}
+                              onClick={(e) => {
+                                onUpdateState(position, "FINISHED");
+                                e.stopPropagation();
+                              }}
                             >
                               {i18n.terminatedStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-pointer"
+                              disabled={isPending}
+                              onClick={(e) => {
+                                onUpdateState(position, "INACTIVE");
+                                e.stopPropagation();
+                              }}
                             >
                               {i18n.inactiveStateLabel}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-pointer"
+                              disabled={isPending}
+                              onClick={(e) => {
+                                onUpdateState(position, "DRAFT");
+                                e.stopPropagation();
+                              }}
                             >
                               {i18n.draftStateLabel}
                             </DropdownMenuItem>
