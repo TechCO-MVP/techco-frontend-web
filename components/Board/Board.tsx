@@ -31,13 +31,20 @@ import { useOpenPositions } from "@/hooks/use-open-positions";
 import { Notifications } from "@/components/Notifications/Notifications";
 import { Dictionary } from "@/types/i18n";
 import { useBusinesses } from "@/hooks/use-businesses";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUsers } from "@/hooks/use-users";
+import { Locale } from "@/i18n-config";
+import { selectNotificationsState } from "@/lib/store/features/notifications/notifications";
+import { useAppSelector } from "@/lib/store/hooks";
+
 type BoardProps = {
   dictionary: Dictionary;
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
+  const notificationsState = useAppSelector(selectNotificationsState);
   const { positionDetailsPage: i18n } = dictionary;
-  const params = useParams<{ id: string }>();
-  const { id } = params;
+  const params = useParams<{ id: string; lang: Locale }>();
+  const { id, lang } = params;
   const {
     data: filterStatus,
     isLoading: loadingProfiles,
@@ -46,7 +53,17 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     positionId: id,
   });
   const { rootBusiness } = useBusinesses();
+  const { currentUser } = useCurrentUser();
+
+  const { users } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
+  const localUser = useMemo(() => {
+    return users.find((user) => user.email === currentUser?.email);
+  }, [users, currentUser]);
   const { positions } = useOpenPositions({
+    userId: localUser?._id,
     businessId: rootBusiness?._id,
   });
   const selectedPosition = useMemo(() => {
@@ -151,6 +168,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         ? filterStatus?.body.pipe_id
         : undefined,
   });
+
   const [board, setBoard] = useState<BoardState | undefined>(data);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -206,6 +224,23 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     setDraggedCard(null);
     setPendingMove(null);
   };
+
+  useEffect(() => {
+    const { showCandidateDetails } = notificationsState;
+    if (showCandidateDetails) {
+      console.log(
+        "query",
+        `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
+      );
+      const element = document.querySelector(
+        `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
+      ) as HTMLElement;
+
+      if (element) {
+        element.click();
+      }
+    }
+  }, [notificationsState]);
 
   const onCardMove = (
     columnId: string,
@@ -278,7 +313,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   return (
     <div className="flex w-full flex-col">
       <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
-        <Link href="/dashboard/positions">
+        <Link href={`/${lang}/dashboard/positions`} replace>
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
             {i18n.goBack}
@@ -353,7 +388,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           </div>
         )}
 
-      <div className="flex gap-4">
+      <div className="flex max-h-screen gap-4 hover:overflow-x-auto">
         {board?.columns.map((column) => (
           <BoardColumn
             dictionary={dictionary}
@@ -402,7 +437,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             <Button
               onClick={() => {
                 const element = document.querySelector(
-                  `#details-${pendingMove?.sourceColumnId}`,
+                  `#details-${pendingMove?.sourceColumnId}-${pendingMove?.cardId}`,
                 ) as HTMLElement;
 
                 if (element) {

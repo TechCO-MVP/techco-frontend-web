@@ -1,9 +1,9 @@
 export const QUERIES = {
   COMPANY_LIST: ["companies"] as const,
-  USER_LIST: ["users"] as const,
+  USER_LIST: (businessId?: string) => ["users", businessId] as const,
   CURRENT_USER: ["current-user"] as const,
-  POSITION_LIST: (businessId?: string, all?: boolean) =>
-    ["positions", businessId, all] as const,
+  POSITION_LIST: (businessId?: string, userId?: string) =>
+    ["positions", businessId, userId] as const,
   PIPE_DATA: (id?: number | string) => ["pipefy-pipe", id] as const,
   CARD_DATA: (id?: number | string) => ["pipefy-card", id] as const,
   PIPES_DATA: (id?: number | string) => ["pipefy-card", id] as const,

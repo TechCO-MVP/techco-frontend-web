@@ -87,6 +87,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     positions,
     isPending: pendingPositions,
   } = useOpenPositions({
+    userId: localUser?._id,
     businessId: rootBusiness?._id,
   });
 
@@ -102,6 +103,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     rootBusiness,
   );
 
+  console.log("[Debug]", {
+    rootBusiness,
+    localUser,
+    params: Boolean(rootBusiness?._id && localUser?._id),
+  });
   useEffect(() => {
     setSelectedCompany(rootBusiness);
   }, [rootBusiness]);
@@ -137,7 +143,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
         console.log("updatePositionResponse", updatePositionResponse);
         if (updatePositionResponse.success) {
           queryClient.invalidateQueries({
-            queryKey: QUERIES.POSITION_LIST(rootBusiness?._id),
+            queryKey: QUERIES.POSITION_LIST(rootBusiness?._id, localUser?._id),
           });
         }
       });

@@ -1,3 +1,4 @@
+"use client";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,7 +11,12 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
-
+import { setNotificationsState } from "@/lib/store/features/notifications/notifications";
+import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { Dispatch, SetStateAction, useState } from "react";
 interface Notification {
   id: string;
   type: "candidate_added" | "candidate_phase" | "system_update" | "error";
@@ -81,10 +87,28 @@ const notifications: Notification[] = [
 ];
 
 export function NotificationItem({
+  setOpen,
   notification,
 }: {
   notification: Notification;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const params = useParams<{ lang: Locale }>();
+  const { lang } = params;
+  const onNotificationClick = () => {
+    dispatch(
+      setNotificationsState({
+        showCandidateDetails: {
+          cardId: "1097053490",
+          phaseId: "334947965",
+        },
+      }),
+    );
+    setOpen(false);
+    router.push(`/${lang}/dashboard/positions/67d37ee3318bf870f6f64ad5`);
+  };
   return (
     <div
       className={cn(
@@ -112,12 +136,12 @@ export function NotificationItem({
           {notification.actionLabel && (
             <div className="flex justify-end">
               <Button
+                onClick={onNotificationClick}
                 variant="outline"
                 size="sm"
                 className="h-8 text-xs"
-                asChild
               >
-                <a href={notification.actionUrl}>{notification.actionLabel}</a>
+                {notification.actionLabel}
               </Button>
             </div>
           )}
@@ -133,8 +157,9 @@ interface NotificationsProps {
 }
 
 export function Notifications({ count = 9, label }: NotificationsProps) {
+  const [open, setOpen] = useState(false);
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
           {label} <Badge>{count}</Badge>
@@ -153,6 +178,7 @@ export function Notifications({ count = 9, label }: NotificationsProps) {
           <div className="flex flex-col">
             {notifications.map((notification) => (
               <NotificationItem
+                setOpen={setOpen}
                 key={notification.id}
                 notification={notification}
               />

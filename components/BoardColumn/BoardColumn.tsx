@@ -72,7 +72,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
   return (
     <div
       className={cn(
-        "w-[21.5rem] min-w-[21.5rem] rounded-lg bg-gray-100 p-4 shadow-md",
+        "max-h-screen w-[21.5rem] min-w-[21.5rem] overflow-hidden rounded-lg bg-gray-100 p-4 shadow-md hover:overflow-y-auto",
         {
           "border border-green-200 bg-green-200": draggedCard && canDrop,
           "border border-red-500 bg-red-200": draggedCard && !canDrop,
@@ -83,7 +83,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       onDragLeave={handleDragLeave}
     >
       <h2 className="mb-4 text-lg font-semibold">{column.name}</h2>
-      <div className="min-h-[100px] space-y-6">
+      <div className="space-y-6">
         {column.cards.nodes.map((card) => (
           <UserCard
             dictionary={dictionary}

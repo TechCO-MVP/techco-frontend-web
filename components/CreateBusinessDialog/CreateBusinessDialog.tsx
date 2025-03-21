@@ -28,8 +28,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { FormCombobox } from "../FormCombobox/FormCombobox";
 import { COUNTRIES } from "@/lib/data/countries";
-import { useAppDispatch } from "@/lib/store/hooks";
-import { setSidebarState } from "@/lib/store/features/sidebar/sidebar";
 
 type CreateBusinessDialogProps = {
   dictionary: Dictionary;
@@ -46,7 +44,6 @@ export const CreateBusinessDialog: FC<Readonly<CreateBusinessDialogProps>> = ({
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const dispatch = useAppDispatch();
 
   const form = useForm<CreateBusinessData>({
     mode: "onChange",
@@ -72,11 +69,6 @@ export const CreateBusinessDialog: FC<Readonly<CreateBusinessDialogProps>> = ({
           setOpen(false);
           toast({ description: i18n.createSucessMessage });
           queryClient.invalidateQueries({ queryKey: QUERIES.COMPANY_LIST });
-          dispatch(
-            setSidebarState({
-              isOpen: true,
-            }),
-          );
         } else {
           setError(createBusinessResponse.message);
         }

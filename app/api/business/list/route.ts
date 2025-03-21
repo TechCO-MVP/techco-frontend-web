@@ -22,6 +22,7 @@ export async function GET() {
         "x-api-key": process.env.API_KEY ?? "",
         Authorization: `Bearer ${token}`,
       },
+      cache: "no-store",
     });
 
     if (!response.ok) {

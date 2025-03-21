@@ -18,11 +18,13 @@ import { paths } from "@/lib/paths";
 import { setAuthState } from "@/lib/store/features/auth/auth";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type SignInFormProps = {
   dictionary: Dictionary;
 };
 export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { signIn: i18n } = dictionary;
@@ -43,6 +45,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
   } = form;
 
   const onSubmit = async (data: SignUpFormData) => {
+    queryClient.invalidateQueries();
     startTransition(async () => {
       const signInResponse = await actions.signIn(data);
       if (!signInResponse.session) {

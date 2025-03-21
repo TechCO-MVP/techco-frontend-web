@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useState, useTransition } from "react";
+import { FC, useEffect, useState, useTransition } from "react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { CreateUserDialog } from "../CreateUserDialog/CreateUserDialog";
@@ -32,6 +32,7 @@ import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { User } from "@/types";
 import { QUERIES } from "@/constants/queries";
+import { EditUserDialog } from "../EditUserDialog/EditUserDialog";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -45,6 +46,8 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   const { rootBusiness } = useBusinesses();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelecterUser] = useState<User | null>();
   const { users, isLoading } = useUsers({
     businessId: rootBusiness?._id,
     all: true,
@@ -57,7 +60,6 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
       return "asc";
     });
   };
-  if (isLoading) return <LoadingSkeleton />;
 
   const filteredUsers = users.filter((user) =>
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -69,22 +71,32 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
     return b.status.localeCompare(a.status);
   });
 
-  const onDisableUser = async (user: User) => {
+  const onUpdateState = async (user: User, status: "enabled" | "disabled") => {
     try {
       startTransition(async () => {
         const updateUserResponse = await actions.updateUserStatus({
           id: user._id,
           email: user.email,
-          status: "disabled",
+          status,
         });
         if (updateUserResponse.success) {
-          queryClient.invalidateQueries({ queryKey: QUERIES.USER_LIST });
+          queryClient.invalidateQueries({
+            queryKey: QUERIES.USER_LIST(rootBusiness?._id),
+          });
         }
       });
     } catch (error: unknown) {
-      console.error("Error@onDisableUser", error);
+      console.error("Error@onUpdateState", error);
     }
   };
+
+  useEffect(() => {
+    if (selectedUser && !showEditModal) {
+      setSelecterUser(null);
+    }
+  }, [showEditModal]);
+
+  if (isLoading) return <LoadingSkeleton />;
 
   return (
     <div className="flex w-full flex-col px-8 py-6">
@@ -167,14 +179,25 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => console.log("edit")}
+                        onClick={() => {
+                          console.log("user", user);
+                          setSelecterUser(user);
+                          setShowEditModal(true);
+                        }}
                       >
                         Editar
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         disabled={isPending}
                         className="cursor-pointer"
-                        onClick={() => onDisableUser(user)}
+                        onClick={() => onUpdateState(user, "enabled")}
+                      >
+                        Habilitar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={isPending}
+                        className="cursor-pointer"
+                        onClick={() => onUpdateState(user, "disabled")}
                       >
                         Inhabilitar
                       </DropdownMenuItem>
@@ -192,6 +215,14 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
           </TableBody>
         </Table>
       </div>
+      {selectedUser && (
+        <EditUserDialog
+          open={showEditModal}
+          setOpen={setShowEditModal}
+          user={selectedUser}
+          dictionary={dictionary}
+        />
+      )}
     </div>
   );
 };

@@ -77,6 +77,7 @@ export const PhaseHistory: React.FC<PhaseHistoryProps> = ({
   const renderField = (field: PipefyField) => {
     return (
       <EditableField
+        pipe={pipe}
         cardId={card.id}
         key={field.internal_id}
         label={field.label}

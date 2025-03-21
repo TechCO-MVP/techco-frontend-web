@@ -117,6 +117,9 @@ export type PipefyPipesResponse = {
 };
 
 export type UpdateFieldResponse = {
+  updateCardField?: {
+    card: PipefyCard;
+  };
   success: boolean;
   message?: string;
 };

@@ -12,9 +12,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { PipefyFieldType } from "@/types/pipefy";
+import {
+  PipefyFieldType,
+  PipefyPipe,
+  UpdateFieldResponse,
+} from "@/types/pipefy";
 import { Loader2, SquarePen } from "lucide-react";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
 interface EditableFieldProps {
   cardId: string;
   label: string;
@@ -22,7 +27,8 @@ interface EditableFieldProps {
   value: string | undefined;
   options?: string[];
   name: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<UpdateFieldResponse>;
+  pipe: PipefyPipe;
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -33,7 +39,9 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   options = [],
   name,
   action,
+  pipe,
 }) => {
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -41,7 +49,14 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
     startTransition(async () => {
-      action(formData);
+      const response = await action(formData);
+      console.log(response);
+      if (response.updateCardField) {
+        setIsEditing(false);
+        queryClient.invalidateQueries({
+          queryKey: QUERIES.PIPE_DATA(pipe.id),
+        });
+      }
     });
   };
   const renderInput = () => {

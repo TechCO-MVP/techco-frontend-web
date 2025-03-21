@@ -15,7 +15,7 @@ export function useUsers({
   email,
 }: QueryUsersParams & { email?: string }) {
   const queryResult = useQuery({
-    queryKey: QUERIES.USER_LIST,
+    queryKey: QUERIES.USER_LIST(businessId),
     queryFn: async () => {
       if (!businessId) {
         throw new Error("Missing required parameter: business_id");

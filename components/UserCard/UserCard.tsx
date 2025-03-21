@@ -107,7 +107,7 @@ export const UserCard: React.FC<CardProps> = ({
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="w-full max-w-[19rem] cursor-grab p-6 active:cursor-grabbing"
+      className="w-[19rem] cursor-grab p-6 active:cursor-grabbing"
     >
       <div>
         <div className="mb-4 flex h-8 items-center justify-between">
@@ -118,7 +118,7 @@ export const UserCard: React.FC<CardProps> = ({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-2 w-2">
                 <MoreHorizontal className="h-2 w-2" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only hidden">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
