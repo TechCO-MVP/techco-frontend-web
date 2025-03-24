@@ -1,4 +1,4 @@
-import { FormEvent, useState, useTransition } from "react";
+import { FormEvent, useCallback, useState, useTransition } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,9 +17,11 @@ import {
   PipefyPipe,
   UpdateFieldResponse,
 } from "@/types/pipefy";
-import { Loader2, SquarePen } from "lucide-react";
+import { ArrowDownToLine, Loader2, SquarePen } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
+import { usePresignedUrl } from "@/hooks/use-presigned-url";
+import { useUploadFile } from "@/hooks/use-file-upload";
 interface EditableFieldProps {
   cardId: string;
   label: string;
@@ -44,21 +46,67 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget as HTMLFormElement;
-    const formData = new FormData(form);
-    startTransition(async () => {
-      const response = await action(formData);
-      console.log(response);
-      if (response.updateCardField) {
-        setIsEditing(false);
-        queryClient.invalidateQueries({
-          queryKey: QUERIES.PIPE_DATA(pipe.id),
-        });
-      }
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [presignedUrl, setPresignedUrl] = useState("");
+  const { uploadFile, uploading, error } = useUploadFile();
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    const fileName = file.name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9.\-_]/g, "");
+
+    mutate({
+      organizationId: pipe.organizationId,
+      fileName: fileName,
     });
   };
+  const { mutate } = usePresignedUrl({
+    onSuccess: (data) => {
+      console.log("usePresignedUrl success", data);
+      setPresignedUrl(data.createPresignedUrl.url);
+    },
+    onError: (data) => {
+      console.log("usePresignedUrl error", data);
+    },
+  });
+  const handleSubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const form = event.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
+      if (type === "attachment") {
+        if (!selectedFile) return;
+        const filePath = new URL(presignedUrl).pathname.slice(1);
+        await uploadFile(presignedUrl, selectedFile, selectedFile.type);
+        formData.set("type", type);
+        formData.set(name, filePath);
+      }
+      startTransition(async () => {
+        const response = await action(formData);
+        console.log(response);
+        if (response.updateCardField) {
+          setIsEditing(false);
+          queryClient.invalidateQueries({
+            queryKey: QUERIES.PIPE_DATA(pipe.id),
+          });
+        }
+      });
+    },
+    [
+      presignedUrl,
+      action,
+      name,
+      pipe.id,
+      queryClient,
+      selectedFile,
+      type,
+      uploadFile,
+    ],
+  );
   const renderInput = () => {
     switch (type) {
       case "short_text":
@@ -88,6 +136,34 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             className="w-full"
           />
         );
+
+      case "attachment": {
+        if (!value) return null;
+        const url = JSON.parse(value);
+        const fileName = new URL(url).pathname.split("/").pop();
+
+        return isEditing ? (
+          <>
+            <Input
+              type="file"
+              id={name}
+              name={name}
+              disabled={!isEditing}
+              className="w-full"
+              onChange={handleFileChange}
+            />
+            {error && <p className="text-red-600">Error: {error}</p>}
+          </>
+        ) : (
+          <div
+            onClick={() => window.open(url, "_blank")}
+            className="group flex w-full cursor-pointer items-center justify-start gap-4 rounded-md p-2 hover:bg-slate-100"
+          >
+            <ArrowDownToLine className="group-hover:stroke-slate-400" />
+            {fileName}
+          </div>
+        );
+      }
 
       case "statement":
         return null;
@@ -253,8 +329,17 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           >
             Cancel
           </Button>
-          <Button disabled={isPending} type="submit" variant="default">
-            {isPending && <Loader2 className="animate-spin" />} Save
+          <Button
+            disabled={
+              uploading ||
+              isPending ||
+              (type === "attachment" ? (selectedFile ? false : true) : false)
+            }
+            type="submit"
+            variant="default"
+          >
+            {(uploading || isPending) && <Loader2 className="animate-spin" />}
+            Save
           </Button>
         </div>
       )}

@@ -94,7 +94,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
     if (selectedUser && !showEditModal) {
       setSelecterUser(null);
     }
-  }, [showEditModal]);
+  }, [showEditModal, selectedUser]);
 
   if (isLoading) return <LoadingSkeleton />;
 

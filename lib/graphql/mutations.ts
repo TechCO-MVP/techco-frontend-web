@@ -42,6 +42,14 @@ export const UPDATE_CARD_FIELD = `
   }
 `;
 
+export const CREATE_PRESIGNED_URL = gql`
+  mutation CreatePresignedUrl($input: CreatePresignedUrlInput!) {
+    createPresignedUrl(input: $input) {
+      url
+    }
+  }
+`;
+
 /**
  * 
  * 

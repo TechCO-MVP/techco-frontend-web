@@ -4,6 +4,7 @@ export interface BoardState {
 }
 
 export type PipefyPipe = {
+  organizationId: string;
   cards_count: number;
   startFormPhaseId: string;
   name: string;

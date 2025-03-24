@@ -227,7 +227,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
 
   useEffect(() => {
     const { showCandidateDetails } = notificationsState;
-    if (showCandidateDetails) {
+    if (showCandidateDetails && data?.pipe) {
       console.log(
         "query",
         `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
@@ -240,7 +240,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         element.click();
       }
     }
-  }, [notificationsState]);
+  }, [notificationsState, data]);
 
   const onCardMove = (
     columnId: string,

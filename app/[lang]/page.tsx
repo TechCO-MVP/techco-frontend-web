@@ -26,12 +26,6 @@ export default async function IndexPage(props: {
             </ul>
           </nav>
         </header>
-        <div className="flex flex-col items-center justify-center">
-          <p>
-            {dictionary["server-component"].currentLang}: {lang}
-          </p>
-          <p>{dictionary["server-component"].welcome}</p>
-        </div>
       </div>
     </div>
   );

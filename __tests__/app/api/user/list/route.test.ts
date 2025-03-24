@@ -74,6 +74,7 @@ describe("GET /api/user", () => {
       `${apiEndpoints.listUsers()}?business_id=123`,
       {
         method: "GET",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": process.env.API_KEY ?? "",
