@@ -30,6 +30,7 @@
     "roleLabel": "Role",
     "rolePlaceholder": "Role",
     "continueBtnText": "Continue",
+    "updateUserBtnText": "Update",
     "cancelBtnText": "Cancel",
     "loadingMessage": "Please wait",
     "createSucessMessage": "User created successfully"

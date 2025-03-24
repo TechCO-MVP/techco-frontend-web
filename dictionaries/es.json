@@ -30,6 +30,7 @@
     "roleLabel": "Rol",
     "rolePlaceholder": "Rol",
     "continueBtnText": "Continuar",
+    "updateUserBtnText": "Guardar",
     "cancelBtnText": "Cancelar",
     "loadingMessage": "Espere for favor",
     "createSucessMessage": "Se ha creado con éxito el usuario"
@@ -208,18 +209,18 @@
     "moveToPhase": "Mover tarjera a fase"
   },
   "utils": {
-    "aFewSeconds": "a few seconds",
-    "seconds": "seconds",
-    "aMinute": "a minute",
-    "minutes": "minutes",
-    "anHour": "an hour",
-    "hours": "hours",
-    "aDay": "a day",
-    "days": "days",
-    "aMonth": "a month",
-    "months": "months",
-    "aYear": "a Year",
-    "years": "years"
+    "aFewSeconds": "unos segundos",
+    "seconds": "segundos",
+    "aMinute": "un minuto",
+    "minutes": "minutos",
+    "anHour": "una hora",
+    "hours": "horas",
+    "aDay": "un día",
+    "days": "días",
+    "aMonth": "un mes",
+    "months": "meses",
+    "aYear": "un año",
+    "years": "años"
   },
   "positionOfferPage": {
     "joinOurTeam": "queremos que formes parte de nuestro equipo de innovación",

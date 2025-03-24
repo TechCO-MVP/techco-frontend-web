@@ -7,6 +7,9 @@ import { Dictionary } from "@/types/i18n";
 import { getDictionary } from "@/get-dictionary";
 import { Provider } from "react-redux";
 import { makeStore } from "@/lib/store/index";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
+
 vi.mock(
   "next/navigation",
   async () => await vi.importActual("next-router-mock"),
@@ -28,12 +31,16 @@ describe("SignInForm (Integration Tests)", () => {
     mockRouter.setCurrentUrl("/");
   });
 
-  const renderWithRedux = (ui: React.ReactNode) => {
-    return render(<Provider store={makeStore()}>{ui}</Provider>);
+  const renderWithProviders = (ui: React.ReactNode) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <Provider store={makeStore()}>{ui}</Provider>
+      </QueryClientProvider>,
+    );
   };
 
   it("renders the form correctly", () => {
-    renderWithRedux(<SignInForm dictionary={dictionary} />);
+    renderWithProviders(<SignInForm dictionary={dictionary} />);
     expect(screen.getByText(dictionary.signIn.formTitle)).toBeInTheDocument();
     expect(
       screen.getByText(dictionary.signIn.formDescription),
@@ -47,7 +54,7 @@ describe("SignInForm (Integration Tests)", () => {
   });
 
   it("disables the submit button when the form is invalid", () => {
-    renderWithRedux(<SignInForm dictionary={dictionary} />);
+    renderWithProviders(<SignInForm dictionary={dictionary} />);
 
     const submitButton = screen.getByRole("button", {
       name: dictionary.signIn.continueBtnText,
@@ -57,7 +64,7 @@ describe("SignInForm (Integration Tests)", () => {
   });
 
   it("displays validation errors when inputs are empty or invalid", async () => {
-    renderWithRedux(<SignInForm dictionary={dictionary} />);
+    renderWithProviders(<SignInForm dictionary={dictionary} />);
 
     fireEvent.change(screen.getByTestId("signup-email-input"), {
       target: { value: "invalid-email" },
@@ -73,7 +80,7 @@ describe("SignInForm (Integration Tests)", () => {
   it("successfully submits the form when inputs are valid", async () => {
     const { signIn } = await import("@/actions");
 
-    renderWithRedux(<SignInForm dictionary={dictionary} />);
+    renderWithProviders(<SignInForm dictionary={dictionary} />);
 
     fireEvent.change(screen.getByTestId("signup-email-input"), {
       target: { value: "test@example.com" },
@@ -98,7 +105,7 @@ describe("SignInForm (Integration Tests)", () => {
   });
 
   it("renders the 'Create Account' link", () => {
-    renderWithRedux(<SignInForm dictionary={dictionary} />);
+    renderWithProviders(<SignInForm dictionary={dictionary} />);
 
     const link = screen.getByRole("link", {
       name: dictionary.signIn.createAccountLabel,

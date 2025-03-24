@@ -1,23 +1,21 @@
 "use client";
 
 import { Dictionary } from "@/types/i18n";
-import { FC, useState, useTransition } from "react";
+import { Dispatch, FC, SetStateAction, useState, useTransition } from "react";
 import { Heading } from "@/components/Typography/Heading";
 import { Text } from "@/components/Typography/Text";
 import { Form } from "@/components/ui/form";
-import { CreateUserData, CreateUserSchema } from "@/lib/schemas";
+import { UpdateUserData, CreateUserSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getErrorMessage } from "@/lib/utils";
 import { FormInput } from "@/components/FormInput/FormInput";
 import { FormSelect } from "../FormSelect/FormSelect";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import * as actions from "@/actions";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -26,31 +24,38 @@ import { useBusinesses } from "@/hooks/use-businesses";
 import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
+import { User } from "@/types";
 
-type CreateUserDialogProps = {
+type EditUserDialogProps = {
   dictionary: Dictionary;
+  user: User;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
+export const EditUserDialog: FC<Readonly<EditUserDialogProps>> = ({
+  user,
   dictionary,
+  open,
+  setOpen,
 }) => {
   const { toast } = useToast();
   const { rootBusiness } = useBusinesses();
   const { userSettingsPage: i18n } = dictionary;
   const [error, setError] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [open, setOpen] = useState(false);
+
   const queryClient = useQueryClient();
-  const form = useForm<CreateUserData>({
+  const form = useForm<UpdateUserData>({
     mode: "onChange",
     resolver: zodResolver(CreateUserSchema),
     defaultValues: {
       businessId: rootBusiness?._id,
-      email: "",
-      fullName: "",
+      email: user.email,
+      fullName: user.full_name,
       businessName: rootBusiness?.name || "",
-      companyPosition: "",
-      role: "",
+      companyPosition: user.company_position,
+      role: user.role,
     },
   });
   const {
@@ -58,19 +63,24 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
     handleSubmit,
     formState: { dirtyFields, errors, isValid },
   } = form;
-  const onSubmit = async (data: CreateUserData) => {
-    try {
-      startTransition(async () => {
-        const createUserResponse = await actions.createUser(data);
 
-        if (createUserResponse.success) {
+  const onSubmit = async (data: UpdateUserData) => {
+    try {
+      console.log("submit", data);
+      startTransition(async () => {
+        const updateUserReponse = await actions.updateUser({
+          ...data,
+          id: user._id,
+        });
+
+        if (updateUserReponse.success) {
           setOpen(false);
           toast({ description: i18n.createSucessMessage });
           queryClient.invalidateQueries({
             queryKey: QUERIES.USER_LIST(rootBusiness?._id),
           });
         } else {
-          setError(createUserResponse.message);
+          setError(updateUserReponse.message);
         }
       });
     } catch (error: unknown) {
@@ -83,14 +93,6 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button asChild variant="ghost" className="bg-secondary">
-          <span>
-            <Plus /> {i18n.createUserButtonLabel}
-          </span>
-        </Button>
-      </DialogTrigger>
-
       <DialogTitle className="hidden">{i18n.createUserFormTitle}</DialogTitle>
 
       <DialogContent className="max-h-[36rem] overflow-y-auto xl:max-h-none">
@@ -191,6 +193,9 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
                 )}
               </div>
               <Button
+                onClick={() =>
+                  console.log("btn click", onSubmit(form.getValues()))
+                }
                 data-testid="create-user-submit-button"
                 disabled={!isValid || isPending}
                 type="submit"
@@ -201,7 +206,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
                     <Loader2 className="animate-spin" /> {i18n.loadingMessage}
                   </>
                 ) : (
-                  i18n.continueBtnText
+                  i18n.updateUserBtnText
                 )}
               </Button>
               <DialogClose asChild>

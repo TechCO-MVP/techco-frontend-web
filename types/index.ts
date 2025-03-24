@@ -80,6 +80,12 @@ export type UpdateUserStatusData = {
   status: "enabled" | "disabled";
 };
 
+export type UpdatePositionStatusData = {
+  userId: string;
+  positionId: string;
+  status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT";
+};
+
 export type PositionSkill = {
   name: string;
   required: boolean;
@@ -121,13 +127,6 @@ export type PositionResponseBody = {
 export type PositionResponse = {
   message: string;
   body: PositionResponseBody;
-};
-
-//
-type HiringProcess = {
-  card_id: number;
-  status: "STARTED" | "IN_PROGRESS" | "COMPLETED" | string; // Adjust possible statuses if known
-  id: string;
 };
 
 type HiringUser = {

@@ -28,6 +28,7 @@ export const GET_PIPES = gql`
 export const GET_PIPE = gql`
   query GetPipe($pipeId: ID!) {
     pipe(id: $pipeId) {
+      organizationId
       cards_count
       id
       name

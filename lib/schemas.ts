@@ -80,6 +80,7 @@ export const CreateUserSchema = z.object({
 });
 
 export type CreateUserData = z.infer<typeof CreateUserSchema>;
+export type UpdateUserData = z.infer<typeof CreateUserSchema>;
 
 /**
  * Create Business Form

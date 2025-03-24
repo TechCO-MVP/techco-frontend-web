@@ -157,7 +157,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   return (
     <Dialog modal open={open} onOpenChange={setOpen}>
-      <DialogTrigger id={`details-${phase.id}`} className="w-full">
+      <DialogTrigger id={`details-${phase.id}-${card.id}`} className="w-full">
         <Button asChild variant="secondary" className="h-8 w-full">
           <span>{i18n.candidateDetails}</span>
         </Button>
