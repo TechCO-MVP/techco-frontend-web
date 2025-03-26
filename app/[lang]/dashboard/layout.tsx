@@ -16,7 +16,7 @@ export default async function DashboardLayout(
   const dictionary = await getDictionary(lang);
   return (
     <div className="relative flex h-full items-center justify-center bg-gray-50">
-      <div className="flex h-full min-h-screen w-full flex-col bg-gray-50">
+      <div className="flex h-full min-h-screen w-full flex-col bg-white">
         <TopBar lang={lang} />
         <SideBar dictionary={dictionary} />
         <main className="mx-auto flex w-full max-w-[90%] flex-1 overflow-hidden py-4">

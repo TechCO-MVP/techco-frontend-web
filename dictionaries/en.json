@@ -205,7 +205,8 @@
     "aboutLabel": "About",
     "experienceLabel": "Experience",
     "educationLabel": "Education",
-    "moveToPhase": "Move card to phase"
+    "moveToPhase": "Move card to phase",
+    "phaseLabel": "Phase"
   },
   "utils": {
     "aFewSeconds": "a few seconds",
@@ -240,5 +241,31 @@
     "salaryDescriptionEnd": "annual, based on the candidate's experience and skills.",
     "whatWeOfferLabel": "What we offer",
     "sendApplicationLabel": "Send my application"
+  },
+  "createPositionPage": {
+    "goBack": "Go back",
+    "pageTitle": "How do you want to create this vacancy?",
+    "pageDescription": "Choose the option that best suits your process. You can generate the job posting using artificial intelligence, create it manually, or duplicate an existing one.",
+    "progessTitle": "Progress in creating the vacancy",
+    "step": "Step",
+    "initialTestStep": "Initial Test",
+    "softSkillsStep": "Soft Skills",
+    "technicalSkillsStep": "Technical Skills",
+    "publishedStep": "Published Vacancy",
+    "descriptionStep": "Description",
+    "inProcess": "In Process",
+    "pending": "Pending",
+    "completed": "Completed",
+    "doesNotApply": "Not Applicable",
+    "createWithAi": "Create with Artificial Intelligence",
+    "createWithAiDescription": "Save time and let AI structure the job opening for you.",
+    "createWithAiDetails": "Our assistant will analyze the position and suggest an optimized description, responsibilities, requirements, and benefits. Just review, adjust, and publish.",
+    "createManually": "Create manually",
+    "createManuallyDescription": "Take full control and build the job opening from scratch.",
+    "createManuallyDetails": "Define every detail, from the description to the requirements and benefits. Ideal if you prefer to customize the job opening from the start.",
+    "copyPrevious": "Copy a previous job opening",
+    "copyPreviousDescription": "Reuse a job opening you already created and adjust it as needed.",
+    "copyPreviousDetails": "Choose an existing job opening as a base. You can modify it before publishing, saving time and maintaining consistency in your offers.",
+    "selectBtnLabel": "Select"
   }
 }

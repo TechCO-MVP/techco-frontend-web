@@ -3,7 +3,12 @@
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { PipefyNode, PipefyPhase, type BoardState } from "@/types/pipefy";
+import {
+  PipefyFieldValues,
+  PipefyNode,
+  PipefyPhase,
+  type BoardState,
+} from "@/types/pipefy";
 import {
   Dialog,
   DialogContent,
@@ -286,6 +291,29 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     console.log("get pipe response", data);
   }, [data]);
 
+  const filteredBoard = useMemo(() => {
+    return board?.pipe.phases.map((column) => {
+      const filteredNodes = column.cards.nodes.filter((node) => {
+        return node.fields.some((field) => {
+          return (
+            field.indexName === PipefyFieldValues.CandidateName &&
+            String(field.value)
+              ?.toLowerCase()
+              .includes(searchTerm.toLowerCase())
+          );
+        });
+      });
+
+      return {
+        ...column,
+        cards: {
+          ...column.cards,
+          nodes: filteredNodes,
+        },
+      };
+    });
+  }, [searchTerm, board]);
+
   const getPriority = () => {
     if (!selectedPosition?.hiring_priority) return "";
     switch (selectedPosition.hiring_priority) {
@@ -342,7 +370,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
       </div>
       <div className="mb-8 flex justify-between">
         <Input
-          className="max-w-[18rem] shadow-sm"
+          className="max-w-[18rem] shadow-sm focus-visible:ring-0"
           type="tex"
           placeholder={i18n.search}
           value={searchTerm}
@@ -389,18 +417,19 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         )}
 
       <div className="flex max-h-screen gap-4 hover:overflow-x-auto">
-        {board?.columns.map((column) => (
-          <BoardColumn
-            dictionary={dictionary}
-            pipe={board.pipe}
-            key={column.id}
-            column={column}
-            onDrop={onDrop}
-            onCardMove={onCardMove}
-            draggedCard={draggedCard}
-            setDraggedCard={setDraggedCard}
-          />
-        ))}
+        {board &&
+          filteredBoard?.map((column) => (
+            <BoardColumn
+              dictionary={dictionary}
+              pipe={board.pipe}
+              key={column.id}
+              column={column}
+              onDrop={onDrop}
+              onCardMove={onCardMove}
+              draggedCard={draggedCard}
+              setDraggedCard={setDraggedCard}
+            />
+          ))}
       </div>
       <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <DialogContent className="max-w-[26rem] p-12">

@@ -5,18 +5,18 @@ import { HiringResponsibleUser } from "@/types";
 
 interface PhaseCommentProps {
   date: string;
-  phase: string;
   comment: string;
+  phaseLabel: string;
   stakeHolders?: HiringResponsibleUser[];
 }
 
 const PhaseComment: FC<Readonly<PhaseCommentProps>> = ({
   date,
-  phase,
   comment,
+  phaseLabel,
   stakeHolders,
 }) => {
-  const { author, comment: text } = parseComment(comment);
+  const { author, phaseName, comment: text } = parseComment(comment);
 
   function convertToFormattedDisplay(text: string) {
     const parts = text.split(/(\{\{user:[a-fA-F0-9]{24}\}\})/g);
@@ -25,6 +25,7 @@ const PhaseComment: FC<Readonly<PhaseCommentProps>> = ({
       const match = part.match(/\{\{user:([a-fA-F0-9]{24})\}\}/);
       if (match) {
         const userId = match[1];
+
         const user = stakeHolders?.find((u) => u.user_id.toString() === userId);
         if (user) {
           return (
@@ -44,7 +45,7 @@ const PhaseComment: FC<Readonly<PhaseCommentProps>> = ({
     <div className="flex flex-col gap-1">
       <Text className="text-sm font-bold text-foreground">{author}</Text>
       <Text className="text-xs text-[#999999]">
-        {date} ~ Fase: {phase}
+        {date} ~ {phaseLabel}: {phaseName}
       </Text>
       <Text type="p" className="text-sm text-muted-foreground">
         {convertToFormattedDisplay(text)}

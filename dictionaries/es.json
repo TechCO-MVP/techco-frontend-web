@@ -206,7 +206,8 @@
     "aboutLabel": "Acerca de",
     "experienceLabel": "Experiencia",
     "educationLabel": "Educación",
-    "moveToPhase": "Mover tarjera a fase"
+    "moveToPhase": "Mover tarjera a fase",
+    "phaseLabel": "Fase"
   },
   "utils": {
     "aFewSeconds": "unos segundos",
@@ -241,5 +242,31 @@
     "salaryDescriptionEnd": "anuales, según experiencia y habilidades del candidato.",
     "whatWeOfferLabel": "Lo que ofrecemos",
     "sendApplicationLabel": "Enviar mi aplicación"
+  },
+  "createPositionPage": {
+    "goBack": "Atrás",
+    "pageTitle": "¿Cómo quieres crear esta vacante?",
+    "pageDescription": "Elige la opción que mejor se adapte a tu proceso. Puedes generar la vacante con inteligencia artificial, construirla manualmente o duplicar una existente.",
+    "progessTitle": "Progreso en la creación de la vacante",
+    "step": "Paso",
+    "initialTestStep": "Prueba inicial",
+    "softSkillsStep": "Habilidades blandas",
+    "technicalSkillsStep": "Habilidades técnicas",
+    "publishedStep": "Vacante publicada",
+    "descriptionStep": "Descripción",
+    "inProcess": "En proceso",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "doesNotApply": "No aplica",
+    "createWithAi": "Crear con Inteligencia Artificial",
+    "createWithAiDescription": "Ahorra tiempo y deja que la IA estructure la vacante por ti.",
+    "createWithAiDetails": "Nuestro asistente analizará el cargo y te sugerirá una descripción optimizada, responsabilidades, requisitos y beneficios. Solo revisa, ajusta y publica.",
+    "createManually": "Crear de forma manual",
+    "createManuallyDescription": "Toma el control total y construye la vacante desde cero.",
+    "createManuallyDetails": "Define cada detalle, desde la descripción hasta los requisitos y beneficios. Ideal si prefieres personalizar la oferta desde el inicio.",
+    "copyPrevious": "Copiar una vacante anterior",
+    "copyPreviousDescription": "Reutiliza una vacante que ya creaste y ajústala según sea necesario.",
+    "copyPreviousDetails": "Elige una vacante existente como base. Podrás modificarla antes de publicarla, ahorrando tiempo y manteniendo consistencia en tus ofertas.",
+    "selectBtnLabel": "Seleccionar"
   }
 }

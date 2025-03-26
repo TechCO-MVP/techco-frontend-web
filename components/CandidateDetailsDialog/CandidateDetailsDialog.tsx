@@ -1,5 +1,13 @@
 "use client";
-import { FC, Fragment, useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  Fragment,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,18 +43,24 @@ import { useParams } from "next/navigation";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { Dictionary } from "@/types/i18n";
 import { useBusinesses } from "@/hooks/use-businesses";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUsers } from "@/hooks/use-users";
 
 interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
   card: PipefyNode;
   pipe: PipefyPipe;
   dictionary: Dictionary;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
   phase,
   pipe,
   dictionary,
+  open,
+  setOpen,
 }) => {
   const { userCard: i18n } = dictionary;
   const { rootBusiness } = useBusinesses();
@@ -72,7 +86,17 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
   const params = useParams<{ id: string }>();
   const { id } = params;
+  const { currentUser } = useCurrentUser();
+
+  const { users } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
+  const localUser = useMemo(() => {
+    return users.find((user) => user.email === currentUser?.email);
+  }, [users, currentUser]);
   const { positions } = useOpenPositions({
+    userId: localUser?._id,
     businessId: rootBusiness?._id,
   });
   const selectedPosition = useMemo(() => {
@@ -81,7 +105,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
   const [publicFormUrl, setPublicFormUrl] = useState("");
   const stakeHolders = useMemo(() => {
     if (!selectedPosition) return [];
@@ -118,7 +141,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
           description: "El candidato ha sido movido a la siguiente fase.",
         });
         queryClient.invalidateQueries({
-          queryKey: QUERIES.PIPE_DATA("305713420"),
+          queryKey: QUERIES.PIPE_DATA(pipe.id),
         });
       },
       onError: () => {
@@ -157,11 +180,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   return (
     <Dialog modal open={open} onOpenChange={setOpen}>
-      <DialogTrigger id={`details-${phase.id}-${card.id}`} className="w-full">
-        <Button asChild variant="secondary" className="h-8 w-full">
-          <span>{i18n.candidateDetails}</span>
-        </Button>
-      </DialogTrigger>
       <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
 
       <DialogContent className="flex max-h-[80vh] min-h-[80vh] max-w-[70vw]">
@@ -374,9 +392,9 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   <Fragment key={comment.id}>
                     <div className="h-[1px] w-full bg-gray-200"></div>
                     <PhaseComment
+                      phaseLabel={i18n.phaseLabel}
                       stakeHolders={stakeHolders}
                       date={comment.created_at}
-                      phase="XXX"
                       comment={comment.text}
                     />
                   </Fragment>

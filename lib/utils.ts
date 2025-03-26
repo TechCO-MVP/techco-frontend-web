@@ -34,11 +34,18 @@ export function decodeToken(token: string) {
 }
 
 export const parseComment = (text: string) => {
-  const match = text.match(/\[\{(.*?)\}\]/);
-  const author = match ? match[1] : null;
-  const comment = text.replace(/\s*\[\{.*?\}\]/g, "").trim();
+  const authorMatch = text.match(/\[\{(.*?)\}\]/);
+  const phaseMatch = text.match(/\{\{phase:(.*?)\}\}/);
 
-  return { comment, author };
+  const author = authorMatch ? authorMatch[1] : null;
+  const phaseName = phaseMatch ? phaseMatch[1] : null;
+
+  const comment = text
+    .replace(/\s*\[\{.*?\}\]/g, "") // remove author
+    .replace(/\s*\{\{phase:.*?\}\}/g, "") // remove phase name
+    .trim();
+
+  return { comment, author, phaseName };
 };
 
 export function countryCodeLookup(value: string): string | null {

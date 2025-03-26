@@ -31,6 +31,7 @@ import { countryLabelLookup, formatDate } from "@/lib/utils";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { CandidateDetailsDialog } from "../CandidateDetailsDialog/CandidateDetailsDialog";
 import { Dictionary } from "@/types/i18n";
+import { MouseEvent, useRef, useState } from "react";
 
 interface CardProps {
   dictionary: Dictionary;
@@ -51,6 +52,8 @@ export const UserCard: React.FC<CardProps> = ({
   pipe,
   dictionary,
 }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
   const { userCard: i18n } = dictionary;
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
   const avatarUrl =
@@ -102,12 +105,20 @@ export const UserCard: React.FC<CardProps> = ({
 
   return (
     <Card
+      ref={cardRef}
+      onClick={(event: MouseEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLElement;
+        if (target.closest("#dialog-close")) return;
+        if (open) return;
+        setOpen(true);
+      }}
+      id={`details-${column.id}-${card.id}`}
       draggable
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="w-[19rem] cursor-grab p-6 active:cursor-grabbing"
+      className="w-[19rem] cursor-pointer p-6 active:cursor-grabbing"
     >
       <div>
         <div className="mb-4 flex h-8 items-center justify-between">
@@ -203,61 +214,15 @@ export const UserCard: React.FC<CardProps> = ({
           </div>
         </motion.div>
       </AnimatePresence>
-      <div className="flex flex-col items-start justify-center">
-        <AnimatePresence>
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-2 overflow-hidden"
-          >
-            <div className="min-w-64 space-y-4 border-t pt-4">
-              <div>
-                <div className="mb-2 flex gap-1">
-                  <Text
-                    type="span"
-                    className="text-xs font-bold text-muted-foreground"
-                  >
-                    {i18n.candidateSource}:
-                  </Text>
-                  <Text type="span" className="text-xs">
-                    {candidateSource}
-                  </Text>
-                </div>
-                <div className="mb-2 flex gap-1">
-                  <Text
-                    type="span"
-                    className="text-xs font-bold text-muted-foreground"
-                  >
-                    {i18n.processStartDate}:
-                  </Text>
-                  <Text type="span" className="text-xs">
-                    {formatDate(processStartDate)}
-                  </Text>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Text className="text-foreground" size="xs">
-                    {i18n.lastCandidateComment}
-                  </Text>
-                  <Textarea
-                    disabled
-                    className="resize-none"
-                    placeholder="El aspirante demuestra un sólido entendimiento de los principios de desarrollo de software y posee..."
-                  ></Textarea>
-                </div>
-              </div>
 
-              <CandidateDetailsDialog
-                dictionary={dictionary}
-                pipe={pipe}
-                card={card}
-                phase={column}
-              />
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      <CandidateDetailsDialog
+        open={open}
+        setOpen={setOpen}
+        dictionary={dictionary}
+        pipe={pipe}
+        card={card}
+        phase={column}
+      />
     </Card>
   );
 };
