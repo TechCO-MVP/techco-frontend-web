@@ -1,12 +1,13 @@
 import { QUERIES } from "@/constants/queries";
-import { useQuery } from "@tanstack/react-query";
-import { HiringPositionResponse } from "@/types";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { HiringPositionData, HiringPositionResponse } from "@/types";
 
 type QueryPositionsParams = {
   userId?: string;
   businessId?: string;
   positionId?: string;
   all?: boolean;
+  options?: Partial<UseQueryOptions<HiringPositionData[]>>;
 };
 
 export function useOpenPositions({
@@ -14,6 +15,7 @@ export function useOpenPositions({
   userId,
   all,
   positionId,
+  options,
 }: QueryPositionsParams) {
   const queryResult = useQuery({
     queryKey: QUERIES.POSITION_LIST(businessId, userId),
@@ -48,6 +50,7 @@ export function useOpenPositions({
     retry: 3,
     refetchOnWindowFocus: false,
     enabled: Boolean(businessId && userId),
+    ...options,
   });
 
   const positions = queryResult.data || [];

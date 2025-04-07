@@ -7,12 +7,17 @@ import { getDictionary } from "@/get-dictionary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { makeStore } from "@/lib/store/index";
+import { useParams } from "next/navigation";
+
 vi.mock("@/hooks/use-businesses");
 
 const mockUseBusinesses = vi.mocked(useBusinesses);
 let mockDictionary: Dictionary;
 const queryClient = new QueryClient();
-
+vi.mock("next/navigation", () => ({
+  // other exports you may be using like useRouter, etc
+  useParams: vi.fn(),
+}));
 describe("AboutCompanyTab", () => {
   beforeEach(async () => {
     mockDictionary = await getDictionary("es");
@@ -22,9 +27,7 @@ describe("AboutCompanyTab", () => {
   const renderWithProviders = (component: React.ReactNode) =>
     render(
       <QueryClientProvider client={queryClient}>
-         <Provider store={makeStore()}>
-        {component}
-         </Provider>
+        <Provider store={makeStore()}>{component}</Provider>
       </QueryClientProvider>,
     );
 
@@ -38,15 +41,17 @@ describe("AboutCompanyTab", () => {
       <AboutCompanyTab dictionary={mockDictionary} />,
     );
 
-    expect(container.querySelectorAll(".skeleton")).toHaveLength(1); 
+    expect(container.querySelectorAll(".skeleton")).toHaveLength(1);
   });
 
   it("renders the CompanyDetailsForm when rootBusiness data is available", () => {
     const mockRootBusiness = { id: "1", name: "Test Business" };
+    vi.mocked(useParams).mockReturnValue({ lang: "es", id: "1" });
 
     mockUseBusinesses.mockReturnValue({
       rootBusiness: mockRootBusiness,
       isLoading: false,
+      businesses: [],
     } as any);
 
     renderWithProviders(<AboutCompanyTab dictionary={mockDictionary} />);

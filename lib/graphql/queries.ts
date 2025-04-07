@@ -71,6 +71,8 @@ export const GET_PIPE = gql`
               }
             }
             current_phase {
+              id
+              name
               fields {
                 required
                 internal_id

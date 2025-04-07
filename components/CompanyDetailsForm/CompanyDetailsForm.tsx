@@ -1,5 +1,5 @@
 "use client";
-import { FC, useTransition, useState } from "react";
+import { FC, useTransition, useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Dictionary } from "@/types/i18n";
@@ -30,18 +30,26 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { QUERIES } from "@/constants/queries";
 import { CreateBusinessDialog } from "../CreateBusinessDialog/CreateBusinessDialog";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
 
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
-  rootBusiness: Business;
+  businesses: Business[];
 };
 
 export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
-  rootBusiness,
   dictionary,
+  businesses,
 }) => {
+  const params = useParams<{ lang: Locale; id: string }>();
+  const { id } = params;
+  const selectedCompany = useMemo(() => {
+    return businesses.find((business) => business._id === id);
+  }, [id, businesses]);
+
   const [error, setError] = useState<string | undefined>("");
-  const [logo, setLogo] = useState(rootBusiness?.logo);
+  const [logo, setLogo] = useState(selectedCompany?.logo);
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -51,14 +59,14 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
     mode: "onChange",
     resolver: zodResolver(CompanyDetailsSchema),
     defaultValues: {
-      description: rootBusiness.description || "",
-      website: rootBusiness.url || "",
-      linkedin: rootBusiness.linkedin_url || "",
-      companySize: rootBusiness?.company_size,
-      industry: rootBusiness?.industry || "",
-      segment: rootBusiness?.segment || "",
-      name: rootBusiness.name,
-      countryCode: rootBusiness.country_code,
+      description: selectedCompany?.description || "",
+      website: selectedCompany?.url || "",
+      linkedin: selectedCompany?.linkedin_url || "",
+      companySize: selectedCompany?.company_size,
+      industry: selectedCompany?.industry || "",
+      segment: selectedCompany?.segment || "",
+      name: selectedCompany?.name,
+      countryCode: selectedCompany?.country_code,
     },
   });
   const {
@@ -68,18 +76,19 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
   } = form;
 
   const getCountryLabel = () => {
-    if (!rootBusiness?.country_code) return null;
+    if (!selectedCompany?.country_code) return null;
     const label = countryLabelLookup(
-      rootBusiness?.country_code?.toLocaleLowerCase(),
+      selectedCompany?.country_code?.toLocaleLowerCase(),
     );
     return label;
   };
   const onSubmit = async (data: CompanyDetailsData) => {
+    if (!selectedCompany) return;
     try {
       startTransition(async () => {
         const updateResponse = await updateCompanyAction(
-          { ...data, logo: logo || rootBusiness?.logo },
-          rootBusiness._id,
+          { ...data, logo: logo || selectedCompany?.logo },
+          selectedCompany._id,
         );
         if (updateResponse.success) {
           toast({ description: i18n.updateSucess });
@@ -118,11 +127,13 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             <Avatar className="h-20 w-20">
               <AvatarImage
                 src={
-                  logo || rootBusiness?.logo || "https://picsum.photos/200/200"
+                  logo ||
+                  selectedCompany?.logo ||
+                  "https://picsum.photos/200/200"
                 }
                 alt="@username"
               />
-              <AvatarFallback>{rootBusiness?.name}</AvatarFallback>
+              <AvatarFallback>{selectedCompany?.name}</AvatarFallback>
             </Avatar>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger>
@@ -157,12 +168,12 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
           </div>
           <div>
             <div className="flex items-center gap-1">
-              <Text fontWeight="bold">{rootBusiness?.name}</Text>
+              <Text fontWeight="bold">{selectedCompany?.name}</Text>
               <CountryLabel label={getCountryLabel()} />
             </div>
             <Text className="text-muted-foreground">
               {i18n.createdByLabel} Mao Molina |
-              {formatDate(rootBusiness?.created_at)}
+              {formatDate(selectedCompany?.created_at)}
             </Text>
           </div>
         </div>

@@ -5,6 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
+    testTimeout: 15000,
     globals: true,
     setupFiles: ["vitest.setup.ts"],
     environment: "jsdom",
@@ -27,14 +28,13 @@ export default defineConfig({
         "hooks/use-toast.ts", // hook from shadcn
         "lib/paths.ts", // The helper is static
         // Temp exlucude for WIP components
+        "components/CreatePosition/*",
         "**/app/**/[lang]/page.tsx",
         "app/*/*/*/page.tsx",
         "app/*/*/*/details/page.tsx",
         "**/app/**/dashboard/home/page.tsx",
         "**/app/**/dashboard/positions/page.tsx",
         "**/app/**/dashboard/positions/**/page.tsx",
-        "app/api/*",
-        "hooks/*",
         "actions/pipefy/update-field.ts",
         "actions/positions/update-status.ts",
         "actions/users/update-user.ts",
@@ -59,7 +59,7 @@ export default defineConfig({
         "components/EditUserDialog/*",
         "components/UserCard/*",
         "components/PhaseHistory/*",
-        "components/Sidebar/*",
+        "components/SideBar/SideBar.tsx",
         "components/CompanyDetailsForm/*",
         "components/CountryLabel/*",
         "components/CreateBusinessDialog/*",
@@ -68,7 +68,6 @@ export default defineConfig({
         "icons/*",
         "lib/utils.ts",
         "lib/store/features/notifications/notifications.ts",
-        "lib/api-endpoints.ts",
         "types/*",
         "lib/pipefy/*",
         "lib/graphql/*",

@@ -16,9 +16,21 @@
   "userSettingsPage": {
     "formTitle": "Configuración de los usuarios de tu organización",
     "formDescription": "Agrega o elimina usuarios de tu organización",
+    "selectModeTitle": "Selecciona un usuario existente",
+    "selectModeDescription": "Selecciona el usuario que quieres asociar a tu empresa",
+    "newModeTitle": "Crear usuario",
+    "newModeDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
     "createUserFormTitle": "Crear usuario",
-    "createUserButtonLabel": "Crear usuario",
+    "assignUserFormTitle": "Asignar un usuario",
+    "createUserButtonLabel": "Asignar usuario",
     "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
+    "assignUserFormDescription": "Elige si quieres agregar un nuevo usuario o asignar uno existente.",
+    "newUserTitle": "Agregar un nuevo usuario",
+    "newUserDescription": "Crea un perfil desde cero y asigna permisos.",
+    "newUserLabel": "Agregar un nuevo usuario",
+    "existingUserTitle": "Asignar un usuario existente",
+    "existingUserDescription": "Selecciona un usuario que ya forma parte de alguna empresa.",
+    "existingUserLabel": "Seleccionar usuario",
     "companyLabel": "Empresa",
     "companyPlaceholder": "Tech Solutions S.A.",
     "emailLabel": "Correo electrónico",
@@ -33,7 +45,9 @@
     "updateUserBtnText": "Guardar",
     "cancelBtnText": "Cancelar",
     "loadingMessage": "Espere for favor",
-    "createSucessMessage": "Se ha creado con éxito el usuario"
+    "createSucessMessage": "Se ha creado con éxito el usuario",
+    "goBack": "Atrás",
+    "searchPlaceholder": "Buscar usuario por nombre o correo"
   },
   "companiesPage": {
     "goBack": "Atrás",
@@ -150,7 +164,7 @@
     "candidates": "Candidatos",
     "createPosition": "Crear vacante",
     "stateLabel": "Estado",
-    "filterLabel": "Filtro",
+    "filterLabel": "Filtrar",
     "positionNameHeading": "Nombre de la vacante",
     "createAtHeading": "Fecha de Creación",
     "candidatesHeading": "Candidatos",
@@ -165,7 +179,13 @@
     "activeStateLabel": "Activa",
     "terminatedStateLabel": "Terminada",
     "inactiveStateLabel": "Inactiva",
-    "draftStateLabel": "Borrador"
+    "draftStateLabel": "Borrador",
+    "priorityFilterLabel": "Prioridad",
+    "7daysFilter": "Últimos 7 días ",
+    "14daysFilter": "Últimos 14 días ",
+    "30daysFilter": "Últimos 30 días ",
+    "90daysFilter": "Últimos 90 días ",
+    "dateFilterLabel": "Fecha de creación"
   },
   "positionDetailsPage": {
     "notifications": "Notificaciones",
@@ -206,7 +226,8 @@
     "aboutLabel": "Acerca de",
     "experienceLabel": "Experiencia",
     "educationLabel": "Educación",
-    "moveToPhase": "Mover tarjera a fase"
+    "moveToPhase": "Mover tarjera a fase",
+    "phaseLabel": "Fase"
   },
   "utils": {
     "aFewSeconds": "unos segundos",
@@ -241,5 +262,32 @@
     "salaryDescriptionEnd": "anuales, según experiencia y habilidades del candidato.",
     "whatWeOfferLabel": "Lo que ofrecemos",
     "sendApplicationLabel": "Enviar mi aplicación"
+  },
+  "createPositionPage": {
+    "goBack": "Atrás",
+    "pageTitle": "¿Cómo quieres crear esta vacante?",
+    "pageDescription": "Elige la opción que mejor se adapte a tu proceso. Puedes generar la vacante con inteligencia artificial, construirla manualmente o duplicar una existente.",
+    "progessTitle": "Progreso en la creación de la vacante",
+    "showProgress": "Ver progreso de la vacante",
+    "step": "Paso",
+    "initialTestStep": "Prueba inicial",
+    "softSkillsStep": "Habilidades blandas",
+    "technicalSkillsStep": "Habilidades técnicas",
+    "publishedStep": "Vacante publicada",
+    "descriptionStep": "Descripción",
+    "inProcess": "En proceso",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "doesNotApply": "No aplica",
+    "createWithAi": "Crear con Inteligencia Artificial",
+    "createWithAiDescription": "Ahorra tiempo y deja que la IA estructure la vacante por ti.",
+    "createWithAiDetails": "Nuestro asistente analizará el cargo y te sugerirá una descripción optimizada, responsabilidades, requisitos y beneficios. Solo revisa, ajusta y publica.",
+    "createManually": "Crear de forma manual",
+    "createManuallyDescription": "Toma el control total y construye la vacante desde cero.",
+    "createManuallyDetails": "Define cada detalle, desde la descripción hasta los requisitos y beneficios. Ideal si prefieres personalizar la oferta desde el inicio.",
+    "copyPrevious": "Copiar una vacante anterior",
+    "copyPreviousDescription": "Reutiliza una vacante que ya creaste y ajústala según sea necesario.",
+    "copyPreviousDetails": "Elige una vacante existente como base. Podrás modificarla antes de publicarla, ahorrando tiempo y manteniendo consistencia en tus ofertas.",
+    "selectBtnLabel": "Seleccionar"
   }
 }

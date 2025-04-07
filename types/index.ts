@@ -4,6 +4,11 @@ export type Country = {
   code: string;
 };
 
+export type UserRole = {
+  business_id: string;
+  role: "super_admin" | "business_admin" | "position_owner" | "recruiter";
+};
+
 export type User = {
   _id: string;
   full_name: string;
@@ -12,6 +17,7 @@ export type User = {
   role: string;
   business_id: string;
   status: "enabled" | "disabled" | "pending";
+  roles: UserRole[];
 };
 
 export type CognitoUser = {
@@ -140,7 +146,7 @@ export type HiringResponsibleUser = HiringUser & {
 
 export type HiringPositionData = {
   _id: string;
-  status: "STARTED" | "IN_PROGRESS" | "COMPLETED" | string; // Adjust possible statuses if known
+  status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT"; // Adjust possible statuses if known
   owner_position_user_id: string;
   owner_position_user_name: string;
   recruiter_user_id: string;
@@ -149,6 +155,7 @@ export type HiringPositionData = {
   role: string;
   hiring_priority: "high" | "medium" | "low";
   pipe_id: string;
+  created_at: string;
 };
 
 export type PositionFilterStatusResponse = {
@@ -193,5 +200,51 @@ export type HiringProcessResponse = {
   message: string;
   body: {
     data: HiringProcessData;
+  };
+};
+export type NotificationStatus = "NEW" | "READ" | "REVIEWED";
+
+export type NotificationType =
+  | "PHASE_CHANGE"
+  | "TAGGED_IN_COMMENT"
+  | "PROFILE_FILTER_PROCESS";
+
+export type Notification = {
+  _id: string;
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+  deleted_at: string | null;
+
+  user_id: string;
+  business_id: string;
+  message: string;
+
+  notification_type:
+    | "PHASE_CHANGE"
+    | "TAGGED_IN_COMMENT"
+    | "PROFILE_FILTER_PROCESS";
+
+  status: "NEW" | "READ" | "REVIEWED"; // define actual statuses you support
+
+  process: string;
+  hiring_process_id: string;
+  read_at: string | null;
+
+  phase_id: string;
+  card_id: string;
+
+  profile_name: string;
+  pipe_id: string;
+  position_name: string;
+};
+
+export type WebSocketNotificationPayload = {
+  message: Notification;
+};
+
+export type GetNotificationsApiResponse = {
+  message: string;
+  body: {
+    data: Notification[];
   };
 };

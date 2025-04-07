@@ -34,7 +34,6 @@ export const CommentBox: FC<CommentBoxProps> = ({
   const [canSubmit, setCanSubmit] = useState(false);
   const { currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
-
   const { mutate: addComment } = useCreateComment({
     onSuccess() {
       queryClient.invalidateQueries({
@@ -49,7 +48,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
   });
 
   function convertToStorageFormat(text: string) {
-    if (!stakeHolders?.length) return "";
+    if (!stakeHolders?.length) return text;
     return text.replace(/@([\w-]+(?:\s[\w-]+)?)/g, (match, name) => {
       const user = stakeHolders.find((u) => u.user_name === name);
       return user ? `{{user:${user.user_id}}}` : match;
@@ -58,9 +57,10 @@ export const CommentBox: FC<CommentBoxProps> = ({
   const handleAddComment = () => {
     const comment = editorRef.current?.textContent || "";
     const text = convertToStorageFormat(comment);
+
     addComment({
       cardId: card.id,
-      text: `${text} [{${currentUser?.name}}]`,
+      text: `${text} [{${currentUser?.name}}] {{phase:${card.current_phase.name}}}`,
     });
   };
 
@@ -102,6 +102,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
             const text = target.innerText.replace(/\u00A0/g, " ");
 
             setCanSubmit(text.length > 1);
+            if (!stakeHolders?.length) return;
             const words = text.match(/(?:^|\s)(@\S*)$/);
             const lastWord = words ? words[1] : "";
             if (lastWord.trim() === "@" && lastKeyRef.current !== "Backspace") {

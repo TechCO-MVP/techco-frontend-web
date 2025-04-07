@@ -3,7 +3,12 @@
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import { PipefyNode, PipefyPhase, type BoardState } from "@/types/pipefy";
+import {
+  PipefyFieldValues,
+  PipefyNode,
+  PipefyPhase,
+  type BoardState,
+} from "@/types/pipefy";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +19,12 @@ import {
 } from "@/components/ui/dialog";
 import { Text } from "@/components/Typography/Text";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, SlidersHorizontal, SmilePlus } from "lucide-react";
+import {
+  ChevronLeft,
+  Share2,
+  SlidersHorizontal,
+  SmilePlus,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/Typography/Heading";
@@ -36,11 +46,25 @@ import { useUsers } from "@/hooks/use-users";
 import { Locale } from "@/i18n-config";
 import { selectNotificationsState } from "@/lib/store/features/notifications/notifications";
 import { useAppSelector } from "@/lib/store/hooks";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Separator } from "../ui/separator";
+import { Checkbox } from "../ui/checkbox";
 
 type BoardProps = {
   dictionary: Dictionary;
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
+  const [matchFilter, setMatchFilter] = useState<string | null>(null);
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const matchOptions = ["Alta", "Media - Alta", "Media", "Baja"];
+  const sourceOptions = [
+    "Talent Connect",
+    "URL de la oferta",
+    "Ingreso manual",
+  ];
+  const statusOptions = ["Activo", "Descartado", "Desistió del proceso"];
+
   const notificationsState = useAppSelector(selectNotificationsState);
   const { positionDetailsPage: i18n } = dictionary;
   const params = useParams<{ id: string; lang: Locale }>();
@@ -228,17 +252,24 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   useEffect(() => {
     const { showCandidateDetails } = notificationsState;
     if (showCandidateDetails && data?.pipe) {
-      console.log(
-        "query",
-        `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
-      );
-      const element = document.querySelector(
-        `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
-      ) as HTMLElement;
+      setTimeout(() => {
+        console.log(
+          "query",
+          `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
+        );
+        const element = document.querySelector(
+          `#details-${showCandidateDetails.phaseId}-${showCandidateDetails.cardId}`,
+        ) as HTMLElement;
 
-      if (element) {
-        element.click();
-      }
+        console.log(
+          "%c[Debug] element",
+          "background-color: teal; font-size: 20px; color: white",
+          element,
+        );
+        if (element) {
+          element.click();
+        }
+      }, 200);
     }
   }, [notificationsState, data]);
 
@@ -286,6 +317,71 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     console.log("get pipe response", data);
   }, [data]);
 
+  const handleMatchChange = (value: string) => {
+    setMatchFilter((prev) => (prev === value ? null : value));
+  };
+
+  const handleSourceChange = (value: string) => {
+    setSourceFilter((prev) => (prev === value ? null : value));
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter((prev) => (prev === value ? null : value));
+  };
+
+  const { filteredBoard, resultCount } = useMemo(() => {
+    let count = 0;
+
+    const filtered = board?.pipe.phases.map((column) => {
+      const filteredNodes = column.cards.nodes.filter((node) => {
+        const fieldMap = Object.fromEntries(
+          node.fields.map((field) => [field.indexName, field.value]),
+        );
+
+        const matchesSearch =
+          !searchTerm ||
+          String(fieldMap[PipefyFieldValues.CandidateName] || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        const matchesMatch =
+          !matchFilter ||
+          String(
+            fieldMap[PipefyFieldValues.RoleAlignment] || "",
+          ).toLowerCase() === matchFilter.toLowerCase();
+
+        const matchesSource =
+          !sourceFilter ||
+          String(
+            fieldMap[PipefyFieldValues.CandidateSource] || "",
+          ).toLowerCase() === sourceFilter.toLowerCase();
+
+        const matchesStatus =
+          !statusFilter ||
+          String(
+            fieldMap[PipefyFieldValues.CandidateStatus] || "",
+          ).toLowerCase() === statusFilter.toLowerCase();
+
+        const isMatch =
+          matchesSearch && matchesMatch && matchesSource && matchesStatus;
+
+        if (isMatch) count += 1;
+
+        return isMatch;
+      });
+
+      return {
+        ...column,
+        cards: {
+          ...column.cards,
+          nodes: filteredNodes,
+        },
+      };
+    });
+
+    return { filteredBoard: filtered, resultCount: count };
+  }, [searchTerm, board, matchFilter, sourceFilter, statusFilter]);
+
   const getPriority = () => {
     if (!selectedPosition?.hiring_priority) return "";
     switch (selectedPosition.hiring_priority) {
@@ -310,48 +406,159 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     return timeAgo(diffInMs, dictionary);
   };
 
+  const onCopyLink = () => {
+    navigator.clipboard.writeText("https://copy");
+    toast({
+      title: "Link de la vacante copiado",
+    });
+  };
   return (
     <div className="flex w-full flex-col">
-      <div className="mb-12 flex flex-col items-start gap-2 border-b pb-8">
-        <Link href={`/${lang}/dashboard/positions`} replace>
-          <Button variant="ghost" className="-mx-8 text-sm">
-            <ChevronLeft className="h-4 w-4" />
-            {i18n.goBack}
-          </Button>
-        </Link>
-        <Badge variant="secondary" className="rounded-md">
-          {countryLabelLookup(
-            filterStatus?.body.process_filters.country_code || "",
-          )}
-        </Badge>
-        <div className="flex items-center justify-center gap-2">
-          <Heading className="text-xl" level={1}>
-            {filterStatus?.body.process_filters.role}
-          </Heading>
-          <Badge variant="secondary" className="rounded-md text-[#34C759]">
-            {selectedPosition?.status}
+      <div className="mb-8 flex justify-between border-b pb-8">
+        <div className="flex flex-col items-start gap-2">
+          <Link href={`/${lang}/dashboard/positions`} replace>
+            <Button variant="ghost" className="-mx-8 text-sm">
+              <ChevronLeft className="h-4 w-4" />
+              {i18n.goBack}
+            </Button>
+          </Link>
+          <Badge variant="secondary" className="rounded-md">
+            {countryLabelLookup(
+              filterStatus?.body.process_filters.country_code || "",
+            )}
           </Badge>
-          <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
-            {getPriority()}
-          </Badge>
+          <div className="flex items-center justify-center gap-2">
+            <Heading className="text-xl" level={1}>
+              {filterStatus?.body.process_filters.role}
+            </Heading>
+            <Badge variant="secondary" className="rounded-md text-[#34C759]">
+              {selectedPosition?.status}
+            </Badge>
+            <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
+              {getPriority()}
+            </Badge>
+          </div>
+          <div className="text-muted-foreground">
+            {i18n.trackingLabel} {calculateTime(filterStatus?.body.created_at)}
+          </div>
+          <Notifications label={i18n.notifications} />
         </div>
-        <div className="text-muted-foreground">
-          {i18n.trackingLabel} {calculateTime(filterStatus?.body.created_at)}
-        </div>
-        <Notifications label={i18n.notifications} />
+        <Button
+          className="place-self-end"
+          variant="outline"
+          onClick={onCopyLink}
+        >
+          <Share2 />
+          Compartir vacante
+        </Button>
       </div>
       <div className="mb-8 flex justify-between">
-        <Input
-          className="max-w-[18rem] shadow-sm"
-          type="tex"
-          placeholder={i18n.search}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            className="w-[250px] max-w-[18rem] shadow-sm focus-visible:ring-0"
+            type="tex"
+            placeholder={i18n.search}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && <span className="text-sm">({resultCount})</span>}
+        </div>
         <div className="flex gap-6">
-          <Button variant="ghost" className="border border-dashed shadow-sm">
-            <SlidersHorizontal /> {i18n.filterLabel}
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                className="border border-dashed shadow-sm"
+              >
+                <SlidersHorizontal /> {i18n.filterLabel}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="text-base font-bold">Filtrar</h4>
+                </div>
+                <Separator />
+
+                <div className="grid gap-2">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-bold">
+                      {dictionary.userCard.roleAlignment}
+                    </h4>
+                  </div>
+
+                  {matchOptions.map((option) => (
+                    <div key={option} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option}
+                        checked={matchFilter === option}
+                        onCheckedChange={() => handleMatchChange(option)}
+                      />
+                      <label
+                        htmlFor={option}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <div className="grid gap-2">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-bold">
+                      {dictionary.userCard.candidateSource}
+                    </h4>
+                  </div>
+
+                  {sourceOptions.map((option) => (
+                    <div key={option} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option}
+                        checked={sourceFilter === option}
+                        onCheckedChange={() => handleSourceChange(option)}
+                      />
+                      <label
+                        htmlFor={option}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <div className="grid gap-2">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-bold">
+                      {dictionary.userCard.candidateSource}
+                    </h4>
+                  </div>
+
+                  {statusOptions.map((option) => (
+                    <div key={option} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option}
+                        checked={statusFilter === option}
+                        onCheckedChange={() => handleStatusChange(option)}
+                      />
+                      <label
+                        htmlFor={option}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
           <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
       </div>
@@ -388,19 +595,20 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           </div>
         )}
 
-      <div className="flex max-h-screen gap-4 hover:overflow-x-auto">
-        {board?.columns.map((column) => (
-          <BoardColumn
-            dictionary={dictionary}
-            pipe={board.pipe}
-            key={column.id}
-            column={column}
-            onDrop={onDrop}
-            onCardMove={onCardMove}
-            draggedCard={draggedCard}
-            setDraggedCard={setDraggedCard}
-          />
-        ))}
+      <div className="flex max-h-screen min-h-[32rem] gap-4 hover:overflow-x-auto">
+        {board &&
+          filteredBoard?.map((column) => (
+            <BoardColumn
+              dictionary={dictionary}
+              pipe={board.pipe}
+              key={column.id}
+              column={column}
+              onDrop={onDrop}
+              onCardMove={onCardMove}
+              draggedCard={draggedCard}
+              setDraggedCard={setDraggedCard}
+            />
+          ))}
       </div>
       <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <DialogContent className="max-w-[26rem] p-12">
