@@ -1,14 +1,7 @@
 "use client";
 
 import { Dispatch, type FC, SetStateAction, useState } from "react";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Dictionary } from "@/types/i18n";
 import { countryNameLookup } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
@@ -61,7 +54,7 @@ export const PreviewDialog: FC<Readonly<Props>> = ({
 
     return `${salary} USD`;
   };
-
+  console.log("dictionary", dictionary);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTitle className="hidden">x</DialogTitle>

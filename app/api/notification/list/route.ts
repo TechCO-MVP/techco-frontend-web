@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { apiEndpoints } from "@/lib/api-endpoints";
 
-export async function GET(req: Request) {
+export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("idToken")?.value;
 

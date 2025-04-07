@@ -25,32 +25,16 @@ export function useWebSocket(
 
   const connect = useCallback(() => {
     const url = new URL(baseUrl);
-    console.log(
-      "%c[Debug] url",
-      "background-color: teal; font-size: 20px; color: white",
-      baseUrl,
-    );
-
     const socket = new WebSocket(url.toString());
     socketRef.current = socket;
 
     setStatus("connecting");
 
     socket.onopen = (event) => {
-      console.log(
-        "%c[Debug] connect",
-        "background-color: teal; font-size: 20px; color: white",
-        event,
-      );
       setStatus("connected");
     };
 
     socket.onmessage = (event) => {
-      console.log(
-        "%c[Debug] message",
-        "background-color: teal; font-size: 20px; color: white",
-        event,
-      );
       try {
         const parsed = JSON.parse(event.data);
         onMessage?.(parsed);
@@ -64,11 +48,6 @@ export function useWebSocket(
     };
 
     socket.onclose = (event) => {
-      console.log(
-        "%c[Debug] disconnected",
-        "background-color: teal; font-size: 20px; color: white",
-        event,
-      );
       setStatus("disconnected");
       if (reconnect) {
         reconnectTimeoutRef.current = setTimeout(connect, reconnectInterval);

@@ -8,12 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";

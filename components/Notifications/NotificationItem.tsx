@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { Locale } from "@/i18n-config";
 import { useAppDispatch } from "@/lib/store/hooks";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { VisibleOnScreen } from "./VisibleOnScreen";
 import { Notification } from "@/types";
 

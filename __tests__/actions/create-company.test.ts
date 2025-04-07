@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { createCompanyAction } from "@/actions";
 import { apiEndpoints } from "@/lib/api-endpoints";
 import { countryCodeLookup } from "@/lib/utils";
@@ -35,7 +35,7 @@ describe("createCompanyAction", () => {
   it("should successfully create a company", async () => {
     // Mock token and API response
     mockGetCookie.mockReturnValueOnce({ value: "mock-token" });
-    (countryCodeLookup as vi.Mock).mockReturnValueOnce("CO");
+    (countryCodeLookup as Mock).mockReturnValueOnce("CO");
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ message: "Company created successfully!" }),
@@ -70,7 +70,7 @@ describe("createCompanyAction", () => {
 
   it("should handle an API error response", async () => {
     mockGetCookie.mockReturnValueOnce({ value: "mock-token" });
-    (countryCodeLookup as vi.Mock).mockReturnValueOnce("CO");
+    (countryCodeLookup as Mock).mockReturnValueOnce("CO");
     mockFetch.mockResolvedValueOnce({
       ok: false,
       json: async () => ({ message: "Error creating company" }),
@@ -87,22 +87,21 @@ describe("createCompanyAction", () => {
   it("should handle missing token", async () => {
     mockGetCookie.mockReturnValueOnce(undefined);
     mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ message: "Missing authorization token." }),
-      });
-  
+      ok: false,
+      json: async () => ({ message: "Missing authorization token." }),
+    });
+
     const response = await createCompanyAction(mockData);
 
     expect(response).toEqual({
       success: false,
       message: "Missing authorization token.",
     });
-
   });
 
   it("should handle fetch errors", async () => {
     mockGetCookie.mockReturnValueOnce({ value: "mock-token" });
-    (countryCodeLookup as vi.Mock).mockReturnValueOnce("CO");
+    (countryCodeLookup as Mock).mockReturnValueOnce("CO");
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
     const response = await createCompanyAction(mockData);

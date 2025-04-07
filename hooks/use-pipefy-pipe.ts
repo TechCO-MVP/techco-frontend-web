@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { graphQLClient } from "@/lib/graphql/client";
 import { GET_PIPE } from "@/lib/graphql/queries";
 import { BoardState, PipefyPipeResponse } from "@/types/pipefy";
@@ -7,9 +7,10 @@ import { QUERIES } from "@/constants/queries";
 
 type QueryPipeParams = {
   pipeId?: string;
+  options?: Partial<UseQueryOptions<BoardState>>;
 };
 
-export function usePipefyPipe({ pipeId }: QueryPipeParams) {
+export function usePipefyPipe({ pipeId, options }: QueryPipeParams) {
   const fetchPipe = async (): Promise<BoardState> => {
     const data = await graphQLClient.request<PipefyPipeResponse>(GET_PIPE, {
       pipeId,
@@ -25,6 +26,7 @@ export function usePipefyPipe({ pipeId }: QueryPipeParams) {
     gcTime: 1000 * 60 * 10,
     retry: 1,
     refetchOnWindowFocus: false,
+    ...options,
   });
 
   return {

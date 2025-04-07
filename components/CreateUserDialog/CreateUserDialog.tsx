@@ -22,7 +22,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useBusinesses } from "@/hooks/use-businesses";
 import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
@@ -153,7 +152,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
       setRole(undefined);
       form.reset();
     }
-  }, [open]);
+  }, [open, form]);
 
   const getTitle = () => {
     switch (mode) {

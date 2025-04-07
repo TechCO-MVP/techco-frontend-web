@@ -1,7 +1,7 @@
 "use client";
 
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

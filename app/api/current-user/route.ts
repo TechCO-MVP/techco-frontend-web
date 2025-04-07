@@ -14,6 +14,13 @@ export async function GET() {
   }
   const user = decodeToken(token) as CognitoUser;
 
+  if (!user) {
+    return NextResponse.json(
+      { error: "Unauthorized: Invalid token" },
+      { status: 401 },
+    );
+  }
+
   return NextResponse.json({
     body: {
       user: {

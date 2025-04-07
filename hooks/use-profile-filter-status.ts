@@ -1,19 +1,19 @@
 import { QUERIES } from "@/constants/queries";
 import { PositionFilterStatusResponse } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 type ProfileFilterParams = {
   positionId: string;
+  options?: Partial<UseQueryOptions<PositionFilterStatusResponse>>;
 };
 
-export function useProfileFilterStatus({ positionId }: ProfileFilterParams) {
+export function useProfileFilterStatus({
+  positionId,
+  options,
+}: ProfileFilterParams) {
   const queryResult = useQuery<PositionFilterStatusResponse>({
     queryKey: QUERIES.PROFILE_FILTER_STATUS(positionId),
     queryFn: async () => {
-      if (!positionId) {
-        throw new Error("Missing required parameter: positionId");
-      }
-
       const queryParams = new URLSearchParams({
         position_id: positionId,
       });
@@ -39,6 +39,7 @@ export function useProfileFilterStatus({ positionId }: ProfileFilterParams) {
 
       return cachedData.body.status === "completed" ? false : 10000;
     },
+    ...options,
   });
 
   const positionStatus = queryResult.data?.body || [];

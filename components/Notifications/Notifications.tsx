@@ -62,7 +62,7 @@ export function Notifications({ label }: NotificationsProps) {
         status: "READ",
       });
     }
-  }, [open, toMarkRead]);
+  }, [open, toMarkRead, mutate]);
 
   const markAsRead = (id: string) => {
     setToMarkRead((prev) => (prev.includes(id) ? prev : [...prev, id]));

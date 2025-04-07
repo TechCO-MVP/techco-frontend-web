@@ -1,7 +1,6 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { graphQLClient } from "@/lib/graphql/client";
 import { CREATE_PRESIGNED_URL } from "@/lib/graphql/mutations";
-import { v4 as uuidv4 } from "uuid";
 
 interface CreatePresignedUrlInput {
   fileName: string;

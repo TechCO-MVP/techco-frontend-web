@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { Textarea } from "../ui/textarea";
 import {
   PipefyNode,
   PipefyFieldValues,
@@ -27,7 +26,7 @@ import {
   PipefyPipe,
 } from "@/types/pipefy";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
-import { countryLabelLookup, formatDate } from "@/lib/utils";
+import { countryLabelLookup } from "@/lib/utils";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { CandidateDetailsDialog } from "../CandidateDetailsDialog/CandidateDetailsDialog";
 import { Dictionary } from "@/types/i18n";
@@ -68,11 +67,8 @@ export const UserCard: React.FC<CardProps> = ({
   const currentPosition = fieldMap[PipefyFieldValues.CurrentPosition];
   const currentCompany = fieldMap[PipefyFieldValues.CurrentCompany];
   const yearsOfExperience = fieldMap[PipefyFieldValues.YearsOfExperience];
-  const processStartDate =
-    fieldMap[PipefyFieldValues.ProcessStartDate] || undefined;
   const candidateStatus =
     fieldMap[PipefyFieldValues.CandidateStatus] || "Activo";
-  const candidateSource = fieldMap[PipefyFieldValues.CandidateSource];
   const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
   const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
 
