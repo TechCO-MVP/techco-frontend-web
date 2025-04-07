@@ -44,6 +44,7 @@ export interface NotificationProps
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
+  id: string;
 }
 
 export function NotificationDialog({
