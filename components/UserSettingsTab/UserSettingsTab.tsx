@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useEffect, useState, useTransition } from "react";
+import { FC, useEffect, useMemo, useState, useTransition } from "react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { CreateUserDialog } from "../CreateUserDialog/CreateUserDialog";
@@ -33,6 +33,8 @@ import { useBusinesses } from "@/hooks/use-businesses";
 import { User } from "@/types";
 import { QUERIES } from "@/constants/queries";
 import { EditUserDialog } from "../EditUserDialog/EditUserDialog";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
 
 type UserSettingsTabProps = {
   dictionary: Dictionary;
@@ -40,19 +42,29 @@ type UserSettingsTabProps = {
 export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   dictionary,
 }) => {
+  const params = useParams<{ lang: Locale; id: string }>();
+  const { id } = params;
+
   const queryClient = useQueryClient();
   const { userSettingsPage: i18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
-  const { rootBusiness } = useBusinesses();
+  const { rootBusiness, businesses } = useBusinesses();
+  const selectedCompany = useMemo(() => {
+    return businesses.find((business) => business._id === id);
+  }, [id, businesses]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelecterUser] = useState<User | null>();
   const { users, isLoading } = useUsers({
-    businessId: rootBusiness?._id,
+    businessId: selectedCompany?._id,
     all: true,
   });
 
+  const { users: allUsers } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
   const handleSort = () => {
     setSortOrder((prev) => {
       if (prev === "asc") return "desc";
@@ -81,7 +93,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
         });
         if (updateUserResponse.success) {
           queryClient.invalidateQueries({
-            queryKey: QUERIES.USER_LIST(rootBusiness?._id),
+            queryKey: QUERIES.USER_LIST(selectedCompany?._id),
           });
         }
       });
@@ -114,7 +126,11 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
             {i18n.formDescription}
           </Text>
         </div>
-        <CreateUserDialog dictionary={dictionary} />
+        <CreateUserDialog
+          business={selectedCompany}
+          users={allUsers}
+          dictionary={dictionary}
+        />
       </div>
       {/* Filters */}
       <div className="mb-8 flex justify-between">
@@ -166,7 +182,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                 <TableCell className="flex items-center justify-between gap-4">
                   <span
                     className={cn(
-                      "rounded-sm border border-[#E4E4E7] px-2.5 py-0.5 font-semibold capitalize text-[#34C759]",
+                      "flex items-center gap-2 rounded-sm border border-[#E4E4E7] px-2.5 py-0.5 font-semibold capitalize text-[#34C759]",
                       user.status !== "enabled" && "text-red-500",
                     )}
                   >
@@ -190,22 +206,16 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                       <DropdownMenuItem
                         disabled={isPending}
                         className="cursor-pointer"
-                        onClick={() => onUpdateState(user, "enabled")}
+                        onClick={() =>
+                          onUpdateState(
+                            user,
+                            user.status === "enabled" ? "disabled" : "enabled",
+                          )
+                        }
                       >
-                        Habilitar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        disabled={isPending}
-                        className="cursor-pointer"
-                        onClick={() => onUpdateState(user, "disabled")}
-                      >
-                        Inhabilitar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => console.log("delete")}
-                      >
-                        Eliminar
+                        {user.status === "enabled"
+                          ? "Inhabilitar"
+                          : "Habilitar"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

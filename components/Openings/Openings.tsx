@@ -35,7 +35,6 @@ import {
 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { useRouter } from "next/navigation";
@@ -53,14 +52,41 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { useUsers } from "@/hooks/use-users";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { Search } from "./Search";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Separator } from "../ui/separator";
+import { Checkbox } from "../ui/checkbox";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  const [priorityFilter, setPriorityFilter] = useState<string | null>();
+  const [statusFilter, setStatusFilter] = useState<string | null>();
+  const priorityOptions = ["high", "medium", "low"];
+  const statusOptions = ["CANCELED", "ACTIVE", "FINISHED", "INACTIVE", "DRAFT"];
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
   const { positionsPage: i18n } = dictionary;
+  const dateOptions = [
+    {
+      value: 7,
+      label: i18n["7daysFilter"],
+    },
+    {
+      value: 14,
+      label: i18n["14daysFilter"],
+    },
+    {
+      value: 30,
+      label: i18n["30daysFilter"],
+    },
+    {
+      value: 90,
+      label: i18n["90daysFilter"],
+    },
+  ];
+  const [dateFilter, setDateFilter] = useState<number | null>();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -70,7 +96,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     businesses,
     isLoading: loadingBusiness,
   } = useBusinesses();
-
+  const [selectedCompany, setSelectedCompany] = useState<Business | null>(
+    rootBusiness,
+  );
   const { currentUser } = useCurrentUser();
 
   const { users } = useUsers({
@@ -81,6 +109,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const localUser = useMemo(() => {
     return users.find((user) => user.email === currentUser?.email);
   }, [users, currentUser]);
+
   const {
     isLoading,
     error,
@@ -88,7 +117,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     isPending: pendingPositions,
   } = useOpenPositions({
     userId: localUser?._id,
-    businessId: rootBusiness?._id,
+    businessId: selectedCompany?._id,
   });
 
   const pipeIds = positions
@@ -98,10 +127,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const { pipes } = usePipefyPipes({
     ids: pipeIds,
   });
-
-  const [selectedCompany, setSelectedCompany] = useState<Business | null>(
-    rootBusiness,
-  );
 
   console.log("[Debug]", {
     rootBusiness,
@@ -115,6 +140,54 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   useEffect(() => {
     console.log("/position/list response", positions);
   }, [positions]);
+
+  const filteredPositions = useMemo(() => {
+    const getDaysAgo = (days: number) => {
+      const now = new Date();
+      now.setDate(now.getDate() - days);
+      return now;
+    };
+
+    const dateCutoff = (() => {
+      switch (dateFilter) {
+        case 7:
+          return getDaysAgo(7);
+        case 14:
+          return getDaysAgo(14);
+        case 30:
+          return getDaysAgo(30);
+        case 90:
+          return getDaysAgo(90);
+        default:
+          return null; // no filter
+      }
+    })();
+    const filtered = positions.filter((position) => {
+      const searchMatch =
+        !searchTerm ||
+        position.role?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const priorityMatch =
+        !priorityFilter ||
+        position.hiring_priority
+          ?.toLowerCase()
+          .includes(priorityFilter.toLocaleLowerCase());
+
+      const statusMatch =
+        !statusFilter ||
+        position.status
+          ?.toLowerCase()
+          .includes(statusFilter.toLocaleLowerCase());
+
+      const dateMatch =
+        !dateCutoff || new Date(position.created_at) >= dateCutoff;
+
+      const isMatch = searchMatch && priorityMatch && statusMatch && dateMatch;
+
+      return isMatch;
+    });
+    return filtered;
+  }, [searchTerm, priorityFilter, positions, statusFilter, dateFilter]);
 
   if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading || pendingPositions || loadingBusiness)
@@ -151,10 +224,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       console.error("Error@onUpdateState", error);
     }
   };
-
-  const filteredPositions = positions.filter((position) =>
-    position.role?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
 
   const sortedPositions = [...filteredPositions].sort((a, b) => {
     if (!sortOrder) return 0; // No sorting
@@ -217,6 +286,18 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     );
   };
 
+  const handlePriorityChange = (value: string) => {
+    setPriorityFilter((prev) => (prev === value ? null : value));
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter((prev) => (prev === value ? null : value));
+  };
+
+  const handleDateChange = (value: number) => {
+    setDateFilter((prev) => (prev === value ? null : value));
+  };
+
   return (
     <div className="flex w-full flex-col px-8 py-6">
       {/* Top Section */}
@@ -268,7 +349,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             <CountryLabel
               label={countryLabelLookup(selectedCompany?.country_code || "co")}
             />
-            <Link href="companies">
+            <Link href={`companies/${selectedCompany?._id}`}>
               <Button
                 variant="ghost"
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F4F4F5]"
@@ -300,12 +381,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       </div>
       {/* Filters */}
       <div className="mb-8 flex justify-between">
-        <Input
-          className="max-w-[18rem] shadow-sm"
-          type="tex"
+        <Search
+          positions={positions}
           placeholder={i18n.search}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          setValue={setSearchTerm}
         />
         <div className="flex gap-6">
           <Button
@@ -318,9 +398,104 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           >
             <ArrowUpDown /> {i18n.stateLabel}
           </Button>
-          <Button variant="ghost" className="border border-dashed shadow-sm">
+          {/* <Button variant="ghost" className="border border-dashed shadow-sm">
             <SlidersHorizontal /> {i18n.filterLabel}
-          </Button>
+          </Button> */}
+          <div className="flex gap-6">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="border border-dashed shadow-sm"
+                >
+                  <SlidersHorizontal /> {i18n.filterLabel}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="text-base font-bold"> {i18n.filterLabel}</h4>
+                  </div>
+
+                  <Separator />
+                  <div className="grid gap-2">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">
+                        {i18n.priorityFilterLabel}
+                      </h4>
+                    </div>
+
+                    {priorityOptions.map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={option}
+                          checked={priorityFilter === option}
+                          onCheckedChange={() => handlePriorityChange(option)}
+                        />
+                        <label
+                          htmlFor={option}
+                          className="text-sm font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+                  <div className="grid gap-2">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">{i18n.stateLabel}</h4>
+                    </div>
+
+                    {statusOptions.map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={option}
+                          checked={statusFilter === option}
+                          onCheckedChange={() => handleStatusChange(option)}
+                        />
+                        <label
+                          htmlFor={option}
+                          className="text-sm font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.toLowerCase()}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+                  <div className="grid gap-2">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">
+                        {i18n.dateFilterLabel}
+                      </h4>
+                    </div>
+
+                    {dateOptions.map((option) => (
+                      <div
+                        key={option.value}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={option.label}
+                          checked={dateFilter === option.value}
+                          onCheckedChange={() => handleDateChange(option.value)}
+                        />
+                        <label
+                          htmlFor={option.label}
+                          className="text-sm font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
       <div>
@@ -364,8 +539,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                     className={cn(
                       "rounded-md",
                       "text-[#34C759]",
-                      position.status === "Inactiva" && "text-[#FF9500]",
-                      position.status === "Cancelada" && "text-[#FF3B30]",
+                      position.status === "INACTIVE" && "text-[#FF9500]",
+                      position.status === "CANCELED" && "text-[#FF3B30]",
                     )}
                   >
                     {position.status}
@@ -377,7 +552,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 >
                   {position.role}
                 </TableCell>
-                <TableCell>{formatDate(new Date().toString())}</TableCell>
+                <TableCell>
+                  {formatDate(new Date(position.created_at).toString())}
+                </TableCell>
                 <TableCell>{renderPipeData(position.pipe_id)}</TableCell>
                 <TableCell className="capitalize">
                   {position.hiring_priority}

@@ -1,3 +1,4 @@
+import { UserRole } from "@/types";
 import { ValidationErrorMessages } from "@/types/i18n";
 
 export const VALIDATION_ERROR_KEYS: {
@@ -17,3 +18,10 @@ export const VALIDATION_ERROR_KEYS: {
   companyLinkedinError: "companyLinkedinError",
   companyWebsiteError: "companyWebsiteError",
 };
+
+export const ROLES: { value: UserRole["role"]; label: string }[] = [
+  { value: "super_admin", label: "Super Admin" },
+  { value: "business_admin", label: "Business Admin" },
+  { value: "position_owner", label: "Position Owner" },
+  { value: "recruiter", label: "Recruiter" },
+];

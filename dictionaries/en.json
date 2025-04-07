@@ -14,11 +14,23 @@
     "title": "My Companies"
   },
   "userSettingsPage": {
-    "formTitle": "Configuración de los usuarios de tu organización",
-    "formDescription": "Agrega o elimina usuarios de tu organización",
+    "formTitle": "Setting up your organization's users",
+    "formDescription": "Add or remove users from your organization",
+    "selectModeTitle": "Select an existing user",
+    "selectModeDescription": "Select the user you want to associate with your company",
+    "newModeTitle": "Create user",
+    "newModeDescription": "Enter your email address to access your account.",
+    "assignUserFormTitle": "Assign user",
     "createUserFormTitle": "Create user",
-    "createUserButtonLabel": "Create user",
-    "createUserFormDescription": "Escribe tu correo electrónico para acceder a tu cuenta.",
+    "createUserButtonLabel": "Assign user",
+    "createUserFormDescription": "Enter your email address to access your account.",
+    "assignUserFormDescription": "Choose whether you want to add a new user or assign an existing one.",
+    "newUserTitle": "Add a new user",
+    "newUserDescription": "Create a profile from scratch and assign permissions.",
+    "newUserLabel": "Add a new user",
+    "existingUserTitle": "Assign an existing user",
+    "existingUserDescription": "Select a user who is already part of a company.",
+    "existingUserLabel": "Select user",
     "companyLabel": "Company Name",
     "companyPlaceholder": "Tech Solutions LLC.",
     "emailLabel": "Email Address",
@@ -33,7 +45,9 @@
     "updateUserBtnText": "Update",
     "cancelBtnText": "Cancel",
     "loadingMessage": "Please wait",
-    "createSucessMessage": "User created successfully"
+    "createSucessMessage": "User created successfully",
+    "goBack": "Back",
+    "searchPlaceholder": "Search by name or email"
   },
   "companiesPage": {
     "goBack": "Back",
@@ -164,7 +178,13 @@
     "activeStateLabel": "Active",
     "terminatedStateLabel": "Terminated",
     "inactiveStateLabel": "Inactive",
-    "draftStateLabel": "Draft"
+    "draftStateLabel": "Draft",
+    "priorityFilterLabel": "Priority",
+    "7daysFilter": "Last 7 days",
+    "14daysFilter": "Last 14 days",
+    "30daysFilter": "Last 30 days",
+    "90daysFilter": "Last 90 days",
+    "dateFilterLabel": "Creation date"
   },
   "positionDetailsPage": {
     "notifications": "Notifications",
@@ -246,7 +266,8 @@
     "goBack": "Go back",
     "pageTitle": "How do you want to create this vacancy?",
     "pageDescription": "Choose the option that best suits your process. You can generate the job posting using artificial intelligence, create it manually, or duplicate an existing one.",
-    "progessTitle": "Progress in creating the vacancy",
+    "progessTitle": "Progress creating the vacancy",
+    "showProgress": "Show progress",
     "step": "Step",
     "initialTestStep": "Initial Test",
     "softSkillsStep": "Soft Skills",

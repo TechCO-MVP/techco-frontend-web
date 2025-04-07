@@ -1,12 +1,12 @@
 "use client";
 
-import { countryNameLookup } from "@/lib/utils";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
+import { LocationSelector } from "./LocationSelector";
 
 export const Preview = () => {
   const [salaryOption, setSalaryOption] = useState<
@@ -58,7 +58,7 @@ export const Preview = () => {
           <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
             <h1 className="text-4xl font-bold">Lead Developer </h1>
             <div className="flex items-center gap-2 text-gray-600">
-              <span>📍 Ubicación: Bogotá /{countryNameLookup("CO")}</span>
+              <LocationSelector />
             </div>
             <section className="w-full space-y-3">
               <div className="flex items-center gap-2 font-semibold">

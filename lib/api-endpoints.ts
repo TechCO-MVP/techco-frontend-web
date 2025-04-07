@@ -58,4 +58,10 @@ export const apiEndpoints = {
   getProfileFilterStatus() {
     return `${BASE_URL}/profile/filter`;
   },
+  getNotifications() {
+    return `${BASE_URL}/notification/list`;
+  },
+  updateNotificationStatus() {
+    return `${BASE_URL}/notification/status`;
+  },
 };

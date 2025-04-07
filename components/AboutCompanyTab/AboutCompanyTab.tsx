@@ -11,17 +11,14 @@ type CompaniesTabProps = {
 export const AboutCompanyTab: FC<Readonly<CompaniesTabProps>> = ({
   dictionary,
 }) => {
-  const { rootBusiness, isLoading, error } = useBusinesses();
+  const { rootBusiness, isLoading, error, businesses } = useBusinesses();
 
   if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading) return <LoadingSkeleton />;
   return (
     <>
       {rootBusiness ? (
-        <CompanyDetailsForm
-          rootBusiness={rootBusiness}
-          dictionary={dictionary}
-        />
+        <CompanyDetailsForm businesses={businesses} dictionary={dictionary} />
       ) : null}
     </>
   );

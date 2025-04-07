@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Provider } from "react-redux";
 import { makeStore } from "@/lib/store/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { NotificationProvider } from "@/lib/notification-provider";
 // Mock the TopBar component
 vi.mock("@/components/TopBar/TopBar", () => ({
   TopBar: vi.fn(() => <div data-testid="mocked-topbar">Mocked TopBar</div>),
@@ -17,7 +17,9 @@ describe("DashboardLayout", () => {
   const renderWithProviders = (ui: React.ReactNode) => {
     return render(
       <QueryClientProvider client={queryClient}>
-        <Provider store={makeStore()}>{ui}</Provider>
+        <NotificationProvider>
+          <Provider store={makeStore()}>{ui}</Provider>
+        </NotificationProvider>
       </QueryClientProvider>,
     );
   };

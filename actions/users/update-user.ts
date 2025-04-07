@@ -3,7 +3,7 @@
 import { UpdateUserData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 import { cookies } from "next/headers";
-import { User } from "@/types";
+import { User, UserRole } from "@/types";
 
 interface CreateResponse {
   success: boolean;
@@ -14,7 +14,7 @@ interface CreateResponse {
 }
 
 export async function updateUser(
-  data: UpdateUserData & { id: string },
+  data: UpdateUserData & { id: string; roles?: UserRole[] },
 ): Promise<CreateResponse> {
   try {
     const cookieStore = await cookies();
@@ -33,6 +33,7 @@ export async function updateUser(
         user_email: data.email,
         company_position: data.companyPosition,
         user_role: data.role,
+        roles: data.roles,
       }),
     });
     console.log("data", {
@@ -42,6 +43,7 @@ export async function updateUser(
       user_email: data.email,
       company_position: data.companyPosition,
       user_role: data.role,
+      roles: data.roles,
     });
     const result = await response.json();
     console.log("result", result);

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import CompaniesPage from "@/app/[lang]/dashboard/companies/page";
+import CompaniesPage from "@/app/[lang]/dashboard/companies/[id]/page";
 import { Locale } from "@/i18n-config";
 import { Suspense } from "react";
 

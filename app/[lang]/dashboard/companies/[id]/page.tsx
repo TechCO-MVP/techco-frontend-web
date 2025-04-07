@@ -20,23 +20,23 @@ export default async function CompaniesPage(props: {
       </nav>
       <Tabs
         defaultValue="about"
-        className="flex h-full w-full flex-col items-center justify-center"
+        className="flex h-full w-full flex-col items-center justify-center bg-white"
       >
-        <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-gray-50">
+        <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
           <TabsTrigger
-            className="rounded-none border-black bg-gray-50 shadow-none data-[state=active]:border-b-2 data-[state=active]:bg-gray-50 data-[state=active]:shadow-none"
+            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
             value="about"
           >
             {dictionary.companiesPage.aboutCompanyTabTitle}
           </TabsTrigger>
           <TabsTrigger
-            className="rounded-none border-black bg-gray-50 shadow-none data-[state=active]:border-b-2 data-[state=active]:bg-gray-50 data-[state=active]:shadow-none"
+            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
             value="user"
           >
             {dictionary.companiesPage.userSettingsTabTitle}
           </TabsTrigger>
           <TabsTrigger
-            className="rounded-none border-black bg-gray-50 shadow-none data-[state=active]:border-b-2 data-[state=active]:bg-gray-50 data-[state=active]:shadow-none"
+            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
             value="main"
           >
             {dictionary.companiesPage.mainTabTitle}

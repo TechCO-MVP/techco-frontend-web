@@ -17,10 +17,17 @@ import {
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Step, Stepper } from "./Stepper";
-import { OptionCard } from "./OptionCard";
+import { OptionCard } from "../OptionCard/OptionCard";
 import { Input } from "../ui/input";
 import { Preview } from "./Preview";
 import { PreviewDialog } from "./PreviewDialog";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 type CreatePositionProps = {
   dictionary: Dictionary;
 };
@@ -73,11 +80,20 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
         </Text>
         <div className="mt-4 h-[1px] w-full bg-gray-200"></div>
       </div>
-      <div className="mx-auto flex w-fit flex-col gap-7 px-10 py-12 shadow-md">
-        <Heading level={2} className="text-2xl font-semibold">
-          {i18n.progessTitle}
-        </Heading>
-        <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+      <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 px-10 py-2 shadow-md">
+        <Accordion type="multiple" className="space-y-4">
+          <AccordionItem value="progress" className="border-none">
+            <AccordionTrigger className="flex justify-end hover:no-underline">
+              {i18n.showProgress}
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4">
+              <Heading level={2} className="text-2xl font-semibold">
+                {i18n.progessTitle}
+              </Heading>
+              <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
       {true && (
         <div className="mx-auto flex w-fit flex-col gap-10">
