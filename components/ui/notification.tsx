@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const notificationVariants = cva(
-  "fixed z-50 shadow-lg transition-all duration-300 ease-in-out",
+  "fixed z-[200] shadow-lg transition-all duration-300 ease-in-out",
   {
     variants: {
       position: {
@@ -83,7 +83,7 @@ export function NotificationDialog({
   if (!show) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 flex items-start justify-center">
+    <div className="pointer-events-none fixed inset-0 z-[200] flex items-start justify-center">
       <div className="pointer-events-auto relative" ref={cardRef}>
         <Card
           className={cn(

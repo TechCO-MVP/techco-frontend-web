@@ -42,7 +42,6 @@ export const Text: React.FC<TextProps> = ({
   return (
     <Tag
       className={cn(
-        "font-sans",
         fontSizeMap[size],
         fontWeightMap[fontWeight],
         colorClass,

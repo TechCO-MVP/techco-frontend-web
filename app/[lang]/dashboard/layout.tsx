@@ -15,8 +15,6 @@ export default async function DashboardLayout(
 ) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-  const webSocketBaseUrl = process.env.WEBSOCKET_URL as string;
-  const webSocketConnectionUrl = `${webSocketBaseUrl}?token=${accessToken}`;
 
   const { children } = props;
   const { lang } = await props.params;
@@ -27,7 +25,7 @@ export default async function DashboardLayout(
       <div className="flex h-full min-h-screen w-full flex-col bg-white">
         <TopBar lang={lang} />
         <SideBar dictionary={dictionary} />
-        <WebSocketListener webSocketUrl={webSocketConnectionUrl} />
+        <WebSocketListener accessToken={accessToken} />
         <main className="mx-auto flex w-full max-w-[90%] flex-1 overflow-hidden py-4">
           {children}
         </main>

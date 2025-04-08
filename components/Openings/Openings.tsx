@@ -375,9 +375,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </span>
           </div>
         </div>
-        <Button variant="ghost" className="flex items-center bg-secondary">
-          <Plus /> {i18n.createPosition}
-        </Button>
+        <Link href={`positions/create`}>
+          <Button variant="ghost" className="flex items-center bg-secondary">
+            <Plus /> {i18n.createPosition}
+          </Button>
+        </Link>
       </div>
       {/* Filters */}
       <div className="mb-8 flex justify-between">

@@ -35,9 +35,6 @@ export default defineConfig({
         "**/app/**/dashboard/home/page.tsx",
         "**/app/**/dashboard/positions/page.tsx",
         "**/app/**/dashboard/positions/**/page.tsx",
-        "actions/pipefy/update-field.ts",
-        "actions/positions/update-status.ts",
-        "actions/users/update-user.ts",
         "components/TopBar/*",
         "components/UserMenu/*",
         "components/UserInfo/*",
@@ -70,7 +67,7 @@ export default defineConfig({
         "lib/store/features/notifications/notifications.ts",
         "types/*",
         "lib/pipefy/*",
-        "lib/graphql/*",
+
         // End Temp exlucude for WIP components
         ".storybook",
         ".next",

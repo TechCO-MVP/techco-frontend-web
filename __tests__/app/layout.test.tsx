@@ -6,9 +6,9 @@ import { describe, it, expect, vi } from "vitest";
 import { Locale } from "@/i18n-config";
 import { i18n } from "@/i18n-config";
 
-vi.mock("next/font/local", () => ({
-  default: vi.fn(() => ({
-    variable: "mocked-font",
+vi.mock("next/font/google", () => ({
+  Inter: vi.fn(() => ({
+    className: "mocked-font",
   })),
 }));
 

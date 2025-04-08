@@ -144,6 +144,14 @@ export type HiringResponsibleUser = HiringUser & {
   can_edit: boolean;
 };
 
+export type HiringProcess = {
+  _id: string;
+  business_id: string;
+  card_id: string;
+  phase_id: string;
+  position_id: string;
+};
+
 export type HiringPositionData = {
   _id: string;
   status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT"; // Adjust possible statuses if known
@@ -156,6 +164,7 @@ export type HiringPositionData = {
   hiring_priority: "high" | "medium" | "low";
   pipe_id: string;
   created_at: string;
+  hiring_processes: HiringProcess[];
 };
 
 export type PositionFilterStatusResponse = {
@@ -248,3 +257,12 @@ export type GetNotificationsApiResponse = {
     data: Notification[];
   };
 };
+
+export interface CreateNotificationInput {
+  user_id: string[];
+  business_id: string;
+  message: string;
+  notification_type: Notification["notification_type"];
+  hiring_process_id: string;
+  phase_id: string;
+}
