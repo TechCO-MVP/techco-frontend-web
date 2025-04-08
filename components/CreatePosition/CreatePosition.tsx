@@ -28,6 +28,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
+import { PositionSheet } from "../PositionSheet/PositionSheet";
+import { CheckBoxList } from "../ChatBot/CheckBoxList";
+import { ReadonlyList } from "../ChatBot/ReadOnlyList";
 type CreatePositionProps = {
   dictionary: Dictionary;
 };
@@ -62,9 +65,33 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
     },
   ]);
 
-  return <Preview />;
+  // return <Preview />;
+  // return (
+  //   <CheckBoxList
+  //     message="Puedes elegir todas las opciones que apliquen para ti y luego haz clic en ‘Enviar respuestas’:"
+  //     options={[
+  //       "Análisis de datos",
+  //       "Gestión de proyectos",
+  //       "Automatización de procesos",
+  //       "Visualización de datos",
+  //       "Otro (Selecciona si quieres compartir algo diferente)",
+  //     ]}
+  //   />
+  // );
+  // return (
+  //   <ReadonlyList
+  //     message="Estos son los elementos que encontré para ti:"
+  //     items={[
+  //       "Análisis de datos",
+  //       "Visualización de datos",
+  //       "Automatización de procesos",
+  //     ]}
+  //   />
+  // );
   return (
     <div className="flex w-full flex-col px-8 py-6">
+      <PositionSheet />
+
       <div className="relative flex flex-col gap-2">
         <Link href={`/${lang}/dashboard/positions`} replace>
           <Button variant="ghost" className="-mx-8 text-sm">

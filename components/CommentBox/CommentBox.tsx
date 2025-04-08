@@ -15,17 +15,20 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { PopoverAnchor } from "@radix-ui/react-popover";
-import { HiringResponsibleUser } from "@/types";
+import { HiringPositionData, HiringResponsibleUser } from "@/types";
+import { useCreateNotification } from "@/hooks/use-create-notification";
 interface CommentBoxProps {
   pipeId: string;
   card: PipefyNode;
   stakeHolders?: HiringResponsibleUser[];
+  position?: HiringPositionData;
 }
 
 export const CommentBox: FC<CommentBoxProps> = ({
   card,
   stakeHolders,
   pipeId,
+  position,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const lastKeyRef = useRef("");
@@ -34,12 +37,42 @@ export const CommentBox: FC<CommentBoxProps> = ({
   const [canSubmit, setCanSubmit] = useState(false);
   const { currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
+  const { mutate: createNotification } = useCreateNotification({
+    onSuccess: () => {
+      console.log(
+        "%c[Debug] sucess",
+        "background-color: teal; font-size: 20px; color: white",
+      );
+    },
+    onError: () => {
+      console.log(
+        "%c[Debug] error",
+        "background-color: teal; font-size: 20px; color: white",
+      );
+    },
+  });
   const { mutate: addComment } = useCreateComment({
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: QUERIES.PIPE_DATA(pipeId),
       });
       if (!editorRef.current) return;
+      const comment = editorRef.current?.textContent || "";
+      const mentionedUsers = extractMentionedUserIds(comment);
+      const hiringProcess = position?.hiring_processes.find(
+        (process) => process.card_id === card.id,
+      );
+      if (hiringProcess && mentionedUsers.length > 0) {
+        createNotification({
+          phase_id: hiringProcess.phase_id,
+          message: "Mencionado en un comentation",
+          notification_type: "TAGGED_IN_COMMENT",
+          user_id: mentionedUsers[0],
+          business_id: hiringProcess?.business_id,
+          hiring_process_id: hiringProcess?._id,
+        });
+      }
+
       editorRef.current.textContent = "";
     },
     onError(error) {
@@ -54,10 +87,23 @@ export const CommentBox: FC<CommentBoxProps> = ({
       return user ? `{{user:${user.user_id}}}` : match;
     });
   }
+
+  function extractMentionedUserIds(text: string): string[] {
+    if (!stakeHolders?.length) return [];
+
+    const mentions = text.match(/@([\w-]+(?:\s[\w-]+)?)/g);
+    if (!mentions) return [];
+
+    const mentionedUserIds = mentions
+      .map((mention) => mention.slice(1)) // remove '@'
+      .map((name) => stakeHolders.find((u) => u.user_name === name)?.user_id)
+      .filter((id): id is string => Boolean(id)); // filter out undefined
+
+    return [...new Set(mentionedUserIds)]; // dedupe
+  }
   const handleAddComment = () => {
     const comment = editorRef.current?.textContent || "";
     const text = convertToStorageFormat(comment);
-
     addComment({
       cardId: card.id,
       text: `${text} [{${currentUser?.name}}] {{phase:${card.current_phase.name}}}`,

@@ -9,6 +9,7 @@ describe("apiEndpoints helper", () => {
     expectedPath: string;
     args?: unknown[];
   }[] = [
+    { key: "createNotification", expectedPath: "/notification/create" },
     {
       key: "verifyOtpCodeSignUp",
       expectedPath: "/auth/verify_auth_otp_code_signup",

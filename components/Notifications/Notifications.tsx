@@ -14,6 +14,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useGetNotifications } from "@/hooks/use-get-notifications";
 import { NotificationItem } from "./NotificationItem";
 import { useUpdateNotification } from "@/hooks/use-update-notification";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
 
 interface NotificationsProps {
   label: string;
@@ -22,12 +24,17 @@ interface NotificationsProps {
 export function Notifications({ label }: NotificationsProps) {
   const { notifications, isLoading } = useGetNotifications();
   const [toMarkRead, setToMarkRead] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
   const { mutate } = useUpdateNotification({
     onSuccess: () => {
       console.log(
         "%c[Debug] sucess",
         "background-color: teal; font-size: 20px; color: white",
       );
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.NOTIFICATIONS,
+      });
     },
     onError: () => {
       console.log(

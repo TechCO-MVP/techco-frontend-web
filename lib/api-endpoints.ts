@@ -64,4 +64,7 @@ export const apiEndpoints = {
   updateNotificationStatus() {
     return `${BASE_URL}/notification/status`;
   },
+  createNotification() {
+    return `${BASE_URL}/notification/create`;
+  },
 };

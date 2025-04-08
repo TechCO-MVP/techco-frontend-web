@@ -398,6 +398,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </div>
             <div className="flex flex-col gap-6 p-6">
               <CommentBox
+                position={selectedPosition}
                 stakeHolders={stakeHolders}
                 pipeId={pipe.id}
                 card={card}
