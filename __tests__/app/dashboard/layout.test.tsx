@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 describe("DashboardLayout", () => {
   beforeEach(() => {
     // Stub the environment variable
-    vi.stubEnv("WEBSOCKET_URL", "wss://localhost");
+    vi.stubEnv("NEXT_PUBLIC_WEBSOCKET_URL", "wss://localhost");
   });
 
   afterEach(() => {
@@ -38,8 +38,8 @@ describe("DashboardLayout", () => {
       </QueryClientProvider>,
     );
   };
-  it("should use the stubbed WEBSOCKET_URL", () => {
-    expect(process.env.WEBSOCKET_URL).toBe("wss://localhost");
+  it("should use the stubbed NEXT_PUBLIC_WEBSOCKET_URL", () => {
+    expect(process.env.NEXT_PUBLIC_WEBSOCKET_URL).toBe("wss://localhost");
   });
   it("renders the layout with children and the TopBar component", async () => {
     mockCookieGet.mockReturnValue({ value: "mock-token" });
