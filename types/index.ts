@@ -259,7 +259,7 @@ export type GetNotificationsApiResponse = {
 };
 
 export interface CreateNotificationInput {
-  user_id: string;
+  user_id: string[];
   business_id: string;
   message: string;
   notification_type: Notification["notification_type"];

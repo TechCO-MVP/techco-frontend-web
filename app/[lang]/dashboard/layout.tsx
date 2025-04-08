@@ -17,7 +17,11 @@ export default async function DashboardLayout(
   const accessToken = cookieStore.get("accessToken")?.value;
   const webSocketBaseUrl = process.env.WEBSOCKET_URL as string;
   const webSocketConnectionUrl = `${webSocketBaseUrl}?token=${accessToken}`;
-
+  console.log(
+    "%c[Debug] webSocketConnectionUrl",
+    "background-color: teal; font-size: 20px; color: white",
+    webSocketConnectionUrl,
+  );
   const { children } = props;
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);

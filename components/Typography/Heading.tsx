@@ -26,11 +26,7 @@ export const Heading: React.FC<HeadingProps> = ({
 
   return (
     <HeadingTag
-      className={cn(
-        "font-sans leading-tight text-primary",
-        fontSizeClass,
-        className,
-      )}
+      className={cn("leading-tight text-primary", fontSizeClass, className)}
     >
       {children}
     </HeadingTag>

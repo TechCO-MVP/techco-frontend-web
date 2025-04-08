@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
 import React, { FC } from "react";
 
 interface OptionCardProps {
+  link?: string;
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -13,6 +15,7 @@ interface OptionCardProps {
 }
 
 export const OptionCard: FC<Readonly<OptionCardProps>> = ({
+  link,
   icon,
   title,
   description,
@@ -35,9 +38,11 @@ export const OptionCard: FC<Readonly<OptionCardProps>> = ({
         </Text>
       )}
 
-      <Button onClick={onClick} className="h-8 text-xs">
-        {selectBtnLabel}
-      </Button>
+      <Link href={link ? link : "#"}>
+        <Button onClick={onClick} className="h-8 text-xs">
+          {selectBtnLabel}
+        </Button>
+      </Link>
     </div>
   );
 };

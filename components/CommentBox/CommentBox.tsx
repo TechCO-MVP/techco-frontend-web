@@ -67,7 +67,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
           phase_id: hiringProcess.phase_id,
           message: "Mencionado en un comentation",
           notification_type: "TAGGED_IN_COMMENT",
-          user_id: mentionedUsers[0],
+          user_id: mentionedUsers,
           business_id: hiringProcess?.business_id,
           hiring_process_id: hiringProcess?._id,
         });

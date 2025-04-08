@@ -33,7 +33,7 @@ export const WebSocketListener: FC<Props> = ({ webSocketUrl }) => {
         timestamp: new Date(`${message.created_at}Z`).toLocaleString(),
       });
     },
-    [showNotification],
+    [showNotification, queryClient],
   );
   useWebSocket(webSocketUrl, {
     onMessage: handleMessage,

@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
 import Providers from "../providers";
-import localFont from "next/font/local";
 import { i18n, type Locale } from "../../i18n-config";
 import { Toaster } from "@/components/ui/toaster";
+import { Inter } from "next/font/google";
 
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-  preload: false,
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-  preload: false,
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Talent Connect",
@@ -40,9 +29,7 @@ export default async function RootLayout(props: Readonly<RootLayoutProps>) {
 
   return (
     <html lang={params.lang}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <Providers>{children}</Providers>
         <Toaster />
       </body>
