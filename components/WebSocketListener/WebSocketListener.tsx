@@ -2,7 +2,7 @@
 
 import { useNotification } from "@/lib/notification-provider";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback } from "react";
 import { WebSocketNotificationPayload } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
@@ -12,30 +12,10 @@ type Props = {
 };
 
 export const WebSocketListener: FC<Props> = ({ accessToken }) => {
-  const { showNotification } = useNotification();
   const queryClient = useQueryClient();
-
+  const { showNotification } = useNotification();
   const baseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
-  console.log(
-    "%c[Debug] baseUrl",
-    "background-color: teal; font-size: 20px; color: white",
-    baseUrl,
-  );
-  // Validate required values
-  useEffect(() => {
-    if (!accessToken) {
-      console.warn("WebSocketListener: Missing accessToken");
-    }
-    if (!baseUrl) {
-      console.error("WebSocketListener: Missing NEXT_PUBLIC_WEBSOCKET_URL");
-    }
-  }, [accessToken, baseUrl]);
-
-  // Don't proceed if required inputs are missing
-  if (!accessToken || !baseUrl) return null;
-
-  const webSocketUrl = `${baseUrl}?token=${accessToken}`;
-
+  console.info("[WebSocketListener] - baseUrl", baseUrl);
   const handleMessage = useCallback(
     (data: WebSocketNotificationPayload) => {
       queryClient.invalidateQueries({
@@ -58,8 +38,12 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
         timestamp: new Date(`${message.created_at}Z`).toLocaleString(),
       });
     },
-    [showNotification, queryClient],
+    [queryClient, showNotification],
   );
+
+  // Construct URL safely, or set it to null
+  const webSocketUrl =
+    accessToken && baseUrl ? `${baseUrl}?token=${accessToken}` : "";
 
   useWebSocket(webSocketUrl, {
     onMessage: handleMessage,
