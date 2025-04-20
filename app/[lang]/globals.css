@@ -6,6 +6,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -33,6 +36,18 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --talent-green-50: 125, 39%, 94%;    /* #E8F5E9 */
+    --talent-green-100: 122, 38%, 84%;   /* #C8E6C9 */
+    --talent-green-300: 123, 38%, 64% ;   /* #81C784 */
+    --talent-green-500: 122, 39%, 49%;   /* #4CAF50 */
+    --talent-green-700: 151, 46%, 34%;   /* #2E7D57 */
+    --talent-green-800: 164, 63%, 23%;   /* #155E4B */
+    --talent-green-900: 162, 69%, 14%;   /* #0B3D2E */
+    --talent-orange-500: 14, 100%, 62%; /* #FF6B3D*/
+    --shadow-talent-black: 0 11px 40px 3px hsla(0, 0%, 0%, 0.6);
+    --shadow-talent-green: 0 11px 40px 3px hsla(164, 100%, 19%, 0.6);
+    --shadow-talent-combined: var(--shadow-talent-black), var(--shadow-talent-green);
+    --gradient-talent-footer: linear-gradient(to right, #00150e, #04664a, #25a575);
   }
   .dark {
     --background: 240 10% 3.9%;

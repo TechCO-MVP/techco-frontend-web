@@ -4,6 +4,11 @@ export type Country = {
   code: string;
 };
 
+export type CountryDialCode = {
+  label: string;
+  value: string;
+};
+
 export type UserRole = {
   business_id: string;
   role: "super_admin" | "business_admin" | "position_owner" | "recruiter";
@@ -247,8 +252,11 @@ export type Notification = {
   position_name: string;
 };
 
-export type WebSocketNotificationPayload = {
-  message: Notification;
+export type WebSocketMessagePayload = {
+  action: "chat_message" | "notification";
+  payload: {
+    message: Notification;
+  };
 };
 
 export type GetNotificationsApiResponse = {
@@ -265,4 +273,87 @@ export interface CreateNotificationInput {
   notification_type: Notification["notification_type"];
   hiring_process_id: string;
   phase_id: string;
+}
+
+export type PositionPhase = {
+  name: string;
+  thread_id: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+  type:
+    | "DESCRIPTION"
+    | "READY_TO_PUBLISH"
+    | "FINAL_INTERVIEW"
+    | "TECHNICAL_TEST"
+    | "SOFT_SKILLS";
+  data: Record<string, unknown>;
+};
+
+export type PositionConfiguration = {
+  _id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user_id: string;
+  thread_id: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  phases: PositionPhase[];
+};
+
+export type GetPositionConfigurationListResponse = {
+  message: string;
+  body: {
+    data: PositionConfiguration;
+  };
+};
+
+export type PostPositionConfigurationInput = {
+  thread_id: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  phases: PositionPhase[];
+};
+
+export type PostPositionConfigurationResponse = {
+  thread_id: string;
+  status: string;
+  type: string;
+  phases: PositionPhase[];
+};
+
+export interface UpdatePositionConfigurationInput {
+  _id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user_id: string;
+  business_id: string;
+  thread_id: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  phases: {
+    name: string;
+    thread_id: string;
+    status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+    type:
+      | "DESCRIPTION"
+      | "READY_TO_PUBLISH"
+      | "FINAL_INTERVIEW"
+      | "TECHNICAL_TEST"
+      | "SOFT_SKILLS";
+    data: Record<string, unknown>;
+  }[];
+}
+
+export interface UpdatePositionConfigurationResponse {
+  _id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user_id: string;
+  business_id: string;
+  thread_id: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
+  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  phases: UpdatePositionConfigurationInput["phases"];
 }

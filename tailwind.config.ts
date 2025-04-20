@@ -51,6 +51,26 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        "talent-green": {
+          50: "hsl(var(--talent-green-50))",
+          100: "hsl(var(--talent-green-100))",
+          300: "hsl(var(--talent-green-300))",
+          500: "hsl(var(--talent-green-500))",
+          700: "hsl(var(--talent-green-700))",
+          800: "hsl(var(--talent-green-800))",
+          900: "hsl(var(--talent-green-900))",
+        },
+        "talent-orange": {
+          500: "hsl(var(--talent-orange-500))",
+        },
+      },
+      boxShadow: {
+        "talent-black": "var(--shadow-talent-black)",
+        "talent-green": "var(--shadow-talent-green)",
+        "talent-combined": "var(--shadow-talent-combined)",
+      },
+      backgroundImage: {
+        "talent-footer": "var(--gradient-talent-footer)",
       },
       borderRadius: {
         lg: "var(--radius)",

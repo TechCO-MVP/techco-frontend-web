@@ -6,6 +6,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AnimatePresence, motion } from "framer-motion";
 
 import {
   Control,
@@ -15,7 +16,6 @@ import {
   FieldValues,
 } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Text } from "../Typography/Text";
 
 type FormInputProps<TSchema extends FieldValues> = {
   disabled?: boolean;
@@ -67,6 +67,7 @@ export function FormInput<TSchema extends FieldValues>({
                 placeholder={placeholder}
                 className={cn(
                   "focus-visible:ring-offset-0",
+                  "focus-visible:ring-talent-orange-500",
                   isTouched &&
                     !hasError &&
                     "border-green-500 focus-visible:ring-green-500",
@@ -75,13 +76,22 @@ export function FormInput<TSchema extends FieldValues>({
                 )}
               />
             </FormControl>
-            <div className="flex min-h-[20px] items-center">
-              {hasError && (
-                <Text size="small" type="span" className="m-0 text-red-500">
-                  {getErrorMessage(errors[name]?.message?.toString())}
-                </Text>
-              )}
-            </div>
+            <motion.div layout className="flex min-h-[20px] items-center">
+              <AnimatePresence mode="wait">
+                {hasError && (
+                  <motion.span
+                    key="error-message"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-red-500"
+                  >
+                    {getErrorMessage(errors[name]?.message?.toString())}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </FormItem>
         );
       }}
