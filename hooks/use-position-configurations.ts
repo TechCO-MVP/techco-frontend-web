@@ -1,13 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { GetPositionConfigurationListResponse } from "@/types";
 import { QUERIES } from "@/constants/queries";
 
 type Params = {
   id?: string;
   all?: boolean;
+  options?: Partial<UseQueryOptions<GetPositionConfigurationListResponse>>;
 };
 
-export function usePositionConfigurations({ id, all }: Params = {}) {
+export function usePositionConfigurations({ id, all, options }: Params = {}) {
   return useQuery<GetPositionConfigurationListResponse>({
     queryKey: QUERIES.POSITION_CONFIG_LIST,
     queryFn: async () => {
@@ -32,5 +33,6 @@ export function usePositionConfigurations({ id, all }: Params = {}) {
     gcTime: 1000 * 60 * 10,
     retry: 1,
     refetchOnWindowFocus: false,
+    ...options,
   });
 }

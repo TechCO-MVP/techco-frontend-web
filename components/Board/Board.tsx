@@ -3,20 +3,7 @@
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { BoardColumn } from "../BoardColumn/BoardColumn";
-import {
-  PipefyFieldValues,
-  PipefyNode,
-  PipefyPhase,
-  type BoardState,
-} from "@/types/pipefy";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { type BoardState } from "@/types/pipefy";
 import { Text } from "@/components/Typography/Text";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,13 +17,17 @@ import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/Typography/Heading";
 import Link from "next/link";
 import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
-import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
 import { StartFormDialog } from "@/components/StartFormDialog/StartFormDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
 import BoardSkeleton from "./Skeleton";
 import { useParams } from "next/navigation";
-import { countryLabelLookup, timeAgo } from "@/lib/utils";
+import {
+  calculateTime,
+  cn,
+  countryLabelLookup,
+  getPriority,
+} from "@/lib/utils";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import { Notifications } from "@/components/Notifications/Notifications";
 import { Dictionary } from "@/types/i18n";
@@ -49,21 +40,20 @@ import { useAppSelector } from "@/lib/store/hooks";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
-
+import { useBoardFilters } from "@/hooks/use-board-filters";
+import { useBoardActions } from "@/hooks/use-board-actions";
+import { STATUS_OPTIONS, MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
+import { MovePhaseDialog } from "./MovePhaseDialog";
+import { MissingFieldsDialog } from "./MissingFieldsDialog";
 type BoardProps = {
   dictionary: Dictionary;
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
-  const [matchFilter, setMatchFilter] = useState<string | null>(null);
-  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const matchOptions = ["Alta", "Media - Alta", "Media", "Baja"];
-  const sourceOptions = [
-    "Talent Connect",
-    "URL de la oferta",
-    "Ingreso manual",
+  const quickFilters = [
+    "Revisión inicial",
+    "Primer entrevista",
+    "Habilidades blandas",
   ];
-  const statusOptions = ["Activo", "Descartado", "Desistió del proceso"];
 
   const notificationsState = useAppSelector(selectNotificationsState);
   const { positionDetailsPage: i18n } = dictionary;
@@ -95,93 +85,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   }, [positions, id]);
 
   const { toast } = useToast();
-  const { mutate } = useMoveCardToPhase({
-    onSuccess: (data, variables) => {
-      if (!pendingMove) return;
-      toast({
-        title: "Cambio de Fase Correcto",
-        description: "El candidato ha sido movido a la siguiente fase.",
-      });
-      const { cardId, sourceColumnId, targetColumnId, newPosition } =
-        pendingMove;
 
-      setBoard((prevBoard) => {
-        if (!prevBoard) return;
-
-        const updatedColumns = prevBoard.columns.map((column) => {
-          if (column.id === sourceColumnId) {
-            // Remove the card from the source column
-            const filteredCards = column.cards.nodes.filter(
-              (card) => card.id !== cardId,
-            );
-            return {
-              ...column,
-              cards: {
-                nodes: filteredCards.map((card, index) => ({
-                  ...card,
-                  position: index,
-                })),
-              },
-            };
-          }
-
-          if (column.id === targetColumnId) {
-            const sourceColumn = prevBoard.columns.find(
-              (col) => col.id === sourceColumnId,
-            );
-            if (!sourceColumn) return column;
-
-            const movedCard = sourceColumn.cards.nodes.find(
-              (card) => card.id === cardId,
-            );
-            if (!movedCard) return column;
-
-            const updatedCards = [
-              ...column.cards.nodes.slice(0, newPosition),
-              { ...movedCard, position: newPosition },
-              ...column.cards.nodes.slice(newPosition),
-            ].map((card, index) => ({ ...card, position: index }));
-
-            return {
-              ...column,
-              cards: { nodes: updatedCards },
-            };
-          }
-
-          return column;
-        });
-
-        return { ...prevBoard, columns: updatedColumns };
-      });
-
-      setIsAlertOpen(false);
-      setPendingMove(null);
-      console.log("Card moved successfully:", data.moveCardToPhase.card);
-      console.log(
-        "Moved from:",
-        variables.cardId,
-        "➡",
-        "To:",
-        variables.destinationPhaseId,
-      );
-    },
-    onError: (error, variables) => {
-      setShowPendingFieldsModal(true);
-      setIsAlertOpen(false);
-
-      console.error(" Move failed:", error);
-      console.error(
-        "Failed to move from:",
-        variables.cardId,
-        "➡",
-        "To:",
-        variables.destinationPhaseId,
-      );
-    },
-    onSettled: (data, error) => {
-      console.log(" Mutation Settled. Success:", !!data, "Error:", !!error);
-    },
-  });
   const {
     data,
     isLoading: loadingPipe,
@@ -194,60 +98,37 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   });
 
   const [board, setBoard] = useState<BoardState | undefined>(data);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [showPendingFieldsModal, setShowPendingFieldsModal] = useState(false);
-  const [draggedCard, setDraggedCard] = useState<{
-    id: string;
-    node: PipefyNode;
-    sourceColumn: PipefyPhase;
-  } | null>(null);
 
-  const [pendingMove, setPendingMove] = useState<{
-    cardId: string;
-    sourceColumnId: string;
-    targetColumnId: string;
-    newPosition: number;
-  } | null>(null);
+  const {
+    searchTerm,
+    setSearchTerm,
+    matchFilter,
+    sourceFilter,
+    statusFilter,
+    handleMatchChange,
+    handleSourceChange,
+    handleStatusChange,
+    filteredBoard,
+    resultCount,
+    toggleQuickFilter,
+    activeQuickFilters,
+    quickFilterCounts,
+    clearQuickFilters,
+  } = useBoardFilters(board);
 
-  const onDrop = (
-    cardId: string,
-    sourceColumnId: string,
-    targetColumnId: string,
-    newPosition: number,
-  ) => {
-    if (sourceColumnId === targetColumnId) return;
-    if (!board) return;
-
-    const sourceColumn = board.columns.find((col) => col.id === sourceColumnId);
-    const targetColumn = board.columns.find((col) => col.id === targetColumnId);
-
-    if (!sourceColumn || !targetColumn) return;
-
-    const card = sourceColumn.cards.nodes.find((c) => c.id === cardId);
-    if (!card) return;
-
-    setPendingMove({ cardId, sourceColumnId, targetColumnId, newPosition });
-
-    setIsAlertOpen(true);
-  };
-
-  const confirmMove = () => {
-    if (!pendingMove) return;
-
-    const { cardId, targetColumnId } = pendingMove;
-    mutate({
-      cardId,
-      destinationPhaseId: targetColumnId,
-    });
-  };
-
-  const cancelMove = () => {
-    setIsAlertOpen(false);
-    setShowPendingFieldsModal(false);
-    setDraggedCard(null);
-    setPendingMove(null);
-  };
+  const {
+    draggedCard,
+    setDraggedCard,
+    pendingMove,
+    isAlertOpen,
+    setIsAlertOpen,
+    showPendingFieldsModal,
+    setShowPendingFieldsModal,
+    onDrop,
+    onCardMove,
+    confirmMove,
+    cancelMove,
+  } = useBoardActions({ board, setBoard });
 
   useEffect(() => {
     const { showCandidateDetails } = notificationsState;
@@ -273,38 +154,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     }
   }, [notificationsState, data]);
 
-  const onCardMove = (
-    columnId: string,
-    draggedId: string,
-    targetId: string,
-  ) => {
-    setBoard((prevBoard) => {
-      if (!prevBoard) return;
-
-      const updatedColumns = prevBoard.columns.map((column) => {
-        if (column.id === columnId) {
-          const cards = [...column.cards.nodes];
-          const draggedIndex = cards.findIndex((card) => card.id === draggedId);
-          const targetIndex = cards.findIndex((card) => card.id === targetId);
-
-          if (draggedIndex === -1 || targetIndex === -1) return column;
-
-          const [draggedCard] = cards.splice(draggedIndex, 1);
-          cards.splice(targetIndex, 0, draggedCard);
-
-          return {
-            ...column,
-            cards: {
-              nodes: cards.map((card, index) => ({ ...card, position: index })),
-            },
-          };
-        }
-        return column;
-      });
-
-      return { ...prevBoard, columns: updatedColumns };
-    });
-  };
   useEffect(() => {
     setBoard(data);
   }, [data]);
@@ -316,95 +165,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   useEffect(() => {
     console.log("get pipe response", data);
   }, [data]);
-
-  const handleMatchChange = (value: string) => {
-    setMatchFilter((prev) => (prev === value ? null : value));
-  };
-
-  const handleSourceChange = (value: string) => {
-    setSourceFilter((prev) => (prev === value ? null : value));
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter((prev) => (prev === value ? null : value));
-  };
-
-  const { filteredBoard, resultCount } = useMemo(() => {
-    let count = 0;
-
-    const filtered = board?.pipe.phases.map((column) => {
-      const filteredNodes = column.cards.nodes.filter((node) => {
-        const fieldMap = Object.fromEntries(
-          node.fields.map((field) => [field.indexName, field.value]),
-        );
-
-        const matchesSearch =
-          !searchTerm ||
-          String(fieldMap[PipefyFieldValues.CandidateName] || "")
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-
-        const matchesMatch =
-          !matchFilter ||
-          String(
-            fieldMap[PipefyFieldValues.RoleAlignment] || "",
-          ).toLowerCase() === matchFilter.toLowerCase();
-
-        const matchesSource =
-          !sourceFilter ||
-          String(
-            fieldMap[PipefyFieldValues.CandidateSource] || "",
-          ).toLowerCase() === sourceFilter.toLowerCase();
-
-        const matchesStatus =
-          !statusFilter ||
-          String(
-            fieldMap[PipefyFieldValues.CandidateStatus] || "",
-          ).toLowerCase() === statusFilter.toLowerCase();
-
-        const isMatch =
-          matchesSearch && matchesMatch && matchesSource && matchesStatus;
-
-        if (isMatch) count += 1;
-
-        return isMatch;
-      });
-
-      return {
-        ...column,
-        cards: {
-          ...column.cards,
-          nodes: filteredNodes,
-        },
-      };
-    });
-
-    return { filteredBoard: filtered, resultCount: count };
-  }, [searchTerm, board, matchFilter, sourceFilter, statusFilter]);
-
-  const getPriority = () => {
-    if (!selectedPosition?.hiring_priority) return "";
-    switch (selectedPosition.hiring_priority) {
-      case "high":
-        return `${i18n.highPriority} 🔥🔥`;
-      case "medium":
-        return `${i18n.mediumPriority} 🔥`;
-      case "low":
-        return `${i18n.lowPriority}`;
-      default:
-        return "";
-    }
-  };
-
-  const calculateTime = (dateString: string | undefined) => {
-    if (!dateString) return null;
-    const givenDate = new Date(dateString);
-    const currentDate = new Date();
-
-    const diffInMs = currentDate.getTime() - givenDate.getTime();
-
-    return timeAgo(diffInMs, dictionary);
-  };
 
   const onCopyLink = () => {
     navigator.clipboard.writeText("https://copy");
@@ -435,11 +195,12 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
               {selectedPosition?.status}
             </Badge>
             <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
-              {getPriority()}
+              {getPriority(selectedPosition?.hiring_priority, i18n)}
             </Badge>
           </div>
           <div className="text-muted-foreground">
-            {i18n.trackingLabel} {calculateTime(filterStatus?.body.created_at)}
+            {i18n.trackingLabel}{" "}
+            {calculateTime(filterStatus?.body.created_at, dictionary)}
           </div>
           <Notifications label={i18n.notifications} />
         </div>
@@ -487,7 +248,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                     </h4>
                   </div>
 
-                  {matchOptions.map((option) => (
+                  {MATCH_OPTIONS.map((option) => (
                     <div key={option} className="flex items-center space-x-2">
                       <Checkbox
                         id={option}
@@ -513,7 +274,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                     </h4>
                   </div>
 
-                  {sourceOptions.map((option) => (
+                  {SOURCE_OPTIONS.map((option) => (
                     <div key={option} className="flex items-center space-x-2">
                       <Checkbox
                         id={option}
@@ -539,7 +300,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                     </h4>
                   </div>
 
-                  {statusOptions.map((option) => (
+                  {STATUS_OPTIONS.map((option) => (
                     <div key={option} className="flex items-center space-x-2">
                       <Checkbox
                         id={option}
@@ -561,6 +322,28 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
 
           <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
+      </div>
+      <div className="mb-4 flex gap-4">
+        {quickFilters.map((label) => (
+          <Button
+            key={label}
+            onClick={() => toggleQuickFilter(label)}
+            className={cn(
+              "bg-talent-orange-500 hover:bg-[#e65d32]",
+              !activeQuickFilters.includes(label) &&
+                "bg-secondary text-black hover:bg-primary/20",
+            )}
+          >
+            {label} ({quickFilterCounts[label] ?? 0})
+          </Button>
+        ))}
+        <Button
+          disabled={!activeQuickFilters.length}
+          className="bg-secondary text-black hover:bg-primary/20"
+          onClick={() => clearQuickFilters()}
+        >
+          Limpiar Selección
+        </Button>
       </div>
       <div className="relative flex gap-4">
         {!loadingPipe &&
@@ -610,59 +393,23 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             />
           ))}
       </div>
-      <Dialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <DialogContent className="max-w-[26rem] p-12">
-          <DialogHeader>
-            <DialogTitle className="mb-4 text-2xl font-normal">
-              {i18n.moveToPhaseDialogTitle}
-            </DialogTitle>
-            <DialogDescription>{i18n.moveToPhaseDialogInfo}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
-            <Button variant="default" onClick={confirmMove}>
-              {i18n.confirmMove}
-            </Button>
-            <Button variant="ghost" onClick={cancelMove}>
-              {i18n.cancelMove}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog
+      {/* Dialogs */}
+      <MovePhaseDialog
+        open={isAlertOpen}
+        onOpenChange={setIsAlertOpen}
+        onConfirm={confirmMove}
+        onCancel={cancelMove}
+        i18n={i18n}
+      />
+
+      <MissingFieldsDialog
         open={showPendingFieldsModal}
         onOpenChange={setShowPendingFieldsModal}
-      >
-        <DialogContent className="max-w-[26rem] p-12">
-          <DialogHeader>
-            <DialogTitle className="mb-4 text-2xl font-normal">
-              {i18n.missingFieldsDialogTitle}
-            </DialogTitle>
-            <DialogDescription>
-              {i18n.missingFieldsDialogInfo}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
-            <Button
-              onClick={() => {
-                const element = document.querySelector(
-                  `#details-${pendingMove?.sourceColumnId}-${pendingMove?.cardId}`,
-                ) as HTMLElement;
-
-                if (element) {
-                  element.click();
-                  cancelMove();
-                }
-              }}
-              variant="default"
-            >
-              {i18n.completeMissingFieldsLabel}
-            </Button>
-            <Button variant="ghost" onClick={cancelMove}>
-              {i18n.cancelMove}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onCompleteFields={cancelMove}
+        onCancel={cancelMove}
+        pendingMove={pendingMove}
+        i18n={i18n}
+      />
     </div>
   );
 };

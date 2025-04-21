@@ -109,3 +109,33 @@ export function formatDateToShort(dateString: string) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
+
+export function getPriority(
+  priority: string | undefined,
+  i18n: Dictionary["positionDetailsPage"],
+) {
+  if (!priority) return "";
+  switch (priority) {
+    case "high":
+      return `${i18n.highPriority} 🔥🔥`;
+    case "medium":
+      return `${i18n.mediumPriority} 🔥`;
+    case "low":
+      return `${i18n.lowPriority}`;
+    default:
+      return "";
+  }
+}
+
+export const calculateTime = (
+  dateString: string | undefined,
+  dictionary: Dictionary,
+) => {
+  if (!dateString) return null;
+  const givenDate = new Date(dateString);
+  const currentDate = new Date();
+
+  const diffInMs = currentDate.getTime() - givenDate.getTime();
+
+  return timeAgo(diffInMs, dictionary);
+};
