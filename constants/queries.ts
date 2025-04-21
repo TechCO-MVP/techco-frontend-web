@@ -11,4 +11,5 @@ export const QUERIES = {
   HIRING_PROCESS: (id: number | string) => ["hiring-poccess", id] as const,
   PROFILE_FILTER_STATUS: (id: string) =>
     ["prosition-filter-status", id] as const,
+  POSITION_CONFIG_LIST: ["position-config-list"] as const,
 };

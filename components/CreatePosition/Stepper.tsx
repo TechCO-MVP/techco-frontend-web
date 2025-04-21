@@ -4,6 +4,8 @@ import { Dispatch, FC, SetStateAction, useState } from "react";
 import { Text } from "../Typography/Text";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+// import { CountryDialCode } from "@/types";
+// import { countryList } from "@/lib/data/country";
 
 export type Step = {
   title: string;
@@ -18,7 +20,23 @@ type StepperProps = {
 
 export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
   const [currentStep, setCurrentStep] = useState(0);
-
+  // const transformCountries = (
+  //   input: {
+  //     name: string;
+  //     code: string;
+  //     emoji: string;
+  //     unicode: string;
+  //     image: string;
+  //     dial_code: string;
+  //   }[],
+  // ): CountryDialCode[] => {
+  //   return input.map(({ name, code, emoji, dial_code }) => ({
+  //     label: `${name} ${dial_code} ${emoji}`,
+  //     value: dial_code,
+  //   }));
+  // };
+  // const result = transformCountries(countryList);
+  // console.log(JSON.stringify(result));
   const onStepClick = (index: number) => {
     if (index === currentStep) return;
     const copy = [...steps];
@@ -47,7 +65,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
     }
   };
   return (
-    <div className="flex">
+    <div className="flex overflow-x-auto">
       {steps.map((step, index) => {
         const isActive = index === currentStep;
         const isComplete = step.status === "complete";

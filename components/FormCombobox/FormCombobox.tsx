@@ -30,8 +30,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Text } from "@/components/Typography/Text";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 type FormComboboxProps<TSchema extends FieldValues> = {
   name: Path<TSchema>;
@@ -46,6 +46,7 @@ type FormComboboxProps<TSchema extends FieldValues> = {
   options: { label: string; value: string }[];
   getErrorMessage: (key?: string) => string;
   containerRef?: React.RefObject<HTMLFormElement | null>;
+  classNames?: string;
 };
 
 export function FormCombobox<TSchema extends FieldValues>({
@@ -61,6 +62,7 @@ export function FormCombobox<TSchema extends FieldValues>({
   getErrorMessage,
   testId,
   containerRef,
+  classNames,
 }: FormComboboxProps<TSchema>) {
   const [open, setOpen] = useState(false);
 
@@ -74,7 +76,7 @@ export function FormCombobox<TSchema extends FieldValues>({
         const hasError = !!errors[name];
 
         return (
-          <FormItem className="mx-auto mb-3 w-full max-w-xs">
+          <FormItem className={cn("mx-auto mb-3 w-full max-w-xs", classNames)}>
             <FormLabel>{label}</FormLabel>
             <FormControl>
               <Popover open={open} onOpenChange={setOpen}>
@@ -85,6 +87,7 @@ export function FormCombobox<TSchema extends FieldValues>({
                     role="combobox"
                     aria-expanded={open}
                     className={cn(
+                      "focus-visible:ring-talent-orange-500",
                       "w-full justify-between",
                       !field.value && "text-muted-foreground",
                       isTouched &&
@@ -114,7 +117,7 @@ export function FormCombobox<TSchema extends FieldValues>({
                       <CommandGroup>
                         {options.map((option) => (
                           <CommandItem
-                            key={option.value}
+                            key={`${option.value}-${option.label}`}
                             value={option.value}
                             onSelect={() => {
                               field.onChange(option.value);
@@ -141,13 +144,22 @@ export function FormCombobox<TSchema extends FieldValues>({
               </Popover>
             </FormControl>
 
-            <div className="flex min-h-[20px] items-center">
-              {hasError && (
-                <Text size="small" type="span" className="m-0 text-red-500">
-                  {getErrorMessage(errors[name]?.message?.toString())}
-                </Text>
-              )}
-            </div>
+            <motion.div layout className="flex min-h-[20px] items-center">
+              <AnimatePresence mode="wait">
+                {hasError && (
+                  <motion.span
+                    key="error-message"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-sm text-red-500"
+                  >
+                    {getErrorMessage(errors[name]?.message?.toString())}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </FormItem>
         );
       }}

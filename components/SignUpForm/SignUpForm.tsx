@@ -88,16 +88,20 @@ export function SignUpForm({
     }
   };
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl bg-white px-12 py-14 shadow-md">
+    <div className="shadow-talent-green border-b-talent-orange-500 flex w-full max-w-xl flex-col items-center justify-center rounded-2xl rounded-b-none border-b-[5px] bg-white px-8 py-14">
       {/* Top Section */}
       <div className="mb-3 flex flex-col items-center">
-        <Heading level={1} className="text-2xl leading-8">
+        <Heading level={1} className="text-2xl leading-8 text-[#15342E]">
           {i18n.welcomeTitle}
         </Heading>
-        <Text className="mb-4 leading-8" type="p" size="large">
+        <Text className="mb-4 leading-8 text-[#15342E]" type="p" size="large">
           {i18n.welcomeMessage}
         </Text>
-        <Text className="text-muted-foreground" type="span" size="small">
+        <Text
+          className="text-[#15342E] text-muted-foreground"
+          type="span"
+          size="small"
+        >
           {i18n.callToActionText}
         </Text>
       </div>
@@ -116,6 +120,7 @@ export function SignUpForm({
           </div>
           {/* Form Row */}
           <FormInput
+            classNames="mb-0"
             testId="signup-name-input"
             name="name"
             label={i18n.nameLabel}
@@ -128,6 +133,7 @@ export function SignUpForm({
           />
           {/* Form Row */}
           <FormInput
+            classNames="mb-0"
             testId="signup-email-input"
             name="email"
             label={i18n.emailLabel}
@@ -140,6 +146,7 @@ export function SignUpForm({
           />
           {/* Form Row */}
           <FormInput
+            classNames="mb-0"
             testId="signup-company-input"
             name="company"
             label={i18n.companyLabel}
@@ -152,6 +159,7 @@ export function SignUpForm({
           />
           {/* Form Row */}
           <FormCombobox
+            classNames="mb-0"
             testId="country-select-trigger"
             name="country"
             label={i18n.countryLabel}
@@ -166,6 +174,7 @@ export function SignUpForm({
           />
           {/* Form Row */}
           <FormSelect
+            classNames="mb-0"
             testId="signup-company-select"
             name="companySize"
             label={i18n.companySizeLabel}
@@ -183,6 +192,7 @@ export function SignUpForm({
           />
           {/* Form Row */}
           <FormSelect
+            classNames="mb-0"
             testId="signup-role-select"
             name="role"
             label={i18n.companyRoleLabel}
@@ -208,7 +218,7 @@ export function SignUpForm({
             data-testid="signup-submit-button"
             disabled={!isValid || isPending}
             type="submit"
-            className="mx-auto w-full max-w-[22rem]"
+            className="bg-talent-orange-500 mx-auto mt-4 w-full max-w-[22rem]"
           >
             {isPending ? (
               <>

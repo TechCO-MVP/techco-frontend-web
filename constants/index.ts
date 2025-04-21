@@ -25,3 +25,11 @@ export const ROLES: { value: UserRole["role"]; label: string }[] = [
   { value: "position_owner", label: "Position Owner" },
   { value: "recruiter", label: "Recruiter" },
 ];
+
+export const MATCH_OPTIONS = ["Alta", "Media - Alta", "Media", "Baja"];
+export const SOURCE_OPTIONS = [
+  "Talent Connect",
+  "URL de la oferta",
+  "Ingreso manual",
+];
+export const STATUS_OPTIONS = ["Activo", "Descartado", "Desistió del proceso"];

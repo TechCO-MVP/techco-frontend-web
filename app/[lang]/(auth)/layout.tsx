@@ -2,6 +2,7 @@ import { Text } from "@/components/Typography/Text";
 import { Button } from "@/components/ui/button";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
+import Image from "next/image";
 import Link from "next/link";
 
 interface SignUpLayoutProps {
@@ -13,7 +14,7 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
   const { children, params } = props;
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
-  const { signUp, signIn, footer } = dictionary;
+  const { signUp, footer } = dictionary;
 
   return (
     <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">
@@ -25,21 +26,23 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
           backgroundColor: "rgba(255,255,255,0.9)",
         }}
       >
-        <header className="w-full p-4">
-          <nav>
+        <header className="w-full px-20 py-8">
+          <nav className="flex items-center justify-between">
+            <Image
+              priority
+              width={152}
+              height={36}
+              src="/assets/talent_connect.svg"
+              alt="TechCo"
+            />
             <ul className="flex justify-end space-x-4">
               <li>
                 <Link href="signin">
-                  <Button className="rounded bg-background text-foreground hover:bg-foreground hover:text-background">
+                  <Button
+                    variant="outline"
+                    className="rounde-md text-talent-green-800 border-talent-green-800 hover:bg-talent-green-800 bg-transparent hover:text-white"
+                  >
                     {signUp.signInLinkText}
-                  </Button>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="signup">
-                  <Button className="rounded bg-background text-foreground hover:bg-foreground hover:text-background">
-                    {signIn.createAccountLabel}
                   </Button>
                 </Link>
               </li>
@@ -49,8 +52,8 @@ export default async function SignUpLayout(props: Readonly<SignUpLayoutProps>) {
         <main className="mb-24 flex flex-1 items-center justify-center">
           {children}
         </main>
-        <footer className="flex h-[60px] items-center justify-center bg-[#B3B3B3]">
-          <Text size="small" type="p" color="#322F35">
+        <footer className="bg-talent-footer flex h-[60px] items-center justify-center">
+          <Text size="small" type="p" className="text-white">
             {footer.message}
           </Text>
         </footer>
