@@ -22,7 +22,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   dictionary,
 }) => {
   const { createPositionPage: i18n } = dictionary;
-  const [selectedDialCode, setSelectedDialCode] = useState("+51");
+  const [, setSelectedDialCode] = useState("+51");
 
   const [steps, setSteps] = useState<Step[]>([
     {

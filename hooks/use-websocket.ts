@@ -1,12 +1,12 @@
 "use client";
 
-import { WebSocketNotificationPayload } from "@/types";
+import { WebSocketMessagePayload } from "@/types";
 import { useEffect, useRef, useState, useCallback } from "react";
 
 type WebSocketStatus = "connecting" | "connected" | "disconnected";
 
 interface UseWebSocketOptions {
-  onMessage?: (data: WebSocketNotificationPayload) => void;
+  onMessage?: (data: WebSocketMessagePayload) => void;
   reconnect?: boolean;
   reconnectInterval?: number;
 }

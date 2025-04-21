@@ -29,28 +29,31 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
   const baseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
   console.info("[WebSocketListener] - baseUrl", baseUrl);
 
-  const onNotificationClick = (message: Notification) => {
-    const cachedQueries = queryClient.getQueriesData<HiringPositionData[]>({
-      queryKey: ["positions"],
-      exact: false,
-    });
+  const onNotificationClick = useCallback(
+    (message: Notification) => {
+      const cachedQueries = queryClient.getQueriesData<HiringPositionData[]>({
+        queryKey: ["positions"],
+        exact: false,
+      });
 
-    const allPositions = cachedQueries.flatMap(([_, data]) => data ?? []);
-    const position = allPositions.find(
-      (position) => position.pipe_id === message.pipe_id,
-    );
-    if (!position) return;
-    dispatch(
-      setNotificationsState({
-        showCandidateDetails: {
-          cardId: message.card_id,
-          phaseId: message.phase_id,
-        },
-      }),
-    );
-    hideNotification();
-    router.push(`/${lang}/dashboard/positions/${position._id}`);
-  };
+      const allPositions = cachedQueries.flatMap(([, data]) => data ?? []);
+      const position = allPositions.find(
+        (position) => position.pipe_id === message.pipe_id,
+      );
+      if (!position) return;
+      dispatch(
+        setNotificationsState({
+          showCandidateDetails: {
+            cardId: message.card_id,
+            phaseId: message.phase_id,
+          },
+        }),
+      );
+      hideNotification();
+      router.push(`/${lang}/dashboard/positions/${position._id}`);
+    },
+    [dispatch, hideNotification, lang, queryClient, router],
+  );
   const handleMessage = useCallback(
     (data: WebSocketMessagePayload) => {
       console.info("[WebSocketListener] - message", data);
@@ -79,7 +82,7 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
         },
       });
     },
-    [queryClient, showNotification],
+    [queryClient, showNotification, onNotificationClick],
   );
 
   // Construct URL safely, or set it to null
