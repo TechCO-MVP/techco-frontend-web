@@ -375,7 +375,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </span>
           </div>
         </div>
-        <Link href={`positions/create`}>
+        <Link href={`companies/${selectedCompany?._id}/positions/create`}>
           <Button variant="ghost" className="flex items-center bg-secondary">
             <Plus /> {i18n.createPosition}
           </Button>

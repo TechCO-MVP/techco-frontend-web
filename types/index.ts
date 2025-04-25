@@ -223,46 +223,82 @@ export type NotificationType =
   | "TAGGED_IN_COMMENT"
   | "PROFILE_FILTER_PROCESS";
 
-export type Notification = {
-  _id: string;
-  created_at: string; // ISO timestamp
-  updated_at: string; // ISO timestamp
-  deleted_at: string | null;
+export type NotificationPayload = {
+  message: {
+    _id: string;
+    created_at: string; // ISO timestamp
+    updated_at: string; // ISO timestamp
+    deleted_at: string | null;
 
-  user_id: string;
-  business_id: string;
-  message: string;
+    user_id: string;
+    business_id: string;
+    message: string;
 
-  notification_type:
-    | "PHASE_CHANGE"
-    | "TAGGED_IN_COMMENT"
-    | "PROFILE_FILTER_PROCESS";
+    notification_type:
+      | "PHASE_CHANGE"
+      | "TAGGED_IN_COMMENT"
+      | "PROFILE_FILTER_PROCESS";
 
-  status: "NEW" | "READ" | "REVIEWED"; // define actual statuses you support
+    status: "NEW" | "READ" | "REVIEWED"; // define actual statuses you support
 
-  process: string;
-  hiring_process_id: string;
-  read_at: string | null;
+    process: string;
+    hiring_process_id: string;
+    read_at: string | null;
 
-  phase_id: string;
-  card_id: string;
+    phase_id: string;
+    card_id: string;
 
-  profile_name: string;
-  pipe_id: string;
-  position_name: string;
+    profile_name: string;
+    pipe_id: string;
+    position_name: string;
+  };
 };
 
 export type WebSocketMessagePayload = {
   action: "chat_message" | "notification";
-  payload: {
-    message: Notification;
-  };
+  payload: NotificationPayload | BotMessagePayload;
 };
+export interface PositionDTO {
+  business_id?: string;
+  recruiter_user_id: string;
+  responsible_users?: string[];
+  role: string;
+  seniority: string;
+  country_code: string;
+  city: string;
+  description: string;
+  responsabilities: string[];
+  skills: string[];
+  languages: string[];
+  hiring_priority: "high" | "medium" | "low";
+  work_mode: "REMOTE" | "ON_SITE" | "HYBRID";
+  benefits?: string[] | null;
+  salary?: {
+    currency: string;
+    salary?: string;
+    salary_range?: {
+      min: string;
+      max: string;
+    };
+  };
+}
+export interface BotMessagePayload {
+  id: string;
+  role: "user" | "assistant";
+  business_id: string;
+  message: string;
+  response_type: BotResponseTypes;
+  options?: string[];
+  position?: DraftPositionData;
+  phase_type: string;
+  position_configuration_id: string;
+  thread_id: string;
+}
 
 export type GetNotificationsApiResponse = {
   message: string;
   body: {
-    data: Notification[];
+    data: NotificationPayload["message"][];
   };
 };
 
@@ -270,7 +306,7 @@ export interface CreateNotificationInput {
   user_id: string[];
   business_id: string;
   message: string;
-  notification_type: Notification["notification_type"];
+  notification_type: NotificationPayload["message"]["notification_type"];
   hiring_process_id: string;
   phase_id: string;
 }
@@ -285,16 +321,16 @@ export type PositionPhase = {
     | "FINAL_INTERVIEW"
     | "TECHNICAL_TEST"
     | "SOFT_SKILLS";
-  data: Record<string, unknown>;
+  data: DraftPositionData;
 };
 
 export type PositionConfiguration = {
   _id: string;
+  business_id: string;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
   user_id: string;
-  thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
   phases: PositionPhase[];
@@ -303,29 +339,58 @@ export type PositionConfiguration = {
 export type GetPositionConfigurationListResponse = {
   message: string;
   body: {
-    data: PositionConfiguration;
+    data: PositionConfiguration[];
   };
 };
 
+export enum PositionConfigurationTypes {
+  AI_TEMPLATE = "AI_TEMPLATE",
+  CUSTOM = "CUSTOM",
+  OTHER_POSITION_AS_TEMPLATE = "OTHER_POSITION_AS_TEMPLATE",
+}
+export enum PositionConfigurationStatus {
+  COMPLETED = "COMPLETED",
+  IN_PROGRESS = "IN_PROGRESS",
+  DRAFT = "DRAFT",
+}
+
+export enum BotResponseTypes {
+  MULTIPLE_SELECTION = "MULTIPLE_SELECTION",
+  UNIQUE_SELECTION = "UNIQUE_SELECTION",
+  OPEN_QUESTION = "OPEN_QUESTION",
+  CURRENT_STATUS = "CURRENT_STATUS",
+  FINAL_CONFIRMATION = "FINAL_CONFIRMATION",
+}
+
 export type PostPositionConfigurationInput = {
-  thread_id: string;
-  status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
-  phases: PositionPhase[];
+  thread_id?: string;
+  status?: PositionConfigurationStatus;
+  type: PositionConfigurationTypes;
+  phases?: PositionPhase[];
+  business_id?: string;
 };
 
 export type PostPositionConfigurationResponse = {
-  thread_id: string;
-  status: string;
-  type: string;
-  phases: PositionPhase[];
+  body: {
+    data: {
+      business_id: string;
+      created_at: string;
+      deleted_at: string | null;
+      phases?: PositionPhase[];
+      status: PositionConfigurationStatus;
+      type: PositionConfigurationTypes;
+      updated_at: string;
+      user_id: string;
+      _id: string;
+    };
+  };
+  message: string;
 };
 
 export interface UpdatePositionConfigurationInput {
   _id: string;
   created_at: string;
   updated_at: string;
-  deleted_at: string | null;
   user_id: string;
   business_id: string;
   thread_id: string;
@@ -341,7 +406,7 @@ export interface UpdatePositionConfigurationInput {
       | "FINAL_INTERVIEW"
       | "TECHNICAL_TEST"
       | "SOFT_SKILLS";
-    data: Record<string, unknown>;
+    data: Record<string, unknown> | DraftPositionData | null;
   }[];
 }
 
@@ -356,4 +421,60 @@ export interface UpdatePositionConfigurationResponse {
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
   phases: UpdatePositionConfigurationInput["phases"];
+}
+
+export type WebSocketStatus = "connecting" | "connected" | "disconnected";
+export type MessageHandler = (data: WebSocketMessagePayload) => void;
+export type StatusChangeHandler = (status: WebSocketStatus) => void;
+
+export type ChatMessage = {
+  id: string;
+  created_at: number;
+  role: string;
+  content: any[];
+};
+
+export type MessageHistoryResponse = {
+  message: string;
+  body: {
+    data: {
+      object: string;
+      data: ChatMessage[];
+      first_id: string;
+      last_id: string;
+      has_more: boolean;
+    };
+  };
+};
+
+export interface DraftPositionData {
+  business_id: string;
+  recruiter_user_id: string;
+  responsible_users: string[];
+  role: string;
+  seniority: string;
+  country_code: string;
+  city: string;
+  description: string;
+  responsabilities: string[];
+  skills: {
+    name: string;
+    required: boolean;
+  }[];
+  languages: {
+    name: string;
+    level: string;
+  }[];
+  hiring_priority: string;
+  work_mode: string;
+  status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
+  benefits: string[] | null;
+  salary: {
+    currency: string;
+    salary: number | null;
+    salary_range: {
+      min: string;
+      max: string;
+    };
+  } | null;
 }

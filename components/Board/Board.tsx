@@ -329,7 +329,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             key={label}
             onClick={() => toggleQuickFilter(label)}
             className={cn(
-              "bg-talent-orange-500 hover:bg-[#e65d32]",
+              "hover:bg-talent-orange-600 bg-talent-orange-500",
               !activeQuickFilters.includes(label) &&
                 "bg-secondary text-black hover:bg-primary/20",
             )}

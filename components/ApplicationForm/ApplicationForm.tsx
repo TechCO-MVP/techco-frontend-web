@@ -27,23 +27,23 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const [steps, setSteps] = useState<Step[]>([
     {
       title: i18n.descriptionStep,
-      status: "complete",
+      status: "COMPLETED",
     },
     {
       title: i18n.initialTestStep,
-      status: "pending",
+      status: "DRAFT",
     },
     {
       title: i18n.softSkillsStep,
-      status: "pending",
+      status: "IN_PROGRESS",
     },
     {
       title: i18n.technicalSkillsStep,
-      status: "skipped",
+      status: "DRAFT",
     },
     {
       title: i18n.publishedStep,
-      status: "pending",
+      status: "DRAFT",
     },
   ]);
   return (

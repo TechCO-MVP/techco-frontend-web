@@ -1,164 +1,178 @@
-// __tests__/hooks/use-websocket.test.tsx
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-  MockInstance,
-} from "vitest";
-import { useWebSocket } from "@/hooks/use-websocket";
+import { useWebSocket } from "@/hooks/use-websocket"; // Adjust path as needed
+import { WebSocketStatus } from "@/types";
 
-// We'll mock WebSocket to simulate events
-let mockSocket: any;
-let listeners: Record<string, Function>;
+// Mock the websocket manager
+vi.mock("@/lib/websocket/manager", () => {
+  return {
+    ws: {
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+      getStatus: vi.fn(() => "disconnected"),
+      addMessageHandler: vi.fn(() => vi.fn()),
+      addStatusHandler: vi.fn(() => vi.fn()),
+      sendMessage: vi.fn(() => true),
+    },
+  };
+});
 
-vi.stubGlobal(
-  "WebSocket",
-  vi.fn().mockImplementation((url: string) => {
-    listeners = {};
-    mockSocket = {
-      url,
-      readyState: WebSocket.CONNECTING,
-      send: vi.fn(),
-      close: vi.fn(),
-      addEventListener: (event: string, cb: Function) => {
-        listeners[event] = cb;
-      },
-      removeEventListener: vi.fn(),
-      set onopen(cb: (this: WebSocket, ev: Event) => void) {
-        listeners["open"] = cb;
-      },
-      set onmessage(cb: (this: WebSocket, ev: MessageEvent) => void) {
-        listeners["message"] = cb;
-      },
-      set onerror(cb: (this: WebSocket, ev: Event) => void) {
-        listeners["error"] = cb;
-      },
-      set onclose(cb: (this: WebSocket, ev: CloseEvent) => void) {
-        listeners["close"] = cb;
-      },
-    };
-    return mockSocket;
-  }),
-);
+// Import mocks after they're defined
+import { ws } from "@/lib/websocket/manager";
 
 describe("useWebSocket", () => {
-  let setTimeoutSpy: ReturnType<typeof vi.spyOn>;
+  const mockUrl = "ws://test.com";
+  const mockMessageHandler = vi.fn();
 
   beforeEach(() => {
-    // Use fake timers to control timeouts
-    vi.useFakeTimers();
-    // Spy on global setTimeout
-    setTimeoutSpy = vi.spyOn(global, "setTimeout") as unknown as MockInstance<
-      (...args: any[]) => any
-    >;
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    // Restore real timers after each test
-    vi.useRealTimers();
+    vi.resetAllMocks();
   });
 
-  it("should establish a WebSocket connection and update status", async () => {
-    const { result } = renderHook(() => useWebSocket("ws://localhost/ws"));
+  it("should initialize with the correct status", () => {
+    vi.mocked(ws.getStatus).mockReturnValue("disconnected");
 
-    expect(result.current.status).toBe("connecting");
+    const { result } = renderHook(() => useWebSocket());
 
-    // Simulate connection open
-    act(() => {
-      listeners["open"]?.();
+    expect(result.current.status).toBe("disconnected");
+  });
+
+  it("should connect to WebSocket when URL is provided", () => {
+    renderHook(() => useWebSocket(mockUrl));
+
+    expect(ws.connect).toHaveBeenCalledWith(mockUrl);
+  });
+
+  it("should not connect when URL is null or undefined", () => {
+    renderHook(() => useWebSocket(null));
+
+    expect(ws.connect).not.toHaveBeenCalled();
+  });
+
+  it("should add message handler when onMessage is provided", () => {
+    renderHook(() => useWebSocket(mockUrl, mockMessageHandler));
+
+    expect(ws.addMessageHandler).toHaveBeenCalledWith(mockMessageHandler);
+  });
+
+  it("should not add message handler when onMessage is not provided", () => {
+    renderHook(() => useWebSocket(mockUrl));
+
+    expect(ws.addMessageHandler).not.toHaveBeenCalled();
+  });
+
+  it("should add status handler", () => {
+    renderHook(() => useWebSocket(mockUrl));
+
+    expect(ws.addStatusHandler).toHaveBeenCalled();
+  });
+
+  it("should update status when status handler is called", () => {
+    vi.mocked(ws.getStatus).mockReturnValue("disconnected");
+
+    // Mock status handler callback
+    let statusCallback: (status: WebSocketStatus) => void;
+    vi.mocked(ws.addStatusHandler).mockImplementation((callback) => {
+      statusCallback = callback;
+      return vi.fn();
     });
 
+    const { result } = renderHook(() => useWebSocket(mockUrl));
+
+    // Initial status
+    expect(result.current.status).toBe("disconnected");
+
+    // Simulate WebSocket status change
+    act(() => {
+      statusCallback!("connected");
+    });
+
+    // Updated status
     expect(result.current.status).toBe("connected");
   });
 
-  it("should handle incoming messages and parse JSON", async () => {
-    const onMessage = vi.fn();
-    renderHook(() => useWebSocket("ws://localhost/ws", { onMessage }));
+  it("should call sendMessage correctly", () => {
+    const { result } = renderHook(() => useWebSocket(mockUrl));
+
+    const testData = { type: "test", payload: "data" };
 
     act(() => {
-      listeners["open"]?.();
+      result.current.sendMessage(testData);
     });
 
-    const payload = { message: "Hello" };
-    act(() => {
-      listeners["message"]?.({ data: JSON.stringify(payload) });
-    });
-
-    expect(onMessage).toHaveBeenCalledWith(payload);
+    expect(ws.sendMessage).toHaveBeenCalledWith(testData);
   });
 
-  it("should send messages when socket is open", async () => {
-    const { result } = renderHook(() => useWebSocket("ws://localhost/ws"));
-
-    mockSocket.readyState = WebSocket.OPEN;
-
-    act(() => {
-      result.current.sendMessage({ test: "123" });
-    });
-
-    expect(mockSocket.send).toHaveBeenCalledWith(
-      JSON.stringify({ test: "123" }),
-    );
-  });
-
-  it("should disconnect the socket", () => {
-    const { result, unmount } = renderHook(() =>
-      useWebSocket("ws://localhost/ws"),
-    );
+  it("should call disconnect when disconnect function is called", () => {
+    const { result } = renderHook(() => useWebSocket(mockUrl));
 
     act(() => {
       result.current.disconnect();
     });
 
-    expect(mockSocket.close).toHaveBeenCalled();
-    expect(result.current.status).toBe("disconnected");
+    expect(ws.disconnect).toHaveBeenCalled();
+  });
+
+  it("should cleanup handlers on unmount", () => {
+    const mockMessageHandlerRemove = vi.fn();
+    const mockStatusHandlerRemove = vi.fn();
+
+    vi.mocked(ws.addMessageHandler).mockReturnValueOnce(
+      mockMessageHandlerRemove,
+    );
+    vi.mocked(ws.addStatusHandler).mockReturnValueOnce(mockStatusHandlerRemove);
+
+    const { unmount } = renderHook(() =>
+      useWebSocket(mockUrl, mockMessageHandler),
+    );
 
     unmount();
+
+    expect(mockMessageHandlerRemove).toHaveBeenCalled();
+    expect(mockStatusHandlerRemove).toHaveBeenCalled();
   });
 
-  it("should attempt reconnect if socket closes", () => {
-    renderHook(() =>
-      useWebSocket("ws://localhost/ws", {
-        reconnect: true,
-        reconnectInterval: 5000,
-      }),
-    );
-
-    // Simulate socket connection open
-    act(() => {
-      listeners["open"]?.();
+  it("should reconnect when URL changes", () => {
+    const newUrl = "ws://new-test.com";
+    const { rerender } = renderHook(({ url }) => useWebSocket(url), {
+      initialProps: { url: mockUrl },
     });
 
-    // Simulate socket close event
-    act(() => {
-      listeners["close"]?.();
-    });
+    expect(ws.connect).toHaveBeenCalledWith(mockUrl);
 
-    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000);
+    rerender({ url: newUrl });
+
+    expect(ws.connect).toHaveBeenCalledWith(newUrl);
+    expect(ws.connect).toHaveBeenCalledTimes(2);
   });
 
-  it("should not reconnect if reconnect is false", () => {
-    renderHook(() =>
-      useWebSocket("ws://localhost/ws", {
-        reconnect: false,
-      }),
+  it("should update message handler when onMessage changes", () => {
+    const initialHandler = vi.fn();
+    const newHandler = vi.fn();
+
+    const mockRemoveInitial = vi.fn();
+    const mockRemoveNew = vi.fn();
+
+    vi.mocked(ws.addMessageHandler).mockImplementationOnce(
+      () => mockRemoveInitial,
+    );
+    vi.mocked(ws.addMessageHandler).mockImplementationOnce(() => mockRemoveNew);
+
+    const { rerender } = renderHook(
+      ({ handler }) => useWebSocket(mockUrl, handler),
+      {
+        initialProps: { handler: initialHandler },
+      },
     );
 
-    // Simulate socket connection open
-    act(() => {
-      listeners["open"]?.();
-    });
+    expect(ws.addMessageHandler).toHaveBeenCalledWith(initialHandler);
 
-    // Simulate socket close event
-    act(() => {
-      listeners["close"]?.();
-    });
+    rerender({ handler: newHandler });
 
-    expect(setTimeoutSpy).not.toHaveBeenCalled();
+    expect(mockRemoveInitial).toHaveBeenCalled();
+    expect(ws.addMessageHandler).toHaveBeenCalledWith(newHandler);
   });
 });

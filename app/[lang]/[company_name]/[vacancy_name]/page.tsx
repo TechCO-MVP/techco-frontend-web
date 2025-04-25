@@ -51,7 +51,7 @@ export default async function Page({
           <div className="mx-auto flex h-[85vh] w-[85vw] flex-col items-center justify-center bg-white px-4 py-12 text-center">
             <div className="mb-8">
               <Image
-                src="/assets/logo.png"
+                src="/assets/talent_connect.svg"
                 alt={company_name}
                 width={64}
                 height={64}

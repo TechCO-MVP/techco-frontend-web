@@ -8,14 +8,14 @@ import { Locale } from "@/i18n-config";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { Dispatch, SetStateAction } from "react";
 import { VisibleOnScreen } from "./VisibleOnScreen";
-import { Notification } from "@/types";
+import { NotificationPayload } from "@/types";
 
 export function NotificationItem({
   setOpen,
   notification,
   markAsRead,
 }: {
-  notification: Notification;
+  notification: NotificationPayload["message"];
   setOpen: Dispatch<SetStateAction<boolean>>;
   markAsRead: (id: string) => void;
 }) {

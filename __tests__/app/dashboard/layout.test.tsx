@@ -71,7 +71,7 @@ describe("DashboardLayout", () => {
     const mainElement = screen.getByRole("main");
     expect(mainElement).toBeInTheDocument();
     expect(mainElement).toHaveClass(
-      "mx-auto flex w-full max-w-[90%] flex-1 overflow-hidden py-4",
+      "mx-auto flex w-full max-w-[90%] flex-1 py-4",
     );
   });
 });

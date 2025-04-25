@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -10,8 +10,14 @@ import { ScrollArea } from "../ui/scroll-area";
 import { PreviewContent } from "./PreviewContent";
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
+import { Business, DraftPositionData } from "@/types";
 
-export const PositionSheet = () => {
+type Props = {
+  positionData: DraftPositionData | null;
+  business?: Business;
+};
+
+export const PositionSheet: FC<Props> = ({ positionData, business }) => {
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -30,7 +36,7 @@ export const PositionSheet = () => {
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-64px)]">
           <div className="flex flex-col">
-            <PreviewContent />
+            <PreviewContent business={business} positionData={positionData} />
           </div>
         </ScrollArea>
       </SheetContent>

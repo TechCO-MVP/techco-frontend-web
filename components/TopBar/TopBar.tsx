@@ -11,9 +11,9 @@ export const TopBar: FC<TopBarProps> = ({ lang }) => {
     <nav className="relative flex h-20 w-full items-center justify-between bg-gray-200 px-28">
       <Image
         priority
-        width={200}
-        height={40}
-        src="/assets/logo.png"
+        width={152}
+        height={36}
+        src="/assets/talent_connect.svg"
         alt="TechCo"
       />
       <UserMenu lang={lang} username="Jesus D" />

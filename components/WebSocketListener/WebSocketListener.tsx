@@ -2,9 +2,9 @@
 
 import { useNotification } from "@/lib/notification-provider";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import {
-  Notification,
+  NotificationPayload,
   WebSocketMessagePayload,
   HiringPositionData,
 } from "@/types";
@@ -27,10 +27,9 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
   const params = useParams<{ lang: Locale }>();
   const { lang } = params;
   const baseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
-  console.info("[WebSocketListener] - baseUrl", baseUrl);
 
   const onNotificationClick = useCallback(
-    (message: Notification) => {
+    (message: NotificationPayload["message"]) => {
       const cachedQueries = queryClient.getQueriesData<HiringPositionData[]>({
         queryKey: ["positions"],
         exact: false,
@@ -54,11 +53,14 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
     },
     [dispatch, hideNotification, lang, queryClient, router],
   );
+
   const handleMessage = useCallback(
     (data: WebSocketMessagePayload) => {
       console.info("[WebSocketListener] - message", data);
-
+      if (!data.payload) return;
+      if ("response_type" in data.payload) return;
       const { action, payload } = data;
+      if (!action || !payload) return;
       if (action === "chat_message") return;
       queryClient.invalidateQueries({
         queryKey: QUERIES.NOTIFICATIONS,
@@ -85,13 +87,16 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
     [queryClient, showNotification, onNotificationClick],
   );
 
-  // Construct URL safely, or set it to null
+  // Construct WebSocket URL
   const webSocketUrl =
-    accessToken && baseUrl ? `${baseUrl}?token=${accessToken}` : "";
+    baseUrl && accessToken ? `${baseUrl}?token=${accessToken}` : null;
 
-  useWebSocket(webSocketUrl, {
-    onMessage: handleMessage,
-  });
+  // Use the WebSocket
+  const { status } = useWebSocket(webSocketUrl, handleMessage);
+
+  useEffect(() => {
+    console.info(`[WebSocketListener] WebSocket status: ${status}`);
+  }, [status]);
 
   return null;
 };

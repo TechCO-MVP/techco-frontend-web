@@ -96,7 +96,7 @@ export function OTPSignUpForm({
     }
   }, [code, authState.email, router]);
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md bg-white px-8 py-6 shadow-md">
+    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-md border-b-[5px] border-b-talent-orange-500 bg-white px-8 py-6 shadow-talent-green">
       {/* Top Section */}
       <div className="mb-10 flex flex-col items-center">
         <Heading
