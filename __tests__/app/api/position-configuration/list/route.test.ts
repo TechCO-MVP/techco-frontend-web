@@ -41,7 +41,7 @@ describe("GET /api/position-configuration/list", () => {
     mockGetCookie.mockReturnValue({ value: "valid_token" });
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-    const req = createRequest();
+    const req = createRequest({ business_id: "123" });
     const res = await GET(req);
     const json = await res.json();
 
@@ -57,7 +57,7 @@ describe("GET /api/position-configuration/list", () => {
       json: async () => ({ error: "Bad Request" }),
     });
 
-    const req = createRequest({ id: "123" });
+    const req = createRequest({ id: "123", business_id: "123" });
     const res = await GET(req);
     const json = await res.json();
 
@@ -74,7 +74,7 @@ describe("GET /api/position-configuration/list", () => {
       json: async () => mockResponse,
     });
 
-    const req = createRequest({ id: "abc", all: "true" });
+    const req = createRequest({ id: "abc", all: "true", business_id: "123" });
     const res = await GET(req);
     const json = await res.json();
 

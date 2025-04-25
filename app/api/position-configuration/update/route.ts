@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 export async function PUT(req: Request) {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken")?.value;
+    const token = cookieStore.get("idToken")?.value;
 
     if (!token) {
       return NextResponse.json(
@@ -30,7 +30,11 @@ export async function PUT(req: Request) {
     );
 
     const json = await response.json();
-
+    console.log(
+      "%c[Debug] response",
+      "background-color: teal; font-size: 20px; color: white",
+      json,
+    );
     if (!response.ok) {
       return NextResponse.json(
         { error: json?.error || "Failed to update position configuration" },

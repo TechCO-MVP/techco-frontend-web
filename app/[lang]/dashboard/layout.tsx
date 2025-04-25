@@ -26,7 +26,7 @@ export default async function DashboardLayout(
         <TopBar lang={lang} />
         <SideBar dictionary={dictionary} />
         <WebSocketListener accessToken={accessToken} />
-        <main className="mx-auto flex w-full max-w-[90%] flex-1 overflow-hidden py-4">
+        <main className="mx-auto flex w-full max-w-[90%] flex-1 py-4">
           {children}
         </main>
       </div>

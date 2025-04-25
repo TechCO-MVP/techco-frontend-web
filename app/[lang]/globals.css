@@ -44,6 +44,7 @@ body {
     --talent-green-800: 164, 63%, 23%;   /* #155E4B */
     --talent-green-900: 162, 69%, 14%;   /* #0B3D2E */
     --talent-orange-500: 14, 100%, 62%; /* #FF6B3D*/
+    --talent-orange-600: 14, 78%, 55%; /* #e65d32*/
     --shadow-talent-black: 0 11px 40px 3px hsla(0, 0%, 0%, 0.6);
     --shadow-talent-green: 0 11px 40px 3px hsla(164, 100%, 19%, 0.6);
     --shadow-talent-combined: var(--shadow-talent-black), var(--shadow-talent-green);

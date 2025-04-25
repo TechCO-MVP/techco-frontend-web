@@ -1,19 +1,49 @@
 "use client";
 
-import { FC } from "react";
-import { Business, DraftPositionData } from "@/types";
+import { FC, useEffect, useMemo, useState } from "react";
 import { countryNameLookup } from "@/lib/utils";
+import { usePositionConfigurations } from "@/hooks/use-position-configurations";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
+import { useBusinesses } from "@/hooks/use-businesses";
+import { Step, Stepper } from "./Stepper";
+import { Dictionary } from "@/types/i18n";
 
 type Props = {
-  positionData: DraftPositionData | null;
-  business?: Business;
+  dictionary: Dictionary;
 };
-export const PreviewContent: FC<Props> = ({ positionData, business }) => {
-  console.log(
-    "%c[Debug] positionData",
-    "background-color: teal; font-size: 20px; color: white",
-    positionData,
-  );
+export const PreviewPosition: FC<Props> = ({ dictionary }) => {
+  const [steps, setSteps] = useState<Step[]>([]);
+  const { createPositionPage: i18n } = dictionary;
+
+  const params = useParams<{
+    lang: Locale;
+    id: string;
+    position_id: string;
+  }>();
+  const { position_id, id } = params;
+  const { businesses } = useBusinesses();
+  const business = useMemo(() => {
+    return businesses.find((b) => b._id === id);
+  }, [id, businesses]);
+  const { data: positionConfiguration } = usePositionConfigurations({
+    id: position_id,
+    businessId: id,
+  });
+  const positionData = positionConfiguration?.body.data?.[0]?.phases?.[0]?.data;
+
+  useEffect(() => {
+    const currentPosition = positionConfiguration?.body.data?.[0];
+    if (currentPosition) {
+      setSteps(
+        currentPosition.phases.map((phase) => ({
+          title: phase.name,
+          status: phase.status,
+        })),
+      );
+    }
+  }, [positionConfiguration]);
+
   if (!positionData) return null;
 
   const formatSalaryRange = () => {
@@ -38,7 +68,11 @@ export const PreviewContent: FC<Props> = ({ positionData, business }) => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
+    <div className="mx-auto w-full max-w-[60rem] space-y-8 p-6">
+      <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
+        <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+      </div>
+
       <h1 className="text-4xl font-bold">{positionData.role} </h1>
       <div className="flex items-center gap-2 text-gray-600">
         <span>

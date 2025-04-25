@@ -3,16 +3,24 @@ import { GetPositionConfigurationListResponse } from "@/types";
 import { QUERIES } from "@/constants/queries";
 
 type Params = {
+  businessId: string;
   id?: string;
   all?: boolean;
   options?: Partial<UseQueryOptions<GetPositionConfigurationListResponse>>;
 };
 
-export function usePositionConfigurations({ id, all, options }: Params = {}) {
+export function usePositionConfigurations({
+  businessId,
+  id,
+  all,
+  options,
+}: Params) {
   return useQuery<GetPositionConfigurationListResponse>({
-    queryKey: QUERIES.POSITION_CONFIG_LIST,
+    queryKey: QUERIES.POSITION_CONFIG_LIST(businessId, id),
     queryFn: async () => {
-      const params = new URLSearchParams();
+      const params = new URLSearchParams({
+        business_id: businessId,
+      });
       if (id) params.append("id", id);
       if (all !== undefined) params.append("all", String(all));
 

@@ -1,7 +1,12 @@
+import { apiEndpoints } from "@/lib/api-endpoints";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ threadId: string }> },
+) {
+  const { threadId } = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get("idToken")?.value;
 
@@ -11,25 +16,25 @@ export async function GET(req: Request) {
       { status: 401 },
     );
   }
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
-  const all = url.searchParams.get("all");
-  const businessId = url.searchParams.get("business_id");
-  if (!businessId) {
+
+  if (!threadId) {
     return NextResponse.json(
-      { error: "Missing required query parameter: business_id" },
+      { error: "Missing required path parameter: threadId" },
       { status: 400 },
     );
   }
-  const queryParams = new URLSearchParams({
-    business_id: businessId,
-  });
-  if (id) queryParams.append("id", id);
-  if (all !== null) queryParams.append("all", all);
+
+  const url = new URL(req.url);
+  const limit = url.searchParams.get("limit") || "20";
+  const messageId = url.searchParams.get("message_id");
+
+  const queryParams = new URLSearchParams();
+  if (limit) queryParams.append("limit", limit);
+  if (messageId) queryParams.append("message_id", messageId);
 
   try {
     const response = await fetch(
-      `${process.env.SERVERLESS_URL}/position_configuration/list?${queryParams.toString()}`,
+      `${apiEndpoints.messageHistory()}/${threadId}?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {
@@ -44,14 +49,16 @@ export async function GET(req: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: json?.error || "Failed to fetch position configuration" },
+        {
+          error: json?.error || "Failed to fetch message history",
+        },
         { status: response.status },
       );
     }
 
     return NextResponse.json(json);
   } catch (error) {
-    console.error("GET /position-configuration/list error:", error);
+    console.error("GET /llm/message-history error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

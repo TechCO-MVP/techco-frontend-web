@@ -9,7 +9,7 @@ import { Check } from "lucide-react";
 
 export type Step = {
   title: string;
-  status: "inProgress" | "pending" | "skipped" | "complete";
+  status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
 };
 
 type StepperProps = {
@@ -44,21 +44,19 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
     const clickedStep = copy[index];
     if (["complete", "skipped"].includes(clickedStep.status)) return;
     setCurrentStep(index);
-    clickedStep.status = "inProgress";
-    current.status = "complete";
+    clickedStep.status = "IN_PROGRESS";
+    current.status = "COMPLETED";
     setSteps(copy);
   };
 
   const getSubtitle = (step: Step): string => {
     switch (step.status) {
-      case "inProgress":
+      case "IN_PROGRESS":
         return i18n.inProcess;
-      case "pending":
+      case "DRAFT":
         return i18n.pending;
-      case "complete":
+      case "COMPLETED":
         return i18n.completed;
-      case "skipped":
-        return i18n.doesNotApply;
 
       default:
         return i18n.inProcess;
@@ -68,9 +66,8 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
     <div className="flex overflow-x-auto">
       {steps.map((step, index) => {
         const isActive = index === currentStep;
-        const isComplete = step.status === "complete";
-        const isSkipped = step.status === "skipped";
-        const isPending = step.status === "pending";
+        const isComplete = step.status === "COMPLETED";
+        const isPending = step.status === "DRAFT";
         const isLastItem = index === steps.length - 1;
 
         return (
@@ -84,7 +81,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
                   onClick={() => onStepClick(index)}
                   className={cn(
                     "absolute inset-0 left-[5px] top-[5px] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#007AFF]",
-                    (isPending || isSkipped) && "border-[#C6C6C8] bg-[#C6C6C8]",
+                    isPending && "border-[#C6C6C8] bg-[#C6C6C8]",
                     isComplete && "bg-[#34C759]",
                   )}
                 >
@@ -94,7 +91,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
               <div
                 className={cn(
                   "right-0 top-5 h-[1px] w-[130px] bg-[#007AFF]",
-                  (isPending || isSkipped) && "bg-[#C6C6C8]",
+                  isPending && "bg-[#C6C6C8]",
                   isLastItem && "bg-transparent",
                   isComplete && "bg-[#34C759]",
                 )}
@@ -104,10 +101,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
               {i18n.step} {index + 1}
             </Text>
             <Text
-              className={cn(
-                "text-sm font-bold text-black text-foreground",
-                isSkipped && "text-muted-foreground",
-              )}
+              className={cn("text-sm font-bold text-black text-foreground")}
               type="p"
             >
               {step.title}
@@ -115,7 +109,6 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, setSteps }) => {
             <Text
               className={cn(
                 "text-xs text-[#007AFF]",
-                isSkipped && "text-muted-foreground",
                 isPending && "text-foreground",
                 isComplete && "text-[#34C759]",
               )}

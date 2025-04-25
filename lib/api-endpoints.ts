@@ -67,4 +67,7 @@ export const apiEndpoints = {
   createNotification() {
     return `${BASE_URL}/notification/create`;
   },
+  messageHistory() {
+    return `${BASE_URL}/llm/message_history`;
+  },
 };

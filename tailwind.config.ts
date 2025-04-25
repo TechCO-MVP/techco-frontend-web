@@ -62,6 +62,7 @@ export default {
         },
         "talent-orange": {
           500: "hsl(var(--talent-orange-500))",
+          600: "hsl(var(--talent-orange-600))",
         },
       },
       boxShadow: {
