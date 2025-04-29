@@ -83,6 +83,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);
   }, [positions, id]);
+  console.log(
+    "%c[Debug] selectedPosition",
+    "background-color: teal; font-size: 20px; color: white",
+    selectedPosition,
+  );
 
   const { toast } = useToast();
 
@@ -182,15 +187,24 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
               {i18n.goBack}
             </Button>
           </Link>
-          <Badge variant="secondary" className="rounded-md">
-            {countryLabelLookup(
-              filterStatus?.body.process_filters.country_code || "",
-            )}
-          </Badge>
-          <div className="flex items-center justify-center gap-2">
+
+          <div className="flex items-center justify-center gap-1">
+            <Badge variant="secondary" className="rounded-md">
+              {countryLabelLookup(
+                filterStatus?.body.process_filters.country_code || "",
+              )}
+            </Badge>
             <Heading className="text-xl" level={1}>
               {filterStatus?.body.process_filters.role}
             </Heading>
+            <div className="text-xs text-muted-foreground">
+              <span className="font-bold">{i18n.createdBy}</span>:{" "}
+              {selectedPosition?.recruiter_user_name} |
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {i18n.trackingLabel}{" "}
+              {calculateTime(filterStatus?.body.created_at, dictionary)}
+            </div>
             <Badge variant="secondary" className="rounded-md text-[#34C759]">
               {selectedPosition?.status}
             </Badge>
@@ -198,14 +212,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
               {getPriority(selectedPosition?.hiring_priority, i18n)}
             </Badge>
           </div>
-          <div className="text-muted-foreground">
-            {i18n.trackingLabel}{" "}
-            {calculateTime(filterStatus?.body.created_at, dictionary)}
-          </div>
+
           <Notifications label={i18n.notifications} />
         </div>
         <Button
-          className="place-self-end"
+          className="place-self-center"
           variant="outline"
           onClick={onCopyLink}
         >
@@ -329,7 +340,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             key={label}
             onClick={() => toggleQuickFilter(label)}
             className={cn(
-              "hover:bg-talent-orange-600 bg-talent-orange-500",
+              "h-6 bg-talent-orange-500 hover:bg-talent-orange-600",
               !activeQuickFilters.includes(label) &&
                 "bg-secondary text-black hover:bg-primary/20",
             )}
@@ -339,7 +350,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         ))}
         <Button
           disabled={!activeQuickFilters.length}
-          className="bg-secondary text-black hover:bg-primary/20"
+          className="h-6 bg-secondary text-black hover:bg-primary/20"
           onClick={() => clearQuickFilters()}
         >
           Limpiar Selección

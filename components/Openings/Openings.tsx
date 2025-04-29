@@ -731,9 +731,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <TableHead className="font-bold text-black">
                   {i18n.currentPhase}
                 </TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.currentPhaseStatus}
-                </TableHead>
+
                 <TableHead className="font-bold text-black">
                   {i18n.updatedAt}
                 </TableHead>
@@ -790,14 +788,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       position.phases.find(
                         (phase) => phase.status === "IN_PROGRESS",
                       )?.name
-                    }
-                  </TableCell>
-
-                  <TableCell>
-                    {
-                      position.phases.find(
-                        (phase) => phase.status === "IN_PROGRESS",
-                      )?.status
                     }
                   </TableCell>
 

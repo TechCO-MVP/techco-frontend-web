@@ -211,7 +211,8 @@
     "highPriority": "Prioridad alta",
     "mediumPriority": "Prioridad media",
     "goBack": "Atrás",
-    "trackingLabel": "Seguimiento"
+    "trackingLabel": "Seguimiento",
+    "createdBy": "Creado por"
   },
   "userCard": {
     "roleAlignment": "Afinidad al cargo",
@@ -305,6 +306,7 @@
     "previewBtnLabel": "Previsualizar vacante",
     "previewSheetTitle": "Detalles de la oferta",
     "draftSavedMessage": "Borrador guardado con exito.",
+    "changesSavedMessage": "Cambios guardados con exito.",
     "continueEditing": "Continuar editando la descripción",
     "editDescription": "Editar descripción",
     "locationLabel": "Ubicación",

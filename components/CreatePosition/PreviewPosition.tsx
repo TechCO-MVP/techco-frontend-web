@@ -24,6 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUsers } from "@/hooks/use-users";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   dictionary: Dictionary;
@@ -37,18 +38,19 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [positionData, setPositionData] = useState<DraftPositionData>();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { createPositionPage: i18n } = dictionary;
   const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
     onSuccess: (data) => {
       console.info("Save Draft success", data);
-
-      queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+      toast({
+        description: i18n.changesSavedMessage,
       });
-      router.push(
-        `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
-      );
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id, position_id),
+      });
+      setMode("preview");
     },
     onError: (error) => {
       console.error("Save Draft error", error);
@@ -161,7 +163,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[60rem] space-y-8 p-6">
+    <div className="mx-auto mb-14 w-full max-w-[60rem] space-y-8 p-6">
       <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
         <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
       </div>
@@ -169,23 +171,25 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold">{positionData.role} </h1>
         <div className="flex gap-2">
-          <Button
-            onClick={() => {
-              if (currentPhase?.status === "DRAFT") {
-                router.push(
-                  `/${lang}/dashboard/companies/${id}/positions/${position_id}`,
-                );
-              } else {
-                setMode("edit");
-              }
-            }}
-            variant="outline"
-          >
-            <EditIcon />{" "}
-            {currentPhase?.status === "DRAFT"
-              ? i18n.continueEditing
-              : i18n.editDescription}
-          </Button>
+          {mode === "preview" && (
+            <Button
+              onClick={() => {
+                if (currentPhase?.status === "DRAFT") {
+                  router.push(
+                    `/${lang}/dashboard/companies/${id}/positions/${position_id}`,
+                  );
+                } else {
+                  setMode("edit");
+                }
+              }}
+              variant="outline"
+            >
+              <EditIcon />
+              {currentPhase?.status === "DRAFT"
+                ? i18n.continueEditing
+                : i18n.editDescription}
+            </Button>
+          )}
           <Button
             onClick={() => {
               router.push(

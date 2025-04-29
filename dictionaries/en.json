@@ -210,7 +210,8 @@
     "highPriority": "High priority",
     "mediumPriority": "Medium priority",
     "goBack": "Back",
-    "trackingLabel": "Tracking"
+    "trackingLabel": "Tracking",
+    "createdBy": "Created by"
   },
   "userCard": {
     "roleAlignment": "Role alignment",
@@ -304,6 +305,7 @@
     "previewBtnLabel": "Preview position",
     "previewSheetTitle": "Position details",
     "draftSavedMessage": "Draft saved successfully.",
+    "changesSavedMessage": "Changes saved successfully.",
     "continueEditing": "Continue editing",
     "editDescription": "Edit description",
     "locationLabel": "Location",

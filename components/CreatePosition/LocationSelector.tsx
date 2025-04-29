@@ -1,9 +1,9 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn, countryCodeLookup, countryNameLookup } from "@/lib/utils";
+import { cn, countryCodeLookup } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -40,23 +40,11 @@ export const LocationSelector: FC<Props> = ({
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [city, setCity] = useState("");
-  const [countryName, setCountryName] = useState("");
-
-  useEffect(() => {
-    if (value) {
-      const code = countryCodeLookup(value);
-      const name = code ? countryNameLookup(code) : "";
-      setCountryName(name ?? "");
-      onCountryChange?.(code || "");
-    }
-  }, [value, onCountryChange]);
-
-  useEffect(() => {
-    onCityChange?.(city);
-  }, [city, onCityChange]);
-
+  console.log(
+    "%c[Debug] defaultCountry",
+    "background-color: teal; font-size: 20px; color: white",
+    defaultCountry,
+  );
   return (
     <div className="flex flex-col gap-2">
       <Popover open={open} onOpenChange={setOpen}>
@@ -67,13 +55,11 @@ export const LocationSelector: FC<Props> = ({
             aria-expanded={open}
             className="w-[250px] justify-between"
           >
-            {value
-              ? COUNTRIES.find((country) => country.value === value)?.label
-              : defaultCountry
-                ? COUNTRIES.find(
-                    (country) => country.code === defaultCountry.toLowerCase(),
-                  )?.label
-                : i18n.countryPlaceholder}
+            {defaultCountry
+              ? COUNTRIES.find(
+                  (country) => country.code === defaultCountry.toLowerCase(),
+                )?.label
+              : i18n.countryPlaceholder}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -91,7 +77,8 @@ export const LocationSelector: FC<Props> = ({
                     key={country.value}
                     value={country.value}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      const code = countryCodeLookup(currentValue);
+                      if (code) onCountryChange?.(code || "");
                       setOpen(false);
                     }}
                   >
@@ -99,7 +86,9 @@ export const LocationSelector: FC<Props> = ({
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === country.value ? "opacity-100" : "opacity-0",
+                        defaultCountry === country.value
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>
@@ -114,13 +103,8 @@ export const LocationSelector: FC<Props> = ({
         className="w-[250px] focus-visible:ring-0"
         placeholder="Ciudad"
         type="text"
-        onChange={(e) => setCity(e.target.value)}
+        onChange={(e) => onCityChange?.(e.target.value)}
       />
-      {city && countryName && (
-        <span>
-          📍 {i18n.locationLabel}: {city} /{countryName}
-        </span>
-      )}
     </div>
   );
 };

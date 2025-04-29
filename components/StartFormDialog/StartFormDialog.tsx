@@ -22,7 +22,7 @@ export const StartFormDialog: FC<Readonly<StartFormDialogProps>> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button asChild variant="ghost" className="bg-secondary">
+        <Button asChild variant="talentGreen">
           <span>
             <Plus /> Agregar Candidato
           </span>

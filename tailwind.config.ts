@@ -64,6 +64,9 @@ export default {
           500: "hsl(var(--talent-orange-500))",
           600: "hsl(var(--talent-orange-600))",
         },
+        "talent-yellow": {
+          500: "hsl(var(--talent-yellow-500))",
+        },
       },
       boxShadow: {
         "talent-black": "var(--shadow-talent-black)",
@@ -72,6 +75,7 @@ export default {
       },
       backgroundImage: {
         "talent-footer": "var(--gradient-talent-footer)",
+        "talent-header": "var(--gradient-talent-header)",
       },
       borderRadius: {
         lg: "var(--radius)",
