@@ -395,7 +395,10 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           </Text>
           <div className="mt-4 flex items-center gap-4">
             <span>
-              {i18n.activePositions} <Badge>{positions.length}</Badge>
+              {i18n.activePositions}{" "}
+              <Badge className="bg-talent-green-500 hover:bg-talent-green-700">
+                {positions.length}
+              </Badge>
             </span>
             <span>
               <Notifications label={i18n.notifications} />
@@ -403,7 +406,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           </div>
         </div>
         <Link href={`companies/${selectedCompany?._id}/positions/create`}>
-          <Button variant="ghost" className="flex items-center bg-secondary">
+          <Button variant="talentGreen" className="flex items-center">
             <Plus /> {i18n.createPosition}
           </Button>
         </Link>
@@ -415,13 +418,13 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       >
         <TabsList className="min-w-full justify-start gap-2 rounded-none bg-white">
           <TabsTrigger
-            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:hover:bg-orange-600"
+            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-talent-green-500 data-[state=active]:text-white data-[state=active]:hover:bg-green-700"
             value="actives"
           >
             Activas
           </TabsTrigger>
           <TabsTrigger
-            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:hover:bg-orange-600"
+            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-talent-green-500 data-[state=active]:text-white data-[state=active]:hover:bg-green-700"
             value="drafts"
           >
             En construcción

@@ -87,7 +87,10 @@ export function Notifications({ label }: NotificationsProps) {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
-          {label} <Badge>{count}</Badge>
+          {label}
+          <Badge className="bg-talent-green-500 hover:bg-talent-green-700">
+            {count}
+          </Badge>
         </span>
       </SheetTrigger>
       <SheetContent className="w-full p-0 sm:max-w-md">
