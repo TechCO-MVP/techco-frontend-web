@@ -1,84 +1,60 @@
 import { Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 
-export const EditableList = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      text: "Diseñar e implementar arquitecturas escalables y eficientes",
-    },
-    {
-      id: 2,
-      text: "Liderar equipos de desarrollo en entornos ágiles (Scrum/Kanban)",
-    },
-    {
-      id: 3,
-      text: "Colaborar con stakeholders para definir requerimientos y mejoras técnicas",
-    },
-    {
-      id: 4,
-      text: "Implementar buenas prácticas de código y garantizar la calidad del software.",
-    },
-    {
-      id: 5,
-      text: "Optimizar el rendimiento y escalabilidad de las plataformas internas.",
-    },
-    {
-      id: 6,
-      text: "Investigar nuevas tecnologías y herramientas para mejorar los procesos",
-    },
-  ]);
-  const [editingId, setEditingId] = useState<number>();
+type Props = {
+  items: string[];
+  onItemsChange: (items: string[]) => void;
+};
+
+export const EditableList: FC<Props> = ({ items, onItemsChange }) => {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newText, setNewText] = useState("");
 
-  const handleTextChange = (id: number, value: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, text: value } : item)),
-    );
+  const handleTextChange = (index: number, value: string) => {
+    const updated = [...items];
+    updated[index] = value;
+    onItemsChange(updated);
   };
 
   const handleAddItem = () => {
     if (newText.trim() === "") return;
-    const newItem = {
-      id: Date.now(),
-      text: newText,
-    };
-    setItems([...items, newItem]);
+    onItemsChange([...items, newText.trim()]);
     setNewText("");
   };
 
-  const handleDelete = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleDelete = (index: number) => {
+    const updated = items.filter((_, i) => i !== index);
+    onItemsChange(updated);
   };
 
   return (
     <div>
-      {items.map((item) => (
+      {items.map((text, index) => (
         <div
-          key={item.id}
+          key={index}
           className="group flex items-center gap-2 py-1"
-          onClick={() => setEditingId(item.id)}
+          onClick={() => setEditingIndex(index)}
         >
-          {editingId === item.id ? (
+          {editingIndex === index ? (
             <input
               autoFocus
-              value={item.text}
-              onChange={(e) => handleTextChange(item.id, e.target.value)}
-              onBlur={() => setEditingId(undefined)}
+              value={text}
+              onChange={(e) => handleTextChange(index, e.target.value)}
+              onBlur={() => setEditingIndex(null)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") setEditingId(undefined);
+                if (e.key === "Enter") setEditingIndex(null);
               }}
               className="w-full border-b border-gray-300 focus:outline-none"
             />
           ) : (
             <span className="flex w-full cursor-pointer items-start gap-2 text-gray-600">
-              {item.text}
+              {text}
             </span>
           )}
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(item.id);
+              handleDelete(index);
             }}
             className="opacity-0 group-hover:opacity-100"
           >

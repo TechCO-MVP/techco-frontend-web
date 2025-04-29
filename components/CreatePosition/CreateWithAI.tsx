@@ -2,7 +2,7 @@
 import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, Loader2, Save, SendHorizonal } from "lucide-react";
@@ -32,6 +32,17 @@ import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useToast } from "@/hooks/use-toast";
 import { MultipleSelectionOptions } from "./MultipleSelectionOptions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
+import { cn } from "@/lib/utils";
 
 type CreateWithAIProps = {
   dictionary: Dictionary;
@@ -40,11 +51,15 @@ type CreateWithAIProps = {
 export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
   dictionary,
 }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const params = useParams<{
     lang: Locale;
     id: string;
     position_id: string;
   }>();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const { lang, position_id, id } = params;
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
@@ -55,13 +70,17 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
   const [positionProgress, setPositionProgrss] =
     useState<DraftPositionData | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const { rootBusiness, businesses } = useBusinesses();
+  const {
+    rootBusiness,
+    businesses,
+    isLoading: loadingBusiness,
+  } = useBusinesses();
   const currentBusiness = useMemo(() => {
     return businesses.find((b) => b._id === id);
   }, [id, businesses]);
 
   const { currentUser } = useCurrentUser();
-  const { localUser } = useUsers({
+  const { localUser, isLoading: loadingUsers } = useUsers({
     businessId: rootBusiness?._id,
     email: currentUser?.email,
   });
@@ -98,10 +117,11 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
 
   const { sendMessage } = useWebSocket(null, onNewMessage);
 
-  const { data: positionConfiguration } = usePositionConfigurations({
-    id: position_id,
-    businessId: id,
-  });
+  const { data: positionConfiguration, isLoading: loadingConfiguration } =
+    usePositionConfigurations({
+      id: position_id,
+      businessId: id,
+    });
 
   const { createPositionPage: i18n } = dictionary;
   const [steps, setSteps] = useState<Step[]>([]);
@@ -123,6 +143,11 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
   });
 
   useEffect(() => {
+    console.log(
+      "%c[Debug] currentPosition",
+      "background-color: teal; font-size: 20px; color: white",
+      currentPosition,
+    );
     if (currentPosition) {
       setSteps(
         currentPosition.phases.map((phase) => ({
@@ -196,11 +221,6 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
     const raw = msg.content?.[0]?.text?.value;
     try {
       const parsed = JSON.parse(raw);
-      console.log(
-        "%c[Debug] parsed",
-        "background-color: teal; font-size: 20px; color: white",
-        parsed.response_type,
-      );
       if (parsed?.position) {
         setPositionProgrss(parsed.position as DraftPositionData);
       }
@@ -212,26 +232,31 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
 
   const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
     onSuccess: (data) => {
-      console.log(
-        "%c[Debug] mutate success",
-        "background-color: teal; font-size: 20px; color: white",
-        data,
-      );
+      console.info("Save Draft success", data);
       toast({
-        description: "Borrador guardado con exito.",
+        description: i18n.draftSavedMessage,
       });
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+      });
+      if (isCompleted) {
+        router.push(
+          `/${lang}/dashboard/companies/${id}/positions/${position_id}/preview`,
+        );
+      } else {
+        router.push(
+          `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
+        );
+      }
     },
     onError: (error) => {
-      console.log(
-        "%c[Debug] mutate error",
-        "background-color: teal; font-size: 20px; color: white",
-        error,
-      );
+      console.error("Save Draft error", error);
     },
   });
 
   const onSaveDraft = () => {
     if (!localUser || !currentPhase || !currentPhase.thread_id) return;
+    setDialogOpen(false);
     saveDraft({
       _id: position_id,
       business_id: id,
@@ -253,6 +278,14 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
       created_at: currentPosition?.created_at || new Date().toISOString(),
     });
   };
+
+  const cleanOption = (option: string) => {
+    const match = option.match(/\(([^)]+)\)/);
+    return match ? match[1] : option;
+  };
+
+  if (isLoading || loadingBusiness || loadingUsers || loadingConfiguration)
+    return <LoadingSkeleton />;
 
   return (
     <div className="flex w-full flex-col px-8 py-6">
@@ -279,198 +312,201 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
           </AccordionItem>
         </Accordion>
       </div>
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : (
-        <div className="mx-auto flex h-full w-fit flex-col gap-10">
-          <div className="mx-auto flex w-fit min-w-[60rem] justify-end gap-8 rounded-md bg-[#7676801F] p-4">
-            <Button disabled={isPending} onClick={onSaveDraft} className="h-8">
-              {isPending ? <Loader2 className="animate-spin" /> : <Save />}
-              {isCompleted ? "Finalizar" : "Guardar Borrador"}
-            </Button>
-            <PositionSheet
-              business={currentBusiness}
-              positionData={positionProgress}
-            />
-          </div>
-          {/* Chat */}
-          <div
-            ref={messageRef}
-            className="flex h-full max-h-[50vh] flex-col gap-3 overflow-y-auto"
+
+      <div className="mx-auto flex h-full w-fit flex-col gap-10">
+        <div className="mx-auto flex w-fit min-w-[60rem] justify-end gap-8 rounded-md bg-[#7676801F] p-4">
+          <Button
+            disabled={!positionProgress?.role || isPending}
+            onClick={() => setDialogOpen(true)}
+            className={cn(
+              "h-8",
+              isCompleted && "bg-talent-orange-500 hover:bg-talent-orange-600",
+            )}
           >
-            {messages.map((msg) => {
-              const isAssistant = msg.role === "assistant";
-              const content = msg.content?.[0]?.text?.value;
-              let parsedMessage = content;
-              let responseType: string | undefined;
-              let options: string[] = [];
+            {isPending ? <Loader2 className="animate-spin" /> : <Save />}
+            {isCompleted ? i18n.finishBtnLabel : i18n.saveDraftBtnLabel}
+          </Button>
+          <PositionSheet
+            business={currentBusiness}
+            positionData={positionProgress}
+            dictionary={dictionary}
+          />
+        </div>
+        <div
+          ref={messageRef}
+          className="flex h-full max-h-[50vh] flex-col gap-3 overflow-y-auto"
+        >
+          {messages.map((msg) => {
+            const isAssistant = msg.role === "assistant";
+            const content = msg.content?.[0]?.text?.value;
+            let parsedMessage = content;
+            let responseType: string | undefined;
+            let options: string[] = [];
 
-              try {
-                const parsed = JSON.parse(content || "");
-                parsedMessage = parsed.message || content;
-                responseType = parsed.response_type;
-                options = parsed.options || [];
-              } catch {
-                // If it's plain text or JSON fails, we fall back to raw value
-              }
+            try {
+              const parsed = JSON.parse(content || "");
+              parsedMessage = parsed.message || content;
+              responseType = parsed.response_type;
+              options = parsed.options || [];
+            } catch {
+              // If it's plain text or JSON fails, we fall back to raw value
+            }
 
-              return (
-                <Fragment key={msg.id}>
-                  {isAssistant ? (
-                    <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
-                      {responseType !== BotResponseTypes.FINAL_CONFIRMATION && (
-                        <p className="mb-2">{parsedMessage}</p>
-                      )}
+            return (
+              <Fragment key={msg.id}>
+                {isAssistant ? (
+                  <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
+                    {responseType !== BotResponseTypes.FINAL_CONFIRMATION && (
+                      <p className="mb-2">{parsedMessage}</p>
+                    )}
 
-                      {(!waitingResponse &&
-                        msg.id === firstMessageId &&
-                        responseType) === "UNIQUE_SELECTION" &&
-                        options.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {options.map((option) => (
-                              <button
-                                onClick={() => onSendMessage(option)}
-                                key={option}
-                                className="rounded-md border border-muted px-3 py-1 text-sm hover:bg-muted"
-                              >
-                                {option}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                      {responseType === "MULTIPLE_SELECTION" &&
-                        options.length > 0 && (
-                          <MultipleSelectionOptions
-                            disabled={
-                              msg.id !== firstMessageId || waitingResponse
-                            }
-                            options={options}
-                            onSubmit={(selected) => {
-                              onSendMessage(selected.toString());
-                            }}
-                          />
-                        )}
-
-                      {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
-                        <div className="rounded-2xl text-sm leading-relaxed">
-                          <p className="mb-1 block font-semibold">
-                            ¡Listo! Ya hemos recopilado toda la información
-                            necesaria para crear la vacante. Haz clic en{" "}
-                            <strong>“Previsualizar”</strong> para revisar los
-                            detalles. Si todo está correcto, puedes hacer clic
-                            en <strong>“Guardar”</strong>.
-                          </p>
-                          <p className="italic">
-                            ¿Necesitas hacer algún cambio? Simplemente continúa
-                            escribiendo y ajustaremos lo que necesites.
-                          </p>
+                    {(!waitingResponse &&
+                      msg.id === firstMessageId &&
+                      responseType) === "UNIQUE_SELECTION" &&
+                      options.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {options.map((option) => (
+                            <button
+                              onClick={() => onSendMessage(option)}
+                              key={option}
+                              className="rounded-md border border-muted px-3 py-1 text-sm hover:bg-muted"
+                            >
+                              {cleanOption(option)}
+                            </button>
+                          ))}
                         </div>
                       )}
-                    </div>
-                  ) : (
-                    <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
-                      <p className="text-sm font-bold leading-5 text-muted-foreground">
-                        {parsedMessage}
-                      </p>
-                    </div>
-                  )}
-                </Fragment>
-              );
-            })}
-            {liveMessages.map((msg, i) => {
-              const isAssistant = msg.role === "assistant";
-              const isLastAssistant =
-                msg.role === "assistant" && i === liveMessages.length - 1;
-              const text = msg.message;
-              const responseType = msg.response_type;
-              const responseOptions = msg.options || [];
 
-              return (
-                <Fragment key={msg.id}>
-                  {isAssistant ? (
-                    <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
-                      <p className="mb-2">
-                        {isLastAssistant ? animatedMessage : text}
-                      </p>
+                    {responseType === "MULTIPLE_SELECTION" &&
+                      options.length > 0 && (
+                        <MultipleSelectionOptions
+                          disabled={
+                            msg.id !== firstMessageId || waitingResponse
+                          }
+                          options={options}
+                          onSubmit={(selected) => {
+                            onSendMessage(selected.toString());
+                          }}
+                        />
+                      )}
 
-                      {!waitingResponse &&
-                        responseType === BotResponseTypes.UNIQUE_SELECTION &&
-                        responseOptions.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {responseOptions.map((option) => (
-                              <button
-                                onClick={() => onSendMessage(option)}
-                                key={option}
-                                className="rounded-md border border-muted px-3 py-1 text-sm hover:bg-muted"
-                              >
-                                {option}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
+                      <div className="rounded-2xl text-sm leading-relaxed">
+                        <p className="mb-1 block">
+                          {i18n.finalConfirmationMessage}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
+                    <p className="text-sm font-bold leading-5 text-muted-foreground">
+                      {parsedMessage}
+                    </p>
+                  </div>
+                )}
+              </Fragment>
+            );
+          })}
+          {liveMessages.map((msg, i) => {
+            const isAssistant = msg.role === "assistant";
+            const isLastAssistant =
+              msg.role === "assistant" && i === liveMessages.length - 1;
+            const text = msg.message;
+            const responseType = msg.response_type;
+            const responseOptions = msg.options || [];
 
-                      {responseType === BotResponseTypes.MULTIPLE_SELECTION &&
-                        responseOptions.length > 0 && (
-                          <MultipleSelectionOptions
-                            disabled={waitingResponse || !isLastAssistant}
-                            options={responseOptions}
-                            onSubmit={(selected) => {
-                              onSendMessage(selected.toString());
-                            }}
-                          />
-                        )}
+            return (
+              <Fragment key={msg.id}>
+                {isAssistant ? (
+                  <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
+                    <p className="mb-2">
+                      {isLastAssistant ? animatedMessage : text}
+                    </p>
 
-                      {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
-                        <div className="rounded-2xl text-sm leading-relaxed">
-                          <p className="mb-1 block font-semibold">
-                            ¡Listo! Ya hemos recopilado toda la información
-                            necesaria para crear la vacante. Haz clic en{" "}
-                            <strong>“Previsualizar”</strong> para revisar los
-                            detalles. Si todo está correcto, puedes hacer clic
-                            en <strong>“Guardar”</strong>.
-                          </p>
-                          <p className="italic">
-                            ¿Necesitas hacer algún cambio? Simplemente continúa
-                            escribiendo y ajustaremos lo que necesites.
-                          </p>
+                    {!waitingResponse &&
+                      responseType === BotResponseTypes.UNIQUE_SELECTION &&
+                      responseOptions.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {responseOptions.map((option) => (
+                            <button
+                              onClick={() => onSendMessage(option)}
+                              key={option}
+                              className="rounded-md border border-muted px-3 py-1 text-sm hover:bg-muted"
+                            >
+                              {cleanOption(option)}
+                            </button>
+                          ))}
                         </div>
                       )}
-                    </div>
-                  ) : (
-                    <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
-                      <p className="text-sm font-bold leading-5 text-muted-foreground">
-                        {text}
-                      </p>
-                    </div>
-                  )}
-                </Fragment>
-              );
-            })}
 
-            <div className="relative mt-auto">
-              <Input
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") onSendMessage();
-                }}
-                value={message}
-                disabled={waitingResponse || isLoading}
-                onChange={(e) => setMessage(e.target.value)}
-                className="mt-10 h-14 rounded-md border-none bg-[#F7F9FB] focus-visible:ring-0"
-                placeholder="Type message"
+                    {responseType === BotResponseTypes.MULTIPLE_SELECTION &&
+                      responseOptions.length > 0 && (
+                        <MultipleSelectionOptions
+                          disabled={waitingResponse || !isLastAssistant}
+                          options={responseOptions}
+                          onSubmit={(selected) => {
+                            onSendMessage(selected.toString());
+                          }}
+                        />
+                      )}
+
+                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
+                      <div className="rounded-2xl text-sm leading-relaxed">
+                        <p className="mb-1 block">
+                          {i18n.finalConfirmationMessage}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
+                    <p className="text-sm font-bold leading-5 text-muted-foreground">
+                      {text}
+                    </p>
+                  </div>
+                )}
+              </Fragment>
+            );
+          })}
+
+          <div className="relative mt-auto">
+            <Input
+              onKeyUp={(e) => {
+                if (e.key === "Enter") onSendMessage();
+              }}
+              value={message}
+              disabled={waitingResponse || isLoading}
+              onChange={(e) => setMessage(e.target.value)}
+              className="mt-10 h-14 rounded-md border-none bg-[#F7F9FB] focus-visible:ring-0"
+              placeholder="Type message"
+            />
+            {waitingResponse ? (
+              <Loader2 className="absolute bottom-4 right-4 h-5 w-5 animate-spin cursor-not-allowed text-[#9fa1a2]" />
+            ) : (
+              <SendHorizonal
+                onClick={() => onSendMessage()}
+                className="absolute bottom-4 right-4 h-5 w-5 cursor-pointer text-[#9fa1a2] hover:text-foreground"
               />
-              {waitingResponse ? (
-                <Loader2 className="absolute bottom-4 right-4 h-5 w-5 animate-spin cursor-not-allowed text-[#9fa1a2]" />
-              ) : (
-                <SendHorizonal
-                  onClick={() => onSendMessage()}
-                  className="absolute bottom-4 right-4 h-5 w-5 cursor-pointer text-[#9fa1a2] hover:text-foreground"
-                />
-              )}
-            </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{i18n.saveDraftTitle}</DialogTitle>
+            <DialogDescription>{i18n.saveDraftDescription}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              {i18n.saveDraftCancel}
+            </Button>
+            <Button onClick={onSaveDraft}>{i18n.saveDraftConfirm}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

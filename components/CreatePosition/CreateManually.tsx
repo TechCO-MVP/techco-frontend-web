@@ -83,7 +83,7 @@ export const CreateManually: FC<Readonly<CreateManuallyProps>> = ({
       <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
         <h1 className="text-4xl font-bold">Lead Developer </h1>
         <div className="flex items-center gap-2 text-gray-600">
-          <LocationSelector />
+          <LocationSelector dictionary={dictionary} />
         </div>
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
@@ -132,7 +132,7 @@ export const CreateManually: FC<Readonly<CreateManuallyProps>> = ({
           <div className="flex flex-col gap-2 font-semibold">
             <h2>🚀 Responsabilidades</h2>
           </div>
-          <EditableList />
+          <EditableList items={[]} onItemsChange={() => {}} />
         </div>
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">

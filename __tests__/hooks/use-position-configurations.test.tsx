@@ -49,6 +49,7 @@ describe("usePositionConfigurations", () => {
     const { result } = renderHook(
       () =>
         usePositionConfigurations({
+          businessId: "123",
           options: {
             retry: false,
           },
@@ -73,6 +74,7 @@ describe("usePositionConfigurations", () => {
     const { result } = renderHook(
       () =>
         usePositionConfigurations({
+          businessId: "123",
           id: "xyz",
           all: true,
           options: {
@@ -98,6 +100,7 @@ describe("usePositionConfigurations", () => {
     const { result } = renderHook(
       () =>
         usePositionConfigurations({
+          businessId: "123",
           options: {
             retry: false,
           },
@@ -121,6 +124,7 @@ describe("usePositionConfigurations", () => {
     const { result } = renderHook(
       () =>
         usePositionConfigurations({
+          businessId: "123",
           options: {
             retry: false,
           },

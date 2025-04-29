@@ -1,4 +1,3 @@
-// Component that exports an icon for LinkedIn.
 export const Linkedin = () => {
   return (
     <svg

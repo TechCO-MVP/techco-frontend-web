@@ -468,13 +468,13 @@ export interface DraftPositionData {
   hiring_priority: string;
   work_mode: string;
   status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
-  benefits: string[] | null;
+  benefits: string[];
   salary: {
     currency: string;
-    salary: number | null;
-    salary_range: {
-      min: string;
-      max: string;
+    salary?: number;
+    salary_range?: {
+      min?: number;
+      max?: number;
     };
-  } | null;
+  };
 }

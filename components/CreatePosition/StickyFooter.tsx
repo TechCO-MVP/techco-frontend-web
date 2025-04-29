@@ -1,13 +1,18 @@
 import { FC } from "react";
 import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
 
 interface StickyFooterProps {
   onCancel: () => void;
   onSave: () => void;
   isSaving?: boolean;
+  cancelLabel: string;
+  saveLabel: string;
 }
 
 export const StickyFooter: FC<StickyFooterProps> = ({
+  cancelLabel,
+  saveLabel,
   onCancel,
   onSave,
   isSaving = false,
@@ -16,10 +21,11 @@ export const StickyFooter: FC<StickyFooterProps> = ({
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-end border-t border-gray-200 bg-white px-4 py-3">
       <div className="flex gap-2">
         <Button variant="secondary" onClick={onCancel}>
-          Cancel
+          {cancelLabel}
         </Button>
         <Button onClick={onSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving && <Loader2 className="animate-spin" />}
+          {saveLabel}
         </Button>
       </div>
     </div>

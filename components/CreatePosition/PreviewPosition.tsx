@@ -3,26 +3,68 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { countryNameLookup } from "@/lib/utils";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Locale } from "@/i18n-config";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { Step, Stepper } from "./Stepper";
 import { Dictionary } from "@/types/i18n";
+import { Button } from "../ui/button";
+import { EditIcon } from "@/icons";
+import { DraftPositionData, PositionPhase } from "@/types";
+import { Textarea } from "../ui/textarea";
+import { EditableList } from "./EditableList";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { LocationSelector } from "./LocationSelector";
+import { StickyFooter } from "./StickyFooter";
+import { LogOut } from "lucide-react";
+import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERIES } from "@/constants/queries";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUsers } from "@/hooks/use-users";
 
 type Props = {
   dictionary: Dictionary;
 };
 export const PreviewPosition: FC<Props> = ({ dictionary }) => {
+  const [salaryOption, setSalaryOption] = useState<
+    "fixed" | "range" | "not-specified"
+  >("fixed");
   const [steps, setSteps] = useState<Step[]>([]);
+  const [currentPhase, setCurrentPhase] = useState<PositionPhase>();
+  const [mode, setMode] = useState<"preview" | "edit">("preview");
+  const [positionData, setPositionData] = useState<DraftPositionData>();
+  const queryClient = useQueryClient();
+
   const { createPositionPage: i18n } = dictionary;
+  const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
+    onSuccess: (data) => {
+      console.info("Save Draft success", data);
+
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+      });
+      router.push(
+        `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
+      );
+    },
+    onError: (error) => {
+      console.error("Save Draft error", error);
+    },
+  });
 
   const params = useParams<{
     lang: Locale;
     id: string;
     position_id: string;
   }>();
-  const { position_id, id } = params;
-  const { businesses } = useBusinesses();
+
+  const router = useRouter();
+
+  const { position_id, id, lang } = params;
+  const { businesses, rootBusiness } = useBusinesses();
   const business = useMemo(() => {
     return businesses.find((b) => b._id === id);
   }, [id, businesses]);
@@ -30,8 +72,18 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     id: position_id,
     businessId: id,
   });
-  const positionData = positionConfiguration?.body.data?.[0]?.phases?.[0]?.data;
 
+  const { currentUser } = useCurrentUser();
+  const { localUser } = useUsers({
+    businessId: rootBusiness?._id,
+    email: currentUser?.email,
+  });
+
+  const currentPosition = useMemo(() => {
+    return positionConfiguration?.body.data.find(
+      (position) => position._id === position_id,
+    );
+  }, [positionConfiguration, position_id]);
   useEffect(() => {
     const currentPosition = positionConfiguration?.body.data?.[0];
     if (currentPosition) {
@@ -41,8 +93,25 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
           status: phase.status,
         })),
       );
+      setCurrentPhase(currentPosition.phases[0]);
+      setPositionData(currentPosition.phases[0].data);
     }
   }, [positionConfiguration]);
+
+  useEffect(() => {
+    console.log(
+      "%c[Debug] positionData",
+      "background-color: teal; font-size: 20px; color: white",
+      positionData,
+    );
+    if (positionData?.salary?.salary_range?.min) {
+      setSalaryOption("range");
+    } else if (positionData?.salary?.salary) {
+      setSalaryOption("fixed");
+    } else {
+      setSalaryOption("not-specified");
+    }
+  }, [positionData]);
 
   if (!positionData) return null;
 
@@ -50,11 +119,11 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     const lowRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range.min));
+    }).format(Number(positionData.salary?.salary_range?.min ?? 0));
     const highRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range.max));
+    }).format(Number(positionData.salary?.salary_range?.max ?? 0));
     return `${lowRange} - ${highRange} ${positionData.salary?.currency}`;
   };
 
@@ -67,22 +136,91 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     return `${salary}`;
   };
 
+  const onSaveDraft = () => {
+    if (!localUser || !currentPhase || !currentPhase.thread_id) return;
+    saveDraft({
+      _id: position_id,
+      business_id: id,
+      status: "COMPLETED",
+      type: "AI_TEMPLATE",
+      thread_id: currentPhase?.thread_id,
+      user_id: localUser?._id,
+      phases:
+        currentPosition?.phases.map((phase) =>
+          phase.name === currentPhase?.name
+            ? {
+                ...phase,
+                status: "COMPLETED",
+                data: positionData,
+              }
+            : phase,
+        ) ?? [],
+      updated_at: new Date().toISOString(),
+      created_at: currentPosition?.created_at || new Date().toISOString(),
+    });
+  };
+
   return (
     <div className="mx-auto w-full max-w-[60rem] space-y-8 p-6">
       <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
         <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
       </div>
 
-      <h1 className="text-4xl font-bold">{positionData.role} </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold">{positionData.role} </h1>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              if (currentPhase?.status === "DRAFT") {
+                router.push(
+                  `/${lang}/dashboard/companies/${id}/positions/${position_id}`,
+                );
+              } else {
+                setMode("edit");
+              }
+            }}
+            variant="outline"
+          >
+            <EditIcon />{" "}
+            {currentPhase?.status === "DRAFT"
+              ? i18n.continueEditing
+              : i18n.editDescription}
+          </Button>
+          <Button
+            onClick={() => {
+              router.push(
+                `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
+              );
+            }}
+          >
+            <LogOut />
+            {i18n.exit}
+          </Button>
+        </div>
+      </div>
       <div className="flex items-center gap-2 text-gray-600">
-        <span>
-          📍 Ubicación: {positionData.city} /{" "}
-          {countryNameLookup(positionData.country_code || "CO")}
-        </span>
+        {mode === "preview" ? (
+          <span>
+            📍 {i18n.locationLabel}: {positionData.city} /
+            {countryNameLookup(positionData.country_code || "CO")}
+          </span>
+        ) : (
+          <LocationSelector
+            dictionary={dictionary}
+            defaultCity={positionData.city}
+            defaultCountry={positionData.country_code}
+            onCountryChange={(country) =>
+              setPositionData({ ...positionData, country_code: country })
+            }
+            onCityChange={(city) =>
+              setPositionData({ ...positionData, city: city })
+            }
+          />
+        )}
       </div>
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
-          <h2> 🌍 Sobre nosotros</h2>
+          <h2> 🌍 {i18n.aboutUsLabel}</h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
           {business?.description}
@@ -90,61 +228,203 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       </section>
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
-          <h2> 💻 Descripción del puesto </h2>
+          <h2> 💻 {i18n.jobDescriptionLabel} </h2>
         </div>
-        <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.description}
-        </p>
+        {mode === "preview" ? (
+          <p className="cursor-text leading-relaxed text-gray-600">
+            {positionData.description}
+          </p>
+        ) : (
+          <Textarea
+            placeholder="Enter your description here"
+            className="w-full"
+            value={positionData.description}
+            onChange={(e) =>
+              setPositionData({ ...positionData, description: e.target.value })
+            }
+          />
+        )}
       </section>
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
-          <h2>🚀 Responsabilidades</h2>
+          <h2>🚀 {i18n.responsabilitiesLabel}</h2>
         </div>
-        <ul className="list-disc space-y-1 pl-6">
-          {positionData.responsabilities?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
-              {item}
-            </li>
-          ))}
-        </ul>
+        {mode === "preview" ? (
+          <ul className="list-disc space-y-1 pl-6">
+            {positionData.responsabilities?.map((item, idx) => (
+              <li key={idx} className="text-sm capitalize">
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EditableList
+            items={positionData.responsabilities}
+            onItemsChange={(items) =>
+              setPositionData({ ...positionData, responsabilities: items })
+            }
+          />
+        )}
       </div>
 
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
-          <h2> 💰 Rango Salarial</h2>
+          <h2> 💰{i18n.salaryRangeLabel}</h2>
         </div>
-        {positionData.salary?.salary_range && (
-          <div className="space-y-4 text-gray-600">
-            <p>
-              📌 La compensación para este rol está dentro del rango de{" "}
-              {formatSalaryRange()} anuales, según experiencia y habilidades del
-              candidato.
-            </p>
-          </div>
-        )}
+        {mode === "preview" ? (
+          <>
+            {positionData.salary?.salary_range && (
+              <div className="space-y-4 text-gray-600">
+                <p>
+                  📌 {i18n.salaryDescriptionStart}
+                  {formatSalaryRange()} {i18n.salaryDescriptionEnd}
+                </p>
+              </div>
+            )}
 
-        {positionData.salary?.salary && positionData.salary?.salary > 0 && (
-          <div className="space-y-4 text-gray-600">
-            <p>
-              📌 La compensación para este rol es de {formatFixedSalary()}{" "}
-              anuales, según experiencia y habilidades del candidato.
-            </p>
-          </div>
+            {positionData.salary?.salary && positionData.salary?.salary > 0 && (
+              <div className="space-y-4 text-gray-600">
+                <p>
+                  📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
+                  {i18n.salaryDescriptionEnd}.
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <RadioGroup
+              onValueChange={(value: "fixed" | "range" | "not-specified") =>
+                setSalaryOption(value)
+              }
+              defaultValue={salaryOption}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="range" id="range" />
+                <Label htmlFor="range">{i18n.rangeLabel}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="fixed" id="fixed" />
+                <Label htmlFor="fixed">{i18n.fixedSalaryLabel}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="not-specified" id="not-specified" />
+                <Label htmlFor="not-specified">
+                  {i18n.salaryNotSpecifiedLabel}
+                </Label>
+              </div>
+            </RadioGroup>
+            {salaryOption === "range" && (
+              <div className="space-y-4 text-gray-600">
+                <div className="flex gap-2">
+                  <Input
+                    defaultValue={positionData.salary.salary_range?.min ?? 0}
+                    placeholder="Mínimo"
+                    type="number"
+                    onChange={(e) =>
+                      setPositionData({
+                        ...positionData,
+                        salary: {
+                          ...positionData.salary,
+                          salary_range: {
+                            ...positionData.salary?.salary_range,
+                            min: parseInt(e.target.value),
+                          },
+                        },
+                      })
+                    }
+                  />
+                  <Input
+                    defaultValue={positionData.salary.salary_range?.max ?? 0}
+                    placeholder="Máximo"
+                    type="number"
+                    onChange={(e) =>
+                      setPositionData({
+                        ...positionData,
+                        salary: {
+                          ...positionData.salary,
+                          salary_range: {
+                            ...positionData.salary?.salary_range,
+                            max: parseInt(e.target.value),
+                          },
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <p>
+                  📌 {i18n.salaryDescriptionStart}
+                  {formatSalaryRange()} {i18n.salaryDescriptionEnd}
+                </p>
+              </div>
+            )}
+
+            {salaryOption === "fixed" && (
+              <div className="space-y-4 text-gray-600">
+                <div className="flex gap-2">
+                  <Input
+                    defaultValue={positionData.salary.salary}
+                    placeholder="Salario"
+                    type="number"
+                    onChange={(e) =>
+                      setPositionData({
+                        ...positionData,
+                        salary: {
+                          currency: positionData.salary.currency,
+                          salary: parseInt(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <p>
+                  📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
+                  {i18n.salaryDescriptionEnd}
+                </p>
+              </div>
+            )}
+
+            {salaryOption === "not-specified" && (
+              <div className="space-y-4 text-gray-600">
+                <p>📌 {i18n.salaryNotSpecified}</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
-          <h2>🎁 Lo que ofrecemos</h2>
+          <h2>🎁 {i18n.whatWeOfferLabel}</h2>
         </div>
-        <ul className="list-disc space-y-1 pl-6">
-          {positionData.benefits?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
-              {item}
-            </li>
-          ))}
-        </ul>
+        {mode === "preview" ? (
+          <ul className="list-disc space-y-1 pl-6">
+            {positionData.benefits?.map((item, idx) => (
+              <li key={idx} className="text-sm capitalize">
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EditableList
+            items={positionData.benefits}
+            onItemsChange={(items) =>
+              setPositionData({ ...positionData, benefits: items })
+            }
+          />
+        )}
       </div>
+      {mode === "edit" && (
+        <StickyFooter
+          cancelLabel={i18n.cancelLabel}
+          saveLabel={i18n.saveLabel}
+          isSaving={isPending}
+          onCancel={() => {
+            setMode("preview");
+          }}
+          onSave={() => onSaveDraft()}
+        />
+      )}
     </div>
   );
 };

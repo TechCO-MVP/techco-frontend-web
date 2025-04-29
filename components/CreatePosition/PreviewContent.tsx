@@ -20,11 +20,11 @@ export const PreviewContent: FC<Props> = ({ positionData, business }) => {
     const lowRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range.min));
+    }).format(Number(positionData.salary?.salary_range?.min));
     const highRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range.max));
+    }).format(Number(positionData.salary?.salary_range?.max));
     return `${lowRange} - ${highRange} ${positionData.salary?.currency}`;
   };
 

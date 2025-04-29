@@ -37,6 +37,7 @@ export function usePositionConfigurations({
 
       return response.json();
     },
+    enabled: !!businessId,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: 1,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn, countryCodeLookup, countryNameLookup } from "@/lib/utils";
@@ -21,8 +21,24 @@ import {
 
 import { COUNTRIES } from "@/lib/data/countries";
 import { Input } from "../ui/input";
+import { Dictionary } from "@/types/i18n";
 
-export const LocationSelector = () => {
+type Props = {
+  onCityChange?: (city: string) => void;
+  onCountryChange?: (country: string) => void;
+  defaultCity?: string;
+  defaultCountry?: string;
+  dictionary: Dictionary;
+};
+
+export const LocationSelector: FC<Props> = ({
+  onCityChange,
+  onCountryChange,
+  defaultCity,
+  defaultCountry,
+  dictionary,
+}) => {
+  const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [city, setCity] = useState("");
@@ -33,8 +49,14 @@ export const LocationSelector = () => {
       const code = countryCodeLookup(value);
       const name = code ? countryNameLookup(code) : "";
       setCountryName(name ?? "");
+      onCountryChange?.(code || "");
     }
-  }, [value]);
+  }, [value, onCountryChange]);
+
+  useEffect(() => {
+    onCityChange?.(city);
+  }, [city, onCityChange]);
+
   return (
     <div className="flex flex-col gap-2">
       <Popover open={open} onOpenChange={setOpen}>
@@ -47,15 +69,22 @@ export const LocationSelector = () => {
           >
             {value
               ? COUNTRIES.find((country) => country.value === value)?.label
-              : "Seleccionar país..."}
+              : defaultCountry
+                ? COUNTRIES.find(
+                    (country) => country.code === defaultCountry.toLowerCase(),
+                  )?.label
+                : i18n.countryPlaceholder}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[250px] p-0">
           <Command>
-            <CommandInput placeholder="Buscar país..." className="h-9" />
+            <CommandInput
+              placeholder={i18n.countrySearchPlaceholder}
+              className="h-9"
+            />
             <CommandList>
-              <CommandEmpty>País no encontrado.</CommandEmpty>
+              <CommandEmpty>{i18n.countryNotFound}</CommandEmpty>
               <CommandGroup>
                 {COUNTRIES.map((country) => (
                   <CommandItem
@@ -81,6 +110,7 @@ export const LocationSelector = () => {
         </PopoverContent>
       </Popover>
       <Input
+        defaultValue={defaultCity}
         className="w-[250px] focus-visible:ring-0"
         placeholder="Ciudad"
         type="text"
@@ -88,7 +118,7 @@ export const LocationSelector = () => {
       />
       {city && countryName && (
         <span>
-          📍 Ubicación: {city} /{countryName}
+          📍 {i18n.locationLabel}: {city} /{countryName}
         </span>
       )}
     </div>
