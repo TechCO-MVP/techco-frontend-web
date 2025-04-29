@@ -413,15 +413,15 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
         defaultValue={defaultTab}
         className="flex h-full w-full flex-col items-center justify-start bg-white"
       >
-        <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
+        <TabsList className="min-w-full justify-start gap-2 rounded-none bg-white">
           <TabsTrigger
-            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:hover:bg-orange-600"
             value="actives"
           >
             Activas
           </TabsTrigger>
           <TabsTrigger
-            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:hover:bg-orange-600"
             value="drafts"
           >
             En construcción
