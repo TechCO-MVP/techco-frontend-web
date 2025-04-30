@@ -29,6 +29,9 @@ export function useCreatePositionConfiguration(
           error?.error || "Failed to create position configuration",
         );
       }
+      console.info("position-configuration/create - Done.");
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      console.info("position-configuration/create - Waited 5000ms.");
 
       return response.json();
     },

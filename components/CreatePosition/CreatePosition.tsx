@@ -11,6 +11,7 @@ import { Text } from "../Typography/Text";
 import { OptionCard } from "../OptionCard/OptionCard";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
 import { PositionConfigurationTypes } from "@/types";
+import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 
 type CreatePositionProps = {
   dictionary: Dictionary;
@@ -37,6 +38,11 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
     onError(error) {
       console.log("[Error]", error);
     },
+  });
+
+  const { data: positionConfiguration } = usePositionConfigurations({
+    all: true,
+    businessId: businessId,
   });
 
   const onCreatePosition = async (type: PositionConfigurationTypes) => {
@@ -91,20 +97,22 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
           icon={<Pencil className="h-10 w-10" />}
         />
 
-        <OptionCard
-          loading={isPending && selectedOption === "COPY"}
-          selectBtnLabel={i18n.selectBtnLabel}
-          title={i18n.copyPrevious}
-          description={i18n.copyPreviousDescription}
-          details={i18n.copyPreviousDetails}
-          onClick={() => {
-            setSelectedOption("COPY");
-            onCreatePosition(
-              PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
-            );
-          }}
-          icon={<Copy className="h-10 w-10" />}
-        />
+        {positionConfiguration?.body?.data?.length && (
+          <OptionCard
+            loading={isPending && selectedOption === "COPY"}
+            selectBtnLabel={i18n.selectBtnLabel}
+            title={i18n.copyPrevious}
+            description={i18n.copyPreviousDescription}
+            details={i18n.copyPreviousDetails}
+            onClick={() => {
+              setSelectedOption("COPY");
+              onCreatePosition(
+                PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
+              );
+            }}
+            icon={<Copy className="h-10 w-10" />}
+          />
+        )}
       </div>
     </div>
   );
