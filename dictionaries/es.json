@@ -328,6 +328,10 @@
     "countryNotFound": "Sin resultados",
     "exit": "Salir",
     "cancelLabel": "Cancelar",
-    "saveLabel": "Guardar cambios"
+    "saveLabel": "Guardar cambios",
+    "cancelEditDialogTitle": "Cancelar edición",
+    "cancelEditDialogDescription": "¿Estás seguro de que deseas cancelar? Hay cambios que no se han guardado.",
+    "cancelEditDialogConfirm": "Sí, cancelar",
+    "cancelEditDialogCancel": "No, seguir editando"
   }
 }

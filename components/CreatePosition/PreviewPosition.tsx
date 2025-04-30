@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { countryNameLookup } from "@/lib/utils";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import { useParams, useRouter } from "next/navigation";
@@ -25,11 +25,21 @@ import { QUERIES } from "@/constants/queries";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUsers } from "@/hooks/use-users";
 import { useToast } from "@/hooks/use-toast";
+import _ from "lodash";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 type Props = {
   dictionary: Dictionary;
 };
 export const PreviewPosition: FC<Props> = ({ dictionary }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [salaryOption, setSalaryOption] = useState<
     "fixed" | "range" | "not-specified"
   >("fixed");
@@ -37,9 +47,10 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
   const [currentPhase, setCurrentPhase] = useState<PositionPhase>();
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [positionData, setPositionData] = useState<DraftPositionData>();
+  const initialData = useRef<DraftPositionData>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-
+  const isDirty = !_.isEqual(positionData, initialData.current);
   const { createPositionPage: i18n } = dictionary;
   const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
     onSuccess: (data) => {
@@ -47,6 +58,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       toast({
         description: i18n.changesSavedMessage,
       });
+      initialData.current = null;
       queryClient.invalidateQueries({
         queryKey: QUERIES.POSITION_CONFIG_LIST(id, position_id),
       });
@@ -99,13 +111,13 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       setPositionData(currentPosition.phases[0].data);
     }
   }, [positionConfiguration]);
+  useEffect(() => {
+    if (positionData && !initialData.current) {
+      initialData.current = positionData;
+    }
+  }, [positionData]);
 
   useEffect(() => {
-    console.log(
-      "%c[Debug] positionData",
-      "background-color: teal; font-size: 20px; color: white",
-      positionData,
-    );
     if (positionData?.salary?.salary_range?.min) {
       setSalaryOption("range");
     } else if (positionData?.salary?.salary) {
@@ -136,6 +148,14 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     }).format(Number(positionData.salary?.salary));
 
     return `${salary}`;
+  };
+
+  const checkUnsavedChanges = () => {
+    if (!isDirty) {
+      setMode("preview");
+      return;
+    }
+    setDialogOpen(true);
   };
 
   const onSaveDraft = () => {
@@ -420,15 +440,34 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       </div>
       {mode === "edit" && (
         <StickyFooter
+          canSave={isDirty}
           cancelLabel={i18n.cancelLabel}
           saveLabel={i18n.saveLabel}
           isSaving={isPending}
           onCancel={() => {
-            setMode("preview");
+            checkUnsavedChanges();
           }}
           onSave={() => onSaveDraft()}
         />
       )}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{i18n.cancelEditDialogTitle}</DialogTitle>
+            <DialogDescription>
+              {i18n.cancelEditDialogDescription}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              {i18n.cancelEditDialogCancel}
+            </Button>
+            <Button onClick={onSaveDraft}>
+              {i18n.cancelEditDialogConfirm}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 
 interface StickyFooterProps {
+  canSave?: boolean;
   onCancel: () => void;
   onSave: () => void;
   isSaving?: boolean;
@@ -15,6 +16,7 @@ export const StickyFooter: FC<StickyFooterProps> = ({
   saveLabel,
   onCancel,
   onSave,
+  canSave,
   isSaving = false,
 }) => {
   return (
@@ -23,7 +25,7 @@ export const StickyFooter: FC<StickyFooterProps> = ({
         <Button variant="secondary" onClick={onCancel}>
           {cancelLabel}
         </Button>
-        <Button onClick={onSave} disabled={isSaving}>
+        <Button onClick={onSave} disabled={isSaving || !canSave}>
           {isSaving && <Loader2 className="animate-spin" />}
           {saveLabel}
         </Button>
