@@ -216,6 +216,70 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     return filtered;
   }, [searchTerm, priorityFilter, positions, statusFilter, dateFilter]);
 
+  const [draftsPage, setDraftsPage] = useState(1);
+  const [draftsPageSize, setDraftsPageSize] = useState(10);
+  const sortedPositions = [...filteredPositions].sort((a, b) => {
+    if (!sortOrder) return 0; // No sorting
+    if (sortOrder === "asc")
+      return a.hiring_priority.localeCompare(b.hiring_priority);
+    return b.hiring_priority.localeCompare(a.hiring_priority);
+  });
+
+  const paginatedDrafts = useMemo(() => {
+    if (!positionConfigurationList) return [];
+    const start = (draftsPage - 1) * draftsPageSize;
+    return positionConfigurationList.slice(start, start + draftsPageSize);
+  }, [positionConfigurationList, draftsPage, draftsPageSize]);
+
+  useEffect(() => {
+    setDraftsPage(1);
+  }, [positionConfigurationList, draftsPageSize]);
+
+  const [activesPage, setActivesPage] = useState(1);
+  const [activesPageSize, setActivesPageSize] = useState(10);
+
+  const paginatedActives = useMemo(() => {
+    if (!sortedPositions) return [];
+    const start = (activesPage - 1) * activesPageSize;
+    return sortedPositions.slice(start, start + activesPageSize);
+  }, [sortedPositions, activesPage, activesPageSize]);
+
+  useEffect(() => {
+    setActivesPage(1);
+  }, [filteredPositions, activesPageSize]);
+
+  const [pulsingRow, setPulsingRow] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (positionParam) {
+      setPulsingRow(positionParam);
+      const timeout = setTimeout(() => setPulsingRow(null), 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [positionParam]);
+
+  useEffect(() => {
+    if (!positionParam) return;
+    if (!positionConfigurationList) return;
+    const index = positionConfigurationList.findIndex(
+      (pos) => pos._id === positionParam,
+    );
+    if (index === -1) return;
+    const page = Math.floor(index / draftsPageSize) + 1;
+    if (draftsPage !== page) setDraftsPage(page);
+  }, [positionParam, positionConfigurationList, draftsPageSize]);
+
+  useEffect(() => {
+    if (
+      positionParam &&
+      paginatedDrafts.some((pos) => pos._id === positionParam)
+    ) {
+      setPulsingRow(positionParam);
+      const timeout = setTimeout(() => setPulsingRow(null), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [positionParam, paginatedDrafts]);
+
   if (error) return <div className="text-red-400"> {error.message}</div>;
   if (isLoading || pendingPositions || loadingBusiness)
     return <LoadingSkeleton />;
@@ -251,13 +315,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       console.error("Error@onUpdateState", error);
     }
   };
-
-  const sortedPositions = [...filteredPositions].sort((a, b) => {
-    if (!sortOrder) return 0; // No sorting
-    if (sortOrder === "asc")
-      return a.hiring_priority.localeCompare(b.hiring_priority);
-    return b.hiring_priority.localeCompare(a.hiring_priority);
-  });
 
   const getStakeHolders = (position: HiringPositionData) => {
     if (position.responsible_users.length === 1)
@@ -394,12 +451,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             {formatDate(rootBusiness?.created_at)}
           </Text>
           <div className="mt-4 flex items-center gap-4">
-            <span>
-              {i18n.activePositions}{" "}
-              <Badge className="bg-talent-green-500 hover:bg-talent-green-700">
-                {positions.length}
-              </Badge>
-            </span>
             <span>
               <Notifications label={i18n.notifications} />
             </span>
@@ -596,10 +647,13 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedPositions.map((position) => (
+                {paginatedActives.map((position) => (
                   <TableRow
                     key={position._id}
-                    className="cursor-pointer"
+                    className={cn(
+                      "cursor-pointer",
+                      pulsingRow === position._id && "animate-blink",
+                    )}
                     onClick={() => router.push(`positions/${position._id}`)}
                   >
                     <TableCell>
@@ -718,6 +772,62 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 ))}
               </TableBody>
             </Table>
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <label
+                htmlFor="actives-page-size"
+                className="text-sm font-medium"
+              >
+                {i18n.paginationPageSizeLabel || "per page"}
+              </label>
+              <select
+                id="actives-page-size"
+                value={activesPageSize}
+                onChange={(e) => {
+                  setActivesPageSize(Number(e.target.value));
+                  setActivesPage(1);
+                }}
+                className="rounded border px-2 py-1"
+                aria-label={i18n.paginationPageSizeLabel || "Page size"}
+              >
+                {[5, 10, 20, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="outline"
+                onClick={() => setActivesPage((p) => Math.max(1, p - 1))}
+                disabled={activesPage === 1}
+                aria-label={i18n.paginationPrevious}
+              >
+                {i18n.paginationPrevious}
+              </Button>
+              <span>
+                {i18n.paginationPage} {activesPage} {i18n.paginationOf}{" "}
+                {Math.ceil((filteredPositions?.length ?? 0) / activesPageSize)}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setActivesPage((p) =>
+                    Math.min(
+                      Math.ceil(
+                        (filteredPositions?.length ?? 0) / activesPageSize,
+                      ),
+                      p + 1,
+                    ),
+                  )
+                }
+                disabled={
+                  activesPage ===
+                  Math.ceil((filteredPositions?.length ?? 0) / activesPageSize)
+                }
+                aria-label={i18n.paginationNext}
+              >
+                {i18n.paginationNext}
+              </Button>
+            </div>
           </div>
         </TabsContent>
         <TabsContent value="drafts" className="h-full w-full">
@@ -734,25 +844,23 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <TableHead className="font-bold text-black">
                   {i18n.currentPhase}
                 </TableHead>
-
                 <TableHead className="font-bold text-black">
                   {i18n.updatedAt}
                 </TableHead>
                 <TableHead className="font-bold text-black">
                   {i18n.createdBy}
                 </TableHead>
-
                 <TableHead className="font-bold text-black"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {positionConfigurationList?.map((position) => (
+              {paginatedDrafts.map((position) => (
                 <TableRow
                   key={position._id}
                   className={cn(
                     "cursor-pointer",
-                    positionParam === position._id &&
-                      "border-2 border-green-500 bg-green-200",
+                    pulsingRow === position._id &&
+                      "animate-blink border-2 border-talent-orange-500",
                   )}
                   onClick={() => {
                     if (
@@ -793,18 +901,15 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       )?.name
                     }
                   </TableCell>
-
                   <TableCell>
                     {formatDate(new Date(position.updated_at).toString())}
                   </TableCell>
-
                   <TableCell>
                     {
                       users.find((user) => user._id === position.user_id)
                         ?.full_name
                     }
                   </TableCell>
-
                   <TableCell className="flex items-center justify-between gap-4">
                     <Button variant="talentOrange">
                       {i18n.continueEditing}
@@ -814,6 +919,63 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
               ))}
             </TableBody>
           </Table>
+          <div className="mt-4 flex items-center justify-end gap-2">
+            <label htmlFor="drafts-page-size" className="text-sm font-medium">
+              {i18n.paginationPageSizeLabel || "per page"}
+            </label>
+            <select
+              id="drafts-page-size"
+              value={draftsPageSize}
+              onChange={(e) => {
+                setDraftsPageSize(Number(e.target.value));
+                setDraftsPage(1);
+              }}
+              className="rounded border px-2 py-1"
+              aria-label={i18n.paginationPageSizeLabel || "Page size"}
+            >
+              {[5, 10, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="outline"
+              onClick={() => setDraftsPage((p) => Math.max(1, p - 1))}
+              disabled={draftsPage === 1}
+              aria-label={i18n.paginationPrevious}
+            >
+              {i18n.paginationPrevious}
+            </Button>
+            <span>
+              {i18n.paginationPage} {draftsPage} {i18n.paginationOf}{" "}
+              {Math.ceil(
+                (positionConfigurationList?.length ?? 0) / draftsPageSize,
+              )}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setDraftsPage((p) =>
+                  Math.min(
+                    Math.ceil(
+                      (positionConfigurationList?.length ?? 0) / draftsPageSize,
+                    ),
+                    p + 1,
+                  ),
+                )
+              }
+              disabled={
+                draftsPage ===
+                Math.ceil(
+                  (positionConfigurationList?.length ?? 0) / draftsPageSize,
+                )
+              }
+              aria-label={i18n.paginationNext}
+            >
+              {i18n.paginationNext}
+            </Button>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

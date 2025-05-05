@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -19,8 +19,9 @@ export const UserMenu: FC<Readonly<Props>> = ({ username, lang }) => {
   return (
     <div className="flex items-center">
       <Avatar className="h-8 w-8">
-        <AvatarImage src="https://picsum.photos/200/200" alt="@username" />
-        <AvatarFallback>UN</AvatarFallback>
+        <AvatarFallback>
+          {username ? username.slice(0, 2).toUpperCase() : "UN"}
+        </AvatarFallback>
       </Avatar>
       <Popover>
         <PopoverTrigger asChild>
@@ -33,11 +34,9 @@ export const UserMenu: FC<Readonly<Props>> = ({ username, lang }) => {
           <div className="grid gap-4">
             <div className="flex items-center gap-4">
               <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src="https://picsum.photos/200/200"
-                  alt="@username"
-                />
-                <AvatarFallback>UN</AvatarFallback>
+                <AvatarFallback>
+                  {username ? username.slice(0, 2).toUpperCase() : "UN"}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">Username</p>

@@ -184,6 +184,17 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
 
   return (
     <div className="mx-auto mb-14 w-full max-w-[60rem] space-y-8 p-6">
+      <Button
+        variant="outline"
+        onClick={() => {
+          router.push(
+            `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
+          );
+        }}
+      >
+        <LogOut />
+        {i18n.exit}
+      </Button>
       <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
         <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
       </div>
@@ -210,16 +221,6 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
                 : i18n.editDescription}
             </Button>
           )}
-          <Button
-            onClick={() => {
-              router.push(
-                `/${lang}/dashboard/positions?tab=drafts&business_id=${id}&position_id=${position_id}`,
-              );
-            }}
-          >
-            <LogOut />
-            {i18n.exit}
-          </Button>
         </div>
       </div>
       <div className="flex items-center gap-2 text-gray-600">

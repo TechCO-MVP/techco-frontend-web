@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { PostPositionConfigurationInput } from "@/types";
+import {
+  PositionConfigurationStatus,
+  PositionConfigurationTypes,
+  PostPositionConfigurationInput,
+} from "@/types";
 
 // Mock fetch
 const mockFetch = vi.fn();
@@ -23,14 +27,14 @@ describe("useCreatePositionConfiguration", () => {
 
   const mockPayload = {
     thread_id: "thread_123",
-    status: "COMPLETED",
-    type: "AI_TEMPLATE",
+    status: PositionConfigurationStatus.DRAFT,
+    type: PositionConfigurationTypes.AI_TEMPLATE,
     phases: [],
   } satisfies PostPositionConfigurationInput;
 
   const mockResponse = {
     thread_id: "thread_123",
-    status: "COMPLETED",
+    status: "DRAFT",
     type: "AI_TEMPLATE",
     phases: [],
   };

@@ -191,7 +191,12 @@
     "currentPhaseStatus": "Estado de la Etapa",
     "updatedAt": "Ultima Actualizacion",
     "createdBy": "Usuario",
-    "continueEditing": "Continuar editando"
+    "continueEditing": "Continuar editando",
+    "paginationPrevious": "Anterior",
+    "paginationNext": "Siguiente",
+    "paginationPage": "Página",
+    "paginationOf": "de",
+    "paginationPageSizeLabel": "por página"
   },
   "positionDetailsPage": {
     "notifications": "Notificaciones",

@@ -181,8 +181,9 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
       {/* Form */}
       <Form {...form}>
         <form
+          id="company-details-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="mb-4 flex w-full flex-col"
+          className="mb-4 flex w-full flex-col pb-24"
         >
           {/* Error Message */}
           <div className="flex min-h-[20px] items-center">
@@ -306,23 +307,27 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             ]}
             getErrorMessage={getErrorMessage(dictionary)}
           />
-
-          {/* Submit Button */}
-          <Button
-            disabled={!isValid || isPending}
-            type="submit"
-            className="w-full max-w-40"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="animate-spin" /> {i18n.loadingMessage}
-              </>
-            ) : (
-              i18n.submitButton
-            )}
-          </Button>
         </form>
       </Form>
+
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-end border-t border-gray-200 bg-white px-8 py-4 shadow-lg">
+        <Button
+          disabled={
+            !isValid || isPending || Object.keys(dirtyFields).length === 0
+          }
+          type="submit"
+          form="company-details-form"
+          className="w-full max-w-40"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="animate-spin" /> {i18n.loadingMessage}
+            </>
+          ) : (
+            i18n.submitButton
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

@@ -46,7 +46,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   const { id } = params;
 
   const queryClient = useQueryClient();
-  const { userSettingsPage: i18n } = dictionary;
+  const { userSettingsPage: i18n, positionsPage: paginationI18n } = dictionary;
   const [searchTerm, setSearchTerm] = useState("");
   const { rootBusiness, businesses } = useBusinesses();
   const selectedCompany = useMemo(() => {
@@ -82,6 +82,19 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
     if (sortOrder === "asc") return a.status.localeCompare(b.status);
     return b.status.localeCompare(a.status);
   });
+
+  const [usersPage, setUsersPage] = useState(1);
+  const [usersPageSize, setUsersPageSize] = useState(5);
+
+  const paginatedUsers = useMemo(() => {
+    if (!sortedUsers) return [];
+    const start = (usersPage - 1) * usersPageSize;
+    return sortedUsers.slice(start, start + usersPageSize);
+  }, [sortedUsers, usersPage, usersPageSize]);
+
+  useEffect(() => {
+    setUsersPage(1);
+  }, [users.length, searchTerm]);
 
   const onUpdateState = async (user: User, status: "enabled" | "disabled") => {
     try {
@@ -173,7 +186,7 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedUsers.map((user) => (
+            {paginatedUsers.map((user) => (
               <TableRow key={user.email}>
                 <TableCell>{user?.full_name}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -224,6 +237,61 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
             ))}
           </TableBody>
         </Table>
+      </div>
+      <div className="mt-4 flex items-center justify-between">
+        <div />
+        <div className="flex items-center gap-2">
+          <label htmlFor="users-page-size" className="text-sm font-medium">
+            {paginationI18n.paginationPageSizeLabel || "per page"}
+          </label>
+          <select
+            id="users-page-size"
+            value={usersPageSize}
+            onChange={(e) => {
+              setUsersPageSize(Number(e.target.value));
+              setUsersPage(1);
+            }}
+            className="rounded border px-2 py-1"
+            aria-label={paginationI18n.paginationPageSizeLabel || "Page size"}
+          >
+            {[5, 10, 20, 50].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="outline"
+            onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
+            disabled={usersPage === 1}
+            aria-label={paginationI18n.paginationPrevious}
+          >
+            {paginationI18n.paginationPrevious}
+          </Button>
+          <span>
+            {paginationI18n.paginationPage} {usersPage}{" "}
+            {paginationI18n.paginationOf}{" "}
+            {Math.ceil((sortedUsers?.length ?? 0) / usersPageSize)}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() =>
+              setUsersPage((p) =>
+                Math.min(
+                  Math.ceil((sortedUsers?.length ?? 0) / usersPageSize),
+                  p + 1,
+                ),
+              )
+            }
+            disabled={
+              usersPage ===
+              Math.ceil((sortedUsers?.length ?? 0) / usersPageSize)
+            }
+            aria-label={paginationI18n.paginationNext}
+          >
+            {paginationI18n.paginationNext}
+          </Button>
+        </div>
       </div>
       {selectedUser && (
         <EditUserDialog

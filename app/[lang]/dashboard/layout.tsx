@@ -22,7 +22,7 @@ export default async function DashboardLayout(
 
   return (
     <div className="relative flex h-full items-center justify-center bg-gray-50">
-      <div className="flex h-full min-h-screen w-full flex-col bg-white">
+      <div className="flex h-full w-full flex-col bg-white">
         <TopBar lang={lang} />
         <SideBar dictionary={dictionary} />
         <WebSocketListener accessToken={accessToken} />

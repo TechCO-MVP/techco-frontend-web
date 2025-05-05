@@ -190,7 +190,12 @@
     "currentPhaseStatus": "Phase Status",
     "updatedAt": "Last Updated",
     "createdBy": "User",
-    "continueEditing": "Continue editing"
+    "continueEditing": "Continue editing",
+    "paginationPrevious": "Previous",
+    "paginationNext": "Next",
+    "paginationPage": "Page",
+    "paginationOf": "of",
+    "paginationPageSizeLabel": "per page"
   },
   "positionDetailsPage": {
     "notifications": "Notifications",
