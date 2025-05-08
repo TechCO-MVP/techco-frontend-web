@@ -70,4 +70,19 @@ export const apiEndpoints = {
   messageHistory() {
     return `${BASE_URL}/llm/message_history`;
   },
+  createPositionConfiguration() {
+    return `${BASE_URL}/position_configuration/create`;
+  },
+  updatePositionConfiguration() {
+    return `${BASE_URL}/position_configuration/update`;
+  },
+  listPositionConfigurations() {
+    return `${BASE_URL}/position_configuration/list`;
+  },
+  completePhase() {
+    return `${BASE_URL}/position_configuration/complete/phase`;
+  },
+  nextPhase() {
+    return `${BASE_URL}/position_configuration/next_phase`;
+  },
 };

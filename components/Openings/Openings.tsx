@@ -217,7 +217,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   }, [searchTerm, priorityFilter, positions, statusFilter, dateFilter]);
 
   const [draftsPage, setDraftsPage] = useState(1);
-  const [draftsPageSize, setDraftsPageSize] = useState(10);
+  const [draftsPageSize, setDraftsPageSize] = useState(5);
   const sortedPositions = [...filteredPositions].sort((a, b) => {
     if (!sortOrder) return 0; // No sorting
     if (sortOrder === "asc")
@@ -236,7 +236,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   }, [positionConfigurationList, draftsPageSize]);
 
   const [activesPage, setActivesPage] = useState(1);
-  const [activesPageSize, setActivesPageSize] = useState(10);
+  const [activesPageSize, setActivesPageSize] = useState(5);
 
   const paginatedActives = useMemo(() => {
     if (!sortedPositions) return [];
@@ -452,7 +452,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           </Text>
           <div className="mt-4 flex items-center gap-4">
             <span>
-              <Notifications label={i18n.notifications} />
+              <Notifications dictionary={dictionary} positions={positions} />
             </span>
           </div>
         </div>

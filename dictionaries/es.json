@@ -337,6 +337,25 @@
     "cancelEditDialogTitle": "Cancelar edición",
     "cancelEditDialogDescription": "¿Estás seguro de que deseas cancelar? Hay cambios que no se han guardado.",
     "cancelEditDialogConfirm": "Sí, cancelar",
-    "cancelEditDialogCancel": "No, seguir editando"
+    "cancelEditDialogCancel": "No, seguir editando",
+    "continuedNextPhase": "Continuar paso"
+  },
+  "notifications": {
+    "label": "Notificaciones",
+    "actionRequired": "Requiere acción",
+    "informative": "Información",
+    "mention": "Mención",
+    "noActionRequired": "No hay notificaciones de acción requerida.",
+    "noInformative": "No hay notificaciones informativas.",
+    "noMention": "No hay notificaciones de mención.",
+    "new": "Nueva",
+    "position": "Vacante",
+    "candidate": "Candidato",
+    "ctaSeeComment": "Ver comentario",
+    "ctaSeeCandidate": "Ver candidato",
+    "ctaStartAction": "Iniciar acción",
+    "mentionText": "te etiquetó en un comentario sobre este candidato",
+    "phaseChange": "El candidato cambió de la fase '{from}' a '{to}'",
+    "enteredPhase": "El candidato entró a la fase '{phase}'. Debes hacer una acción"
   }
 }

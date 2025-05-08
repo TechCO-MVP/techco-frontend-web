@@ -15,31 +15,28 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
 
-    const response = await fetch(
-      `${apiEndpoints.createPositionConfiguration()}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.API_KEY ?? "",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+    const response = await fetch(`${apiEndpoints.nextPhase()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.API_KEY ?? "",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify(body),
+    });
 
     const json = await response.json();
-    console.log("response", json);
+    console.log(`${apiEndpoints.nextPhase()} response`, json);
     if (!response.ok) {
       return NextResponse.json(
-        { error: json?.error || "Failed to create position configuration" },
+        { error: json?.message || json?.error || "Failed to start next phase" },
         { status: response.status },
       );
     }
 
     return NextResponse.json(json);
   } catch (error) {
-    console.error("POST /position-configuration/create error:", error);
+    console.error("POST /position-configuration/next_phase error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

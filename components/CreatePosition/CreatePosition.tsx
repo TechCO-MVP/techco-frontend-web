@@ -12,6 +12,8 @@ import { OptionCard } from "../OptionCard/OptionCard";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
 import { PositionConfigurationTypes } from "@/types";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
+import AnimatedModal from "../ChatBot/AnimatedModal";
+import { InfoSheet } from "./InfoSheet";
 
 type CreatePositionProps = {
   dictionary: Dictionary;
@@ -53,7 +55,7 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
   };
 
   return (
-    <div className="flex w-full flex-col px-8 py-6">
+    <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
         <Link href={`/${lang}/dashboard/positions`} replace>
           <Button variant="ghost" className="-mx-8 text-sm">
@@ -69,7 +71,10 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
         </Text>
         <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
       </div>
-
+      <div className="flex justify-end gap-4 pt-6">
+        <AnimatedModal />
+        <InfoSheet />
+      </div>
       <div className="mt-14 flex justify-center gap-8">
         <OptionCard
           loading={isPending && selectedOption === "AI"}
@@ -81,7 +86,7 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
             setSelectedOption("AI");
             onCreatePosition(PositionConfigurationTypes.AI_TEMPLATE);
           }}
-          icon={<BrainCog className="h-10 w-10" />}
+          icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
         />
 
         <OptionCard
@@ -94,7 +99,7 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
             setSelectedOption("MANUALLY");
             onCreatePosition(PositionConfigurationTypes.CUSTOM);
           }}
-          icon={<Pencil className="h-10 w-10" />}
+          icon={<Pencil className="h-10 w-10 stroke-talent-green-500" />}
         />
 
         {positionConfiguration?.body?.data?.length && (
@@ -110,7 +115,7 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
                 PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
               );
             }}
-            icon={<Copy className="h-10 w-10" />}
+            icon={<Copy className="h-10 w-10 stroke-talent-green-500" />}
           />
         )}
       </div>

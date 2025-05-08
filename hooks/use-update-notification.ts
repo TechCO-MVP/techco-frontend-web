@@ -23,39 +23,24 @@ export function useUpdateNotification(
     UpdateNotificationStatusInput
   >({
     mutationFn: async ({ notification_ids, status }) => {
-      const results = await Promise.allSettled(
-        notification_ids.map((id) =>
-          fetch("/api/notification/status", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ notification_id: id, status }),
-          }).then(async (res) => {
-            if (!res.ok) {
-              const error = await res.json();
-              throw new Error(error?.error || `Failed to update ${id}`);
-            }
-            return id;
-          }),
-        ),
-      );
+      const res = await fetch("/api/notification/status", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notification_id: notification_ids, status }),
+      });
 
-      const updated = results
-        .filter(
-          (r): r is PromiseFulfilledResult<string> => r.status === "fulfilled",
-        )
-        .map((r) => r.value);
-
-      const failed = results
-        .filter((r): r is PromiseRejectedResult => r.status === "rejected")
-        .map((r) => r.reason.message);
-
-      if (failed.length) {
-        throw new Error(`Some updates failed: ${failed.join(", ")}`);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error?.error || "Failed to update notifications");
       }
 
+      const data = await res.json();
+      console.log("useUpdateNotification Response", data);
+      // Optionally validate data shape here with Zod if you have a schema
+
       return {
-        message: "Notifications updated successfully.",
-        updated,
+        message: data.message || "Notifications updated successfully.",
+        updated: data.updated || notification_ids,
       };
     },
     ...options,

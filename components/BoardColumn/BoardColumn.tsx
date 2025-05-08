@@ -82,7 +82,9 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       onDrop={handleDrop}
       onDragLeave={handleDragLeave}
     >
-      <h2 className="mb-4 text-lg font-semibold">{column.name}</h2>
+      <h2 className="mb-4 text-lg font-semibold">
+        {column.name} ({column.cards_count})
+      </h2>
       <div className="space-y-6">
         {column.cards.nodes.map((card) => (
           <UserCard

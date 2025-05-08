@@ -34,24 +34,22 @@ export const SideBar: FC<Readonly<SideBarProps>> = ({ dictionary }) => {
   };
 
   return (
-    <div className="p-2">
-      <Sheet defaultOpen={isOpen} open={isOpen} onOpenChange={onOpenChange}>
-        <SheetTrigger className="hidden">
-          <Menu />
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>{i18n.title}</SheetTitle>
-            {businesses.map((business) => {
-              return (
-                <Heading key={business._id} level={2}>
-                  {business.name}
-                </Heading>
-              );
-            })}
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
-    </div>
+    <Sheet defaultOpen={isOpen} open={isOpen} onOpenChange={onOpenChange}>
+      <SheetTrigger className="hidden">
+        <Menu />
+      </SheetTrigger>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle>{i18n.title}</SheetTitle>
+          {businesses.map((business) => {
+            return (
+              <Heading key={business._id} level={2}>
+                {business.name}
+              </Heading>
+            );
+          })}
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   );
 };

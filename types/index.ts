@@ -229,6 +229,9 @@ export type NotificationPayload = {
     created_at: string; // ISO timestamp
     updated_at: string; // ISO timestamp
     deleted_at: string | null;
+    phase_from?: string;
+    phase_to?: string;
+    phase_name?: string;
 
     user_id: string;
     business_id: string;
@@ -315,12 +318,7 @@ export type PositionPhase = {
   name: string;
   thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-  type:
-    | "DESCRIPTION"
-    | "READY_TO_PUBLISH"
-    | "FINAL_INTERVIEW"
-    | "TECHNICAL_TEST"
-    | "SOFT_SKILLS";
+  type: PositionConfigurationPhaseTypes;
   data: DraftPositionData;
 };
 
@@ -332,7 +330,7 @@ export type PositionConfiguration = {
   deleted_at: string | null;
   user_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  type: PositionConfigurationTypes;
   phases: PositionPhase[];
 };
 
@@ -354,6 +352,14 @@ export enum PositionConfigurationStatus {
   DRAFT = "DRAFT",
 }
 
+export enum PositionConfigurationPhaseTypes {
+  DESCRIPTION = "DESCRIPTION",
+  READY_TO_PUBLISH = "READY_TO_PUBLISH",
+  FINAL_INTERVIEW = "FINAL_INTERVIEW",
+  TECHNICAL_TEST = "TECHNICAL_TEST",
+  SOFT_SKILLS = "SOFT_SKILLS",
+}
+
 export enum BotResponseTypes {
   MULTIPLE_SELECTION = "MULTIPLE_SELECTION",
   UNIQUE_SELECTION = "UNIQUE_SELECTION",
@@ -362,6 +368,35 @@ export enum BotResponseTypes {
   FINAL_CONFIRMATION = "FINAL_CONFIRMATION",
 }
 
+export type NextPhaseInput = {
+  position_configuration_id: string;
+  configuration_type: PositionConfigurationTypes;
+};
+
+export type CompletePhaseInput = {
+  position_configuration_id: string;
+  data: Record<
+    string,
+    string | number | boolean | string[] | number[] | boolean[]
+  >;
+};
+export type CompletePhaseResponse = {
+  message: string;
+  body: {
+    data: {
+      _id: string;
+      created_at: string;
+      updated_at: string;
+      deleted_at: string | null;
+      user_id: string;
+      business_id: string;
+      current_phase: string;
+      status: PositionConfigurationStatus;
+      type: PositionConfigurationTypes;
+      phases: PositionPhase[];
+    };
+  };
+};
 export type PostPositionConfigurationInput = {
   thread_id?: string;
   status?: PositionConfigurationStatus;
@@ -377,6 +412,7 @@ export type PostPositionConfigurationResponse = {
       created_at: string;
       deleted_at: string | null;
       phases?: PositionPhase[];
+      current_phase?: string;
       status: PositionConfigurationStatus;
       type: PositionConfigurationTypes;
       updated_at: string;
@@ -395,17 +431,12 @@ export interface UpdatePositionConfigurationInput {
   business_id: string;
   thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  type: PositionConfigurationTypes;
   phases: {
     name: string;
     thread_id: string;
     status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-    type:
-      | "DESCRIPTION"
-      | "READY_TO_PUBLISH"
-      | "FINAL_INTERVIEW"
-      | "TECHNICAL_TEST"
-      | "SOFT_SKILLS";
+    type: PositionConfigurationPhaseTypes;
     data: Record<string, unknown> | DraftPositionData | null;
   }[];
 }
@@ -419,7 +450,7 @@ export interface UpdatePositionConfigurationResponse {
   business_id: string;
   thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
-  type: "AI_TEMPLATE" | "CUSTOM" | "OTHER_POSITION_AS_TEMPLATE";
+  type: PositionConfigurationTypes;
   phases: UpdatePositionConfigurationInput["phases"];
 }
 
@@ -478,3 +509,19 @@ export interface DraftPositionData {
     };
   };
 }
+
+/**
+ * NotificationCategory is a frontend-only type for grouping notifications in the UI.
+ * This should be replaced by a backend-provided category in the future.
+ */
+export type NotificationCategory =
+  | "action_required"
+  | "informative"
+  | "mention";
+
+/**
+ * Fallback categorization logic (to be replaced by backend):
+ * - PHASE_CHANGE => action_required
+ * - PROFILE_FILTER_PROCESS => informative
+ * - TAGGED_IN_COMMENT => mention
+ */

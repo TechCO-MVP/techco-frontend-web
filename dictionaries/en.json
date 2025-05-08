@@ -336,6 +336,25 @@
     "cancelEditDialogTitle": "Cancel editing",
     "cancelEditDialogDescription": "Are you sure you want to cancel? There are changes that have not been saved.",
     "cancelEditDialogConfirm": "Yes, cancel",
-    "cancelEditDialogCancel": "No, continue editing"
+    "cancelEditDialogCancel": "No, continue editing",
+    "continuedNextPhase": "Continue phase"
+  },
+  "notifications": {
+    "label": "Notifications",
+    "actionRequired": "Action required",
+    "informative": "Informative",
+    "mention": "Mention",
+    "noActionRequired": "No notifications of action required.",
+    "noInformative": "No notifications informative.",
+    "noMention": "No notifications of mention.",
+    "new": "New",
+    "position": "Position",
+    "candidate": "Candidate",
+    "ctaSeeComment": "See comment",
+    "ctaSeeCandidate": "See candidate",
+    "ctaStartAction": "Start action",
+    "mentionText": "mentioned you in a comment about this candidate",
+    "phaseChange": "The candidate moved from phase '{from}' to '{to}'",
+    "enteredPhase": "The candidate entered the phase '{phase}'. You need to take action"
   }
 }

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { apiEndpoints } from "@/lib/api-endpoints";
 
 export async function GET(req: Request) {
   const cookieStore = await cookies();
@@ -29,7 +30,7 @@ export async function GET(req: Request) {
 
   try {
     const response = await fetch(
-      `${process.env.SERVERLESS_URL}/position_configuration/list?${queryParams.toString()}`,
+      `${apiEndpoints.listPositionConfigurations()}?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {

@@ -10,7 +10,11 @@ import { Step, Stepper } from "./Stepper";
 import { Dictionary } from "@/types/i18n";
 import { Button } from "../ui/button";
 import { EditIcon } from "@/icons";
-import { DraftPositionData, PositionPhase } from "@/types";
+import {
+  DraftPositionData,
+  PositionConfigurationTypes,
+  PositionPhase,
+} from "@/types";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,7 +22,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { LocationSelector } from "./LocationSelector";
 import { StickyFooter } from "./StickyFooter";
-import { LogOut } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
@@ -34,6 +38,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { useNextPhase } from "@/hooks/use-next-phase";
 
 type Props = {
   dictionary: Dictionary;
@@ -44,6 +49,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     "fixed" | "range" | "not-specified"
   >("fixed");
   const [steps, setSteps] = useState<Step[]>([]);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<PositionPhase>();
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [positionData, setPositionData] = useState<DraftPositionData>();
@@ -51,6 +57,15 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const isDirty = !_.isEqual(positionData, initialData.current);
+  const { mutate: startNextPhase, isPending: isNextPhasePending } =
+    useNextPhase({
+      onSuccess: (data) => {
+        console.info("Start Next Phase success", data);
+      },
+      onError: (error) => {
+        console.error("Start Next Phase error", error);
+      },
+    });
   const { createPositionPage: i18n } = dictionary;
   const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
     onSuccess: (data) => {
@@ -86,7 +101,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     id: position_id,
     businessId: id,
   });
-
+  console.log("positionConfiguration", positionConfiguration);
   const { currentUser } = useCurrentUser();
   const { localUser } = useUsers({
     businessId: rootBusiness?._id,
@@ -111,10 +126,38 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       setPositionData(currentPosition.phases[0].data);
     }
   }, [positionConfiguration]);
+
+  function isPositionDataComplete(data: typeof positionData): boolean {
+    return (
+      !!data &&
+      typeof data.city === "string" &&
+      data.city.trim() !== "" &&
+      typeof data.role === "string" &&
+      data.role.trim() !== "" &&
+      typeof data.country_code === "string" &&
+      data.country_code.trim() !== "" &&
+      typeof data.description === "string" &&
+      data.description.trim() !== "" &&
+      Array.isArray(data.responsabilities) &&
+      data.responsabilities.length > 0 &&
+      Array.isArray(data.benefits) &&
+      data.benefits.length > 0 &&
+      typeof data.hiring_priority !== "undefined" &&
+      data.hiring_priority !== null &&
+      Array.isArray(data.skills) &&
+      data.skills.length > 0 &&
+      typeof data.work_mode === "string" &&
+      data.work_mode.trim() !== "" &&
+      typeof data.seniority === "string" &&
+      data.seniority.trim() !== ""
+    );
+  }
   useEffect(() => {
     if (positionData && !initialData.current) {
       initialData.current = positionData;
     }
+    const allDataCompleted = isPositionDataComplete(positionData);
+    setIsCompleted(Boolean(allDataCompleted));
   }, [positionData]);
 
   useEffect(() => {
@@ -164,7 +207,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
       _id: position_id,
       business_id: id,
       status: "COMPLETED",
-      type: "AI_TEMPLATE",
+      type: PositionConfigurationTypes.AI_TEMPLATE,
       thread_id: currentPhase?.thread_id,
       user_id: localUser?._id,
       phases:
@@ -449,6 +492,26 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
             checkUnsavedChanges();
           }}
           onSave={() => onSaveDraft()}
+        />
+      )}
+      {mode !== "edit" && isCompleted && (
+        <StickyFooter
+          showCancelButton={false}
+          canSave={isCompleted}
+          cancelLabel={i18n.cancelLabel}
+          saveLabel={`${i18n.continuedNextPhase} 2`}
+          isSaving={isNextPhasePending}
+          onCancel={() => {
+            checkUnsavedChanges();
+          }}
+          onSave={() =>
+            startNextPhase({
+              position_configuration_id: position_id,
+              configuration_type: (positionConfiguration?.body?.data[0]?.type ??
+                PositionConfigurationTypes.AI_TEMPLATE) as PositionConfigurationTypes,
+            })
+          }
+          saveButtonIcon={<ChevronRight className="h-4 w-4" />}
         />
       )}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

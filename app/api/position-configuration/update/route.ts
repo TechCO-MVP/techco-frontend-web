@@ -1,7 +1,7 @@
 // app/api/position-configuration/update/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
+import { apiEndpoints } from "@/lib/api-endpoints";
 export async function PUT(req: Request) {
   try {
     const cookieStore = await cookies();
@@ -17,7 +17,7 @@ export async function PUT(req: Request) {
     const body = await req.json();
 
     const response = await fetch(
-      `${process.env.SERVERLESS_URL}/position_configuration/update`,
+      `${apiEndpoints.updatePositionConfiguration()}`,
       {
         method: "PUT",
         headers: {

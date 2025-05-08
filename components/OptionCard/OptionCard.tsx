@@ -38,7 +38,7 @@ export const OptionCard: FC<Readonly<OptionCardProps>> = ({
         </Text>
       )}
 
-      <Button onClick={onClick} className="h-8 text-xs">
+      <Button onClick={onClick} className="h-8 text-xs" variant="talentGreen">
         {selectBtnLabel}
         {loading && <Loader2 className="animate-spin" />}
       </Button>

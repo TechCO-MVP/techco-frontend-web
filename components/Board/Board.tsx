@@ -211,7 +211,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
               {getPriority(selectedPosition?.hiring_priority, i18n)}
             </Badge>
-            <Notifications label={i18n.notifications} />
+            <Notifications positions={positions} dictionary={dictionary} />
           </div>
         </div>
         <Button
@@ -388,7 +388,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           </div>
         )}
 
-      <div className="flex max-h-[calc(100vh-400px)] gap-4 hover:overflow-x-auto">
+      <div className="flex max-h-[calc(100vh-400px)] gap-4 overflow-x-auto">
         {board &&
           filteredBoard?.map((column) => (
             <BoardColumn

@@ -24,6 +24,7 @@ import {
   BotMessagePayload,
   BotResponseTypes,
   DraftPositionData,
+  PositionConfigurationTypes,
   WebSocketMessagePayload,
 } from "@/types";
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
@@ -261,7 +262,7 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
       _id: position_id,
       business_id: id,
       status: "DRAFT",
-      type: "AI_TEMPLATE",
+      type: currentPosition?.type || PositionConfigurationTypes.AI_TEMPLATE,
       thread_id: currentPhase?.thread_id,
       user_id: localUser?._id,
       phases:
