@@ -79,7 +79,7 @@ export const CancelApplicationDialog: FC<Readonly<Props>> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="rounded-mdpx-4 mb-4 mt-4 h-10 w-full max-w-md bg-secondary py-2 text-secondary-foreground hover:bg-secondary/80">
+      <DialogTrigger className="mb-4 mt-4 h-10 w-full max-w-md rounded-md border border-talent-green-500 px-4 py-2 text-talent-green-500 hover:bg-secondary/80">
         {i18n.skipLabel}
       </DialogTrigger>
 

@@ -40,7 +40,7 @@ export const SendApplicationDialog: FC<Readonly<Props>> = ({
   }, [publicPhaseFormUrl, cardId, mutate]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="mb-4 h-10 w-full max-w-md rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800">
+      <DialogTrigger className="hover:bg-talent-green-600 mb-4 h-10 w-full max-w-md rounded-md bg-talent-green-500 text-white">
         {i18n.sendApplicationLabel}
       </DialogTrigger>
 

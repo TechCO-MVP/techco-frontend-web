@@ -191,11 +191,16 @@
     "updatedAt": "Last Updated",
     "createdBy": "User",
     "continueEditing": "Continue editing",
+    "deleteLabel": "Delete",
     "paginationPrevious": "Previous",
     "paginationNext": "Next",
     "paginationPage": "Page",
     "paginationOf": "of",
-    "paginationPageSizeLabel": "per page"
+    "paginationPageSizeLabel": "per page",
+    "confirmDeleteDialogTitle": "Are you sure you want to delete this position?",
+    "confirmDeleteDialogDescription": "This action cannot be undone.",
+    "confirmDeleteDialogConfirm": "Yes, delete",
+    "confirmDeleteDialogCancel": "No, cancel"
   },
   "positionDetailsPage": {
     "notifications": "Notifications",
@@ -270,14 +275,24 @@
     "requirementsLabel": "Key Requirements",
     "salaryRangeLabel": "Salary Range",
     "salaryDescriptionStart": "Compensation for this role is within the range of",
-    "salaryDescriptionEnd": "annual, based on the candidate's experience and skills.",
+    "salaryDescriptionEnd": "monthly, based on the candidate's experience and skills.",
     "whatWeOfferLabel": "What we offer",
-    "sendApplicationLabel": "Send my application"
+    "sendApplicationLabel": "Send my application",
+    "iWantToApply": "I want to apply"
   },
   "createPositionPage": {
+    "seeHowItWorks": "See how it works",
+    "howWeEvaluate": "How do we evaluate your candidates?",
+    "copyDescriptionPageTitle": "Select the position you want to copy the description from",
+    "copyDescriptionPageDescription": "We'll show you the description you used before so you can review if it's still useful. If it works for you, just select it and continue. It's that simple!",
+    "noPreviousPositions": "You must have at least one position to use this option",
     "goBack": "Go back",
-    "pageTitle": "How do you want to create this vacancy?",
-    "pageDescription": "Choose the option that best suits your process. You can generate the job posting using artificial intelligence, create it manually, or duplicate an existing one.",
+    "descriptionPhasePageTitle": "How do you want to create this vacancy?",
+    "descriptionPhasePageDescription": "Choose the option that best suits your process. You can generate the job posting using artificial intelligence, create it manually, or duplicate an existing one.",
+    "softSkillsPhasePageTitle": "How do you want to create your cultural fit test?",
+    "softSkillsPhasePageDescription": "We know that every culture is unique, which is why we create tailor-made tests. With Tici, the values ​​you assess reflect exactly what your company experiences, without generic formulas or empty templates.",
+    "technicalSkillsPhasePageTitle": "How do you want to create your technical test?",
+    "technicalSkillsPhasePageDescription": "We know that every company faces unique challenges, so we design technical tests that truly reflect the challenges of the role and area. No generic tests: here you assess what really matters.",
     "progessTitle": "Progress creating the vacancy",
     "showProgress": "Show progress",
     "step": "Step",
@@ -292,12 +307,16 @@
     "doesNotApply": "Not Applicable",
     "createWithAi": "Create with Artificial Intelligence",
     "createWithAiDescription": "Save time and let AI structure the job opening for you.",
+    "createWithAiSoftSkills": "Receive step-by-step guidance to build a test 100% aligned with your organizational culture. We help you identify key values and translate them into a powerful and personalized test.",
+    "createWithAiTechnicalSkills": "Tici builds a customized technical test using the job description and cultural fit test as a base. This way, you can evaluate if the person is ready to face the real challenges of your company, without additional effort.",
     "createWithAiDetails": "Our assistant will analyze the position and suggest an optimized description, responsibilities, requirements, and benefits. Just review, adjust, and publish.",
     "createManually": "Create manually",
     "createManuallyDescription": "Take full control and build the job opening from scratch.",
     "createManuallyDetails": "Define every detail, from the description to the requirements and benefits. Ideal if you prefer to customize the job opening from the start.",
     "copyPrevious": "Copy a previous job opening",
     "copyPreviousDescription": "Reuse a job opening you already created and adjust it as needed.",
+    "copyPreviousSoftSkills": "Already have a previous test? Save time by duplicating it and adjusting it to your new needs. Perfect if you already know what you're looking for and want to maintain consistency.",
+    "copyPreviousTechnicalSkills": "Have you created a test before? You can easily reuse and adapt it for a new process. It's fast, maintains consistency, and lets you focus on what's changing.",
     "copyPreviousDetails": "Choose an existing job opening as a base. You can modify it before publishing, saving time and maintaining consistency in your offers.",
     "selectBtnLabel": "Select",
     "saveDraftTitle": "Save draft",
@@ -312,6 +331,7 @@
     "draftSavedMessage": "Draft saved successfully.",
     "changesSavedMessage": "Changes saved successfully.",
     "continueEditing": "Continue editing",
+    "deleteLabel": "Delete",
     "editDescription": "Edit description",
     "locationLabel": "Location",
     "aboutUsLabel": "About us",
@@ -321,7 +341,7 @@
     "salaryRangeLabel": "Salary Range",
     "fixedsalaryDescriptionStart": "Compensation for this role is",
     "salaryDescriptionStart": "Compensation for this role is within the range of",
-    "salaryDescriptionEnd": "annual, based on the candidate's experience and skills.",
+    "salaryDescriptionEnd": "monthly, based on the candidate's experience and skills.",
     "salaryNotSpecified": "Salary compensation will be shared during the process.",
     "whatWeOfferLabel": "Lo que ofrecemos",
     "rangeLabel": "Range",
@@ -337,7 +357,27 @@
     "cancelEditDialogDescription": "Are you sure you want to cancel? There are changes that have not been saved.",
     "cancelEditDialogConfirm": "Yes, cancel",
     "cancelEditDialogCancel": "No, continue editing",
-    "continuedNextPhase": "Continue phase"
+    "continuedNextPhase": "Continue phase",
+    "selectTemplateTitle": "Choose the process that best fits your vacancy",
+    "selectTemplateDescription": "Three different paths, but with a single promise: finding the ideal person, without assumptions and with what really matters.",
+    "selectTemplateBtnLabel": "Select template",
+    "softSkillsInfoSheet": {
+      "title": "Create your soft skills test aligned with your culture",
+      "description": "Each company understands behaviors differently. Our AI helps you build a test tailored to your job opening and your organization's way of working. Forget about generic tests!",
+      "howWeEvaluateTitle": "📋 How do we evaluate your candidates?",
+      "howWeEvaluateText": "We analyze each behavior from three complementary approaches:\n\n🟩 Situational: What would they do in a hypothetical scenario?\n🟦 Experiential: What have they done in real situations?\n🟨 Reflective: How do they think, what did they learn, and how do they act?\n\nThis allows us to get to know each person better, beyond their resume.",
+      "scoringTitle": "🎯 How is it scored?",
+      "scoringText": "Each answer is evaluated on a scale from 1 to 5:\n\nNo evidence of the behavior\nSuperficial answer\nDemonstrates it with room for improvement\nDemonstrates it clearly and solidly\nHighly developed and inspires others\n\nWe calculate an average per behavior, and then an overall average for the test. This way you can compare candidates more objectively and easily.",
+      "aiEvaluationTitle": "🤖 Automatic evaluation with AI",
+      "aiEvaluationText": "Our AI identifies key signals in the answers such as:\n🗣 Collaborative language\n🤝 Team recognition\n🧘 Conflict resolution\n🤓 Reflective capacity\n\nThis makes scoring faster, more accurate, and more reliable.",
+      "recruiterBenefitsTitle": "✅ What benefits can it bring you as a recruiter?",
+      "recruiterBenefitsList": [
+        "A personalized test aligned with your culture",
+        "Less time spent on design and review",
+        "Better decisions based on real compatibility",
+        "A more professional and modern process for your candidates"
+      ]
+    }
   },
   "notifications": {
     "label": "Notifications",
@@ -353,8 +393,45 @@
     "ctaSeeComment": "See comment",
     "ctaSeeCandidate": "See candidate",
     "ctaStartAction": "Start action",
-    "mentionText": "mentioned you in a comment about this candidate",
+    "mentionText": "You have been mentioned in a comment.",
     "phaseChange": "The candidate moved from phase '{from}' to '{to}'",
     "enteredPhase": "The candidate entered the phase '{phase}'. You need to take action"
+  },
+  "onboardingMessage": {
+    "greeting": "Hi {name}!",
+    "intro": "I'm Tici, your virtual hiring assistant.",
+    "helpText": "I'm here to help you build a <b>well-thought-out, clear, and aligned hiring process for your company's real needs.</b>",
+    "helpListIntro": "I'll help you:",
+    "helpList": [
+      "✅ <b>Write clear job postings</b> aligned with your culture.",
+      "✅ <b>Create tests</b> based on real challenges.",
+      "✅ <b>Evaluate cultural fit</b> accurately.",
+      "✅ <b>Score with fair criteria</b> and no assumptions."
+    ],
+    "noExpert": "<b>You don't need to be an expert.</b> I'll guide you step by step.",
+    "startNow": "Start now"
+  },
+  "templateSelectionTable": {
+    "headers": [
+      "Process milestones",
+      "Process 1 - Senior management and executive roles",
+      "Middle management and semi-senior roles",
+      "Operational and high-turnover roles"
+    ],
+    "rows": [
+      ["We search for the best talent for you", "Yes", "Yes", "Yes"],
+      ["We automatically invite ideal profiles", "Yes", "Yes", "Yes"],
+      ["We filter for compatibility with your position", "Yes", "Yes", "Yes"],
+      ["First interview guided by AI", "Yes", "Yes", "Yes"],
+      ["Final interview with results support", "Yes", "Yes", "Yes"],
+      ["Final interview without results support", "Yes", "Yes", "Yes"],
+      ["Decision based on data, not intuition", "Yes", "Yes", "Yes"]
+    ],
+    "tooltips": [
+      "For positions with high responsibility, strategic vision, and proven experience. Ideal if you are looking for leaders with a track record.",
+      "A process that mixes efficiency and depth. We use AI to help you filter, but you decide at key moments.",
+      "Perfect for roles where you need to hire quickly without losing quality. Everything is designed to optimize time and resources."
+    ],
+    "select": "Select"
   }
 }

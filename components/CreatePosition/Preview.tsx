@@ -8,12 +8,7 @@ import { DraftPositionData } from "@/types";
 type Props = {
   positionData: DraftPositionData;
 };
-export const PreviewPosition: FC<Props> = ({ positionData }) => {
-  console.log(
-    "%c[Debug] positionData",
-    "background-color: teal; font-size: 20px; color: white",
-    positionData,
-  );
+export const PreviewPosition: FC<Props> = () => {
   const [items] = useState([
     {
       id: 1,

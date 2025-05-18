@@ -17,21 +17,27 @@ type Props = {
   positionData: DraftPositionData | null;
   business?: Business;
   dictionary: Dictionary;
+  customTrigger?: React.ReactNode;
 };
 
 export const PositionSheet: FC<Props> = ({
   positionData,
   business,
   dictionary,
+  customTrigger,
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="h-8">
-          <Eye /> {i18n.previewBtnLabel}
-        </Button>
+        {customTrigger ? (
+          customTrigger
+        ) : (
+          <Button className="h-8">
+            <Eye /> {i18n.previewBtnLabel}
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent className="w-[780px] p-0 sm:max-w-[780px]">
         <SheetHeader className="border-b px-4 py-3">

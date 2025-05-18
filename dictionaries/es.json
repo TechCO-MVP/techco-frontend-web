@@ -191,12 +191,17 @@
     "currentPhaseStatus": "Estado de la Etapa",
     "updatedAt": "Ultima Actualizacion",
     "createdBy": "Usuario",
-    "continueEditing": "Continuar editando",
+    "continueEditing": "Editar",
+    "deleteLabel": "Eliminar",
     "paginationPrevious": "Anterior",
     "paginationNext": "Siguiente",
     "paginationPage": "Página",
     "paginationOf": "de",
-    "paginationPageSizeLabel": "por página"
+    "paginationPageSizeLabel": "por página",
+    "confirmDeleteDialogTitle": "¿Estás seguro de que quieres eliminar esta vacante?",
+    "confirmDeleteDialogDescription": "Esta acción no se puede deshacer.",
+    "confirmDeleteDialogConfirm": "Sí, eliminar",
+    "confirmDeleteDialogCancel": "No, cancelar"
   },
   "positionDetailsPage": {
     "notifications": "Notificaciones",
@@ -271,14 +276,24 @@
     "requirementsLabel": "Requisitos clave",
     "salaryRangeLabel": "Rango salarial",
     "salaryDescriptionStart": "La compensación para este rol está dentro del rango de",
-    "salaryDescriptionEnd": "anuales, según experiencia y habilidades del candidato.",
+    "salaryDescriptionEnd": "mensuales, según experiencia y habilidades del candidato.",
     "whatWeOfferLabel": "Lo que ofrecemos",
-    "sendApplicationLabel": "Enviar mi aplicación"
+    "sendApplicationLabel": "Enviar mi aplicación",
+    "iWantToApply": "Quiero postularme"
   },
   "createPositionPage": {
+    "seeHowItWorks": "Ver cómo funciona",
+    "howWeEvaluate": "Entiende cómo calificamos",
+    "copyDescriptionPageTitle": "Selecciona la vacante de la que quieres copiar la descripción",
+    "copyDescriptionPageDescription": "Te mostraremos la descripción que usaste antes para que revises si sigue siendo útil. Si te funciona, solo selecciónala y continúa. ¡Así de simple!",
+    "noPreviousPositions": "Debes haber creado al menos una vacante para usar esta opción",
     "goBack": "Atrás",
-    "pageTitle": "¿Cómo quieres crear esta vacante?",
-    "pageDescription": "Elige la opción que mejor se adapte a tu proceso. Puedes generar la vacante con inteligencia artificial, construirla manualmente o duplicar una existente.",
+    "descriptionPhasePageTitle": "¿Cómo quieres crear la descripción de tu vacante?",
+    "descriptionPhasePageDescription": "Sabemos que una buena descripción atrae al talento correcto. Por eso te ayudamos a construir una oferta que no solo sea clara, sino también atractiva, auténtica y alineada con lo que realmente necesita tu empresa.",
+    "softSkillsPhasePageTitle": "¿Cómo quieres crear tu test de fit cultural?",
+    "softSkillsPhasePageDescription": "Sabemos que cada cultura es única, por eso creamos tests hechos a la medida. Con Tici, los valores que evalúas reflejan exactamente lo que vive tu empresa, sin fórmulas genéricas ni plantillas vacías.",
+    "technicalSkillsPhasePageTitle": "¿Cómo quieres crear tu test técnico?",
+    "technicalSkillsPhasePageDescription": "Sabemos que cada empresa enfrenta desafíos únicos, por eso diseñamos pruebas técnicas que realmente reflejan los retos del rol y del área. Nada de tests genéricos: aquí evalúas lo que de verdad importa.",
     "progessTitle": "Progreso en la creación de la vacante",
     "showProgress": "Ver progreso de la vacante",
     "step": "Paso",
@@ -291,15 +306,18 @@
     "pending": "Pendiente",
     "completed": "Completado",
     "doesNotApply": "No aplica",
-    "createWithAi": "Crear con Inteligencia Artificial",
-    "createWithAiDescription": "Ahorra tiempo y deja que la IA estructure la vacante por ti.",
+    "createWithAi": "Crear con acompañamiento de Tici",
+    "createWithAiDescription": "Tici genera automaticamente una descripcion de vacante completa, con base en tu necesidad. No es un texto generico: es una oferta que comunica tu cultura, tus retos y lo que esperas de quien se una a tu equipo.",
+    "createWithAiSoftSkills": "Recibe guía paso a paso para construir un test alineado 100% a tu cultura organizacional. Te ayudamos a identificar los valores clave y traducirlos en un test poderoso y personalizado.",
+    "createWithAiTechnicalSkills": "Tici construye automáticamente una prueba técnica personalizada usando la descripción del cargo y el test de fit cultural como base. Así puedes evaluar si la persona está lista para enfrentar los retos reales de tu empresa, sin esfuerzo adicional.",
     "createWithAiDetails": "Nuestro asistente analizará el cargo y te sugerirá una descripción optimizada, responsabilidades, requisitos y beneficios. Solo revisa, ajusta y publica.",
     "createManually": "Crear de forma manual",
-    "createManuallyDescription": "Toma el control total y construye la vacante desde cero.",
+    "createManuallyDescription": "Define cada detalle, desde la descripción hasta los requisitos y beneficios. Ideal si prefieres personalizar la oferta desde el inicio.",
     "createManuallyDetails": "Define cada detalle, desde la descripción hasta los requisitos y beneficios. Ideal si prefieres personalizar la oferta desde el inicio.",
-    "copyPrevious": "Copiar una vacante anterior",
-    "copyPreviousDescription": "Reutiliza una vacante que ya creaste y ajústala según sea necesario.",
-    "copyPreviousDetails": "Elige una vacante existente como base. Podrás modificarla antes de publicarla, ahorrando tiempo y manteniendo consistencia en tus ofertas.",
+    "copyPrevious": "Usar una prueba existente como base",
+    "copyPreviousDescription": "Reutiliza una descripcion que ya hayas creado. Puedes editarla y adaptarla facilmente para nuevos procesos, manteniendo consistencia y ahorrando tiempo.",
+    "copyPreviousSoftSkills": "¿Ya tienes un test anterior? Ahorra tiempo duplicándolo y ajustándolo según tu nueva necesidad. Perfecto si ya sabes lo que buscas y quieres mantener consistencia.",
+    "copyPreviousTechnicalSkills": "¿Ya creaste una prueba antes? Puedes reutilizarla y adaptarla fácilmente para un nuevo proceso. Es rápido, mantiene coherencia y te permite enfocarte en lo que cambia.",
     "selectBtnLabel": "Seleccionar",
     "saveDraftTitle": "Guardar borrador",
     "saveDraftDescription": "¿Estás seguro de que no quieres seguir editando la descripción de la vacante?",
@@ -313,6 +331,7 @@
     "draftSavedMessage": "Borrador guardado con exito.",
     "changesSavedMessage": "Cambios guardados con exito.",
     "continueEditing": "Continuar editando la descripción",
+    "deleteLabel": "Eliminar",
     "editDescription": "Editar descripción",
     "locationLabel": "Ubicación",
     "aboutUsLabel": "Sobre nosotros",
@@ -322,7 +341,7 @@
     "salaryRangeLabel": "Rango salarial",
     "fixedsalaryDescriptionStart": "La compensación para este rol es de",
     "salaryDescriptionStart": "La compensación para este rol está dentro del rango de",
-    "salaryDescriptionEnd": "anuales, según experiencia y habilidades del candidato.",
+    "salaryDescriptionEnd": "mensuales, según experiencia y habilidades del candidato.",
     "salaryNotSpecified": "La compensación salarial se compartirá durante el proceso.",
     "whatWeOfferLabel": "Lo que ofrecemos",
     "rangeLabel": "Rango",
@@ -338,7 +357,27 @@
     "cancelEditDialogDescription": "¿Estás seguro de que deseas cancelar? Hay cambios que no se han guardado.",
     "cancelEditDialogConfirm": "Sí, cancelar",
     "cancelEditDialogCancel": "No, seguir editando",
-    "continuedNextPhase": "Continuar paso"
+    "continuedNextPhase": "Continuar paso",
+    "selectTemplateTitle": "Elige el proceso que mejor va con tu vacante",
+    "selectTemplateDescription": "Tres caminos diferentes, pero con una sola promesa: encontrar a la persona ideal, sin suposiciones y con lo que de verdad importa.",
+    "selectTemplateBtnLabel": "Seleccionar plantilla",
+    "softSkillsInfoSheet": {
+      "title": "Crea tu test de habilidades blandas alineado con tu cultura",
+      "description": "Cada empresa entiende los comportamientos de forma distinta. Nuestra IA te ayuda a construir un test hecho a la medida de tu vacante y la forma de trabajar en tu organización. ¡Olvídate de las pruebas genéricas!",
+      "howWeEvaluateTitle": "📋 ¿Cómo evaluamos a tus candidatos?",
+      "howWeEvaluateText": "Analizamos cada comportamiento desde tres enfoques complementarios:\n\n🟩 Situacional: ¿Qué haría ante un escenario hipotético?\n🟦 Experiencial: ¿Qué ha hecho en situaciones reales?\n🟨 Reflexiva: ¿Cómo piensa, qué aprendió y cómo actúa?\n\nEsto nos permite conocer mejor a cada persona, más allá de su CV.",
+      "scoringTitle": "🎯 ¿Cómo se califica?",
+      "scoringText": "Cada respuesta se evalúa con una escala del 1 al 5:\n\nSin evidencia del comportamiento\nRespuesta superficial\nLo demuestra con oportunidades de mejora\nLo demuestra con claridad y solidez\nEstá muy desarrollado e inspira a otros\n\nCalculamos un promedio por comportamiento, y luego un promedio general del test. Así podrás comparar candidatos de forma más objetiva y fácil.",
+      "aiEvaluationTitle": "🤖 Evaluación automática con IA",
+      "aiEvaluationText": "Nuestra IA identifica señales clave en las respuestas como:\n🗣 Lenguaje colaborativo\n🤝 Reconocimiento al equipo\n🧘 Resolución de conflictos\n🤓 Capacidad de reflexión\n\nEsto hace que la calificación sea más rápida, precisa y confiable.",
+      "recruiterBenefitsTitle": "✅ ¿Qué beneficios te puede traer como reclutador?",
+      "recruiterBenefitsList": [
+        "Un test personalizado y alineado con tu cultura",
+        "Menos tiempo invertido en diseño y revisión",
+        "Mejores decisiones basadas en compatibilidad real",
+        "Un proceso más profesional y moderno para tus candidatos"
+      ]
+    }
   },
   "notifications": {
     "label": "Notificaciones",
@@ -354,8 +393,45 @@
     "ctaSeeComment": "Ver comentario",
     "ctaSeeCandidate": "Ver candidato",
     "ctaStartAction": "Iniciar acción",
-    "mentionText": "te etiquetó en un comentario sobre este candidato",
+    "mentionText": "Te han etiquetado en un comentario.",
     "phaseChange": "El candidato cambió de la fase '{from}' a '{to}'",
     "enteredPhase": "El candidato entró a la fase '{phase}'. Debes hacer una acción"
+  },
+  "onboardingMessage": {
+    "greeting": "¡Hola {name}!",
+    "intro": "Soy Tici, tu asistente virtual de selección.",
+    "helpText": "Estoy aquí para ayudarte a construir un proceso de contratación <b>bien pensado, claro y alineado con lo que realmente necesita tu empresa.</b>",
+    "helpListIntro": "Te ayudare a:",
+    "helpList": [
+      "✅ <b>Escribir vacantes claras</b> y alineadas con tu cultura.",
+      "✅ <b>Crear pruebas</b> basadas en desafíos reales.",
+      "✅ <b>Evaluar el encaje cultural</b> de forma precisa.",
+      "✅ <b>Calificar con criterios justos</b> y sin suposiciones."
+    ],
+    "noExpert": "<b>No necesitas ser experto.</b> Yo te acompaño paso a paso.",
+    "startNow": "Empezar ahora"
+  },
+  "templateSelectionTable": {
+    "headers": [
+      "Hitos del proceso",
+      "Proceso 1 - Alta dirección y cargos senior",
+      "Dirección media y perfiles semi-senior",
+      "Perfiles operativos y alta rotación"
+    ],
+    "rows": [
+      ["Buscamos por ti el mejor talento", "Si", "Si", "Si"],
+      ["Invitamos automáticamente a los perfiles ideales", "Si", "Si", "Si"],
+      ["Filtramos por compatibilidad con tu vacante", "Si", "Si", "Si"],
+      ["Primera entrevista guiada por IA", "Si", "Si", "Si"],
+      ["Entrevista final con apoyo de resultados", "Si", "Si", "Si"],
+      ["Entrevista final sin apoyo de resultados", "Si", "Si", "Si"],
+      ["Decisión basada en datos, no en intuiciones", "Si", "Si", "Si"]
+    ],
+    "tooltips": [
+      "Para vacantes con mucha responsabilidad, visión estratégica y experiencia comprobada. Ideal si buscas líderes con trayectoria.",
+      "Un proceso que mezcla eficiencia y profundidad. Usamos IA para ayudarte a filtrar, pero tú decides en los momentos clave.",
+      "Perfecto para roles donde necesitas contratar rápido sin perder calidad. Todo está pensado para optimizar tiempo y recursos."
+    ],
+    "select": "Seleccionar"
   }
 }

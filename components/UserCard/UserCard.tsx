@@ -30,7 +30,9 @@ import { countryLabelLookup } from "@/lib/utils";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import { CandidateDetailsDialog } from "../CandidateDetailsDialog/CandidateDetailsDialog";
 import { Dictionary } from "@/types/i18n";
-import { MouseEvent, useRef, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
+import { useAppSelector } from "@/lib/store/hooks";
+import { selectNotificationsState } from "@/lib/store/features/notifications/notifications";
 
 interface CardProps {
   dictionary: Dictionary;
@@ -51,6 +53,9 @@ export const UserCard: React.FC<CardProps> = ({
   pipe,
   dictionary,
 }) => {
+  const notificationsState = useAppSelector(selectNotificationsState);
+  const { showCandidateDetails } = notificationsState;
+
   const cardRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { userCard: i18n } = dictionary;
@@ -98,6 +103,16 @@ export const UserCard: React.FC<CardProps> = ({
       onCardMove(draggedCard.id, card.id);
     }
   };
+
+  useEffect(() => {
+    if (showCandidateDetails && showCandidateDetails.cardId === card.id) {
+      console.log("[Notifications] showCandidateDetails", {
+        showCandidateDetails,
+        card,
+      });
+      setOpen(true);
+    }
+  }, [showCandidateDetails]);
 
   return (
     <Card

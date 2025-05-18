@@ -24,7 +24,7 @@ import {
   BotMessagePayload,
   BotResponseTypes,
   DraftPositionData,
-  PositionConfigurationTypes,
+  PositionConfigurationPhaseTypes,
   WebSocketMessagePayload,
 } from "@/types";
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
@@ -49,7 +49,7 @@ type CreateWithAIProps = {
   dictionary: Dictionary;
 };
 
-export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
+export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
   dictionary,
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -135,7 +135,7 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
 
   const currentPhase = useMemo(() => {
     return currentPosition?.phases.find(
-      (phase) => phase.name === "Description",
+      (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
     );
   }, [currentPosition]);
 
@@ -144,11 +144,6 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
   });
 
   useEffect(() => {
-    console.log(
-      "%c[Debug] currentPosition",
-      "background-color: teal; font-size: 20px; color: white",
-      currentPosition,
-    );
     if (currentPosition) {
       setSteps(
         currentPosition.phases.map((phase) => ({
@@ -242,7 +237,7 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
       });
       if (isCompleted) {
         router.push(
-          `/${lang}/dashboard/companies/${id}/positions/${position_id}/preview`,
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/preview`,
         );
       } else {
         router.push(
@@ -257,26 +252,20 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
 
   const onSaveDraft = () => {
     if (!localUser || !currentPhase || !currentPhase.thread_id) return;
+    if (!currentPosition) return;
     setDialogOpen(false);
     saveDraft({
-      _id: position_id,
-      business_id: id,
-      status: "DRAFT",
-      type: currentPosition?.type || PositionConfigurationTypes.AI_TEMPLATE,
-      thread_id: currentPhase?.thread_id,
-      user_id: localUser?._id,
+      ...currentPosition,
       phases:
         currentPosition?.phases.map((phase) =>
           phase.name === currentPhase?.name
             ? {
                 ...phase,
-                status: isCompleted ? "COMPLETED" : "DRAFT",
+                status: "IN_PROGRESS",
                 data: positionProgress,
               }
             : phase,
         ) ?? [],
-      updated_at: new Date().toISOString(),
-      created_at: currentPosition?.created_at || new Date().toISOString(),
     });
   };
 
@@ -507,7 +496,9 @@ export const CreateWithAI: FC<Readonly<CreateWithAIProps>> = ({
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               {i18n.saveDraftCancel}
             </Button>
-            <Button onClick={onSaveDraft}>{i18n.saveDraftConfirm}</Button>
+            <Button variant="talentGreen" onClick={onSaveDraft}>
+              {i18n.saveDraftConfirm}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

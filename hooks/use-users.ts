@@ -6,6 +6,7 @@ type QueryUsersParams = {
   businessId?: string;
   userId?: string;
   all?: boolean;
+  excludeBusinessId?: string;
 };
 
 export function useUsers({
@@ -13,9 +14,10 @@ export function useUsers({
   userId,
   all,
   email,
+  excludeBusinessId,
 }: QueryUsersParams & { email?: string }) {
   const queryResult = useQuery({
-    queryKey: QUERIES.USER_LIST(businessId),
+    queryKey: QUERIES.USER_LIST(businessId, excludeBusinessId),
     queryFn: async () => {
       if (!businessId) {
         throw new Error("Missing required parameter: business_id");
@@ -26,7 +28,8 @@ export function useUsers({
       const queryParams = new URLSearchParams({ business_id: businessId });
       if (userId) queryParams.append("id", userId);
       if (queryAll !== undefined) queryParams.append("all", String(queryAll));
-
+      if (excludeBusinessId)
+        queryParams.append("exclude_business_id", excludeBusinessId);
       const response = await fetch(`/api/user/list?${queryParams.toString()}`);
 
       if (!response.ok) {

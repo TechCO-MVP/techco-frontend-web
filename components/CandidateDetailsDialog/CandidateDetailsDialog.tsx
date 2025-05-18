@@ -40,6 +40,11 @@ import { Dictionary } from "@/types/i18n";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUsers } from "@/hooks/use-users";
+import {
+  selectNotificationsState,
+  setNotificationsState,
+} from "@/lib/store/features/notifications/notifications";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 
 interface CandidateDetailsDialogProps {
   phase: PipefyPhase;
@@ -57,6 +62,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   open,
   setOpen,
 }) => {
+  const notificationsState = useAppSelector(selectNotificationsState);
+  const { showCandidateDetails } = notificationsState;
   const { userCard: i18n } = dictionary;
   const { rootBusiness } = useBusinesses();
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
@@ -82,6 +89,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const params = useParams<{ id: string }>();
   const { id } = params;
   const { currentUser } = useCurrentUser();
+  const dispatch = useAppDispatch();
 
   const { users } = useUsers({
     businessId: rootBusiness?._id,
@@ -173,8 +181,15 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     });
   }, [open, card, publicFormUrl, mutate]);
 
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open);
+    if (!open) {
+      dispatch(setNotificationsState({ showCandidateDetails: undefined }));
+    }
+  };
+
   return (
-    <Dialog modal open={open} onOpenChange={setOpen}>
+    <Dialog modal open={open} onOpenChange={handleOpenChange}>
       <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
       <DialogContent
         onInteractOutside={(event) => event.preventDefault()}
@@ -221,7 +236,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </div>
           </div>
           <Tabs
-            defaultValue="about"
+            defaultValue={showCandidateDetails?.defaultTab || "about"}
             className="flex h-full w-full max-w-[540px] flex-col items-center justify-start overflow-hidden pr-10"
           >
             <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
@@ -231,12 +246,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               >
                 {i18n.profileTabTitle}
               </TabsTrigger>
-              <TabsTrigger
-                className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-                value="documents"
-              >
-                {i18n.documentsTabTitle}
-              </TabsTrigger>
+
               <TabsTrigger
                 className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
                 value="comments"
@@ -389,7 +399,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </TabsContent>
             <TabsContent
               value="comments"
-              className="max-h-[70vh] w-full max-w-screen-lg overflow-y-auto"
+              className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
             >
               <div className="flex flex-col-reverse gap-6 p-6">
                 {card.comments?.map((comment) => {
@@ -417,7 +427,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </TabsContent>
             <TabsContent
               value="history"
-              className="max-h-[70vh] w-full max-w-screen-lg overflow-y-auto"
+              className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
             >
               <PhaseHistory dictionary={dictionary} pipe={pipe} card={card} />
             </TabsContent>

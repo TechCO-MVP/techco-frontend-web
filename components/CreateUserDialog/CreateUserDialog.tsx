@@ -75,6 +75,10 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
     handleSubmit,
     formState: { dirtyFields, errors, isValid },
   } = form;
+
+  useEffect(() => {
+    if (mode !== "new" && users.length === 0) setMode("new");
+  }, [users, mode]);
   const onSubmit = async (data: CreateUserData) => {
     try {
       startTransition(async () => {
@@ -110,12 +114,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
         role,
       });
     }
-    console.log(
-      "%c[Debug] existingUser",
-      "background-color: teal; font-size: 20px; color: white",
-      existingUser,
-      role,
-    );
+
     try {
       startTransition(async () => {
         const updateUserReponse = await actions.updateUser({
@@ -190,7 +189,7 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
 
       <DialogContent className="max-h-[36rem] max-w-fit overflow-y-auto !rounded-none xl:max-h-none">
         <div className="flex w-full flex-col items-center justify-center bg-white p-8">
-          {mode !== undefined && (
+          {mode !== undefined && users.length > 0 && (
             <Button
               className="mb-10 place-self-start"
               variant="outline"

@@ -5,6 +5,7 @@ export interface NotificationsState {
   showCandidateDetails?: {
     phaseId: string;
     cardId: string;
+    defaultTab: "about" | "comments" | "history";
   };
 }
 

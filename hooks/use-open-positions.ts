@@ -26,7 +26,6 @@ export function useOpenPositions({
       if (!userId) {
         throw new Error("Missing required parameter: user_id");
       }
-      console.log("[Debug] Fetching positions...", { businessId, userId });
       const queryAll = positionId ? undefined : (all ?? true);
       const queryParams = new URLSearchParams({
         business_id: businessId,

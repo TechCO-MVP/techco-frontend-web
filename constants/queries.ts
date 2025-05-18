@@ -1,7 +1,8 @@
 export const QUERIES = {
   COMPANY_LIST: ["companies"] as const,
   NOTIFICATIONS: ["notifications"] as const,
-  USER_LIST: (businessId?: string) => ["users", businessId] as const,
+  USER_LIST: (businessId?: string, excludeBusinessId?: string) =>
+    ["users", businessId, excludeBusinessId] as const,
   CURRENT_USER: ["current-user"] as const,
   POSITION_LIST: (businessId?: string, userId?: string) =>
     ["positions", businessId, userId] as const,

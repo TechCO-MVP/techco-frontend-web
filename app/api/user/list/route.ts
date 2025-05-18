@@ -16,6 +16,7 @@ export async function GET(req: Request) {
 
   const url = new URL(req.url);
   const businessId = url.searchParams.get("business_id");
+  const excludeBusinessId = url.searchParams.get("exclude_business_id");
   const userId = url.searchParams.get("id");
   const all = url.searchParams.get("all");
 
@@ -27,6 +28,8 @@ export async function GET(req: Request) {
   }
 
   const queryParams = new URLSearchParams({ business_id: businessId });
+  if (excludeBusinessId)
+    queryParams.append("exclude_business_id", excludeBusinessId);
   if (userId) queryParams.append("id", userId);
   if (all) queryParams.append("all", all);
 

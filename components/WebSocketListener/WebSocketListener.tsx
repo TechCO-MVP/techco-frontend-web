@@ -45,6 +45,10 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
           showCandidateDetails: {
             cardId: message.card_id,
             phaseId: message.phase_id,
+            defaultTab:
+              message.notification_type === "TAGGED_IN_COMMENT"
+                ? "comments"
+                : "about",
           },
         }),
       );

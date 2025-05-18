@@ -18,7 +18,7 @@ export default async function Page({
   const dictionary = await getDictionary(lang);
   const { positionOfferPage: i18n } = dictionary;
   if (!token) return <p>Missing token</p>;
-  const response = await fetch(apiEndpoints.positionDetails(token), {
+  const response = await fetch(apiEndpoints.positionDetails({ token }), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

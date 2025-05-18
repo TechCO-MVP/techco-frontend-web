@@ -1,4 +1,4 @@
-import { CreateWithAI } from "@/components/CreatePosition/CreateWithAI";
+import { ModeSelection } from "@/components/CreatePosition/ModeSelection";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 
@@ -10,5 +10,5 @@ export default async function CompaniesPage(props: {
 
   const dictionary = await getDictionary(lang);
 
-  return <CreateWithAI dictionary={dictionary} />;
+  return <ModeSelection dictionary={dictionary} />;
 }

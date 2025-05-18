@@ -17,28 +17,12 @@ import { useUpdateNotification } from "@/hooks/use-update-notification";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { HiringPositionData, NotificationCategory } from "@/types";
+import { HiringPositionData, PhaseType, NotificationType } from "@/types";
 import { Dictionary } from "@/types/i18n";
 
 interface NotificationsProps {
   dictionary: Dictionary;
   positions: HiringPositionData[];
-}
-
-// Fallback categorization function (replace with backend-provided category in future)
-function getNotificationCategory(notification: {
-  notification_type: string;
-}): NotificationCategory {
-  switch (notification.notification_type) {
-    case "PHASE_CHANGE":
-      return "action_required";
-    case "PROFILE_FILTER_PROCESS":
-      return "informative";
-    case "TAGGED_IN_COMMENT":
-      return "mention";
-    default:
-      return "informative";
-  }
 }
 
 export function Notifications({ dictionary, positions }: NotificationsProps) {
@@ -49,10 +33,6 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
 
   const { mutate } = useUpdateNotification({
     onSuccess: () => {
-      console.log(
-        "%c[Debug] sucess",
-        "background-color: teal; font-size: 20px; color: white",
-      );
       queryClient.invalidateQueries({
         queryKey: QUERIES.NOTIFICATIONS,
       });
@@ -76,14 +56,6 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
   );
 
   useEffect(() => {
-    console.log(
-      "%c[Debug] ",
-      "background-color: teal; font-size: 20px; color: white",
-      {
-        open,
-        toMarkRead,
-      },
-    );
     if (!open && toMarkRead.length > 0) {
       mutate({
         notification_ids: toMarkRead,
@@ -106,12 +78,12 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
     );
     return {
       action_required: sorted.filter(
-        (n) => getNotificationCategory(n) === "action_required",
+        (n) => n.phase_type === PhaseType.ACTION_CALL,
       ),
-      informative: sorted.filter(
-        (n) => getNotificationCategory(n) === "informative",
+      informative: sorted.filter((n) => n.phase_type === PhaseType.INFORMATIVE),
+      mention: sorted.filter(
+        (n) => n.notification_type === NotificationType.TAGGED_IN_COMMENT,
       ),
-      mention: sorted.filter((n) => getNotificationCategory(n) === "mention"),
     };
   }, [notifications]);
 

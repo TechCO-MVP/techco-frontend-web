@@ -40,11 +40,7 @@ export const LocationSelector: FC<Props> = ({
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
-  console.log(
-    "%c[Debug] defaultCountry",
-    "background-color: teal; font-size: 20px; color: white",
-    defaultCountry,
-  );
+
   return (
     <div className="flex flex-col gap-2">
       <Popover open={open} onOpenChange={setOpen}>

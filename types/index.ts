@@ -14,6 +14,19 @@ export type UserRole = {
   role: "super_admin" | "business_admin" | "position_owner" | "recruiter";
 };
 
+export type DeletePositionConfigurationInput = {
+  id: string;
+};
+
+export type DeletePositionConfigurationResponse = {
+  message: string;
+  body: {
+    data: {
+      _id: string;
+    };
+  };
+};
+
 export type User = {
   _id: string;
   full_name: string;
@@ -218,10 +231,15 @@ export type HiringProcessResponse = {
 };
 export type NotificationStatus = "NEW" | "READ" | "REVIEWED";
 
-export type NotificationType =
-  | "PHASE_CHANGE"
-  | "TAGGED_IN_COMMENT"
-  | "PROFILE_FILTER_PROCESS";
+export enum PhaseType {
+  INFORMATIVE = "INFORMATIVE",
+  ACTION_CALL = "ACTION_CALL",
+}
+export enum NotificationType {
+  PHASE_CHANGE = "PHASE_CHANGE",
+  TAGGED_IN_COMMENT = "TAGGED_IN_COMMENT",
+  PROFILE_FILTER_PROCESS = "PROFILE_FILTER_PROCESS",
+}
 
 export type NotificationPayload = {
   message: {
@@ -229,18 +247,13 @@ export type NotificationPayload = {
     created_at: string; // ISO timestamp
     updated_at: string; // ISO timestamp
     deleted_at: string | null;
-    phase_from?: string;
-    phase_to?: string;
     phase_name?: string;
-
+    phase_type?: PhaseType;
     user_id: string;
     business_id: string;
     message: string;
 
-    notification_type:
-      | "PHASE_CHANGE"
-      | "TAGGED_IN_COMMENT"
-      | "PROFILE_FILTER_PROCESS";
+    notification_type: NotificationType;
 
     status: "NEW" | "READ" | "REVIEWED"; // define actual statuses you support
 
@@ -332,6 +345,8 @@ export type PositionConfiguration = {
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: PositionConfigurationTypes;
   phases: PositionPhase[];
+  flow_type: PositionConfigurationFlowTypes;
+  current_phase: PositionConfigurationPhaseTypes;
 };
 
 export type GetPositionConfigurationListResponse = {
@@ -345,6 +360,12 @@ export enum PositionConfigurationTypes {
   AI_TEMPLATE = "AI_TEMPLATE",
   CUSTOM = "CUSTOM",
   OTHER_POSITION_AS_TEMPLATE = "OTHER_POSITION_AS_TEMPLATE",
+}
+
+export enum PositionConfigurationFlowTypes {
+  HIGH_PROFILE_FLOW = "HIGH_PROFILE_FLOW",
+  MEDIUM_PROFILE_FLOW = "MEDIUM_PROFILE_FLOW",
+  LOW_PROFILE_FLOW = "LOW_PROFILE_FLOW",
 }
 export enum PositionConfigurationStatus {
   COMPLETED = "COMPLETED",
@@ -373,12 +394,21 @@ export type NextPhaseInput = {
   configuration_type: PositionConfigurationTypes;
 };
 
+export type ProfileFilterStartUrlInput = {
+  position_id: string;
+  business_id: string;
+  email: string;
+  url_profiles: string[];
+};
+
 export type CompletePhaseInput = {
   position_configuration_id: string;
-  data: Record<
-    string,
-    string | number | boolean | string[] | number[] | boolean[]
-  >;
+  data:
+    | DraftPositionData
+    | Record<
+        string,
+        string | number | boolean | string[] | number[] | boolean[]
+      >;
 };
 export type CompletePhaseResponse = {
   message: string;
@@ -398,11 +428,8 @@ export type CompletePhaseResponse = {
   };
 };
 export type PostPositionConfigurationInput = {
-  thread_id?: string;
-  status?: PositionConfigurationStatus;
-  type: PositionConfigurationTypes;
-  phases?: PositionPhase[];
-  business_id?: string;
+  business_id: string;
+  flow_type: PositionConfigurationFlowTypes;
 };
 
 export type PostPositionConfigurationResponse = {
@@ -422,14 +449,20 @@ export type PostPositionConfigurationResponse = {
   };
   message: string;
 };
-
+export type ProfileFilterStartUrlResponse = {
+  message: string;
+  body: {
+    profile_filter: {
+      _id: string;
+    };
+  };
+};
 export interface UpdatePositionConfigurationInput {
   _id: string;
   created_at: string;
   updated_at: string;
   user_id: string;
   business_id: string;
-  thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: PositionConfigurationTypes;
   phases: {
@@ -509,19 +542,3 @@ export interface DraftPositionData {
     };
   };
 }
-
-/**
- * NotificationCategory is a frontend-only type for grouping notifications in the UI.
- * This should be replaced by a backend-provided category in the future.
- */
-export type NotificationCategory =
-  | "action_required"
-  | "informative"
-  | "mention";
-
-/**
- * Fallback categorization logic (to be replaced by backend):
- * - PHASE_CHANGE => action_required
- * - PROFILE_FILTER_PROCESS => informative
- * - TAGGED_IN_COMMENT => mention
- */

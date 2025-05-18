@@ -28,7 +28,7 @@ export default async function DashboardLayout(
         <TopBar lang={lang} />
         <SideBar dictionary={dictionary} />
         <WebSocketListener accessToken={accessToken} />
-        <main className="mx-auto flex w-full max-w-[90%] flex-1">
+        <main className="mx-auto flex w-full max-w-[90%] flex-1 pb-10">
           {children}
         </main>
         <footer className="flex h-[60px] items-center justify-center bg-talent-footer">

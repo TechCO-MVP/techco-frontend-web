@@ -3,17 +3,21 @@ import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useMemo } from "react";
 import { Button } from "../ui/button";
-import { BrainCog, ChevronLeft, Copy, Pencil } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { OptionCard } from "../OptionCard/OptionCard";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
-import { PositionConfigurationTypes } from "@/types";
-import { usePositionConfigurations } from "@/hooks/use-position-configurations";
+import { PositionConfigurationFlowTypes } from "@/types";
+import TemplateSelectionTable from "../TemplateSelectionTable/TemplateSelectionTable";
 import AnimatedModal from "../ChatBot/AnimatedModal";
-import { InfoSheet } from "./InfoSheet";
+import { CREATE_POSITION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingMessage";
+import { useBusinesses } from "@/hooks/use-businesses";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useUsers } from "@/hooks/use-users";
+import { QUERIES } from "@/constants/queries";
+import { useQueryClient } from "@tanstack/react-query";
 
 type CreatePositionProps = {
   dictionary: Dictionary;
@@ -22,19 +26,37 @@ type CreatePositionProps = {
 export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
   dictionary,
 }) => {
+  const showOnboarding = !localStorage.getItem(
+    CREATE_POSITION_ONBOARDING_HIDE_KEY,
+  );
+  const { rootBusiness } = useBusinesses();
+  const queryClient = useQueryClient();
+
+  const { currentUser } = useCurrentUser();
+
+  const { users } = useUsers({
+    businessId: rootBusiness?._id,
+    all: true,
+  });
+
+  const localUser = useMemo(() => {
+    return users.find((user) => user.email === currentUser?.email);
+  }, [users, currentUser]);
+
   const router = useRouter();
   const params = useParams<{ lang: Locale; id: string }>();
   const { lang, id: businessId } = params;
   const { createPositionPage: i18n } = dictionary;
-  const [selectedOption, setSelectedOption] = useState<
-    "AI" | "MANUALLY" | "COPY" | null
-  >(null);
+
   const { mutate, isPending } = useCreatePositionConfiguration({
     onSuccess(data) {
       const { body } = data;
       const { data: positionData } = body;
+      queryClient.invalidateQueries({
+        queryKey: [QUERIES.POSITION_CONFIG_LIST(businessId)],
+      });
       router.push(
-        `/${lang}/dashboard/companies/${businessId}/positions/${[positionData._id]}`,
+        `/${lang}/dashboard/companies/${businessId}/position-configuration/${positionData._id}`,
       );
     },
     onError(error) {
@@ -42,14 +64,11 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
     },
   });
 
-  const { data: positionConfiguration } = usePositionConfigurations({
-    all: true,
-    businessId: businessId,
-  });
-
-  const onCreatePosition = async (type: PositionConfigurationTypes) => {
+  const handleTemplateSelection = (
+    flowType: PositionConfigurationFlowTypes,
+  ) => {
     mutate({
-      type,
+      flow_type: flowType,
       business_id: businessId,
     });
   };
@@ -64,61 +83,24 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
           </Button>
         </Link>
         <Heading className="text-2xl" level={1}>
-          {i18n.pageTitle}
+          {i18n.selectTemplateTitle}
         </Heading>
         <Text className="max-w-[49rem] text-sm text-muted-foreground" type="p">
-          {i18n.pageDescription}
+          {i18n.selectTemplateDescription}
         </Text>
         <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
       </div>
-      <div className="flex justify-end gap-4 pt-6">
-        <AnimatedModal />
-        <InfoSheet />
-      </div>
-      <div className="mt-14 flex justify-center gap-8">
-        <OptionCard
-          loading={isPending && selectedOption === "AI"}
-          selectBtnLabel={i18n.selectBtnLabel}
-          title={i18n.createWithAi}
-          description={i18n.createWithAiDescription}
-          details={i18n.createWithAiDetails}
-          onClick={() => {
-            setSelectedOption("AI");
-            onCreatePosition(PositionConfigurationTypes.AI_TEMPLATE);
-          }}
-          icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
-        />
-
-        <OptionCard
-          loading={isPending && selectedOption === "MANUALLY"}
-          selectBtnLabel={i18n.selectBtnLabel}
-          title={i18n.createManually}
-          description={i18n.createManuallyDescription}
-          details={i18n.createManuallyDetails}
-          onClick={() => {
-            setSelectedOption("MANUALLY");
-            onCreatePosition(PositionConfigurationTypes.CUSTOM);
-          }}
-          icon={<Pencil className="h-10 w-10 stroke-talent-green-500" />}
-        />
-
-        {positionConfiguration?.body?.data?.length && (
-          <OptionCard
-            loading={isPending && selectedOption === "COPY"}
-            selectBtnLabel={i18n.selectBtnLabel}
-            title={i18n.copyPrevious}
-            description={i18n.copyPreviousDescription}
-            details={i18n.copyPreviousDetails}
-            onClick={() => {
-              setSelectedOption("COPY");
-              onCreatePosition(
-                PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
-              );
-            }}
-            icon={<Copy className="h-10 w-10 stroke-talent-green-500" />}
-          />
-        )}
-      </div>
+      <TemplateSelectionTable
+        isPending={isPending}
+        onTemplateSelect={handleTemplateSelection}
+        dictionary={dictionary}
+      />
+      <AnimatedModal
+        dictionary={dictionary}
+        defaultOpen={showOnboarding}
+        mode="message"
+        localUser={localUser}
+      />
     </div>
   );
 };

@@ -9,11 +9,6 @@ type Props = {
   business?: Business;
 };
 export const PreviewContent: FC<Props> = ({ positionData, business }) => {
-  console.log(
-    "%c[Debug] positionData",
-    "background-color: teal; font-size: 20px; color: white",
-    positionData,
-  );
   if (!positionData) return null;
 
   const formatSalaryRange = () => {

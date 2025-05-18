@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, countryLabelLookup, formatDate } from "@/lib/utils";
+import { cn, countryLabelLookup, formatDate, timeAgo } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu,
@@ -32,6 +32,8 @@ import {
   SlidersHorizontal,
   Settings,
   BadgeInfo,
+  SquarePenIcon,
+  TrashIcon,
 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
@@ -43,6 +45,8 @@ import { useBusinesses } from "@/hooks/use-businesses";
 import {
   Business,
   HiringPositionData,
+  PositionConfiguration,
+  PositionConfigurationPhaseTypes,
   UpdatePositionStatusData,
 } from "@/types";
 import { Notifications } from "@/components/Notifications/Notifications";
@@ -59,24 +63,31 @@ import { Checkbox } from "../ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useSearchParams } from "next/navigation";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
+import EmptyTableState from "../EmptyTableState/EmptyTableState";
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
+import { useDeletePositionConfiguration } from "@/hooks/use-delete-position-configuration";
+import { useToast } from "@/hooks/use-toast";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  const { toast } = useToast();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const businessParam = searchParams.get("business_id");
   const positionParam = searchParams.get("position_id");
   const defaultTab =
     tabParam === "actives" || tabParam === "drafts" ? tabParam : "actives";
-
+  const [positionToDelete, setPositionToDelete] = useState<string>();
   const [priorityFilter, setPriorityFilter] = useState<string | null>();
   const [statusFilter, setStatusFilter] = useState<string | null>();
   const priorityOptions = ["high", "medium", "low"];
   const statusOptions = ["CANCELED", "ACTIVE", "FINISHED", "INACTIVE", "DRAFT"];
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
+  const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
+    useState(false);
 
   const { positionsPage: i18n } = dictionary;
   const dateOptions = [
@@ -100,6 +111,25 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const [dateFilter, setDateFilter] = useState<number | null>();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const { mutate: deletePositionConfiguration, isPending: isDeleting } =
+    useDeletePositionConfiguration({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: QUERIES.POSITION_CONFIG_LIST(selectedCompany?._id || ""),
+        });
+        toast({
+          title: "Vacante eliminada",
+          description: "La vacante ha sido eliminada correctamente",
+        });
+        setIsConfirmDeleteDialogOpen(false);
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Error al eliminar la vacante",
+        });
+      },
+    });
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const {
@@ -145,11 +175,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     ids: pipeIds,
   });
 
-  console.log("[Debug]", {
-    rootBusiness,
-    localUser,
-    params: Boolean(rootBusiness?._id && localUser?._id),
-  });
   useEffect(() => {
     if (businessParam) {
       const business = businesses.find((b) => b._id === businessParam);
@@ -160,13 +185,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   }, [rootBusiness, businessParam, businesses]);
 
   useEffect(() => {
-    console.log(
-      "%c[Debug] ",
-      "background-color: teal; font-size: 20px; color: white",
-      selectedCompany,
-    );
     console.log("/position/list response", positions);
   }, [positions, selectedCompany]);
+
+  useEffect(() => {
+    console.log("/position-configuration/list response", data);
+  }, [data, selectedCompany]);
 
   const filteredPositions = useMemo(() => {
     const getDaysAgo = (days: number) => {
@@ -342,6 +366,31 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     );
   };
 
+  const redirectToPosition = (position: PositionConfiguration) => {
+    switch (position.current_phase) {
+      case PositionConfigurationPhaseTypes.DESCRIPTION:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+        );
+        break;
+      case PositionConfigurationPhaseTypes.SOFT_SKILLS:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills`,
+        );
+        break;
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
+        );
+        break;
+      default:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+        );
+        break;
+    }
+  };
+
   const renderPipeData = (pipeId: string | null) => {
     if (!pipeId) return <span>Pending...</span>;
     const pipe = pipes?.find((p) => p.id === pipeId);
@@ -456,7 +505,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </span>
           </div>
         </div>
-        <Link href={`companies/${selectedCompany?._id}/positions/create`}>
+        <Link
+          href={`companies/${selectedCompany?._id}/position-configuration/create`}
+        >
           <Button variant="talentGreen" className="flex items-center">
             <Plus /> {i18n.createPosition}
           </Button>
@@ -467,18 +518,18 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
         defaultValue={defaultTab}
         className="flex h-full w-full flex-col items-center justify-start bg-white"
       >
-        <TabsList className="min-w-full justify-start gap-2 rounded-none bg-white">
+        <TabsList className="min-w-full justify-start gap-2 rounded-none border-b-[1px] bg-white">
           <TabsTrigger
-            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-talent-green-500 data-[state=active]:text-white data-[state=active]:hover:bg-green-700"
+            className="rounded-none border-talent-green-500 text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
             value="actives"
           >
-            Activas
+            Vancantes
           </TabsTrigger>
           <TabsTrigger
-            className="h-6 rounded-lg bg-secondary text-black shadow-none hover:bg-primary/20 data-[state=active]:bg-talent-green-500 data-[state=active]:text-white data-[state=active]:hover:bg-green-700"
+            className="rounded-none border-talent-green-500 text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
             value="drafts"
           >
-            En construcción
+            Borradores de vacantes
           </TabsTrigger>
         </TabsList>
         <TabsContent value="actives" className="h-full w-full">
@@ -616,368 +667,420 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
               </div>
             </div>
           </div>
-          <div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-black">
-                    {i18n.stateLabel}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.positionNameHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.createAtHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.candidatesHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.priorityHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.responsibleHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.recruiterHeading}
-                  </TableHead>
-                  <TableHead className="font-bold text-black">
-                    {i18n.stakeholdersHeading}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedActives.map((position) => (
-                  <TableRow
-                    key={position._id}
-                    className={cn(
-                      "cursor-pointer",
-                      pulsingRow === position._id && "animate-blink",
-                    )}
-                    onClick={() => router.push(`positions/${position._id}`)}
-                  >
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "rounded-md",
-                          "text-[#34C759]",
-                          position.status === "INACTIVE" && "text-[#FF9500]",
-                          position.status === "CANCELED" && "text-[#FF3B30]",
-                        )}
-                      >
-                        {position.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell
-                      title={position.role}
-                      className="max-w-[100px] truncate"
-                    >
-                      {position.role}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(new Date(position.created_at).toString())}
-                    </TableCell>
-                    <TableCell>{renderPipeData(position.pipe_id)}</TableCell>
-                    <TableCell className="capitalize">
-                      {position.hiring_priority}
-                    </TableCell>
-                    <TableCell>{position.owner_position_user_name}</TableCell>
-                    <TableCell>
-                      <span>{position.recruiter_user_name}</span>
-                    </TableCell>
-                    <TableCell className="flex items-center justify-between gap-4">
-                      {getStakeHolders(position)}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <MoreHorizontal width="16" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem
-                            className="cursor-pointer"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {i18n.editLabel}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="cursor-pointer"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {i18n.duplicateLabel}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="cursor-pointer">
-                              {i18n.changeStateLabel}
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                              <DropdownMenuSubContent>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  disabled={isPending}
-                                  onClick={(e) => {
-                                    onUpdateState(position, "CANCELED");
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  {i18n.cancelStateLabel}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  disabled={isPending}
-                                  onClick={(e) => {
-                                    onUpdateState(position, "ACTIVE");
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  {i18n.activeStateLabel}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  disabled={isPending}
-                                  onClick={(e) => {
-                                    onUpdateState(position, "FINISHED");
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  {i18n.terminatedStateLabel}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  disabled={isPending}
-                                  onClick={(e) => {
-                                    onUpdateState(position, "INACTIVE");
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  {i18n.inactiveStateLabel}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  disabled={isPending}
-                                  onClick={(e) => {
-                                    onUpdateState(position, "DRAFT");
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  {i18n.draftStateLabel}
-                                </DropdownMenuItem>
-                              </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                          </DropdownMenuSub>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+          {paginatedActives.length > 0 ? (
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-black">
+                      {i18n.stateLabel}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.positionNameHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.createAtHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.candidatesHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.priorityHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.responsibleHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.recruiterHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.stakeholdersHeading}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="mt-4 flex items-center justify-end gap-2">
-              <label
-                htmlFor="actives-page-size"
-                className="text-sm font-medium"
-              >
-                {i18n.paginationPageSizeLabel || "per page"}
-              </label>
-              <select
-                id="actives-page-size"
-                value={activesPageSize}
-                onChange={(e) => {
-                  setActivesPageSize(Number(e.target.value));
-                  setActivesPage(1);
-                }}
-                className="rounded border px-2 py-1"
-                aria-label={i18n.paginationPageSizeLabel || "Page size"}
-              >
-                {[5, 10, 20, 50].map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-              <Button
-                variant="outline"
-                onClick={() => setActivesPage((p) => Math.max(1, p - 1))}
-                disabled={activesPage === 1}
-                aria-label={i18n.paginationPrevious}
-              >
-                {i18n.paginationPrevious}
-              </Button>
-              <span>
-                {i18n.paginationPage} {activesPage} {i18n.paginationOf}{" "}
-                {Math.ceil((filteredPositions?.length ?? 0) / activesPageSize)}
-              </span>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setActivesPage((p) =>
-                    Math.min(
-                      Math.ceil(
-                        (filteredPositions?.length ?? 0) / activesPageSize,
+                </TableHeader>
+                <TableBody>
+                  {paginatedActives.map((position) => (
+                    <TableRow
+                      key={position._id}
+                      className={cn(
+                        "cursor-pointer",
+                        pulsingRow === position._id && "animate-blink",
+                      )}
+                      onClick={() => router.push(`positions/${position._id}`)}
+                    >
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "rounded-md",
+                            "text-[#34C759]",
+                            position.status === "INACTIVE" && "text-[#FF9500]",
+                            position.status === "CANCELED" && "text-[#FF3B30]",
+                          )}
+                        >
+                          {position.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell
+                        title={position.role}
+                        className="max-w-[100px] truncate"
+                      >
+                        {position.role}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(new Date(position.created_at).toString())}
+                      </TableCell>
+                      <TableCell>{renderPipeData(position.pipe_id)}</TableCell>
+                      <TableCell className="capitalize">
+                        {position.hiring_priority}
+                      </TableCell>
+                      <TableCell>{position.owner_position_user_name}</TableCell>
+                      <TableCell>
+                        <span>{position.recruiter_user_name}</span>
+                      </TableCell>
+                      <TableCell className="flex items-center justify-between gap-4">
+                        {getStakeHolders(position)}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <MoreHorizontal width="16" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {i18n.editLabel}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {i18n.duplicateLabel}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger className="cursor-pointer">
+                                {i18n.changeStateLabel}
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuPortal>
+                                <DropdownMenuSubContent>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    disabled={isPending}
+                                    onClick={(e) => {
+                                      onUpdateState(position, "CANCELED");
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {i18n.cancelStateLabel}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    disabled={isPending}
+                                    onClick={(e) => {
+                                      onUpdateState(position, "ACTIVE");
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {i18n.activeStateLabel}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    disabled={isPending}
+                                    onClick={(e) => {
+                                      onUpdateState(position, "FINISHED");
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {i18n.terminatedStateLabel}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    disabled={isPending}
+                                    onClick={(e) => {
+                                      onUpdateState(position, "INACTIVE");
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {i18n.inactiveStateLabel}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    disabled={isPending}
+                                    onClick={(e) => {
+                                      onUpdateState(position, "DRAFT");
+                                      e.stopPropagation();
+                                    }}
+                                  >
+                                    {i18n.draftStateLabel}
+                                  </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                              </DropdownMenuPortal>
+                            </DropdownMenuSub>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <label
+                  htmlFor="actives-page-size"
+                  className="text-sm font-medium"
+                >
+                  {i18n.paginationPageSizeLabel || "per page"}
+                </label>
+                <select
+                  id="actives-page-size"
+                  value={activesPageSize}
+                  onChange={(e) => {
+                    setActivesPageSize(Number(e.target.value));
+                    setActivesPage(1);
+                  }}
+                  className="rounded border px-2 py-1"
+                  aria-label={i18n.paginationPageSizeLabel || "Page size"}
+                >
+                  {[5, 10, 20, 50].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  variant="outline"
+                  onClick={() => setActivesPage((p) => Math.max(1, p - 1))}
+                  disabled={activesPage === 1}
+                  aria-label={i18n.paginationPrevious}
+                >
+                  {i18n.paginationPrevious}
+                </Button>
+                <span>
+                  {i18n.paginationPage} {activesPage} {i18n.paginationOf}{" "}
+                  {Math.ceil(
+                    (filteredPositions?.length ?? 0) / activesPageSize,
+                  )}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setActivesPage((p) =>
+                      Math.min(
+                        Math.ceil(
+                          (filteredPositions?.length ?? 0) / activesPageSize,
+                        ),
+                        p + 1,
                       ),
-                      p + 1,
-                    ),
-                  )
-                }
-                disabled={
-                  activesPage ===
-                  Math.ceil((filteredPositions?.length ?? 0) / activesPageSize)
-                }
-                aria-label={i18n.paginationNext}
-              >
-                {i18n.paginationNext}
-              </Button>
+                    )
+                  }
+                  disabled={
+                    activesPage ===
+                    Math.ceil(
+                      (filteredPositions?.length ?? 0) / activesPageSize,
+                    )
+                  }
+                  aria-label={i18n.paginationNext}
+                >
+                  {i18n.paginationNext}
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <EmptyTableState
+              title="Aún no has creado vacantes"
+              description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
+              buttonLabel="Crear vacante"
+              onClick={() =>
+                router.push(
+                  `companies/${selectedCompany?._id}/position-configuration/create`,
+                )
+              }
+            />
+          )}
         </TabsContent>
         <TabsContent value="drafts" className="h-full w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-black">{i18n.stateLabel}</TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.positionNameHeading}
-                </TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.createAtHeading}
-                </TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.currentPhase}
-                </TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.updatedAt}
-                </TableHead>
-                <TableHead className="font-bold text-black">
-                  {i18n.createdBy}
-                </TableHead>
-                <TableHead className="font-bold text-black"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedDrafts.map((position) => (
-                <TableRow
-                  key={position._id}
-                  className={cn(
-                    "cursor-pointer",
-                    pulsingRow === position._id &&
-                      "animate-blink border-2 border-talent-orange-500",
-                  )}
-                  onClick={() => {
-                    if (
-                      position.status === "DRAFT" ||
-                      position.status === "IN_PROGRESS"
-                    ) {
-                      router.push(
-                        `companies/${selectedCompany?._id}/positions/${position._id}`,
-                      );
-                    } else {
-                      router.push(
-                        `companies/${selectedCompany?._id}/positions/${position._id}/preview`,
-                      );
-                    }
-                  }}
-                >
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={cn("rounded-md", "text-[#34C759]")}
+          {paginatedDrafts.length > 0 ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-black">
+                      {i18n.stateLabel}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.positionNameHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.createAtHeading}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.currentPhase}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.updatedAt}
+                    </TableHead>
+                    <TableHead className="font-bold text-black">
+                      {i18n.createdBy}
+                    </TableHead>
+                    <TableHead className="font-bold text-black"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedDrafts.map((position) => (
+                    <TableRow
+                      key={position._id}
+                      className={cn(
+                        "cursor-pointer",
+                        pulsingRow === position._id &&
+                          "animate-blink border-2 border-talent-orange-500",
+                      )}
+                      onClick={() => redirectToPosition(position)}
                     >
-                      {position.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell
-                    title={position.phases[0]?.data?.role}
-                    className="max-w-[100px] truncate"
-                  >
-                    {position.phases[0]?.data?.role}
-                  </TableCell>
-                  <TableCell>
-                    {formatDate(new Date(position.created_at).toString())}
-                  </TableCell>
-                  <TableCell>
-                    {
-                      position.phases.find(
-                        (phase) => phase.status === "IN_PROGRESS",
-                      )?.name
-                    }
-                  </TableCell>
-                  <TableCell>
-                    {formatDate(new Date(position.updated_at).toString())}
-                  </TableCell>
-                  <TableCell>
-                    {
-                      users.find((user) => user._id === position.user_id)
-                        ?.full_name
-                    }
-                  </TableCell>
-                  <TableCell className="flex items-center justify-between gap-4">
-                    <Button variant="talentOrange">
-                      {i18n.continueEditing}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4 flex items-center justify-end gap-2">
-            <label htmlFor="drafts-page-size" className="text-sm font-medium">
-              {i18n.paginationPageSizeLabel || "per page"}
-            </label>
-            <select
-              id="drafts-page-size"
-              value={draftsPageSize}
-              onChange={(e) => {
-                setDraftsPageSize(Number(e.target.value));
-                setDraftsPage(1);
-              }}
-              className="rounded border px-2 py-1"
-              aria-label={i18n.paginationPageSizeLabel || "Page size"}
-            >
-              {[5, 10, 20, 50].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-            <Button
-              variant="outline"
-              onClick={() => setDraftsPage((p) => Math.max(1, p - 1))}
-              disabled={draftsPage === 1}
-              aria-label={i18n.paginationPrevious}
-            >
-              {i18n.paginationPrevious}
-            </Button>
-            <span>
-              {i18n.paginationPage} {draftsPage} {i18n.paginationOf}{" "}
-              {Math.ceil(
-                (positionConfigurationList?.length ?? 0) / draftsPageSize,
-              )}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() =>
-                setDraftsPage((p) =>
-                  Math.min(
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={cn("rounded-md", "text-[#34C759]")}
+                        >
+                          {position.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell
+                        title={position.phases[0]?.data?.role}
+                        className="max-w-[100px] truncate"
+                      >
+                        {position.phases[0]?.data?.role}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(new Date(position.created_at).toString())} (
+                        {timeAgo(
+                          Date.now() - new Date(position.created_at).getTime(),
+                          dictionary,
+                        )}
+                        )
+                      </TableCell>
+                      <TableCell>
+                        {
+                          position.phases.find(
+                            (phase) => phase.status === "IN_PROGRESS",
+                          )?.name
+                        }
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(new Date(position.updated_at).toString())}
+                      </TableCell>
+                      <TableCell>
+                        {
+                          users.find((user) => user._id === position.user_id)
+                            ?.full_name
+                        }
+                      </TableCell>
+                      <TableCell className="flex items-center justify-center">
+                        <Button variant="link">
+                          <SquarePenIcon className="h-4 w-4" />
+                          {i18n.continueEditing}
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPositionToDelete(position._id);
+                            setIsConfirmDeleteDialogOpen(true);
+                          }}
+                          variant="ghost"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <label
+                  htmlFor="drafts-page-size"
+                  className="text-sm font-medium"
+                >
+                  {i18n.paginationPageSizeLabel || "per page"}
+                </label>
+                <select
+                  id="drafts-page-size"
+                  value={draftsPageSize}
+                  onChange={(e) => {
+                    setDraftsPageSize(Number(e.target.value));
+                    setDraftsPage(1);
+                  }}
+                  className="rounded border px-2 py-1"
+                  aria-label={i18n.paginationPageSizeLabel || "Page size"}
+                >
+                  {[5, 10, 20, 50].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  variant="outline"
+                  onClick={() => setDraftsPage((p) => Math.max(1, p - 1))}
+                  disabled={draftsPage === 1}
+                  aria-label={i18n.paginationPrevious}
+                >
+                  {i18n.paginationPrevious}
+                </Button>
+                <span>
+                  {i18n.paginationPage} {draftsPage} {i18n.paginationOf}{" "}
+                  {Math.ceil(
+                    (positionConfigurationList?.length ?? 0) / draftsPageSize,
+                  )}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setDraftsPage((p) =>
+                      Math.min(
+                        Math.ceil(
+                          (positionConfigurationList?.length ?? 0) /
+                            draftsPageSize,
+                        ),
+                        p + 1,
+                      ),
+                    )
+                  }
+                  disabled={
+                    draftsPage ===
                     Math.ceil(
                       (positionConfigurationList?.length ?? 0) / draftsPageSize,
-                    ),
-                    p + 1,
-                  ),
+                    )
+                  }
+                  aria-label={i18n.paginationNext}
+                >
+                  {i18n.paginationNext}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <EmptyTableState
+              title="Aún no has creado vacantes"
+              description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
+              buttonLabel="Crear vacante"
+              onClick={() =>
+                router.push(
+                  `companies/${selectedCompany?._id}/position-configuration/create`,
                 )
               }
-              disabled={
-                draftsPage ===
-                Math.ceil(
-                  (positionConfigurationList?.length ?? 0) / draftsPageSize,
-                )
-              }
-              aria-label={i18n.paginationNext}
-            >
-              {i18n.paginationNext}
-            </Button>
-          </div>
+            />
+          )}
         </TabsContent>
       </Tabs>
+      <ConfirmDialog
+        open={isConfirmDeleteDialogOpen}
+        onOpenChange={setIsConfirmDeleteDialogOpen}
+        isLoading={isDeleting}
+        onConfirm={() => {
+          if (!positionToDelete) return;
+          deletePositionConfiguration({ id: positionToDelete });
+        }}
+        onCancel={() => setIsConfirmDeleteDialogOpen(false)}
+        dictionary={dictionary}
+      />
     </div>
   );
 };

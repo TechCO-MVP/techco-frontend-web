@@ -52,7 +52,19 @@ export const apiEndpoints = {
   refreshTokens() {
     return `${BASE_URL}/auth/refresh_tokens`;
   },
-  positionDetails(token: string) {
+  positionDetails({
+    token,
+    positionId,
+  }: {
+    token?: string;
+    positionId?: string;
+  }) {
+    if (token) {
+      return `${BASE_URL}/position/token?token=${token}`;
+    }
+    if (positionId) {
+      return `${BASE_URL}/position/token?position_id=${positionId}`;
+    }
     return `${BASE_URL}/position/token?token=${token}`;
   },
   getProfileFilterStatus() {
@@ -84,5 +96,11 @@ export const apiEndpoints = {
   },
   nextPhase() {
     return `${BASE_URL}/position_configuration/next_phase`;
+  },
+  profileFilterStartUrl() {
+    return `${BASE_URL}/profile/filter/start/url`;
+  },
+  deletePositionConfiguration(id: string) {
+    return `${BASE_URL}/position_configuration/${id}`;
   },
 };

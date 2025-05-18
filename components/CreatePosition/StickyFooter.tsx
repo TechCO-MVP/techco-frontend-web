@@ -31,7 +31,11 @@ export const StickyFooter: FC<StickyFooterProps> = ({
             {cancelLabel}
           </Button>
         )}
-        <Button onClick={onSave} disabled={isSaving || !canSave}>
+        <Button
+          variant="talentGreen"
+          onClick={onSave}
+          disabled={isSaving || !canSave}
+        >
           {isSaving && <Loader2 className="animate-spin" />}
           {saveLabel}
           {saveButtonIcon}

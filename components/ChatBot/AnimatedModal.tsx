@@ -2,11 +2,30 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChatOnboarding } from "./ChatOnboarding";
+import {
+  MODE_SELECTION_ONBOARDING_HIDE_KEY,
+  OnboardingStepper,
+} from "./OnboardingStepper";
 import { Button } from "@/components/ui/button";
+import { OnboardingMessage } from "./OnboardingMessage";
+import { PositionConfigurationPhaseTypes, User } from "@/types";
+import { Dictionary } from "@/types/i18n";
 
-export default function AnimatedModal() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AnimatedModal({
+  defaultOpen,
+  mode,
+  localUser,
+  dictionary,
+  type,
+}: {
+  defaultOpen: boolean;
+  mode: "stepper" | "message";
+  localUser?: User;
+  dictionary: Dictionary;
+  type?: PositionConfigurationPhaseTypes;
+}) {
+  const { createPositionPage: i18n } = dictionary;
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animateButton, setAnimateButton] = useState(false);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -76,16 +95,27 @@ export default function AnimatedModal() {
     }
   }, [animateButton]);
 
+  useEffect(() => {
+    if (type) {
+      const hideKey = `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-${type}`;
+      const wasHidden = localStorage.getItem(hideKey);
+      if (!wasHidden) {
+        setIsOpen(true);
+      }
+    }
+  }, [type]);
   return (
     <>
-      <Button
-        ref={buttonRef}
-        onClick={openModal}
-        className="max-w-[200px] bg-[#FCFCFC] text-[#007AFF] hover:bg-[#FCFCFC]"
-        disabled={isAnimating}
-      >
-        Ver cómo funciona
-      </Button>
+      {mode === "stepper" && (
+        <Button
+          ref={buttonRef}
+          onClick={openModal}
+          className="max-w-[200px] bg-[#FCFCFC] text-[#007AFF] hover:bg-[#FCFCFC]"
+          disabled={isAnimating}
+        >
+          {i18n.seeHowItWorks}
+        </Button>
+      )}
 
       <AnimatePresence onExitComplete={handleAnimationComplete}>
         {isOpen && (
@@ -156,7 +186,36 @@ export default function AnimatedModal() {
               }}
               onAnimationComplete={handleAnimationComplete}
             >
-              <ChatOnboarding onFinish={closeModal} />
+              {mode === "message" ? (
+                <OnboardingMessage
+                  localUser={localUser}
+                  onFinish={closeModal}
+                  dictionary={dictionary}
+                />
+              ) : (
+                <OnboardingStepper
+                  type={type}
+                  slides={[
+                    {
+                      title: "Todo comienza con una conversación",
+                      text: "Desde la vacante, abre el chat con nuestra IA. Te guiará paso a paso, como si tuvieras un experto en selección a tu lado.",
+                    },
+                    {
+                      title: "Define los comportamientos clave.",
+                      text: "Escribe lo que quieres evaluar (como liderazgo o adaptabilidad), o deja que la IA te sugiera según el perfil del cargo.",
+                    },
+                    {
+                      title: "Ajústalo a tu estilo",
+                      text: "Cada comportamiento tiene una definición editable. Asegúrate de que refleje cómo se vive en tu empresa.",
+                    },
+                    {
+                      title: "Test generado al instante",
+                      text: "Una vez definidos los comportamientos, la IA crea un test listo para compartir. No necesitas hacer nada más.",
+                    },
+                  ]}
+                  onFinish={closeModal}
+                />
+              )}
             </motion.div>
           </>
         )}

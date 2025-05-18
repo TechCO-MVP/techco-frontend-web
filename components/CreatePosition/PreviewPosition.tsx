@@ -10,11 +10,7 @@ import { Step, Stepper } from "./Stepper";
 import { Dictionary } from "@/types/i18n";
 import { Button } from "../ui/button";
 import { EditIcon } from "@/icons";
-import {
-  DraftPositionData,
-  PositionConfigurationTypes,
-  PositionPhase,
-} from "@/types";
+import { DraftPositionData, PositionPhase } from "@/types";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -38,7 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { useNextPhase } from "@/hooks/use-next-phase";
+import { useCompletePhase } from "@/hooks/use-complete-phase";
 
 type Props = {
   dictionary: Dictionary;
@@ -57,13 +53,18 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const isDirty = !_.isEqual(positionData, initialData.current);
-  const { mutate: startNextPhase, isPending: isNextPhasePending } =
-    useNextPhase({
+  const router = useRouter();
+
+  const { mutate: completePhase, isPending: isCompletePhasePending } =
+    useCompletePhase({
       onSuccess: (data) => {
-        console.info("Start Next Phase success", data);
+        console.info("Complete Phase success", data);
+        router.push(
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
+        );
       },
       onError: (error) => {
-        console.error("Start Next Phase error", error);
+        console.error("Complete Phase error", error);
       },
     });
   const { createPositionPage: i18n } = dictionary;
@@ -89,8 +90,6 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
     id: string;
     position_id: string;
   }>();
-
-  const router = useRouter();
 
   const { position_id, id, lang } = params;
   const { businesses, rootBusiness } = useBusinesses();
@@ -203,25 +202,18 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
 
   const onSaveDraft = () => {
     if (!localUser || !currentPhase || !currentPhase.thread_id) return;
+    if (!currentPosition) return;
     saveDraft({
-      _id: position_id,
-      business_id: id,
-      status: "COMPLETED",
-      type: PositionConfigurationTypes.AI_TEMPLATE,
-      thread_id: currentPhase?.thread_id,
-      user_id: localUser?._id,
+      ...currentPosition,
       phases:
         currentPosition?.phases.map((phase) =>
           phase.name === currentPhase?.name
             ? {
                 ...phase,
-                status: "COMPLETED",
                 data: positionData,
               }
             : phase,
         ) ?? [],
-      updated_at: new Date().toISOString(),
-      created_at: currentPosition?.created_at || new Date().toISOString(),
     });
   };
 
@@ -500,15 +492,14 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
           canSave={isCompleted}
           cancelLabel={i18n.cancelLabel}
           saveLabel={`${i18n.continuedNextPhase} 2`}
-          isSaving={isNextPhasePending}
+          isSaving={isCompletePhasePending}
           onCancel={() => {
             checkUnsavedChanges();
           }}
           onSave={() =>
-            startNextPhase({
+            completePhase({
               position_configuration_id: position_id,
-              configuration_type: (positionConfiguration?.body?.data[0]?.type ??
-                PositionConfigurationTypes.AI_TEMPLATE) as PositionConfigurationTypes,
+              data: positionData,
             })
           }
           saveButtonIcon={<ChevronRight className="h-4 w-4" />}

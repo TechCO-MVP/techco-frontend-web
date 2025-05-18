@@ -8,27 +8,8 @@ import { Locale } from "@/i18n-config";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { Dispatch, SetStateAction } from "react";
 import { VisibleOnScreen } from "./VisibleOnScreen";
-import {
-  HiringPositionData,
-  NotificationCategory,
-  NotificationPayload,
-} from "@/types";
+import { HiringPositionData, PhaseType, NotificationPayload } from "@/types";
 import { Dictionary } from "@/types/i18n";
-
-function getNotificationCategory(notification: {
-  notification_type: string;
-}): NotificationCategory {
-  switch (notification.notification_type) {
-    case "PHASE_CHANGE":
-      return "action_required";
-    case "PROFILE_FILTER_PROCESS":
-      return "informative";
-    case "TAGGED_IN_COMMENT":
-      return "mention";
-    default:
-      return "informative";
-  }
-}
 
 /**
  * Returns the CTA label for a notification based on its category.
@@ -38,16 +19,13 @@ function getCtaLabel(
   notification: NotificationPayload["message"],
   i18n: Dictionary["notifications"],
 ): string {
-  const category = getNotificationCategory(notification);
-  switch (category) {
-    case "mention":
-      return i18n.ctaSeeComment;
-    case "informative":
+  switch (notification.phase_type) {
+    case PhaseType.INFORMATIVE:
       return i18n.ctaSeeCandidate;
-    case "action_required":
+    case PhaseType.ACTION_CALL:
       return i18n.ctaStartAction;
     default:
-      return i18n.ctaSeeCandidate;
+      return i18n.ctaSeeComment;
   }
 }
 
@@ -59,27 +37,19 @@ function getNotificationText(
   notification: NotificationPayload["message"],
   i18n: Dictionary["notifications"],
 ): string {
-  const category = getNotificationCategory(notification);
-  switch (category) {
-    case "mention":
-      // "@NombreUsuario te etiquetó en un comentario sobre este candidato"
-      return `@${notification.profile_name} ${i18n.mentionText}`;
-    case "informative":
-      // "El candidato cambió de la fase '[Nombre fase origen]' a '[Nombre fase destino]'"
-      if (notification.phase_from && notification.phase_to) {
-        return i18n.phaseChange
-          .replace("{from}", notification.phase_from)
-          .replace("{to}", notification.phase_to);
+  switch (notification.phase_type) {
+    case PhaseType.INFORMATIVE:
+      if (notification.phase_name) {
+        return i18n.enteredPhase.replace("{phase}", notification.phase_name);
       }
       return notification.message;
-    case "action_required":
-      // "El candidato entró a la fase '[Nombre fase]'. Debes hacer una acción"
+    case PhaseType.ACTION_CALL:
       if (notification.phase_name) {
         return i18n.enteredPhase.replace("{phase}", notification.phase_name);
       }
       return notification.message;
     default:
-      return notification.message;
+      return i18n.mentionText;
   }
 }
 
@@ -102,33 +72,35 @@ export function NotificationItem({
   const params = useParams<{ lang: Locale }>();
   const { lang } = params;
   const onNotificationClick = () => {
-    console.log(
-      "%c[Debug] notification",
-      "background-color: teal; font-size: 20px; color: white",
-      notification,
-    );
     const position = positions.find(
       (position) => position.pipe_id === notification.pipe_id,
     );
-    console.log(
-      "%c[Debug] position",
-      "background-color: teal; font-size: 20px; color: white",
-      position,
-    );
+    if (!position) {
+      console.warn("[Notifications] Position not found", {
+        position,
+        positions,
+      });
+    }
+
     dispatch(
       setNotificationsState({
         showCandidateDetails: {
           cardId: notification.card_id,
           phaseId: notification.phase_id,
+          defaultTab:
+            notification.notification_type === "TAGGED_IN_COMMENT"
+              ? "comments"
+              : "about",
         },
       }),
     );
+
     setOpen(false);
     router.push(`/${lang}/dashboard/positions/${position?._id}`);
   };
 
   const handleVisible = () => {
-    if (notification.status === "READ") {
+    if (notification.status === "NEW") {
       markAsRead(notification._id);
     }
   };

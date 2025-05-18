@@ -64,7 +64,9 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
   const { users: allUsers } = useUsers({
     businessId: rootBusiness?._id,
     all: true,
+    excludeBusinessId: selectedCompany?._id,
   });
+
   const handleSort = () => {
     setSortOrder((prev) => {
       if (prev === "asc") return "desc";

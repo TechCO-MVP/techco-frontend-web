@@ -15,7 +15,11 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { PopoverAnchor } from "@radix-ui/react-popover";
-import { HiringPositionData, HiringResponsibleUser } from "@/types";
+import {
+  HiringPositionData,
+  HiringResponsibleUser,
+  NotificationType,
+} from "@/types";
 import { useCreateNotification } from "@/hooks/use-create-notification";
 interface CommentBoxProps {
   pipeId: string;
@@ -66,7 +70,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
         createNotification({
           phase_id: hiringProcess.phase_id,
           message: "Mencionado en un comentation",
-          notification_type: "TAGGED_IN_COMMENT",
+          notification_type: NotificationType.TAGGED_IN_COMMENT,
           user_id: mentionedUsers,
           business_id: hiringProcess?.business_id,
           hiring_process_id: hiringProcess?._id,
@@ -184,6 +188,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
       <Button
         disabled={!canSubmit}
         onClick={handleAddComment}
+        variant="talentGreen"
         className="h-9 place-self-end px-4 py-2"
       >
         Publicar comentario
