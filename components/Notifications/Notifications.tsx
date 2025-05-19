@@ -19,6 +19,8 @@ import { QUERIES } from "@/constants/queries";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HiringPositionData, PhaseType, NotificationType } from "@/types";
 import { Dictionary } from "@/types/i18n";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
 
 interface NotificationsProps {
   dictionary: Dictionary;
@@ -30,6 +32,17 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
   const { notifications, isLoading } = useGetNotifications();
   const [toMarkRead, setToMarkRead] = useState<string[]>([]);
   const queryClient = useQueryClient();
+  const params = useParams<{
+    lang: Locale;
+    id: string;
+  }>();
+  const { id: positionId } = params;
+  const filteredNotifications = useMemo(() => {
+    if (!positionId) return notifications;
+    return notifications?.filter(
+      (notification) => notification.position_id === positionId,
+    );
+  }, [notifications, positionId]);
 
   const { mutate } = useUpdateNotification({
     onSuccess: () => {
@@ -48,11 +61,11 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
   const [open, setOpen] = useState(false);
   const count = useMemo(
     () =>
-      notifications?.reduce(
+      filteredNotifications?.reduce(
         (acc, n) => (n.status === "NEW" || n.status === "READ" ? acc + 1 : acc),
         0,
       ) ?? 0,
-    [notifications],
+    [filteredNotifications],
   );
 
   useEffect(() => {
@@ -70,9 +83,9 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
 
   // Group and sort notifications by category (fallback logic)
   const categorizedNotifications = useMemo(() => {
-    if (!notifications)
+    if (!filteredNotifications)
       return { action_required: [], informative: [], mention: [] };
-    const sorted = [...notifications].sort(
+    const sorted = [...filteredNotifications].sort(
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
@@ -85,7 +98,7 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
         (n) => n.notification_type === NotificationType.TAGGED_IN_COMMENT,
       ),
     };
-  }, [notifications]);
+  }, [filteredNotifications]);
 
   if (isLoading)
     return (

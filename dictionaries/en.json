@@ -422,10 +422,21 @@
       ["We search for the best talent for you", "Yes", "Yes", "Yes"],
       ["We automatically invite ideal profiles", "Yes", "Yes", "Yes"],
       ["We filter for compatibility with your position", "Yes", "Yes", "Yes"],
-      ["First interview guided by AI", "Yes", "Yes", "Yes"],
-      ["Final interview with results support", "Yes", "Yes", "Yes"],
-      ["Final interview without results support", "Yes", "Yes", "Yes"],
-      ["Decision based on data, not intuition", "Yes", "Yes", "Yes"]
+      [
+        "Our AI generates and scores the cultural fit assessment",
+        "Yes",
+        "Yes",
+        "Yes"
+      ],
+      ["First interview with contextual support", "Yes", "Yes", "No"],
+      ["Manual creation of the technical assessment", "No", "Yes", "No"],
+      [
+        "Our AI generates and scores the technical assessment",
+        "Yes",
+        "No",
+        "No"
+      ],
+      ["Final interview based on data, not intuition", "Yes", "Yes", "Yes"]
     ],
     "tooltips": [
       "For positions with high responsibility, strategic vision, and proven experience. Ideal if you are looking for leaders with a track record.",

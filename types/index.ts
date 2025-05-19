@@ -263,7 +263,7 @@ export type NotificationPayload = {
 
     phase_id: string;
     card_id: string;
-
+    position_id: string;
     profile_name: string;
     pipe_id: string;
     position_name: string;
@@ -325,6 +325,7 @@ export interface CreateNotificationInput {
   notification_type: NotificationPayload["message"]["notification_type"];
   hiring_process_id: string;
   phase_id: string;
+  position_id: string;
 }
 
 export type PositionPhase = {

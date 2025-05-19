@@ -422,10 +422,31 @@
       ["Buscamos por ti el mejor talento", "Si", "Si", "Si"],
       ["Invitamos automáticamente a los perfiles ideales", "Si", "Si", "Si"],
       ["Filtramos por compatibilidad con tu vacante", "Si", "Si", "Si"],
-      ["Primera entrevista guiada por IA", "Si", "Si", "Si"],
-      ["Entrevista final con apoyo de resultados", "Si", "Si", "Si"],
-      ["Entrevista final sin apoyo de resultados", "Si", "Si", "Si"],
-      ["Decisión basada en datos, no en intuiciones", "Si", "Si", "Si"]
+      [
+        "Nuestra IA genera y califica por ti el Assessment de fit cultural ",
+        "Si",
+        "Si",
+        "Si"
+      ],
+      [
+        "Haces la primera entrevista con contexto inteligente",
+        "Si",
+        "Si",
+        "No"
+      ],
+      ["Creas el assessment técnico de forma manual", "No", "Si", "No"],
+      [
+        "Nuestra IA genera y califica por ti el Assessment técnico",
+        "Si",
+        "No",
+        "No"
+      ],
+      [
+        "Haces la entrevista final basada en datos, no en intuiciones",
+        "Si",
+        "Si",
+        "Si"
+      ]
     ],
     "tooltips": [
       "Para vacantes con mucha responsabilidad, visión estratégica y experiencia comprobada. Ideal si buscas líderes con trayectoria.",

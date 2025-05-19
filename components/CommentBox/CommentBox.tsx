@@ -74,6 +74,7 @@ export const CommentBox: FC<CommentBoxProps> = ({
           user_id: mentionedUsers,
           business_id: hiringProcess?.business_id,
           hiring_process_id: hiringProcess?._id,
+          position_id: position?._id || "",
         });
       }
 

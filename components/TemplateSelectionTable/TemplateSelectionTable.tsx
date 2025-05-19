@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "../ui/tooltip";
-import { BadgeInfo, Loader2 } from "lucide-react";
+import { BadgeInfo, CheckCircle, Loader2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PositionConfigurationFlowTypes } from "@/types";
 import { Dictionary } from "@/types/i18n";
@@ -91,7 +91,13 @@ export const TemplateSelectionTable: React.FC<TemplateSelectionTableProps> = ({
                         : "px-4 py-3 text-center text-foreground"
                     }
                   >
-                    {cell}
+                    {cell === "Si" || cell === "Yes" ? (
+                      <CheckCircle className="mx-auto h-4 w-4 text-green-500" />
+                    ) : cell === "No" ? (
+                      <XCircle className="mx-auto h-4 w-4 text-red-500" />
+                    ) : (
+                      cell
+                    )}
                   </td>
                 ))}
               </tr>

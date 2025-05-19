@@ -34,7 +34,7 @@ export const PositionSheet: FC<Props> = ({
         {customTrigger ? (
           customTrigger
         ) : (
-          <Button className="h-8">
+          <Button variant="talentGreen" className="h-8">
             <Eye /> {i18n.previewBtnLabel}
           </Button>
         )}

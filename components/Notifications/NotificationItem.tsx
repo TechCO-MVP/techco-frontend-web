@@ -73,8 +73,9 @@ export function NotificationItem({
   const { lang } = params;
   const onNotificationClick = () => {
     const position = positions.find(
-      (position) => position.pipe_id === notification.pipe_id,
+      (position) => position._id === notification.position_id,
     );
+
     if (!position) {
       console.warn("[Notifications] Position not found", {
         position,

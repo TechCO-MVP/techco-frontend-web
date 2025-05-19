@@ -52,7 +52,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
                 )}
                 <div
                   className={cn(
-                    "left-[5px] top-[5px] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#007AFF]",
+                    "left-[5px] top-[5px] flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full bg-[#007AFF]",
                     isPending && "border-[#C6C6C8] bg-[#C6C6C8]",
                     isComplete && "bg-talent-green-500",
                   )}

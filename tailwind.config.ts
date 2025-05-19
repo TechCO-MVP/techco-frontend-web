@@ -56,6 +56,7 @@ export default {
           100: "hsl(var(--talent-green-100))",
           300: "hsl(var(--talent-green-300))",
           500: "hsl(var(--talent-green-500))",
+          600: "hsl(var(--talent-green-600))",
           700: "hsl(var(--talent-green-700))",
           800: "hsl(var(--talent-green-800))",
           900: "hsl(var(--talent-green-900))",

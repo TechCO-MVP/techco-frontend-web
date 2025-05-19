@@ -233,7 +233,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
         description: i18n.draftSavedMessage,
       });
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id, position_id),
       });
       if (isCompleted) {
         router.push(
@@ -312,7 +312,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             disabled={!positionProgress?.role || isPending}
             onClick={() => setDialogOpen(true)}
             className={cn(
-              "h-8",
+              "hover:bg-talent-green-600 h-8 bg-talent-green-500",
               isCompleted && "bg-talent-orange-500 hover:bg-talent-orange-600",
             )}
           >
