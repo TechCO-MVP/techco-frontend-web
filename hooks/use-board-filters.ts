@@ -30,9 +30,24 @@ export function useBoardFilters(board?: BoardState) {
   const phases = board?.pipe.phases ?? [];
 
   const quickFilterMap: Record<string, string[]> = {
-    "Revisión inicial": ["Inbox", "Doing"],
-    "Primer entrevista": ["Done", "Prueba", "Final Interview"],
-    "Habilidades blandas": ["No está interesado"],
+    "Filtro inicial": ["Oferta enviada", "Filtro inicial"],
+    "Fit cultural": ["Assessment fit Cultural", "Resultado Fit Cultural"],
+    "Primer entrevista": [
+      "Primera entrevista solicitada",
+      "Primera entrevista programada",
+      "Resultado primer entrevista",
+    ],
+    "Assessment técnico": [
+      "Assessment técnico",
+      "Resultado Assessment técnico",
+    ],
+    "Entrevista final": [
+      "Entrevista final solicitada",
+      "Entrevista final programada",
+      "Resultado entrevista final",
+    ],
+    Finalistas: ["Finalistas", "Candidato seleccionado"],
+    Descartados: ["Descartados"],
   };
 
   const activePhaseNames = activeQuickFilters.length

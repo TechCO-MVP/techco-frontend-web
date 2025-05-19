@@ -47,9 +47,13 @@ type BoardProps = {
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const quickFilters = [
-    "Revisión inicial",
+    "Filtro inicial",
+    "Fit cultural",
     "Primer entrevista",
-    "Habilidades blandas",
+    "Assessment técnico",
+    "Entrevista final",
+    "Finalistas",
+    "Descartados",
   ];
 
   const { positionDetailsPage: i18n } = dictionary;
