@@ -32,7 +32,8 @@ import { QUERIES } from "@/constants/queries";
 import { CreateBusinessDialog } from "../CreateBusinessDialog/CreateBusinessDialog";
 import { useParams } from "next/navigation";
 import { Locale } from "@/i18n-config";
-
+import { useUsers } from "@/hooks/use-users";
+import { useCurrentUser } from "@/hooks/use-current-user";
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
   businesses: Business[];
@@ -47,6 +48,19 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
   const selectedCompany = useMemo(() => {
     return businesses.find((business) => business._id === id);
   }, [id, businesses]);
+
+  const { users } = useUsers({
+    businessId: selectedCompany?._id,
+  });
+  const { currentUser } = useCurrentUser();
+
+  const localUser = useMemo(() => {
+    return users.find((user) => user.email === currentUser?.email);
+  }, [users, currentUser]);
+
+  const userRole = useMemo(() => {
+    return localUser?.roles.find((role) => role.business_id === id);
+  }, [localUser, id]);
 
   const [error, setError] = useState<string | undefined>("");
   const [logo, setLogo] = useState(selectedCompany?.logo);
@@ -120,7 +134,9 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
               {i18n.formDescription}
             </Text>
           </div>
-          <CreateBusinessDialog dictionary={dictionary} />
+          {userRole?.role === "super_admin" && (
+            <CreateBusinessDialog dictionary={dictionary} />
+          )}
         </div>
         <div className="mt-6 flex items-center justify-center gap-6">
           <div className="flex flex-col">

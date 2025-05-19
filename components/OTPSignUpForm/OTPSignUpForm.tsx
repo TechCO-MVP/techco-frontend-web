@@ -68,7 +68,7 @@ export function OTPSignUpForm({
       if (!response.success) {
         return setError(response.message);
       }
-      router.push(paths.home());
+      router.push(paths.openings());
     });
   };
 

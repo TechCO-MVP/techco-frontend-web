@@ -5,7 +5,7 @@ import { z } from "zod";
  * SignUp Form
  */
 export const SignUpFormSchema = z.object({
-  name: z.string().min(3, { message: VALIDATION_ERROR_KEYS.nameError }),
+  full_name: z.string().min(3, { message: VALIDATION_ERROR_KEYS.nameError }),
   email: z.string().email({ message: VALIDATION_ERROR_KEYS.emailError }),
   company: z.string().min(3, { message: VALIDATION_ERROR_KEYS.companyError }),
   companySize: z

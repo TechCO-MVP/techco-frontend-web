@@ -501,7 +501,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           </Text>
           <div className="mt-4 flex items-center gap-4">
             <span>
-              <Notifications dictionary={dictionary} positions={positions} />
+              <Notifications
+                dictionary={dictionary}
+                positions={positions}
+                businessId={selectedCompany?._id}
+              />
             </span>
           </div>
         </div>

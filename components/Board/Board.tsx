@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/Typography/Heading";
 import Link from "next/link";
 import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
-import { StartFormDialog } from "@/components/StartFormDialog/StartFormDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
 import BoardSkeleton from "./Skeleton";
@@ -160,6 +159,12 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
 
           <div className="flex w-full items-center justify-between gap-1">
             <div className="flex items-center justify-center gap-1">
+              <Badge
+                variant="secondary"
+                className="rounded-md border border-[#E4E4E7] bg-white text-[#34C759]"
+              >
+                {selectedPosition?.status}
+              </Badge>
               <Badge variant="secondary" className="rounded-md">
                 {countryLabelLookup(
                   filterStatus?.body.process_filters.country_code || "",
@@ -176,9 +181,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                 {i18n.trackingLabel}{" "}
                 {calculateTime(filterStatus?.body.created_at, dictionary)}
               </div>
-              <Badge variant="secondary" className="rounded-md text-[#34C759]">
-                {selectedPosition?.status}
-              </Badge>
+
               <Badge variant="secondary" className="rounded-md text-[#FF3B30]">
                 {getPriority(selectedPosition?.hiring_priority, i18n)}
               </Badge>
@@ -305,8 +308,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
               </div>
             </PopoverContent>
           </Popover>
-
-          <StartFormDialog publicFormUrl={board?.pipe.publicForm.url} />
         </div>
       </div>
       <div className="mb-4 flex gap-4">

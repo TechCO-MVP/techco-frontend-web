@@ -25,9 +25,14 @@ import { Locale } from "@/i18n-config";
 interface NotificationsProps {
   dictionary: Dictionary;
   positions: HiringPositionData[];
+  businessId?: string;
 }
 
-export function Notifications({ dictionary, positions }: NotificationsProps) {
+export function Notifications({
+  dictionary,
+  positions,
+  businessId,
+}: NotificationsProps) {
   const { notifications: i18n } = dictionary;
   const { notifications, isLoading } = useGetNotifications();
   const [toMarkRead, setToMarkRead] = useState<string[]>([]);
@@ -38,11 +43,14 @@ export function Notifications({ dictionary, positions }: NotificationsProps) {
   }>();
   const { id: positionId } = params;
   const filteredNotifications = useMemo(() => {
-    if (!positionId) return notifications;
+    if (!positionId && !businessId) return notifications;
+
     return notifications?.filter(
-      (notification) => notification.position_id === positionId,
+      (notification) =>
+        notification.position_id === positionId ||
+        notification.business_id === businessId,
     );
-  }, [notifications, positionId]);
+  }, [notifications, positionId, businessId]);
 
   const { mutate } = useUpdateNotification({
     onSuccess: () => {

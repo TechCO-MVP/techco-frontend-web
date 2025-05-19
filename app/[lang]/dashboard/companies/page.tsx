@@ -35,23 +35,12 @@ export default async function CompaniesPage(props: {
           >
             {dictionary.companiesPage.userSettingsTabTitle}
           </TabsTrigger>
-          <TabsTrigger
-            className="rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-            value="main"
-          >
-            {dictionary.companiesPage.mainTabTitle}
-          </TabsTrigger>
         </TabsList>
         <TabsContent value="about" className="h-full w-full max-w-screen-lg">
           <AboutCompanyTab dictionary={dictionary} />
         </TabsContent>
         <TabsContent value="user" className="h-full w-full max-w-screen-lg">
           <UserSettingsTab dictionary={dictionary} />
-        </TabsContent>
-        <TabsContent value="main" className="h-full">
-          <div className="mx-auto -mt-8 flex h-full max-w-md flex-col items-center justify-center gap-4">
-            Main Panel here.
-          </div>
         </TabsContent>
       </Tabs>
     </div>

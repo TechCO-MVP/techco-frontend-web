@@ -108,7 +108,7 @@ describe("OTPSignUpForm (Integration Tests)", () => {
         country: "es",
         role: "Mock Role",
       });
-      expect(mockRouter.pathname).toBe(`/${paths.home()}`);
+      expect(mockRouter.pathname).toBe(`/${paths.openings()}`);
     });
   });
 

@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DIAL_CODES } from "@/lib/data/countries";
+import { PositionConfigurationPhaseTypes } from "@/types";
 
 type ApplicationFormProps = {
   dictionary: Dictionary;
@@ -28,22 +29,22 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     {
       title: i18n.descriptionStep,
       status: "COMPLETED",
-    },
-    {
-      title: i18n.initialTestStep,
-      status: "DRAFT",
+      type: PositionConfigurationPhaseTypes.DESCRIPTION,
     },
     {
       title: i18n.softSkillsStep,
       status: "IN_PROGRESS",
+      type: PositionConfigurationPhaseTypes.SOFT_SKILLS,
     },
     {
       title: i18n.technicalSkillsStep,
       status: "DRAFT",
+      type: PositionConfigurationPhaseTypes.TECHNICAL_TEST,
     },
     {
       title: i18n.publishedStep,
       status: "DRAFT",
+      type: PositionConfigurationPhaseTypes.READY_TO_PUBLISH,
     },
   ]);
   return (

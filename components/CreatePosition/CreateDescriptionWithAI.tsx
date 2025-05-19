@@ -139,7 +139,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
     );
   }, [currentPosition]);
 
-  const { messages, isLoading, firstMessageId } = useMessageHistory({
+  const { messages, isLoading } = useMessageHistory({
     threadId: currentPhase?.thread_id,
   });
 
@@ -149,6 +149,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
         currentPosition.phases.map((phase) => ({
           title: phase.name,
           status: phase.status,
+          type: phase.type,
         })),
       );
     }
@@ -312,7 +313,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             disabled={!positionProgress?.role || isPending}
             onClick={() => setDialogOpen(true)}
             className={cn(
-              "hover:bg-talent-green-600 h-8 bg-talent-green-500",
+              "h-8 bg-talent-green-500 hover:bg-talent-green-600",
               isCompleted && "bg-talent-orange-500 hover:bg-talent-orange-600",
             )}
           >
@@ -334,13 +335,11 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             const content = msg.content?.[0]?.text?.value;
             let parsedMessage = content;
             let responseType: string | undefined;
-            let options: string[] = [];
 
             try {
               const parsed = JSON.parse(content || "");
               parsedMessage = parsed.message || content;
               responseType = parsed.response_type;
-              options = parsed.options || [];
             } catch {
               // If it's plain text or JSON fails, we fall back to raw value
             }
@@ -353,7 +352,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
                       <p className="mb-2">{parsedMessage}</p>
                     )}
 
-                    {(!waitingResponse &&
+                    {/* {(!waitingResponse &&
                       msg.id === firstMessageId &&
                       responseType) === "UNIQUE_SELECTION" &&
                       options.length > 0 && (
@@ -381,7 +380,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
                             onSendMessage(selected.toString());
                           }}
                         />
-                      )}
+                      )} */}
 
                     {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
                       <div className="rounded-2xl text-sm leading-relaxed">

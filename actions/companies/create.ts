@@ -8,6 +8,9 @@ import { countryCodeLookup } from "@/lib/utils";
 interface CreateResponse {
   success: boolean;
   message?: string;
+  body?: {
+    _id: string;
+  };
 }
 
 export async function createCompanyAction(
@@ -39,6 +42,7 @@ export async function createCompanyAction(
       return {
         success: true,
         message: result?.message,
+        body: result?.body,
       };
     }
 

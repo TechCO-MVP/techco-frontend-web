@@ -35,7 +35,7 @@ export function SignUpForm({
     mode: "onChange",
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
-      name: "",
+      full_name: "",
       email: "",
       company: "",
       country: "",
@@ -88,7 +88,7 @@ export function SignUpForm({
     }
   };
   return (
-    <div className="shadow-talent-green border-b-talent-orange-500 flex w-full max-w-xl flex-col items-center justify-center rounded-2xl rounded-b-none border-b-[5px] bg-white px-8 py-14">
+    <div className="flex w-full max-w-xl flex-col items-center justify-center rounded-2xl rounded-b-none border-b-[5px] border-b-talent-orange-500 bg-white px-8 py-14 shadow-talent-green">
       {/* Top Section */}
       <div className="mb-3 flex flex-col items-center">
         <Heading level={1} className="text-2xl leading-8 text-[#15342E]">
@@ -122,7 +122,7 @@ export function SignUpForm({
           <FormInput
             classNames="mb-0"
             testId="signup-name-input"
-            name="name"
+            name="full_name"
             label={i18n.nameLabel}
             placeholder={i18n.namePlaceholder}
             type="string"
@@ -218,7 +218,7 @@ export function SignUpForm({
             data-testid="signup-submit-button"
             disabled={!isValid || isPending}
             type="submit"
-            className="bg-talent-orange-500 mx-auto mt-4 w-full max-w-[22rem]"
+            className="mx-auto mt-4 w-full max-w-[22rem] bg-talent-orange-500"
           >
             {isPending ? (
               <>

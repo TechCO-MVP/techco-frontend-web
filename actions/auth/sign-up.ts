@@ -22,7 +22,7 @@ export async function signUp(data: SignUpFormData): Promise<SignUpResponse> {
       },
       body: JSON.stringify({
         email: data.email,
-        name: data.name,
+        full_name: data.full_name,
       }),
     });
 

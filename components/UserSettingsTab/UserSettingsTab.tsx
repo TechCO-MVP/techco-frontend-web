@@ -193,7 +193,13 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
                 <TableCell>{user?.full_name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.company_position}</TableCell>
-                <TableCell>{user.role}</TableCell>
+                <TableCell>
+                  {
+                    user.roles.find(
+                      (role) => role.business_id === selectedCompany?._id,
+                    )?.role
+                  }
+                </TableCell>
                 <TableCell className="flex items-center justify-between gap-4">
                   <span
                     className={cn(

@@ -119,6 +119,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
         currentPosition.phases.map((phase) => ({
           title: phase.name,
           status: phase.status,
+          type: phase.type,
         })),
       );
       setCurrentPhase(currentPosition.phases[0]);
@@ -312,7 +313,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.responsabilities?.map((item, idx) => (
-              <li key={idx} className="text-sm capitalize">
+              <li key={idx} className="capitalize text-gray-600">
                 {item}
               </li>
             ))}
@@ -460,7 +461,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.benefits?.map((item, idx) => (
-              <li key={idx} className="text-sm capitalize">
+              <li key={idx} className="capitalize text-gray-600">
                 {item}
               </li>
             ))}

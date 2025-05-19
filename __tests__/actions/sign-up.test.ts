@@ -8,7 +8,7 @@ const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 const mockData: SignUpFormData = {
-  name: "User",
+  full_name: "User",
   email: "test@example.com",
   company: "Tech",
   role: "Recruiter",

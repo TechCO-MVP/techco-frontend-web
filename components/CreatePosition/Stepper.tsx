@@ -4,10 +4,12 @@ import { Dispatch, FC, SetStateAction, useState } from "react";
 import { Text } from "../Typography/Text";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { PositionConfigurationPhaseTypes } from "@/types";
 
 export type Step = {
   title: string;
   status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
+  type: PositionConfigurationPhaseTypes;
 };
 
 type StepperProps = {
@@ -32,6 +34,24 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
         return i18n.inProcess;
     }
   };
+
+  const getTitle = (step: Step): string => {
+    switch (step.type) {
+      case PositionConfigurationPhaseTypes.DESCRIPTION:
+        return "Descripción";
+      case PositionConfigurationPhaseTypes.SOFT_SKILLS:
+        return "Assessment Fit cultural";
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        return "Assessment Técnico";
+      case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
+        return "¡Listo!";
+      case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:
+        return "Entrevista final";
+      default:
+        return step.title;
+    }
+  };
+
   return (
     <div className="flex justify-between overflow-x-auto">
       {steps.map((step, index) => {
@@ -85,7 +105,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
               )}
               type="p"
             >
-              {step.title}
+              {getTitle(step)}
             </Text>
             <Text
               className={cn(
