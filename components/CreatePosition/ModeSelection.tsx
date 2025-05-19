@@ -268,12 +268,17 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       </div>
 
       <div className="flex justify-end gap-4 pt-6">
-        <AnimatedModal
-          dictionary={dictionary}
-          mode="stepper"
-          defaultOpen={false}
-          type={activePhase?.type}
-        />
+        {activePhase?.type !==
+          PositionConfigurationPhaseTypes.READY_TO_PUBLISH &&
+          activePhase?.type !==
+            PositionConfigurationPhaseTypes.FINAL_INTERVIEW && (
+            <AnimatedModal
+              dictionary={dictionary}
+              mode="stepper"
+              defaultOpen={false}
+              type={activePhase?.type}
+            />
+          )}
         <InfoSheet dictionary={dictionary} />
       </div>
       <div className="mt-14 flex justify-center gap-8">
