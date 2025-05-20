@@ -238,7 +238,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
       });
       if (isCompleted) {
         router.push(
-          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/preview`,
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/description/preview`,
         );
       } else {
         router.push(

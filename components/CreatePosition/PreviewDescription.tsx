@@ -39,7 +39,7 @@ import { useCompletePhase } from "@/hooks/use-complete-phase";
 type Props = {
   dictionary: Dictionary;
 };
-export const PreviewPosition: FC<Props> = ({ dictionary }) => {
+export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [salaryOption, setSalaryOption] = useState<
     "fixed" | "range" | "not-specified"
@@ -123,7 +123,7 @@ export const PreviewPosition: FC<Props> = ({ dictionary }) => {
         })),
       );
       setCurrentPhase(currentPosition.phases[0]);
-      setPositionData(currentPosition.phases[0].data);
+      setPositionData(currentPosition.phases[0].data as DraftPositionData);
     }
   }, [positionConfiguration]);
 

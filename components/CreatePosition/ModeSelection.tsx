@@ -3,7 +3,7 @@ import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { BrainCog, ChevronLeft, Copy } from "lucide-react";
 import { Heading } from "../Typography/Heading";
@@ -20,6 +20,7 @@ import { InfoSheet } from "./InfoSheet";
 import { useNextPhase } from "@/hooks/use-next-phase";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
+import ModeSelectionSkeleton from "./ModeSelectionSkeleton";
 type ModeSelectionProps = {
   dictionary: Dictionary;
 };
@@ -95,7 +96,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       console.log("[Error]", error);
     },
   });
-  const { data: positionConfiguration } = usePositionConfigurations({
+  const { data: positionConfiguration, isLoading } = usePositionConfigurations({
     all: true,
     businessId: businessId,
   });
@@ -119,11 +120,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     if (phase) return phase;
     return null;
   }, [currentPosition]);
-  console.log(
-    "%c[Debug] currentPosition",
-    "background-color: teal; font-size: 20px; color: white",
-    { currentPosition, positionConfiguration, activePhase },
-  );
+
   const redirectToCopy = () => {
     if (!activePhase) return;
     switch (activePhase?.type) {
@@ -140,6 +137,17 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
         break;
     }
   };
+
+  useEffect(() => {
+    if (
+      activePhase &&
+      activePhase.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
+    ) {
+      router.push(
+        `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish`,
+      );
+    }
+  }, [activePhase]);
 
   const startNextPhase = (selectedOption: PositionConfigurationTypes) => {
     mutate({
@@ -249,6 +257,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     }
   };
 
+  if (isLoading) return <ModeSelectionSkeleton />;
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">

@@ -8,7 +8,10 @@ type Props = {
   positionData: DraftPositionData | null;
   business?: Business;
 };
-export const PreviewContent: FC<Props> = ({ positionData, business }) => {
+export const PreviewDescriptionContent: FC<Props> = ({
+  positionData,
+  business,
+}) => {
   if (!positionData) return null;
 
   const formatSalaryRange = () => {

@@ -306,6 +306,7 @@ export interface BotMessagePayload {
   response_type: BotResponseTypes;
   options?: string[];
   position?: DraftPositionData;
+  assesment?: Assessment;
   phase_type: string;
   position_configuration_id: string;
   thread_id: string;
@@ -333,7 +334,7 @@ export type PositionPhase = {
   thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: PositionConfigurationPhaseTypes;
-  data: DraftPositionData;
+  data: DraftPositionData | Assessment;
 };
 
 export type PositionConfiguration = {
@@ -395,6 +396,11 @@ export type NextPhaseInput = {
   configuration_type: PositionConfigurationTypes;
 };
 
+export type CreatePositionInput = {
+  position_configuration_id: string;
+  configuration_type: PositionConfigurationTypes;
+};
+
 export type ProfileFilterStartUrlInput = {
   position_id: string;
   business_id: string;
@@ -405,6 +411,7 @@ export type ProfileFilterStartUrlInput = {
 export type CompletePhaseInput = {
   position_configuration_id: string;
   data:
+    | Assessment
     | DraftPositionData
     | Record<
         string,
@@ -543,3 +550,21 @@ export interface DraftPositionData {
     };
   };
 }
+
+export type Assessment = {
+  is_lead_position: boolean;
+  how_much_autonomy: string;
+  challenges_of_the_position: string;
+  soft_skills: AssessmentSoftSkill[];
+};
+
+export type AssessmentSoftSkill = {
+  name: string;
+  dimensions: AssessmentSoftSkillDimension[];
+};
+
+export type AssessmentSoftSkillDimension = {
+  name: string;
+  question: string;
+  explanation: string;
+};

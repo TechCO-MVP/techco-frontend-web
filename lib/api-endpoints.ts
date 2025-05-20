@@ -85,6 +85,9 @@ export const apiEndpoints = {
   createPositionConfiguration() {
     return `${BASE_URL}/position_configuration/create`;
   },
+  createPosition() {
+    return `${BASE_URL}/position_configuration/create/position`;
+  },
   updatePositionConfiguration() {
     return `${BASE_URL}/position_configuration/update`;
   },

@@ -16,11 +16,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { PositionSheet } from "./PositionSheet";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import { useMessageHistory } from "@/hooks/use-message-history";
 import {
+  Assessment,
   BotMessagePayload,
   BotResponseTypes,
   DraftPositionData,
@@ -32,7 +32,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useToast } from "@/hooks/use-toast";
-import { MultipleSelectionOptions } from "./MultipleSelectionOptions";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +43,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { cn } from "@/lib/utils";
+import { SoftSkillsSheet } from "./SoftSkillsSheet";
 
 type CreateWithAIProps = {
   dictionary: Dictionary;
@@ -68,17 +68,9 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
   const [liveMessages, setLiveMessages] = useState<BotMessagePayload[]>([]);
   const [waitingResponse, setWaitingResponse] = useState(false);
   const [animatedMessage, setAnimatedMessage] = useState<string | null>(null);
-  const [positionProgress, setPositionProgrss] =
-    useState<DraftPositionData | null>(null);
+  const [progress, setProgress] = useState<Assessment | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const {
-    rootBusiness,
-    businesses,
-    isLoading: loadingBusiness,
-  } = useBusinesses();
-  const currentBusiness = useMemo(() => {
-    return businesses.find((b) => b._id === id);
-  }, [id, businesses]);
+  const { rootBusiness, isLoading: loadingBusiness } = useBusinesses();
 
   const { currentUser } = useCurrentUser();
   const { localUser, isLoading: loadingUsers } = useUsers({
@@ -108,7 +100,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       business_id: payload.business_id,
       options: payload.options,
     };
-    if (payload.position) setPositionProgrss(payload.position);
+    if (payload.assesment) setProgress(payload.assesment);
     if (payload.response_type === BotResponseTypes.FINAL_CONFIRMATION)
       setIsCompleted(true);
     setLiveMessages((prev) => [...prev, newUserMessage]);
@@ -211,21 +203,28 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
   }, [liveMessages]);
 
   useEffect(() => {
-    if (positionProgress) return;
+    console.log(
+      "%c[Debug] progress",
+      "background-color: teal; font-size: 20px; color: white",
+      progress,
+    );
+  }, [progress]);
+  useEffect(() => {
+    if (progress) return;
     const msg = messages.filter((msg) => msg.role === "assistant").pop();
     if (!msg) return;
 
     const raw = msg.content?.[0]?.text?.value;
     try {
       const parsed = JSON.parse(raw);
-      if (parsed?.position) {
-        setPositionProgrss(parsed.position as DraftPositionData);
+      if (parsed?.assesment) {
+        setProgress(parsed.assesment as Assessment);
       }
       if (parsed?.response_type === BotResponseTypes.FINAL_CONFIRMATION) {
         setIsCompleted(true);
       }
     } catch {}
-  }, [messages, positionProgress]);
+  }, [messages, progress]);
 
   const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
     onSuccess: (data) => {
@@ -238,7 +237,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       });
       if (isCompleted) {
         router.push(
-          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/preview`,
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/soft-skills/preview`,
         );
       } else {
         router.push(
@@ -263,16 +262,11 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
             ? {
                 ...phase,
                 status: "IN_PROGRESS",
-                data: positionProgress,
+                data: progress,
               }
             : phase,
         ) ?? [],
     });
-  };
-
-  const cleanOption = (option: string) => {
-    const match = option.match(/\(([^)]+)\)/);
-    return match ? match[1] : option;
   };
 
   if (isLoading || loadingBusiness || loadingUsers || loadingConfiguration)
@@ -310,7 +304,8 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       <div className="mx-auto flex h-full w-fit flex-col gap-10">
         <div className="mx-auto flex w-fit min-w-[60rem] justify-end gap-8 rounded-md bg-[#7676801F] p-4">
           <Button
-            disabled={!positionProgress?.role || isPending}
+            variant="talentGreen"
+            disabled={!progress || isPending}
             onClick={() => setDialogOpen(true)}
             className={cn(
               "h-8",
@@ -320,10 +315,10 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
             {isPending ? <Loader2 className="animate-spin" /> : <Save />}
             {isCompleted ? i18n.finishBtnLabel : i18n.saveDraftBtnLabel}
           </Button>
-          <PositionSheet
-            business={currentBusiness}
-            positionData={positionProgress}
+          <SoftSkillsSheet
+            assessment={progress}
             dictionary={dictionary}
+            role={(currentPosition?.phases[0]?.data as DraftPositionData)?.role}
           />
         </div>
         <div
@@ -406,7 +401,6 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
               msg.role === "assistant" && i === liveMessages.length - 1;
             const text = msg.message;
             const responseType = msg.response_type;
-            const responseOptions = msg.options || [];
 
             return (
               <Fragment key={msg.id}>
@@ -415,7 +409,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
                     <p className="mb-2">
                       {isLastAssistant ? animatedMessage : text}
                     </p>
-
+                    {/* 
                     {!waitingResponse &&
                       responseType === BotResponseTypes.UNIQUE_SELECTION &&
                       responseOptions.length > 0 && (
@@ -441,7 +435,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
                             onSendMessage(selected.toString());
                           }}
                         />
-                      )}
+                      )} */}
 
                     {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
                       <div className="rounded-2xl text-sm leading-relaxed">
@@ -489,7 +483,9 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{i18n.saveDraftTitle}</DialogTitle>
-            <DialogDescription>{i18n.saveDraftDescription}</DialogDescription>
+            <DialogDescription>
+              {i18n.saveSoftSkillsDraftDescription}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>

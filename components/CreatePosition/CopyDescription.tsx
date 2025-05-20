@@ -10,7 +10,7 @@ import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { PositionSheet } from "./PositionSheet";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
-import { PositionConfigurationPhaseTypes } from "@/types";
+import { DraftPositionData, PositionConfigurationPhaseTypes } from "@/types";
 import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useQueryClient } from "@tanstack/react-query";
@@ -122,10 +122,10 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
             {completedDescriptions?.map((position) => (
               <TableRow key={position._id} className={cn("cursor-pointer")}>
                 <TableCell
-                  title={position.phases[0]?.data?.role}
+                  title={(position?.phases[0]?.data as DraftPositionData)?.role}
                   className="max-w-[100px] truncate"
                 >
-                  {position.phases[0]?.data?.role}
+                  {(position?.phases[0]?.data as DraftPositionData)?.role}
                 </TableCell>
                 <TableCell>
                   {formatDate(new Date(position.created_at).toString())}
@@ -146,7 +146,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                         Pre visualizar
                       </Button>
                     }
-                    positionData={position.phases[0]?.data}
+                    positionData={position.phases[0]?.data as DraftPositionData}
                     business={rootBusiness ? rootBusiness : undefined}
                     dictionary={dictionary}
                   />

@@ -1,4 +1,4 @@
-import { PreviewPosition } from "@/components/CreatePosition/PreviewPosition";
+import { PreviewDescription } from "@/components/CreatePosition/PreviewDescription";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 
@@ -10,5 +10,5 @@ export default async function CompaniesPage(props: {
 
   const dictionary = await getDictionary(lang);
 
-  return <PreviewPosition dictionary={dictionary} />;
+  return <PreviewDescription dictionary={dictionary} />;
 }

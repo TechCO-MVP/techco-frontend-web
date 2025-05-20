@@ -44,6 +44,7 @@ import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import {
   Business,
+  DraftPositionData,
   HiringPositionData,
   PositionConfiguration,
   PositionConfigurationPhaseTypes,
@@ -949,10 +950,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                         </Badge>
                       </TableCell>
                       <TableCell
-                        title={position.phases[0]?.data?.role}
+                        title={
+                          (position.phases[0]?.data as DraftPositionData)?.role
+                        }
                         className="max-w-[100px] truncate"
                       >
-                        {position.phases[0]?.data?.role}
+                        {(position.phases[0]?.data as DraftPositionData)?.role}
                       </TableCell>
                       <TableCell>
                         {formatDate(new Date(position.created_at).toString())} (
