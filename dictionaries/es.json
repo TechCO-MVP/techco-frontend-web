@@ -278,6 +278,7 @@
     "salaryDescriptionStart": "La compensación para este rol está dentro del rango de",
     "salaryDescriptionEnd": "mensuales, según experiencia y habilidades del candidato.",
     "whatWeOfferLabel": "Lo que ofrecemos",
+    "skillsLabel": "Requisitos clave",
     "sendApplicationLabel": "Enviar mi aplicación",
     "iWantToApply": "Quiero postularme"
   },
@@ -347,6 +348,7 @@
     "salaryDescriptionEnd": "mensuales, según experiencia y habilidades del candidato.",
     "salaryNotSpecified": "La compensación salarial se compartirá durante el proceso.",
     "whatWeOfferLabel": "Lo que ofrecemos",
+    "skillsLabel": "Habilidades clave",
     "rangeLabel": "Rango",
     "fixedSalaryLabel": "Salario fijo",
     "salaryNotSpecifiedLabel": "Sin especificar",

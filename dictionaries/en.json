@@ -277,6 +277,7 @@
     "salaryDescriptionStart": "Compensation for this role is within the range of",
     "salaryDescriptionEnd": "monthly, based on the candidate's experience and skills.",
     "whatWeOfferLabel": "What we offer",
+    "skillsLabel": "Key skills",
     "sendApplicationLabel": "Send my application",
     "iWantToApply": "I want to apply"
   },
@@ -346,7 +347,8 @@
     "salaryDescriptionStart": "Compensation for this role is within the range of",
     "salaryDescriptionEnd": "monthly, based on the candidate's experience and skills.",
     "salaryNotSpecified": "Salary compensation will be shared during the process.",
-    "whatWeOfferLabel": "Lo que ofrecemos",
+    "whatWeOfferLabel": "What we offer",
+    "skillsLabel": "Key skills",
     "rangeLabel": "Range",
     "fixedSalaryLabel": "Fixed Salary",
     "salaryNotSpecifiedLabel": "Unspecified",

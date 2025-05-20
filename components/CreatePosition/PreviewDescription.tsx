@@ -142,8 +142,6 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       data.responsabilities.length > 0 &&
       Array.isArray(data.benefits) &&
       data.benefits.length > 0 &&
-      typeof data.hiring_priority !== "undefined" &&
-      data.hiring_priority !== null &&
       Array.isArray(data.skills) &&
       data.skills.length > 0 &&
       typeof data.work_mode === "string" &&
@@ -471,6 +469,31 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             items={positionData.benefits}
             onItemsChange={(items) =>
               setPositionData({ ...positionData, benefits: items })
+            }
+          />
+        )}
+      </div>
+
+      <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🎯 {i18n.skillsLabel}</h2>
+        </div>
+        {mode === "preview" ? (
+          <ul className="list-disc space-y-1 pl-6">
+            {positionData.skills?.map((item, idx) => (
+              <li key={idx} className="capitalize text-gray-600">
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EditableList
+            items={positionData.skills.map((skill) => skill.name)}
+            onItemsChange={(items) =>
+              setPositionData({
+                ...positionData,
+                skills: items.map((item) => ({ name: item, required: false })),
+              })
             }
           />
         )}
