@@ -101,7 +101,9 @@ export function Notifications({
       action_required: sorted.filter(
         (n) => n.phase_type === PhaseType.ACTION_CALL,
       ),
-      informative: sorted.filter((n) => n.phase_type === PhaseType.INFORMATIVE),
+      informative: sorted.filter(
+        (n) => !n.phase_type || n.phase_type === PhaseType.INFORMATIVE,
+      ),
       mention: sorted.filter(
         (n) => n.notification_type === NotificationType.TAGGED_IN_COMMENT,
       ),

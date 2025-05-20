@@ -53,6 +53,24 @@ function getNotificationText(
   }
 }
 
+function findPosition(
+  positions: HiringPositionData[],
+  notification: NotificationPayload["message"],
+): HiringPositionData | undefined {
+  if (notification.position_id) {
+    const byPositionId = positions.find(
+      (position) => position._id === notification.position_id,
+    );
+    if (byPositionId) return byPositionId;
+  }
+  if (notification.pipe_id) {
+    return positions.find(
+      (position) => position.pipe_id === notification.pipe_id,
+    );
+  }
+  return undefined;
+}
+
 export function NotificationItem({
   setOpen,
   notification,
@@ -72,15 +90,15 @@ export function NotificationItem({
   const params = useParams<{ lang: Locale }>();
   const { lang } = params;
   const onNotificationClick = () => {
-    const position = positions.find(
-      (position) => position._id === notification.position_id,
-    );
+    const position = findPosition(positions, notification);
 
     if (!position) {
       console.warn("[Notifications] Position not found", {
+        notification,
         position,
         positions,
       });
+      return;
     }
 
     dispatch(

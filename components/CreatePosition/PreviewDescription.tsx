@@ -327,6 +327,31 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       </div>
 
       <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🎯 {i18n.skillsLabel}</h2>
+        </div>
+        {mode === "preview" ? (
+          <ul className="list-disc space-y-1 pl-6">
+            {positionData.skills?.map((item, idx) => (
+              <li key={idx} className="capitalize text-gray-600">
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EditableList
+            items={positionData.skills.map((skill) => skill.name)}
+            onItemsChange={(items) =>
+              setPositionData({
+                ...positionData,
+                skills: items.map((item) => ({ name: item, required: false })),
+              })
+            }
+          />
+        )}
+      </div>
+
+      <div className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 💰{i18n.salaryRangeLabel}</h2>
         </div>
@@ -474,30 +499,6 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         )}
       </div>
 
-      <div className="w-full space-y-3">
-        <div className="flex flex-col gap-2 font-semibold">
-          <h2>🎯 {i18n.skillsLabel}</h2>
-        </div>
-        {mode === "preview" ? (
-          <ul className="list-disc space-y-1 pl-6">
-            {positionData.skills?.map((item, idx) => (
-              <li key={idx} className="capitalize text-gray-600">
-                {item.name}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <EditableList
-            items={positionData.skills.map((skill) => skill.name)}
-            onItemsChange={(items) =>
-              setPositionData({
-                ...positionData,
-                skills: items.map((item) => ({ name: item, required: false })),
-              })
-            }
-          />
-        )}
-      </div>
       {mode === "edit" && (
         <StickyFooter
           canSave={isDirty}

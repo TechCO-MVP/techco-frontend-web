@@ -76,7 +76,10 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
-        <Link href={`/${lang}/dashboard/positions`} replace>
+        <Link
+          href={`/${lang}/dashboard/positions?tab=drafts&business_id=${businessId}`}
+          replace
+        >
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
             {i18n.goBack}
