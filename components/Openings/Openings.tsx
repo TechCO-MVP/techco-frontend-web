@@ -406,7 +406,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
         if (!phase) return;
         const isCompleted =
           phase.status === "COMPLETED" ||
-          (phase.data as Assessment).soft_skills.length > 0;
+          (phase.data as Assessment)?.soft_skills?.length > 0;
 
         if (isCompleted) {
           router.push(
@@ -427,6 +427,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       default:
         router.push(
           `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+        );
+        break;
+      case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}/publish`,
         );
         break;
     }

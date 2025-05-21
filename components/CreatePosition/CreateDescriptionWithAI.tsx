@@ -288,7 +288,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
         >
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
-            {i18n.goBack}
+            {i18n.exit}
           </Button>
         </Link>
       </div>

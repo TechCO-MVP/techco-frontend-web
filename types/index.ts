@@ -232,8 +232,8 @@ export type HiringProcessResponse = {
 export type NotificationStatus = "NEW" | "READ" | "REVIEWED";
 
 export enum PhaseType {
-  INFORMATIVE = "INFORMATIVE",
-  ACTION_CALL = "ACTION_CALL",
+  INFORMATIVE = "Informativa",
+  ACTION_CALL = "Llamado a la acción",
 }
 export enum NotificationType {
   PHASE_CHANGE = "PHASE_CHANGE",
