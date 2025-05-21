@@ -52,7 +52,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST,
+        queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
       });
       toast({
         title: "Vacante publicada",

@@ -40,7 +40,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST,
+        queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
       });
       const currentPhase = positionData.phases?.find(
         (phase) => phase.status === "IN_PROGRESS",

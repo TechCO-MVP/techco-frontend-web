@@ -39,7 +39,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST,
+          queryKey: QUERIES.POSITION_CONFIG_LIST(id),
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,

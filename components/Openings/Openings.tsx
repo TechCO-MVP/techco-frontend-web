@@ -124,7 +124,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     useDeletePositionConfiguration({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST,
+          queryKey: QUERIES.POSITION_CONFIG_LIST(
+            selectedCompany?._id || rootBusiness?._id,
+          ),
         });
         toast({
           title: "Vacante eliminada",

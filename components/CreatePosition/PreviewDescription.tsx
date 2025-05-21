@@ -76,7 +76,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       });
       initialData.current = null;
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST,
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
       });
       setMode("preview");
     },

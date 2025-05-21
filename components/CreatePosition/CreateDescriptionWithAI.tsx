@@ -240,7 +240,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
         description: i18n.draftSavedMessage,
       });
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST,
+        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
       });
       if (isCompleted) {
         router.push(
