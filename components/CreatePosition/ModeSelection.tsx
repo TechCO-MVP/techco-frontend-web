@@ -40,7 +40,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: [QUERIES.POSITION_CONFIG_LIST(businessId)],
+        queryKey: QUERIES.POSITION_CONFIG_LIST,
       });
       const currentPhase = positionData.phases?.find(
         (phase) => phase.status === "IN_PROGRESS",
@@ -288,7 +288,12 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
               type={activePhase?.type}
             />
           )}
-        <InfoSheet dictionary={dictionary} />
+        <InfoSheet
+          type={
+            activePhase?.type || PositionConfigurationPhaseTypes.DESCRIPTION
+          }
+          dictionary={dictionary}
+        />
       </div>
       <div className="mt-14 flex justify-center gap-8">
         <OptionCard

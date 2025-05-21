@@ -25,6 +25,7 @@ import { SoftSkillsSheet } from "./SoftSkillsSheet";
 import { PositionSheet } from "./PositionSheet";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useCreatePosition } from "@/hooks/use-create-position";
+import { useToast } from "@/hooks/use-toast";
 
 type PublishPositionProps = {
   dictionary: Dictionary;
@@ -33,6 +34,7 @@ type PublishPositionProps = {
 export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
   dictionary,
 }) => {
+  const { toast } = useToast();
   const [steps, setSteps] = useState<Step[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -50,7 +52,12 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: [QUERIES.POSITION_CONFIG_LIST(businessId)],
+        queryKey: QUERIES.POSITION_CONFIG_LIST,
+      });
+      toast({
+        title: "Vacante publicada",
+        description:
+          "¡Felicitaciones! Publicaste tu vacante. Te notificaremos cuando tu tablero de seguimiento esté listo.",
       });
       console.log(
         "%c[Debug] positionData",

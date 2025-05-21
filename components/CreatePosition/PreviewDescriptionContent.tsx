@@ -64,10 +64,23 @@ export const PreviewDescriptionContent: FC<Props> = ({
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🚀 Responsabilidades</h2>
         </div>
-        <ul className="list-disc space-y-1 pl-6">
+        <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.responsabilities?.map((item, idx) => (
             <li key={idx} className="text-sm capitalize">
               {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🎯 Habilidades clave</h2>
+        </div>
+        <ul className="list-disc space-y-1 pl-6 text-gray-600">
+          {positionData.skills?.map((item, idx) => (
+            <li key={idx} className="text-sm capitalize">
+              {item.name}
             </li>
           ))}
         </ul>
@@ -101,7 +114,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🎁 Lo que ofrecemos</h2>
         </div>
-        <ul className="list-disc space-y-1 pl-6">
+        <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.benefits?.map((item, idx) => (
             <li key={idx} className="text-sm capitalize">
               {item}

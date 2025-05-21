@@ -53,7 +53,7 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: [QUERIES.POSITION_CONFIG_LIST(businessId, undefined)],
+        queryKey: QUERIES.POSITION_CONFIG_LIST,
       });
       router.push(
         `/${lang}/dashboard/companies/${businessId}/position-configuration/${positionData._id}`,

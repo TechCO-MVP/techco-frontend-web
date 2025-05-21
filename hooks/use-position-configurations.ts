@@ -16,7 +16,7 @@ export function usePositionConfigurations({
   options,
 }: Params) {
   return useQuery<GetPositionConfigurationListResponse>({
-    queryKey: QUERIES.POSITION_CONFIG_LIST(businessId, id),
+    queryKey: QUERIES.POSITION_CONFIG_LIST,
     queryFn: async () => {
       const params = new URLSearchParams({
         business_id: businessId,
@@ -38,8 +38,8 @@ export function usePositionConfigurations({
       return response.json();
     },
     enabled: !!businessId,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 5,
     retry: 1,
     refetchOnWindowFocus: false,
     ...options,

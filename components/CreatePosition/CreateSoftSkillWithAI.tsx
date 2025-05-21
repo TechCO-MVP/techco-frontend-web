@@ -100,7 +100,8 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       business_id: payload.business_id,
       options: payload.options,
     };
-    if (payload.assesment) setProgress(payload.assesment);
+    if (payload.assesment && Object.keys(payload.assesment).length > 0)
+      setProgress(payload.assesment);
     if (payload.response_type === BotResponseTypes.FINAL_CONFIRMATION)
       setIsCompleted(true);
     setLiveMessages((prev) => [...prev, newUserMessage]);
@@ -207,8 +208,9 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       "%c[Debug] progress",
       "background-color: teal; font-size: 20px; color: white",
       progress,
+      currentPosition,
     );
-  }, [progress]);
+  }, [progress, currentPosition]);
   useEffect(() => {
     if (progress) return;
     const msg = messages.filter((msg) => msg.role === "assistant").pop();
@@ -217,7 +219,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
     const raw = msg.content?.[0]?.text?.value;
     try {
       const parsed = JSON.parse(raw);
-      if (parsed?.assesment) {
+      if (parsed?.assesment && Object.keys(parsed.assesment).length > 0) {
         setProgress(parsed.assesment as Assessment);
       }
       if (parsed?.response_type === BotResponseTypes.FINAL_CONFIRMATION) {
@@ -233,7 +235,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
         description: i18n.draftSavedMessage,
       });
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+        queryKey: QUERIES.POSITION_CONFIG_LIST,
       });
       if (isCompleted) {
         router.push(

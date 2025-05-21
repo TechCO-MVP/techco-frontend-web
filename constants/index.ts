@@ -17,6 +17,7 @@ export const VALIDATION_ERROR_KEYS: {
   companyDescriptionError: "companyDescriptionError",
   companyLinkedinError: "companyLinkedinError",
   companyWebsiteError: "companyWebsiteError",
+  companyDescriptionMaxError: "companyDescriptionMaxError",
 };
 
 export const ROLES: { value: UserRole["role"]; label: string }[] = [

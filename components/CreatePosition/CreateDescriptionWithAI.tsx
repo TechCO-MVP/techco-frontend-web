@@ -32,7 +32,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useToast } from "@/hooks/use-toast";
-import { MultipleSelectionOptions } from "./MultipleSelectionOptions";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +42,7 @@ import {
 } from "../ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
-import { cn } from "@/lib/utils";
+import { cn, isPositionDescriptionComplete } from "@/lib/utils";
 
 type CreateWithAIProps = {
   dictionary: Dictionary;
@@ -211,6 +210,13 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
   }, [liveMessages]);
 
   useEffect(() => {
+    if (!positionProgress) return;
+    if (isPositionDescriptionComplete(positionProgress)) {
+      setIsCompleted(true);
+    }
+  }, [positionProgress]);
+
+  useEffect(() => {
     if (positionProgress) return;
     const msg = messages.filter((msg) => msg.role === "assistant").pop();
     if (!msg) return;
@@ -234,7 +240,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
         description: i18n.draftSavedMessage,
       });
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(id, position_id),
+        queryKey: QUERIES.POSITION_CONFIG_LIST,
       });
       if (isCompleted) {
         router.push(
@@ -268,11 +274,6 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             : phase,
         ) ?? [],
     });
-  };
-
-  const cleanOption = (option: string) => {
-    const match = option.match(/\(([^)]+)\)/);
-    return match ? match[1] : option;
   };
 
   if (isLoading || loadingBusiness || loadingUsers || loadingConfiguration)
@@ -334,12 +335,10 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             const isAssistant = msg.role === "assistant";
             const content = msg.content?.[0]?.text?.value;
             let parsedMessage = content;
-            let responseType: string | undefined;
 
             try {
               const parsed = JSON.parse(content || "");
               parsedMessage = parsed.message || content;
-              responseType = parsed.response_type;
             } catch {
               // If it's plain text or JSON fails, we fall back to raw value
             }
@@ -348,9 +347,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
               <Fragment key={msg.id}>
                 {isAssistant ? (
                   <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
-                    {responseType !== BotResponseTypes.FINAL_CONFIRMATION && (
-                      <p className="mb-2">{parsedMessage}</p>
-                    )}
+                    <p className="mb-2">{parsedMessage}</p>
 
                     {/* {(!waitingResponse &&
                       msg.id === firstMessageId &&
@@ -381,14 +378,6 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
                           }}
                         />
                       )} */}
-
-                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
-                      <div className="rounded-2xl text-sm leading-relaxed">
-                        <p className="mb-1 block">
-                          {i18n.finalConfirmationMessage}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
@@ -405,8 +394,6 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
             const isLastAssistant =
               msg.role === "assistant" && i === liveMessages.length - 1;
             const text = msg.message;
-            const responseType = msg.response_type;
-            const responseOptions = msg.options || [];
 
             return (
               <Fragment key={msg.id}>
@@ -415,41 +402,6 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
                     <p className="mb-2">
                       {isLastAssistant ? animatedMessage : text}
                     </p>
-
-                    {!waitingResponse &&
-                      responseType === BotResponseTypes.UNIQUE_SELECTION &&
-                      responseOptions.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {responseOptions.map((option) => (
-                            <button
-                              onClick={() => onSendMessage(option)}
-                              key={option}
-                              className="rounded-md border border-muted px-3 py-1 text-sm hover:bg-muted"
-                            >
-                              {cleanOption(option)}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                    {responseType === BotResponseTypes.MULTIPLE_SELECTION &&
-                      responseOptions.length > 0 && (
-                        <MultipleSelectionOptions
-                          disabled={waitingResponse || !isLastAssistant}
-                          options={responseOptions}
-                          onSubmit={(selected) => {
-                            onSendMessage(selected.toString());
-                          }}
-                        />
-                      )}
-
-                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
-                      <div className="rounded-2xl text-sm leading-relaxed">
-                        <p className="mb-1 block">
-                          {i18n.finalConfirmationMessage}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">

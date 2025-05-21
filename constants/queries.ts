@@ -12,8 +12,7 @@ export const QUERIES = {
   HIRING_PROCESS: (id: number | string) => ["hiring-poccess", id] as const,
   PROFILE_FILTER_STATUS: (id: string) =>
     ["prosition-filter-status", id] as const,
-  POSITION_CONFIG_LIST: (business_id: string, id?: string) =>
-    ["position-config-list", business_id, id] as const,
+  POSITION_CONFIG_LIST: ["position-config-list"] as const,
   MESSAGE_HISTORY: (threadId?: string, limit?: number, messageId?: string) =>
     ["message-history", threadId, limit, messageId] as const,
 };

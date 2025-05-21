@@ -4,6 +4,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
 import { COUNTRIES } from "@/lib/data/countries";
+import { DraftPositionData } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -139,3 +140,28 @@ export const calculateTime = (
 
   return timeAgo(diffInMs, dictionary);
 };
+export function isPositionDescriptionComplete(
+  data: DraftPositionData,
+): boolean {
+  return (
+    !!data &&
+    typeof data.city === "string" &&
+    data.city.trim() !== "" &&
+    typeof data.role === "string" &&
+    data.role.trim() !== "" &&
+    typeof data.country_code === "string" &&
+    data.country_code.trim() !== "" &&
+    typeof data.description === "string" &&
+    data.description.trim() !== "" &&
+    Array.isArray(data.responsabilities) &&
+    data.responsabilities.length > 0 &&
+    Array.isArray(data.benefits) &&
+    data.benefits.length > 0 &&
+    Array.isArray(data.skills) &&
+    data.skills.length > 0 &&
+    typeof data.work_mode === "string" &&
+    data.work_mode.trim() !== "" &&
+    typeof data.seniority === "string" &&
+    data.seniority.trim() !== ""
+  );
+}

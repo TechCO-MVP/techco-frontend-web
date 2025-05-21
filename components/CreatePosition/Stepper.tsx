@@ -5,7 +5,9 @@ import { Text } from "../Typography/Text";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { PositionConfigurationPhaseTypes } from "@/types";
-
+import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { Locale } from "@/i18n-config";
 export type Step = {
   title: string;
   status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
@@ -20,7 +22,9 @@ type StepperProps = {
 
 export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
   const [currentStep] = useState(0);
-
+  const router = useRouter();
+  const params = useParams<{ lang: Locale; id: string; position_id: string }>();
+  const { lang, id, position_id } = params;
   const getSubtitle = (step: Step): string => {
     switch (step.status) {
       case "IN_PROGRESS":
@@ -52,6 +56,30 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
     }
   };
 
+  const handleRedirect = (step: Step) => {
+    if (step.status !== "COMPLETED") return;
+
+    switch (step.type) {
+      case PositionConfigurationPhaseTypes.DESCRIPTION:
+        router.push(
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/description/preview`,
+        );
+        return;
+      case PositionConfigurationPhaseTypes.SOFT_SKILLS:
+        router.push(
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/soft-skills/preview`,
+        );
+
+        return;
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        console.log("technical test");
+        return;
+      case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
+        console.log("ready to publish");
+        return;
+    }
+  };
+
   return (
     <div className="flex justify-between overflow-x-auto">
       {steps.map((step, index) => {
@@ -62,8 +90,12 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
 
         return (
           <div
+            onClick={() => handleRedirect(step)}
             key={index}
-            className="relative flex w-full flex-col items-center justify-center gap-1"
+            className={cn(
+              "relative flex w-full flex-col items-center justify-center gap-1",
+              isComplete && "cursor-pointer",
+            )}
           >
             <div className="flex items-center justify-center gap-1">
               <div className="relative h-[42px] w-[42px]">
@@ -72,7 +104,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
                 )}
                 <div
                   className={cn(
-                    "left-[5px] top-[5px] flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full bg-[#007AFF]",
+                    "left-[5px] top-[5px] flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#007AFF]",
                     isPending && "border-[#C6C6C8] bg-[#C6C6C8]",
                     isComplete && "bg-talent-green-500",
                   )}

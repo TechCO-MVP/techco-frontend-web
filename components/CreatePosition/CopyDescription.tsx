@@ -52,7 +52,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: [QUERIES.POSITION_CONFIG_LIST(id)],
+          queryKey: QUERIES.POSITION_CONFIG_LIST,
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,

@@ -97,12 +97,23 @@ export function Notifications({
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
+    console.log(
+      sorted.filter(
+        (n) =>
+          (n.notification_type !== NotificationType.TAGGED_IN_COMMENT &&
+            !n.phase_type) ||
+          n.phase_type === PhaseType.INFORMATIVE,
+      ),
+    );
     return {
       action_required: sorted.filter(
         (n) => n.phase_type === PhaseType.ACTION_CALL,
       ),
       informative: sorted.filter(
-        (n) => !n.phase_type || n.phase_type === PhaseType.INFORMATIVE,
+        (n) =>
+          (n.notification_type !== NotificationType.TAGGED_IN_COMMENT &&
+            !n.phase_type) ||
+          n.phase_type === PhaseType.INFORMATIVE,
       ),
       mention: sorted.filter(
         (n) => n.notification_type === NotificationType.TAGGED_IN_COMMENT,
@@ -139,11 +150,25 @@ export function Notifications({
         </SheetHeader>
         <Tabs defaultValue="action_required" className="w-full">
           <TabsList className="sticky top-0 z-10 bg-background">
-            <TabsTrigger value="action_required">
-              {i18n.actionRequired}
+            <TabsTrigger
+              className="rounded-none border-[#FFC107] text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
+              value="action_required"
+            >
+              {i18n.actionRequired} (
+              {categorizedNotifications.action_required.length})
             </TabsTrigger>
-            <TabsTrigger value="informative">{i18n.informative}</TabsTrigger>
-            <TabsTrigger value="mention">{i18n.mention}</TabsTrigger>
+            <TabsTrigger
+              className="rounded-none border-[#FFC107] text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
+              value="informative"
+            >
+              {i18n.informative} ({categorizedNotifications.informative.length})
+            </TabsTrigger>
+            <TabsTrigger
+              className="rounded-none border-[#FFC107] text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
+              value="mention"
+            >
+              {i18n.mention} ({categorizedNotifications.mention.length})
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="action_required">
             <ScrollArea className="h-[calc(100vh-128px)]">

@@ -115,6 +115,7 @@
     "otpCodeError": "El código ingresado no es válido.",
     "companyNameError": "El nombre de la empresa es obligatorio.",
     "companyDescriptionError": "La descripción debe tener al menos 10 caracteres.",
+    "companyDescriptionMaxError": "La descripción debe tener menos de 1000 caracteres.",
     "companyWebsiteError": "Por favor, introduce una URL válida del sitio web.",
     "companyLinkedinError": "Por favor, introduce una URL válida del perfil de LinkedIn."
   },

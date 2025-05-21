@@ -39,7 +39,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(id, position_id),
+          queryKey: QUERIES.POSITION_CONFIG_LIST,
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
@@ -67,6 +67,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
 
   useEffect(() => {
     const currentPosition = positionConfiguration?.body.data?.[0];
+
     if (currentPosition) {
       setCurrentPosition(currentPosition);
       setSteps(
@@ -79,6 +80,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
       const softSkillsPhase = currentPosition.phases.find(
         (phase) => phase.type === PositionConfigurationPhaseTypes.SOFT_SKILLS,
       );
+
       if (!softSkillsPhase) return;
 
       setPositionData(softSkillsPhase.data as Assessment);
@@ -188,12 +190,13 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
         saveLabel={`${i18n.continuedNextPhase} 3`}
         isSaving={isCompletePhasePending}
         onCancel={() => {}}
-        onSave={() =>
+        onSave={() => {
+          console.info("Saving", positionData);
           completePhase({
             position_configuration_id: position_id,
             data: positionData,
-          })
-        }
+          });
+        }}
         saveButtonIcon={<ChevronRight className="h-4 w-4" />}
       />
     </div>

@@ -25,7 +25,7 @@ function getCtaLabel(
     case PhaseType.ACTION_CALL:
       return i18n.ctaStartAction;
     default:
-      return i18n.ctaSeeComment;
+      return i18n.ctaSeeCandidate;
   }
 }
 
@@ -49,7 +49,7 @@ function getNotificationText(
       }
       return notification.message;
     default:
-      return i18n.mentionText;
+      return notification.message;
   }
 }
 

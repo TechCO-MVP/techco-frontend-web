@@ -48,7 +48,8 @@ export const CompanyDetailsSchema = z.object({
   countryCode: z.string(),
   description: z
     .string()
-    .min(10, { message: VALIDATION_ERROR_KEYS.companyDescriptionError }),
+    .min(10, { message: VALIDATION_ERROR_KEYS.companyDescriptionError })
+    .max(1000, { message: VALIDATION_ERROR_KEYS.companyDescriptionMaxError }),
   website: z
     .string()
     .url({ message: VALIDATION_ERROR_KEYS.companyWebsiteError }),

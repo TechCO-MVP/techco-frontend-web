@@ -11,7 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, countryLabelLookup, formatDate, timeAgo } from "@/lib/utils";
+import {
+  cn,
+  countryLabelLookup,
+  formatDate,
+  isPositionDescriptionComplete,
+  timeAgo,
+} from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu,
@@ -43,6 +49,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import {
+  Assessment,
   Business,
   DraftPositionData,
   HiringPositionData,
@@ -68,6 +75,7 @@ import EmptyTableState from "../EmptyTableState/EmptyTableState";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 import { useDeletePositionConfiguration } from "@/hooks/use-delete-position-configuration";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "../ui/scroll-area";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -116,7 +124,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     useDeletePositionConfiguration({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(selectedCompany?._id || ""),
+          queryKey: QUERIES.POSITION_CONFIG_LIST,
         });
         toast({
           title: "Vacante eliminada",
@@ -369,16 +377,46 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
 
   const redirectToPosition = (position: PositionConfiguration) => {
     switch (position.current_phase) {
-      case PositionConfigurationPhaseTypes.DESCRIPTION:
-        router.push(
-          `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+      case PositionConfigurationPhaseTypes.DESCRIPTION: {
+        const phase = position.phases.find(
+          (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
         );
-        break;
-      case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        router.push(
-          `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills`,
+        if (!phase) return;
+        const isCompleted = isPositionDescriptionComplete(
+          phase.data as DraftPositionData,
         );
+        if (isCompleted) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/description/preview`,
+          );
+        } else {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+          );
+        }
+
         break;
+      }
+      case PositionConfigurationPhaseTypes.SOFT_SKILLS: {
+        const phase = position.phases.find(
+          (phase) => phase.type === PositionConfigurationPhaseTypes.SOFT_SKILLS,
+        );
+        if (!phase) return;
+        const isCompleted =
+          phase.status === "COMPLETED" ||
+          (phase.data as Assessment).soft_skills.length > 0;
+
+        if (isCompleted) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills/preview`,
+          );
+        } else {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills`,
+          );
+        }
+        break;
+      }
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
         router.push(
           `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
@@ -444,33 +482,35 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <ChevronDown />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="px-3 py-2.5">
-                <div className="h-8 border-b-[1px] border-b-[#E4E4E7] font-bold">
-                  {i18n.yourCompanies}
-                </div>
-                {businesses.map((business) => {
-                  return (
-                    <DropdownMenuItem
-                      key={business._id}
-                      className="flex cursor-pointer flex-col items-start gap-0"
-                      onClick={() => setSelectedCompany(business)}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Heading
-                          level={1}
-                          className="text-center text-xl font-bold leading-8"
-                        >
-                          {business.name}
-                        </Heading>
-                        <CountryLabel
-                          label={countryLabelLookup(business.country_code)}
-                        />
-                      </div>
-                      <Text className="text-muted-foreground">
-                        {formatDate(business.created_at)}
-                      </Text>
-                    </DropdownMenuItem>
-                  );
-                })}
+                <ScrollArea className="h-[420px]">
+                  <div className="h-8 border-b-[1px] border-b-[#E4E4E7] font-bold">
+                    {i18n.yourCompanies}
+                  </div>
+                  {businesses.map((business) => {
+                    return (
+                      <DropdownMenuItem
+                        key={business._id}
+                        className="flex cursor-pointer flex-col items-start gap-0"
+                        onClick={() => setSelectedCompany(business)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Heading
+                            level={1}
+                            className="text-center text-xl font-bold leading-8"
+                          >
+                            {business.name}
+                          </Heading>
+                          <CountryLabel
+                            label={countryLabelLookup(business.country_code)}
+                          />
+                        </div>
+                        <Text className="text-muted-foreground">
+                          {formatDate(business.created_at)}
+                        </Text>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </ScrollArea>
               </DropdownMenuContent>
             </DropdownMenu>
             <Heading
@@ -709,7 +749,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       key={position._id}
                       className={cn(
                         "cursor-pointer",
-                        pulsingRow === position._id && "animate-blink",
+                        pulsingRow === position._id &&
+                          "animate-blink border-2 border-[#1976D2]",
                       )}
                       onClick={() => router.push(`positions/${position._id}`)}
                     >
@@ -937,7 +978,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       className={cn(
                         "cursor-pointer",
                         pulsingRow === position._id &&
-                          "animate-blink border-2 border-talent-orange-500",
+                          "animate-blink border-2 border-[#1976D2]",
                       )}
                       onClick={() => redirectToPosition(position)}
                     >
@@ -965,13 +1006,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                         )}
                         )
                       </TableCell>
-                      <TableCell>
-                        {
-                          position.phases.find(
-                            (phase) => phase.status === "IN_PROGRESS",
-                          )?.name
-                        }
-                      </TableCell>
+                      <TableCell>{position.current_phase}</TableCell>
                       <TableCell>
                         {formatDate(new Date(position.updated_at).toString())}
                       </TableCell>
