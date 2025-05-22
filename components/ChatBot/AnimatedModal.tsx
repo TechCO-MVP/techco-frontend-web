@@ -12,22 +12,22 @@ import { PositionConfigurationPhaseTypes, User } from "@/types";
 import { Dictionary } from "@/types/i18n";
 
 const onboardingContentByPhase: Record<
-  PositionConfigurationPhaseTypes,
+  PositionConfigurationPhaseTypes | "first_time_onboarding",
   { slides: { title: string; text: string }[]; images: string[] }
 > = {
   [PositionConfigurationPhaseTypes.DESCRIPTION]: {
     slides: [
       {
         title: "Crea una vacante clara, atractiva y alineada con tu empresa",
-        text: "<p>Vamos a ayudarte a construir una vacante que realmente conecte con las personas.</p> <p> No necesitas escribir desde cero: nuestra inteligencia artificial Tici está aquí para acompañarte en todo momento.</p><br/> <p>Solo conversa con ella como lo harías con un amigo o compañero. Cuanto más nos cuentes, mejor será el resultado.</p>",
+        text: "<p style='text-align: justify;'>Vamos a ayudarte a construir una vacante que realmente conecte con las personas.</p> <p style='text-align: justify;'> No necesitas escribir desde cero: nuestra inteligencia artificial Tici está aquí para acompañarte en todo momento.</p><br/> <p style='text-align: justify;'>Solo conversa con ella como lo harías con un amigo o compañero. Cuanto más nos cuentes, mejor será el resultado.</p>",
       },
       {
         title: "Cuéntanos sobre la vacante",
-        text: "<p>Nuestro asistente de IA necesita entender qué estás buscando. Habla de forma natural: qué hace esta persona, qué necesitas del rol, cómo se trabaja en tu equipo. </p> <br/> <p> La IA irá haciendo preguntas para ayudarte a pensar en todos los detalles. </p>",
+        text: "<p style='text-align: justify;'>Nuestro asistente de IA necesita entender qué estás buscando. Habla de forma natural: qué hace esta persona, qué necesitas del rol, cómo se trabaja en tu equipo. </p> <br/> <p style='text-align: justify;'> La IA irá haciendo preguntas para ayudarte a pensar en todos los detalles. </p>",
       },
       {
         title: "Reflejamos tu cultura",
-        text: "<p>La IA Tici adaptará la vacante al tono y estilo de tu empresa. Si ya llenaste el “la descripción de la empresa” o has trabajado antes en esta plataforma, ¡tomaremos eso como base!</p> <br /> <p> Podrás revisar y ajustar el texto en cualquier momento. Aquí mandas tú.</p>",
+        text: "<p style='text-align: justify;'>La IA Tici adaptará la vacante al tono y estilo de tu empresa. Si ya llenaste el “la descripción de la empresa” o has trabajado antes en esta plataforma, ¡tomaremos eso como base!</p> <br /> <p style='text-align: justify;'> Podrás revisar y ajustar el texto en cualquier momento. Aquí mandas tú.</p>",
       },
       {
         title: "Tu vacante, lista en minutos",
@@ -75,11 +75,11 @@ const onboardingContentByPhase: Record<
       },
       {
         title: "Opción 1: Crea tu prueba con ayuda de IA Tici",
-        text: `<p>Con nuestra inteligencia artificial, crear una prueba técnica es tan fácil como hacer clic.</p> <p>Ya tenemos todo lo que necesitamos: la información del cargo, la cultura de tu empresa y el contenido del test de habilidades blandas.</p> <br/> <p> Nosotros conectamos los puntos por ti.</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: center;'> <li>Te armamos una prueba lista para usar, adaptada al perfil.</li> <li>Ajustada al estilo de tu empresa.</li> <li>Diseñada en minutos, sin que tengas que escribir nada.</li> </ul> <br> <p>Ideal para cargos junior, semi-senior o de alta rotación.</p>`,
+        text: `<p>Con nuestra inteligencia artificial, crear una prueba técnica es tan fácil como hacer clic.</p> <p>Ya tenemos todo lo que necesitamos: la información del cargo, la cultura de tu empresa y el contenido del test de habilidades blandas.</p> <br/> <p> Nosotros conectamos los puntos por ti.</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li>Te armamos una prueba lista para usar, adaptada al perfil.</li> <li>Ajustada al estilo de tu empresa.</li> <li>Diseñada en minutos, sin que tengas que escribir nada.</li> </ul> <br> <p>Ideal para cargos junior, semi-senior o de alta rotación.</p>`,
       },
       {
         title: "Opción 2: Sube tu propia prueba técnica",
-        text: "<p>¿Ya tienes una prueba técnica armada? Puedes usarla.</p> <p>Solo asegúrate de incluir estos elementos clave:</p> <br/> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: center;'> <li>Objetivo: qué quieres evaluar.</li> <li>Instrucciones claras para el candidato.</li> <li>Reto técnico: la tarea o desafío.</li> <li>Misión: qué debe lograr o resolver.</li> <li>Criterios de evaluación: cómo vas a calificar.</li> </ul> <br> <p>Esta opción es perfecta para cargos muy técnicos, estratégicos o de alto nivel, donde necesitas personalizar todo al detalle.</p>",
+        text: "<p>¿Ya tienes una prueba técnica armada? Puedes usarla.</p> <p>Solo asegúrate de incluir estos elementos clave:</p> <br/> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li>Objetivo: qué quieres evaluar.</li> <li>Instrucciones claras para el candidato.</li> <li>Reto técnico: la tarea o desafío.</li> <li>Misión: qué debe lograr o resolver.</li> <li>Criterios de evaluación: cómo vas a calificar.</li> </ul> <br> <p>Esta opción es perfecta para cargos muy técnicos, estratégicos o de alto nivel, donde necesitas personalizar todo al detalle.</p>",
       },
       {
         title: " ¿Listo para empezar?",
@@ -124,6 +124,37 @@ const onboardingContentByPhase: Record<
       "/assets/onboarding.svg",
     ],
   },
+  first_time_onboarding: {
+    slides: [
+      {
+        title: " ¡Bienvenido a bordo!",
+        text: "<p style='text-align: justify;'> Gracias por unirte. <strong>Aquí vas a encontrar todo lo que necesitas para crear procesos de selección más fáciles, rápidos y ajustados a lo que tu empresa realmente necesita.</strong> Y lo mejor: no estarás solo, te vamos a acompañar paso a paso.</p>",
+      },
+      {
+        title: "Tu nuevo aliado: la inteligencia artificial Tici",
+        text: "<p style='text-align: justify;'>Vamos a ayudarte a crear:</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li>Descripciones de vacantes atractivas.</li> <li>Pruebas técnicas alineadas al rol.</li> <li>Evaluaciones de fit cultural personalizadas.</li> </ul>. <p style='text-align: justify;'> Todo adaptado al estilo y las necesidades de tu empresa. <strong> Tú nos cuentas, la IA te ayuda a construir.</strong> </p>",
+      },
+      {
+        title: "Todo el proceso, en un solo lugar",
+        text: "<p style='text-align: justify;'>Tendrás un tablero visual donde podrás ver en qué etapa está cada candidato.</p> <p style='text-align: justify;'> Muchas tareas estarán automatizadas, así que podrás gestionar sin complicarte.</p>",
+      },
+      {
+        title: "¿Manejas varias empresas o ciudades?",
+        text: "<p style='text-align: justify;'>Desde aquí puedes crear diferentes empresas o sedes según tu operación.</p> <p style='text-align: justify;'>Esto te dará más control y orden para organizar todos tus procesos de selección</p>",
+      },
+      {
+        title: "Mantente al tanto de todo",
+        text: "<p style='text-align: justify;'>Tendrás un centro de notificaciones donde podrás ver todo lo que pasa:</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li>Cambios en procesos</li> <li>Acciones que requieren tu respuesta</li> <li>Menciones de otros miembros de tu equipo.</li> </ul>",
+      },
+    ],
+    images: [
+      "/assets/first_onboarding_1.png",
+      "/assets/first_onboarding_2.png",
+      "/assets/first_onboarding_3.png",
+      "/assets/first_onboarding_4.png",
+      "/assets/first_onboarding_5.png",
+    ],
+  },
 };
 
 export default function AnimatedModal({
@@ -137,7 +168,7 @@ export default function AnimatedModal({
   mode: "stepper" | "message";
   localUser?: User;
   dictionary: Dictionary;
-  type?: PositionConfigurationPhaseTypes;
+  type?: PositionConfigurationPhaseTypes | "first_time_onboarding";
 }) {
   const { createPositionPage: i18n } = dictionary;
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -225,10 +256,12 @@ export default function AnimatedModal({
         <Button
           ref={buttonRef}
           onClick={openModal}
-          className="max-w-[200px] bg-[#FCFCFC] text-[#007AFF] hover:bg-[#FCFCFC]"
+          className="bg-[#FCFCFC] text-[#007AFF] hover:bg-[#FCFCFC]"
           disabled={isAnimating}
         >
-          {i18n.seeHowItWorks}
+          {type === "first_time_onboarding"
+            ? i18n.startOnboarding
+            : i18n.seeHowItWorks}
         </Button>
       )}
 

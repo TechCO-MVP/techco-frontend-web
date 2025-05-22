@@ -26,9 +26,10 @@ type CreatePositionProps = {
 export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
   dictionary,
 }) => {
-  const showOnboarding = !localStorage.getItem(
-    CREATE_POSITION_ONBOARDING_HIDE_KEY,
-  );
+  const showOnboarding =
+    typeof window !== "undefined"
+      ? !localStorage.getItem(CREATE_POSITION_ONBOARDING_HIDE_KEY)
+      : false;
   const { rootBusiness } = useBusinesses();
   const queryClient = useQueryClient();
 

@@ -15,7 +15,7 @@ export function OnboardingStepper({
 }: {
   onFinish: () => void;
   slides: { title: string; text: string }[];
-  type?: PositionConfigurationPhaseTypes;
+  type?: PositionConfigurationPhaseTypes | "first_time_onboarding";
   images?: string[];
 }) {
   const [current, setCurrent] = useState(0);
@@ -98,7 +98,7 @@ export function OnboardingStepper({
               onClick={handleNext}
               aria-label="Siguiente"
             >
-              {isFirst ? "Empezar ahora" : "Siguiente"}
+              {isFirst ? "Comenzar recorrido" : "Siguiente"}
             </Button>
           ) : (
             <Button

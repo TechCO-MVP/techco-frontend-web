@@ -284,6 +284,7 @@
   },
   "createPositionPage": {
     "seeHowItWorks": "See how it works",
+    "startOnboarding": "Start onboarding",
     "howWeEvaluate": "How do we evaluate your candidates?",
     "copyDescriptionPageTitle": "Select the position you want to copy the description from",
     "copyDescriptionPageDescription": "We'll show you the description you used before so you can review if it's still useful. If it works for you, just select it and continue. It's that simple!",

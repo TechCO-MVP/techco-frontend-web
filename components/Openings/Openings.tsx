@@ -77,11 +77,19 @@ import { useDeletePositionConfiguration } from "@/hooks/use-delete-position-conf
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "../ui/scroll-area";
 import { Locale } from "@/i18n-config";
+import AnimatedModal from "../ChatBot/AnimatedModal";
+import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
+  const showOnboarding =
+    typeof window !== "undefined"
+      ? !localStorage.getItem(
+          `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-first_time_onboarding`,
+        )
+      : false;
   const { toast } = useToast();
   const params = useParams<{ lang: Locale; id: string }>();
   const { lang } = params;
@@ -577,13 +585,21 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </span>
           </div>
         </div>
-        <Link
-          href={`companies/${selectedCompany?._id}/position-configuration/create`}
-        >
-          <Button variant="talentGreen" className="flex items-center">
-            <Plus /> {i18n.createPosition}
-          </Button>
-        </Link>
+        <div className="flex flex-row gap-8">
+          <AnimatedModal
+            mode="stepper"
+            defaultOpen={showOnboarding}
+            dictionary={dictionary}
+            type="first_time_onboarding"
+          />
+          <Link
+            href={`companies/${selectedCompany?._id}/position-configuration/create`}
+          >
+            <Button variant="talentGreen" className="flex items-center">
+              <Plus /> {i18n.createPosition}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Tabs
