@@ -5,6 +5,7 @@ import { MessageHistoryResponse } from "@/types";
 type UseMessageHistoryParams = {
   threadId?: string;
   limit?: number;
+  refetchInterval?: number;
 };
 
 export function useMessageHistory({
@@ -38,6 +39,19 @@ export function useMessageHistory({
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     retry: 1,
+    refetchInterval: (query) => {
+      const cachedData = query.state.data;
+      console.log("cachedData", cachedData, threadId);
+      if (!cachedData) return false;
+      console.info(
+        "message history",
+        cachedData?.pages?.[0]?.body?.data?.data,
+        cachedData?.pages?.[0]?.body?.data?.data?.length > 0,
+      );
+      return cachedData?.pages?.[0]?.body?.data?.data?.length > 0
+        ? false
+        : 5000;
+    },
   });
 
   const messages =
