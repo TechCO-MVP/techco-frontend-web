@@ -84,12 +84,9 @@ type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
-  const showOnboarding =
-    typeof window !== "undefined"
-      ? !localStorage.getItem(
-          `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-first_time_onboarding`,
-        )
-      : false;
+  const showOnboarding = !localStorage.getItem(
+    `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-first_time_onboarding`,
+  );
   const { toast } = useToast();
   const params = useParams<{ lang: Locale; id: string }>();
   const { lang } = params;

@@ -19,6 +19,7 @@ export function OnboardingMessage({
 }) {
   const handleFinish = () => {
     localStorage.setItem(CREATE_POSITION_ONBOARDING_HIDE_KEY, "true");
+
     onFinish();
   };
   const { onboardingMessage: i18n } = dictionary;
@@ -29,7 +30,7 @@ export function OnboardingMessage({
     <div className="mx-auto flex h-[675px] w-[579px] flex-col items-center gap-[18px] border-b-[5px] border-b-talent-orange-500 bg-white shadow-lg">
       <div className="flex w-full flex-col gap-4">
         <Image
-          src="/assets/onboarding_2.png"
+          src="/assets/onboarding_1.png"
           className="h-[327px] w-[579px] object-cover"
           alt="Decorative vector"
           width={577}
