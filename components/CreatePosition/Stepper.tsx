@@ -18,9 +18,10 @@ type StepperProps = {
   steps: Step[];
   i18n: Dictionary["createPositionPage"];
   setSteps: Dispatch<SetStateAction<Step[]>>;
+  phase?: PositionConfigurationPhaseTypes;
 };
 
-export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
+export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
   const [currentStep] = useState(0);
   const router = useRouter();
   const params = useParams<{ lang: Locale; id: string; position_id: string }>();
@@ -72,7 +73,9 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
 
         return;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        console.log("technical test");
+        router.push(
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/technical-test`,
+        );
         return;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         console.log("ready to publish");
@@ -107,6 +110,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n }) => {
                     "left-[5px] top-[5px] flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#007AFF]",
                     isPending && "border-[#C6C6C8] bg-[#C6C6C8]",
                     isComplete && "bg-talent-green-500",
+                    phase === step.type && "border-4 border-[#FFC107]",
                   )}
                 >
                   {isComplete && <Check className="h-4 w-4 stroke-white" />}

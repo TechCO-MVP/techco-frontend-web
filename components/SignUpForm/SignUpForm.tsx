@@ -215,6 +215,7 @@ export function SignUpForm({
             getErrorMessage={getErrorMessage(dictionary)}
           />
           <Button
+            variant="talentGreen"
             data-testid="signup-submit-button"
             disabled={!isValid || isPending}
             type="submit"

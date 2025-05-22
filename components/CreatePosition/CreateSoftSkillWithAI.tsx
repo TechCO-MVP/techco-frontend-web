@@ -101,7 +101,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       options: payload.options,
     };
     if (payload.assesment && Object.keys(payload.assesment).length > 0)
-      setProgress(payload.assesment);
+      setProgress(payload.assesment as Assessment);
     if (payload.response_type === BotResponseTypes.FINAL_CONFIRMATION)
       setIsCompleted(true);
     setLiveMessages((prev) => [...prev, newUserMessage]);
@@ -263,7 +263,6 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
           phase.name === currentPhase?.name
             ? {
                 ...phase,
-                status: "IN_PROGRESS",
                 data: progress,
               }
             : phase,
@@ -297,7 +296,12 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
               <Heading level={2} className="text-2xl font-semibold">
                 {i18n.progessTitle}
               </Heading>
-              <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+              <Stepper
+                phase={PositionConfigurationPhaseTypes.SOFT_SKILLS}
+                steps={steps}
+                setSteps={setSteps}
+                i18n={i18n}
+              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>

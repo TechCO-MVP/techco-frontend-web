@@ -121,6 +121,12 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     return null;
   }, [currentPosition]);
 
+  console.log(
+    "%c[Debug] activePhase",
+    "background-color: teal; font-size: 20px; color: white",
+    activePhase,
+  );
+
   const redirectToCopy = () => {
     if (!activePhase) return;
     switch (activePhase?.type) {

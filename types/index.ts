@@ -183,6 +183,7 @@ export type HiringPositionData = {
   pipe_id: string;
   created_at: string;
   hiring_processes: HiringProcess[];
+  position_configuration_id?: string;
 };
 
 export type PositionFilterStatusResponse = {
@@ -306,7 +307,7 @@ export interface BotMessagePayload {
   response_type: BotResponseTypes;
   options?: string[];
   position?: DraftPositionData;
-  assesment?: Assessment;
+  assesment?: Assessment | TechnicalAssessment;
   phase_type: string;
   position_configuration_id: string;
   thread_id: string;
@@ -334,7 +335,7 @@ export type PositionPhase = {
   thread_id: string;
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: PositionConfigurationPhaseTypes;
-  data: DraftPositionData | Assessment;
+  data: DraftPositionData | Assessment | TechnicalAssessment;
 };
 
 export type PositionConfiguration = {
@@ -412,6 +413,7 @@ export type CompletePhaseInput = {
   position_configuration_id: string;
   data:
     | Assessment
+    | TechnicalAssessment
     | DraftPositionData
     | Record<
         string,
@@ -559,6 +561,7 @@ export type Assessment = {
 };
 
 export type AssessmentSoftSkill = {
+  description: string;
   name: string;
   dimensions: AssessmentSoftSkillDimension[];
 };
@@ -567,4 +570,21 @@ export type AssessmentSoftSkillDimension = {
   name: string;
   question: string;
   explanation: string;
+};
+
+/**
+ * {
+  "assesment": {
+    "business_case_title": "Desarrollo y Liderazgo en Prototipo de Dashboard Web",
+    "assesment_goal": "Evaluar la capacidad para diseñar, implementar y liderar el desarrollo de una solución frontend en un entorno colaborativo y dinámico, alineada a las mejores prácticas e integración con equipos multidisciplinarios.",
+    "challenge": "La empresa está lanzando una nueva plataforma SaaS para gestión de talento. Se requiere un prototipo funcional de un dashboard principal, que muestre información clave (KPIs, alertas, datos de usuarios), totalmente responsive, que consuma datos de una API y que pueda ser fácilmente ampliable. Los equipos de diseño y backend te facilitarán recursos y especificaciones, pero esperan de ti liderazgo técnico, criterio de diseño, buenas prácticas y claridad para comunicar tus decisiones.",
+    "your_mission": "1. Desarrolla un prototipo funcional del dashboard usando React.js (o Angular, si prefieres) y especifica brevemente cómo estructuraste el código (componentes, organización, estilos, etc.). 2. Explica las decisiones técnicas tomadas (librerías usadas, manejo de estado, estrategia de integración con APIs, control de versiones y testeo) y cómo evaluaste su impacto en performance y escalabilidad. 3. Describe cómo guiarías y mentorearías a un miembro junior del equipo en este proyecto. 4. Resume cómo asegurarías la colaboración efectiva entre producto, diseño y desarrollo backend en este contexto. Presenta tu entrega en un repositorio privado y acompáñalo de un README claro para entender tu solución."
+  }
+}
+ */
+export type TechnicalAssessment = {
+  business_case_title: string;
+  assesment_goal: string;
+  challenge: string;
+  your_mission: string;
 };

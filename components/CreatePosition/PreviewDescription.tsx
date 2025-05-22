@@ -10,7 +10,11 @@ import { Step, Stepper } from "./Stepper";
 import { Dictionary } from "@/types/i18n";
 import { Button } from "../ui/button";
 import { EditIcon } from "@/icons";
-import { DraftPositionData, PositionPhase } from "@/types";
+import {
+  DraftPositionData,
+  PositionConfigurationPhaseTypes,
+  PositionPhase,
+} from "@/types";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -127,6 +131,18 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
     }
   }, [positionConfiguration]);
 
+  const descriptionPhase = useMemo(() => {
+    return currentPosition?.phases.find(
+      (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
+    );
+  }, [currentPosition]);
+
+  console.log(
+    "%c[Debug] descriptionPhase",
+    "background-color: teal; font-size: 20px; color: white",
+    descriptionPhase,
+  );
+
   function isPositionDataComplete(data: typeof positionData): boolean {
     return (
       !!data &&
@@ -230,7 +246,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {i18n.exit}
       </Button>
       <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
-        <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+        <Stepper
+          phase={PositionConfigurationPhaseTypes.DESCRIPTION}
+          steps={steps}
+          setSteps={setSteps}
+          i18n={i18n}
+        />
       </div>
 
       <div className="flex items-center justify-between">
@@ -516,17 +537,25 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           showCancelButton={false}
           canSave={isCompleted}
           cancelLabel={i18n.cancelLabel}
-          saveLabel={`${i18n.continuedNextPhase} 2`}
+          saveLabel={
+            descriptionPhase?.status === "COMPLETED"
+              ? `Guardar Cambios`
+              : `${i18n.continuedNextPhase} 2`
+          }
           isSaving={isCompletePhasePending}
           onCancel={() => {
             checkUnsavedChanges();
           }}
-          onSave={() =>
-            completePhase({
-              position_configuration_id: position_id,
-              data: positionData,
-            })
-          }
+          onSave={() => {
+            if (descriptionPhase?.status === "COMPLETED") {
+              onSaveDraft();
+            } else {
+              completePhase({
+                position_configuration_id: position_id,
+                data: positionData,
+              });
+            }
+          }}
           saveButtonIcon={<ChevronRight className="h-4 w-4" />}
         />
       )}

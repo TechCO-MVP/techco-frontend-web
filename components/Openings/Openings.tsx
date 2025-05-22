@@ -45,7 +45,7 @@ import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import {
@@ -76,12 +76,15 @@ import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 import { useDeletePositionConfiguration } from "@/hooks/use-delete-position-configuration";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "../ui/scroll-area";
+import { Locale } from "@/i18n-config";
 
 type OpeningsProps = {
   dictionary: Dictionary;
 };
 export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const { toast } = useToast();
+  const params = useParams<{ lang: Locale; id: string }>();
+  const { lang } = params;
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const businessParam = searchParams.get("business_id");
@@ -348,6 +351,23 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       });
     } catch (error: unknown) {
       console.error("Error@onUpdateState", error);
+    }
+  };
+
+  const getTitle = (position: PositionConfiguration): string => {
+    switch (position.current_phase) {
+      case PositionConfigurationPhaseTypes.DESCRIPTION:
+        return "Descripción";
+      case PositionConfigurationPhaseTypes.SOFT_SKILLS:
+        return "Assessment Fit cultural";
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        return "Assessment Técnico";
+      case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
+        return "¡Listo!";
+      case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:
+        return "Entrevista final";
+      default:
+        return position.current_phase;
     }
   };
 
@@ -800,7 +820,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                           <DropdownMenuContent>
                             <DropdownMenuItem
                               className="cursor-pointer"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}`,
+                                );
+                              }}
                             >
                               {i18n.editLabel}
                             </DropdownMenuItem>
@@ -1013,7 +1038,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                         )}
                         )
                       </TableCell>
-                      <TableCell>{position.current_phase}</TableCell>
+                      <TableCell>{getTitle(position)}</TableCell>
                       <TableCell>
                         {formatDate(new Date(position.updated_at).toString())}
                       </TableCell>

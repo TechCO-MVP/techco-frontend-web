@@ -268,7 +268,6 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
           phase.name === currentPhase?.name
             ? {
                 ...phase,
-                status: "IN_PROGRESS",
                 data: positionProgress,
               }
             : phase,
@@ -302,7 +301,12 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
               <Heading level={2} className="text-2xl font-semibold">
                 {i18n.progessTitle}
               </Heading>
-              <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+              <Stepper
+                phase={PositionConfigurationPhaseTypes.DESCRIPTION}
+                steps={steps}
+                setSteps={setSteps}
+                i18n={i18n}
+              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>

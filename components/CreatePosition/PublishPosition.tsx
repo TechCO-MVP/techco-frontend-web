@@ -12,6 +12,7 @@ import {
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
   PositionPhase,
+  TechnicalAssessment,
 } from "@/types";
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,6 +27,8 @@ import { PositionSheet } from "./PositionSheet";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useCreatePosition } from "@/hooks/use-create-position";
 import { useToast } from "@/hooks/use-toast";
+import { TechnicalSkillsSheet } from "./TechnicalSkillsSheet";
+import { useNextPhase } from "@/hooks/use-next-phase";
 
 type PublishPositionProps = {
   dictionary: Dictionary;
@@ -72,7 +75,11 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
       console.log("[Error]", error);
     },
   });
-  const { data: positionConfiguration, isLoading } = usePositionConfigurations({
+  const {
+    data: positionConfiguration,
+    isLoading,
+    refetch,
+  } = usePositionConfigurations({
     all: true,
     businessId: businessId,
   });
@@ -83,6 +90,25 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
     );
   }, [positionConfiguration, position_id]);
 
+  const { mutate: nextPhase, isPending: isNextPhasePending } = useNextPhase({
+    onSuccess(data) {
+      const { body } = data;
+      const { data: positionData } = body;
+      console.log(
+        "%c[Debug] nextPhase",
+        "background-color: teal; font-size: 20px; color: white",
+        positionData,
+      );
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
+      });
+      refetch();
+    },
+    onError(error) {
+      console.log("[Error]", error);
+    },
+  });
+
   useEffect(() => {
     if (currentPosition) {
       setSteps(
@@ -92,6 +118,19 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
           type: phase.type,
         })),
       );
+    }
+  }, [currentPosition]);
+
+  useEffect(() => {
+    if (!currentPosition || isNextPhasePending) return;
+    if (
+      currentPosition.current_phase !==
+      PositionConfigurationPhaseTypes.READY_TO_PUBLISH
+    ) {
+      nextPhase({
+        position_configuration_id: position_id,
+        configuration_type: PositionConfigurationTypes.AI_TEMPLATE,
+      });
     }
   }, [currentPosition]);
 
@@ -136,6 +175,20 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             customTrigger={
               <Button variant="outline" className="w-[242px] justify-between">
                 Assessment fit cultural
+                <SquareArrowUpRight className="h-4 w-4" />
+              </Button>
+            }
+          />
+        );
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        return (
+          <TechnicalSkillsSheet
+            key={phase.type}
+            assessment={phase.data as TechnicalAssessment}
+            dictionary={dictionary}
+            customTrigger={
+              <Button variant="outline" className="w-[242px] justify-between">
+                Assessment Técnico
                 <SquareArrowUpRight className="h-4 w-4" />
               </Button>
             }
@@ -223,7 +276,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
               canSave={true}
               cancelLabel={i18n.cancelLabel}
               saveLabel={`${i18n.publishPositionBtnLabel}`}
-              isSaving={isPending}
+              isSaving={isPending || isNextPhasePending}
               onCancel={() => {}}
               onSave={createPosition}
               saveButtonIcon={<ChevronRight className="h-4 w-4" />}
