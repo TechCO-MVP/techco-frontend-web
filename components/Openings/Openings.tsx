@@ -452,7 +452,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
         );
         break;
-      default:
         router.push(
           `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
         );
@@ -460,6 +459,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         router.push(
           `companies/${selectedCompany?._id}/position-configuration/${position._id}/publish`,
+        );
+        break;
+      default:
+        router.push(
+          `companies/${selectedCompany?._id}/position-configuration/${position._id}`,
         );
         break;
     }

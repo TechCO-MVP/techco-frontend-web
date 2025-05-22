@@ -213,7 +213,12 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             {i18n.goBack}
           </Button>
         </Link>
-        <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+        <Stepper
+          phase={PositionConfigurationPhaseTypes.READY_TO_PUBLISH}
+          steps={steps}
+          setSteps={setSteps}
+          i18n={i18n}
+        />
 
         <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
       </div>
