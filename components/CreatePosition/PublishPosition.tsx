@@ -129,7 +129,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
     ) {
       nextPhase({
         position_configuration_id: position_id,
-        configuration_type: PositionConfigurationTypes.AI_TEMPLATE,
+        configuration_type: PositionConfigurationTypes.NONE_REQUIRED,
       });
     }
   }, [currentPosition]);

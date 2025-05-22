@@ -363,6 +363,7 @@ export enum PositionConfigurationTypes {
   AI_TEMPLATE = "AI_TEMPLATE",
   CUSTOM = "CUSTOM",
   OTHER_POSITION_AS_TEMPLATE = "OTHER_POSITION_AS_TEMPLATE",
+  NONE_REQUIRED = "NONE_REQUIRED",
 }
 
 export enum PositionConfigurationFlowTypes {
