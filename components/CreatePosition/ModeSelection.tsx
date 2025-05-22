@@ -165,11 +165,11 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
   const getTitle = () => {
     switch (activePhase?.type) {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
-        return i18n.descriptionPhasePageTitle;
+        return `Paso 1: ${i18n.descriptionPhasePageTitle}`;
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        return i18n.softSkillsPhasePageTitle;
+        return `Paso 2: ${i18n.softSkillsPhasePageTitle}`;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        return i18n.technicalSkillsPhasePageTitle;
+        return `Paso 3: ${i18n.technicalSkillsPhasePageTitle}`;
       case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:
         return i18n.descriptionPhasePageTitle;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
