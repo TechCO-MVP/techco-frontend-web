@@ -55,7 +55,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
       const { body } = data;
       const { data: positionData } = body;
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
       });
       toast({
         title: "Vacante publicada",
@@ -100,7 +100,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
         positionData,
       );
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
       });
       refetch();
     },

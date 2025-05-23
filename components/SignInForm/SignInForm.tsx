@@ -100,6 +100,7 @@ export const SignInForm: FC<Readonly<SignInFormProps>> = ({ dictionary }) => {
             disabled={!isValid || isPending}
             type="submit"
             className="mx-auto w-full max-w-[22rem]"
+            variant="talentGreen"
           >
             {isPending ? (
               <>

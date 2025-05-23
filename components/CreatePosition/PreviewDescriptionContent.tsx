@@ -94,8 +94,8 @@ export const PreviewDescriptionContent: FC<Props> = ({
           <div className="space-y-4 text-gray-600">
             <p>
               📌 La compensación para este rol está dentro del rango de{" "}
-              {formatSalaryRange()} anuales, según experiencia y habilidades del
-              candidato.
+              {formatSalaryRange()} mensuales, según experiencia y habilidades
+              del candidato.
             </p>
           </div>
         )}
@@ -104,7 +104,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
           <div className="space-y-4 text-gray-600">
             <p>
               📌 La compensación para este rol es de {formatFixedSalary()}{" "}
-              anuales, según experiencia y habilidades del candidato.
+              mensuales, según experiencia y habilidades del candidato.
             </p>
           </div>
         )}

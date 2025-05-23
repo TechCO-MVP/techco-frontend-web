@@ -132,9 +132,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     useDeletePositionConfiguration({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(
-            selectedCompany?._id || rootBusiness?._id,
-          ),
+          queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
         });
         toast({
           title: "Vacante eliminada",
@@ -210,6 +208,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   useEffect(() => {
     console.log("/position-configuration/list response", data);
   }, [data, selectedCompany]);
+
+  useEffect(() => {
+    if (selectedCompany) {
+      const params = new URLSearchParams(window.location.search);
+      params.set("business_id", selectedCompany._id);
+      router.push(`?${params.toString()}`);
+    }
+  }, [selectedCompany]);
 
   const filteredPositions = useMemo(() => {
     const getDaysAgo = (days: number) => {

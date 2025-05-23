@@ -16,7 +16,7 @@ export function usePositionConfigurations({
   options,
 }: Params) {
   return useQuery<GetPositionConfigurationListResponse>({
-    queryKey: QUERIES.POSITION_CONFIG_LIST(businessId),
+    queryKey: QUERIES.POSITION_CONFIG_LIST(businessId, id),
     queryFn: async () => {
       const params = new URLSearchParams({
         business_id: businessId,

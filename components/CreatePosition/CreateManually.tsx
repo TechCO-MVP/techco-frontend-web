@@ -183,7 +183,7 @@ export const CreateManually: FC<Readonly<CreateManuallyProps>> = ({
               </div>
               <p>
                 📌 La compensación para este rol está dentro del rango de{" "}
-                {formatSalaryRange()} anuales, según experiencia y habilidades
+                {formatSalaryRange()} mensuales, según experiencia y habilidades
                 del candidato.
               </p>
             </div>
@@ -200,7 +200,7 @@ export const CreateManually: FC<Readonly<CreateManuallyProps>> = ({
               </div>
               <p>
                 📌 La compensación para este rol es de {formatFixedSalary()}{" "}
-                anuales, según experiencia y habilidades del candidato.
+                mensuales, según experiencia y habilidades del candidato.
               </p>
             </div>
           )}

@@ -80,7 +80,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       });
       initialData.current = null;
       queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
       });
       setMode("preview");
     },
@@ -171,7 +171,8 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       initialData.current = positionData;
     }
     const allDataCompleted = isPositionDataComplete(positionData);
-    setIsCompleted(Boolean(allDataCompleted));
+
+    setIsCompleted(allDataCompleted);
   }, [positionData]);
 
   useEffect(() => {
@@ -568,10 +569,21 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDialogOpen(false);
+              }}
+            >
               {i18n.cancelEditDialogCancel}
             </Button>
-            <Button onClick={onSaveDraft}>
+            <Button
+              onClick={() => {
+                setDialogOpen(false);
+                setMode("preview");
+                setPositionData(initialData.current as DraftPositionData);
+              }}
+            >
               {i18n.cancelEditDialogConfirm}
             </Button>
           </DialogFooter>

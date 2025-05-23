@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import { FC, useTransition } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, Loader2, LogOut } from "lucide-react";
 import * as actions from "@/actions";
 import { Locale } from "@/i18n-config";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -18,6 +18,16 @@ interface Props {
 
 export const UserMenu: FC<Readonly<Props>> = ({ lang }) => {
   const { currentUser } = useCurrentUser();
+  const [isPending, startTransition] = useTransition();
+
+  const handleSignOut = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    startTransition(() => {
+      const formData = new FormData();
+      formData.append("lang", lang);
+      actions.signOut(formData);
+    });
+  };
 
   return (
     <div className="flex items-center">
@@ -55,14 +65,19 @@ export const UserMenu: FC<Readonly<Props>> = ({ lang }) => {
               </div>
             </div>
             <div className="grid gap-2">
-              <form action={actions.signOut}>
+              <form onSubmit={handleSignOut}>
                 <input type="hidden" name="lang" value={lang} />
 
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-red-600 hover:bg-red-100 hover:text-red-600"
+                  disabled={isPending}
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  {isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="mr-2 h-4 w-4" />
+                  )}
                   Log out
                 </Button>
               </form>

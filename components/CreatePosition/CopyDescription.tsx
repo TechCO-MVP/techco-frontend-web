@@ -3,7 +3,7 @@ import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
@@ -42,6 +42,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
   const queryClient = useQueryClient();
   const { lang, position_id, id } = params;
   const { createPositionPage: i18n } = dictionary;
+  const [selectedPosition, setSelectedPosition] = useState<string>();
   const { data: positionConfiguration } = usePositionConfigurations({
     all: true,
     businessId: id,
@@ -52,7 +53,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+          queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
@@ -139,7 +140,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                       ?.full_name
                   }
                 </TableCell>
-                <TableCell className="flex items-center justify-between gap-4">
+                <TableCell>
                   <PositionSheet
                     customTrigger={
                       <Button variant="link" className="underline">
@@ -150,19 +151,24 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                     business={rootBusiness ? rootBusiness : undefined}
                     dictionary={dictionary}
                   />
+                </TableCell>
+                <TableCell className="flex items-center justify-center">
                   <Button
                     onClick={() => {
+                      setSelectedPosition(position._id);
                       completePhase({
                         position_configuration_id: position_id,
                         data: position.phases[0]?.data,
                       });
                     }}
                     variant="link"
-                    className="underline"
+                    className="flex items-center justify-center gap-2 underline"
                   >
-                    Crear una copia
-                    {isCompletePhasePending && (
+                    {isCompletePhasePending &&
+                    selectedPosition === position._id ? (
                       <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Crear una copia"
                     )}
                   </Button>
                 </TableCell>

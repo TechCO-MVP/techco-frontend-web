@@ -39,7 +39,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+          queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
@@ -71,7 +71,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
     if (currentPosition) {
       setCurrentPosition(currentPosition);
       setSteps(
-        currentPosition.phases.map((phase) => ({
+        currentPosition.phases?.map((phase) => ({
           title: phase.name,
           status: phase.status,
           type: phase.type,
@@ -144,7 +144,7 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
         </p>
       </div>
       <section className="w-full space-y-3">
-        {positionData.soft_skills.map((skill) => (
+        {positionData.soft_skills?.map((skill) => (
           <div key={skill.name}>
             <div className="flex items-center gap-2 font-semibold">
               <h2>{skill.name}</h2>

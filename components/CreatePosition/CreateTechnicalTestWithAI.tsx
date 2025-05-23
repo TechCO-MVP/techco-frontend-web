@@ -63,7 +63,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
       onSuccess: (data) => {
         console.info("Complete Phase success", data);
         queryClient.invalidateQueries({
-          queryKey: QUERIES.POSITION_CONFIG_LIST(id),
+          queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
         });
         router.push(
           `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
