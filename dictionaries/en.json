@@ -277,6 +277,7 @@
     "salaryRangeLabel": "Salary Range",
     "salaryDescriptionStart": "Compensation for this role is within the range of",
     "salaryDescriptionEnd": "monthly, based on the candidate's experience and skills.",
+    "fixedsalaryDescriptionStart": "La compensación para este rol es de",
     "whatWeOfferLabel": "What we offer",
     "skillsLabel": "Key skills",
     "sendApplicationLabel": "Send my application",

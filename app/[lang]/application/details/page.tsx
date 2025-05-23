@@ -55,6 +55,15 @@ export default async function Page({
     }).format(Number(range.max));
     return `${lowRange} - ${highRange} ${currency}`;
   };
+
+  const formatFixedSalary = () => {
+    const salary = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: positionData.position_salary_range?.currency || "USD",
+    }).format(Number(positionData.position_salary_range?.salary));
+
+    return `${salary} `;
+  };
   return (
     <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">
       <div
@@ -123,7 +132,7 @@ export default async function Page({
               </ul>
             </section>
 
-            {positionData.position_salary_range && (
+            {positionData.position_salary_range?.salary_range && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 font-semibold">
                   <h2> 💰 {i18n.salaryRangeLabel}</h2>
@@ -135,6 +144,15 @@ export default async function Page({
                   </p>
                 </div>
               </section>
+            )}
+
+            {positionData.position_salary_range?.salary && (
+              <div className="space-y-4 text-gray-600">
+                <p>
+                  📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
+                  {i18n.salaryDescriptionEnd}.
+                </p>
+              </div>
             )}
             <section className="space-y-3 pb-16">
               <div className="flex items-center gap-2 font-semibold">
