@@ -217,7 +217,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   };
 
   const onSaveDraft = () => {
-    if (!localUser || !currentPhase || !currentPhase.thread_id) return;
+    if (!localUser || !currentPhase) return;
     if (!currentPosition) return;
     saveDraft({
       ...currentPosition,
@@ -543,7 +543,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               ? `Guardar Cambios`
               : `${i18n.continuedNextPhase} 2`
           }
-          isSaving={isCompletePhasePending}
+          isSaving={isCompletePhasePending || isPending}
           onCancel={() => {
             checkUnsavedChanges();
           }}

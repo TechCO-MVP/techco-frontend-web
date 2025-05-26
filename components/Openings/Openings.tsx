@@ -55,6 +55,8 @@ import {
   HiringPositionData,
   PositionConfiguration,
   PositionConfigurationPhaseTypes,
+  PositionConfigurationTypes,
+  TechnicalAssessment,
   UpdatePositionStatusData,
 } from "@/types";
 import { Notifications } from "@/components/Notifications/Notifications";
@@ -368,13 +370,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   };
 
   const getTitle = (position: PositionConfiguration): string => {
+    const totalPhases = position.phases.length;
     switch (position.current_phase) {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
-        return "Descripción";
+        return `Descripción (1 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        return "Assessment Fit cultural";
+        return `Assessment Fit cultural (2 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        return "Assessment Técnico";
+        return `Assessment Técnico (3 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         return "¡Listo!";
       case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:
@@ -411,12 +414,26 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   };
 
   const redirectToPosition = (position: PositionConfiguration) => {
-    switch (position.current_phase) {
+    const phaseToRedirect = position.phases.find(
+      (phase) => phase.status === "IN_PROGRESS" || phase.status === "DRAFT",
+    );
+    console.log(
+      "%c[Debug] phaseToRedirect",
+      "background-color: teal; font-size: 20px; color: white",
+      phaseToRedirect,
+    );
+    switch (phaseToRedirect?.type) {
       case PositionConfigurationPhaseTypes.DESCRIPTION: {
         const phase = position.phases.find(
           (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
         );
         if (!phase) return;
+        if (phase.status === "DRAFT") {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}`,
+          );
+          return;
+        }
         const isCompleted = isPositionDescriptionComplete(
           phase.data as DraftPositionData,
         );
@@ -424,9 +441,18 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           router.push(
             `companies/${selectedCompany?._id}/position-configuration/${position._id}/description/preview`,
           );
-        } else {
+        } else if (
+          phase.configuration_type === PositionConfigurationTypes.AI_TEMPLATE
+        ) {
           router.push(
             `companies/${selectedCompany?._id}/position-configuration/${position._id}/description`,
+          );
+        } else if (
+          phase.configuration_type ===
+          PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE
+        ) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/description/copy`,
           );
         }
 
@@ -437,6 +463,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           (phase) => phase.type === PositionConfigurationPhaseTypes.SOFT_SKILLS,
         );
         if (!phase) return;
+        if (phase.status === "DRAFT") {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}`,
+          );
+          return;
+        }
         const isCompleted =
           phase.status === "COMPLETED" ||
           (phase.data as Assessment)?.soft_skills?.length > 0;
@@ -445,17 +477,54 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           router.push(
             `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills/preview`,
           );
-        } else {
+        } else if (
+          phase.configuration_type === PositionConfigurationTypes.AI_TEMPLATE
+        ) {
           router.push(
             `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills`,
+          );
+        } else if (
+          phase.configuration_type ===
+          PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE
+        ) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/soft-skills/copy`,
           );
         }
         break;
       }
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        router.push(
-          `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
+        const phase = position.phases.find(
+          (phase) =>
+            phase.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
         );
+        if (!phase) return;
+        if (phase.status === "DRAFT") {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}`,
+          );
+          return;
+        }
+        const isCompleted =
+          phase.status === "COMPLETED" ||
+          (phase.data as TechnicalAssessment)?.your_mission;
+        if (isCompleted) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
+          );
+        } else if (
+          phase.configuration_type ===
+          PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE
+        ) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test/copy`,
+          );
+        } else {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/technical-test`,
+          );
+        }
+
         break;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         router.push(

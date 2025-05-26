@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
+import { Input } from "../ui/input";
 
 type CopyDescriptionProps = {
   dictionary: Dictionary;
@@ -43,6 +44,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
   const { lang, position_id, id } = params;
   const { createPositionPage: i18n } = dictionary;
   const [selectedPosition, setSelectedPosition] = useState<string>();
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const { data: positionConfiguration } = usePositionConfigurations({
     all: true,
     businessId: id,
@@ -90,10 +92,21 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
     );
   }, [positionConfiguration]);
 
+  const filteredDescriptions = useMemo(() => {
+    if (!searchQuery.trim()) return completedDescriptions;
+    return completedDescriptions?.filter((position) => {
+      const role = (position?.phases[0]?.data as DraftPositionData)?.role || "";
+      return role.toLowerCase().includes(searchQuery.trim().toLowerCase());
+    });
+  }, [completedDescriptions, searchQuery]);
+
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
-        <Link href={`/${lang}/dashboard/positions`} replace>
+        <Link
+          href={`/${lang}/dashboard/positions?tab=drafts&position_id=${position_id}&business_id=${id}`}
+          replace
+        >
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
             {i18n.goBack}
@@ -108,6 +121,16 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
         <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
       </div>
       <div className="flex flex-col gap-4">
+        <div className="mb-4 flex items-center gap-2 pt-10">
+          <Input
+            type="text"
+            placeholder="Buscar  vacante..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-0"
+            aria-label="Buscar por nombre de vacante"
+          />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -128,7 +151,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {completedDescriptions?.map((position) => (
+            {filteredDescriptions?.map((position) => (
               <TableRow key={position._id} className={cn("cursor-pointer")}>
                 <TableCell
                   title={(position?.phases[0]?.data as DraftPositionData)?.role}

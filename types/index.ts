@@ -336,6 +336,7 @@ export type PositionPhase = {
   status: "COMPLETED" | "IN_PROGRESS" | "DRAFT";
   type: PositionConfigurationPhaseTypes;
   data: DraftPositionData | Assessment | TechnicalAssessment;
+  configuration_type: PositionConfigurationTypes;
 };
 
 export type PositionConfiguration = {

@@ -31,6 +31,7 @@ import {
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
 
 import { TechnicalSkillsSheet } from "./TechnicalSkillsSheet";
+import { Input } from "../ui/input";
 
 type CopyTechnicalSkillsProps = {
   dictionary: Dictionary;
@@ -49,6 +50,7 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
   const { lang, position_id, id } = params;
   const { createPositionPage: i18n } = dictionary;
   const [selectedPosition, setSelectedPosition] = useState<string>();
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const { data: positionConfiguration } = usePositionConfigurations({
     all: true,
     businessId: id,
@@ -98,6 +100,14 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
     );
   }, [positionConfiguration]);
 
+  const filteredTechnicalSkills = useMemo(() => {
+    if (!searchQuery.trim()) return completedTechnicalSkills;
+    return completedTechnicalSkills?.filter((position) => {
+      const role = (position?.phases[0]?.data as DraftPositionData)?.role || "";
+      return role.toLowerCase().includes(searchQuery.trim().toLowerCase());
+    });
+  }, [completedTechnicalSkills, searchQuery]);
+
   console.log(
     "%c[Debug] completedSoftSkills",
     "background-color: teal; font-size: 20px; color: white",
@@ -106,21 +116,34 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
-        <Link href={`/${lang}/dashboard/positions`} replace>
+        <Link
+          href={`/${lang}/dashboard/positions?tab=drafts&position_id=${position_id}&business_id=${id}`}
+          replace
+        >
           <Button variant="ghost" className="-mx-8 text-sm">
             <ChevronLeft className="h-4 w-4" />
             {i18n.goBack}
           </Button>
         </Link>
         <Heading className="text-2xl" level={1}>
-          {i18n.copyDescriptionPageTitle}
+          {i18n.copyTechnicalSkillsPageTitle}
         </Heading>
         <Text className="max-w-[49rem] text-sm text-muted-foreground" type="p">
-          {i18n.copyDescriptionPageDescription}
+          {i18n.copyTechnicalSkillsPageDescription}
         </Text>
         <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
       </div>
       <div className="flex flex-col gap-4">
+        <div className="mb-4 flex items-center gap-2 pt-10">
+          <Input
+            type="text"
+            placeholder="Buscar  vacante..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-0"
+            aria-label="Buscar por nombre de vacante"
+          />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -141,7 +164,7 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {completedTechnicalSkills?.map((position) => (
+            {filteredTechnicalSkills?.map((position) => (
               <TableRow key={position._id} className={cn("cursor-pointer")}>
                 <TableCell
                   title={(position?.phases[0]?.data as DraftPositionData)?.role}
