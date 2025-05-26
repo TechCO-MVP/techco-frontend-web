@@ -81,7 +81,9 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
         }),
       );
       hideNotification();
-      router.push(`/${lang}/dashboard/positions/${position._id}`);
+      router.push(
+        `/${lang}/dashboard/positions/${position._id}?business_id=${message.business_id}`,
+      );
     },
     [dispatch, hideNotification, lang, queryClient, router],
   );

@@ -115,7 +115,9 @@ export function NotificationItem({
     );
 
     setOpen(false);
-    router.push(`/${lang}/dashboard/positions/${position?._id}`);
+    router.push(
+      `/${lang}/dashboard/positions/${position?._id}?business_id=${notification.business_id}`,
+    );
   };
 
   const handleVisible = () => {
