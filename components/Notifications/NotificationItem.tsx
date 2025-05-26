@@ -89,9 +89,9 @@ export function NotificationItem({
   const router = useRouter();
   const params = useParams<{ lang: Locale }>();
   const { lang } = params;
-  const onNotificationClick = () => {
-    const position = findPosition(positions, notification);
+  const position = findPosition(positions, notification);
 
+  const onNotificationClick = () => {
     if (!position) {
       console.warn("[Notifications] Position not found", {
         notification,
@@ -141,7 +141,7 @@ export function NotificationItem({
         <div className="flex gap-2">
           <div className="flex-1">
             <div className="text-base font-bold">
-              {i18n.position}:{notification.position_name}
+              {i18n.position}:{position?.role || notification.position_name}
             </div>
             {notification.profile_name && (
               <div className="text-sm">

@@ -58,7 +58,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
   };
 
   const handleRedirect = (step: Step) => {
-    if (step.status !== "COMPLETED") return;
+    if (step.status === "DRAFT") return;
 
     switch (step.type) {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
@@ -78,7 +78,9 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
         );
         return;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
-        console.log("ready to publish");
+        router.push(
+          `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/publish`,
+        );
         return;
     }
   };
@@ -97,7 +99,7 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
             key={index}
             className={cn(
               "relative flex w-full flex-col items-center justify-center gap-1",
-              isComplete && "cursor-pointer",
+              !isPending && "cursor-pointer",
             )}
           >
             <div className="flex items-center justify-center gap-1">

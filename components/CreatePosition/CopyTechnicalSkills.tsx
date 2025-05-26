@@ -8,9 +8,13 @@ import { Button } from "../ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { PositionSheet } from "./PositionSheet";
+
 import { usePositionConfigurations } from "@/hooks/use-position-configurations";
-import { DraftPositionData, PositionConfigurationPhaseTypes } from "@/types";
+import {
+  DraftPositionData,
+  PositionConfigurationPhaseTypes,
+  TechnicalAssessment,
+} from "@/types";
 import { useUsers } from "@/hooks/use-users";
 import { useBusinesses } from "@/hooks/use-businesses";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,11 +30,13 @@ import {
 } from "../ui/table";
 import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
 
-type CopyDescriptionProps = {
+import { TechnicalSkillsSheet } from "./TechnicalSkillsSheet";
+
+type CopyTechnicalSkillsProps = {
   dictionary: Dictionary;
 };
 
-export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
+export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
   dictionary,
 }) => {
   const params = useParams<{
@@ -56,7 +62,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
         queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
       });
       router.push(
-        `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/description/preview`,
+        `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/technical-test`,
       );
     },
     onError: (error) => {
@@ -82,14 +88,21 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
     currentPosition,
   );
 
-  const completedDescriptions = useMemo(() => {
-    return positionConfiguration?.body?.data?.filter(
-      (position) =>
-        position.current_phase &&
-        position.current_phase !== PositionConfigurationPhaseTypes.DESCRIPTION,
+  const completedTechnicalSkills = useMemo(() => {
+    return positionConfiguration?.body?.data?.filter((position) =>
+      position.phases?.some(
+        (phase) =>
+          phase.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST &&
+          phase.status === "COMPLETED",
+      ),
     );
   }, [positionConfiguration]);
 
+  console.log(
+    "%c[Debug] completedSoftSkills",
+    "background-color: teal; font-size: 20px; color: white",
+    completedTechnicalSkills,
+  );
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
@@ -128,7 +141,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {completedDescriptions?.map((position) => (
+            {completedTechnicalSkills?.map((position) => (
               <TableRow key={position._id} className={cn("cursor-pointer")}>
                 <TableCell
                   title={(position?.phases[0]?.data as DraftPositionData)?.role}
@@ -149,15 +162,24 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                   }
                 </TableCell>
                 <TableCell>
-                  <PositionSheet
+                  <TechnicalSkillsSheet
+                    role={
+                      (currentPosition?.phases[0]?.data as DraftPositionData)
+                        ?.role
+                    }
                     customTrigger={
                       <Button variant="link" className="underline">
                         Pre visualizar
                       </Button>
                     }
-                    positionData={position.phases[0]?.data as DraftPositionData}
-                    business={rootBusiness ? rootBusiness : undefined}
                     dictionary={dictionary}
+                    assessment={
+                      position.phases.find(
+                        (pos) =>
+                          pos.type ===
+                          PositionConfigurationPhaseTypes.TECHNICAL_TEST,
+                      )?.data as TechnicalAssessment
+                    }
                   />
                 </TableCell>
                 <TableCell className="flex items-center justify-center">
@@ -170,7 +192,7 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                         phases:
                           currentPosition?.phases.map((phase) =>
                             phase.type ===
-                            PositionConfigurationPhaseTypes.DESCRIPTION
+                            PositionConfigurationPhaseTypes.TECHNICAL_TEST
                               ? {
                                   ...phase,
                                   status: "IN_PROGRESS",
@@ -178,8 +200,8 @@ export const CopyDescription: FC<Readonly<CopyDescriptionProps>> = ({
                                     (position.phases.find(
                                       (pos) =>
                                         pos.type ===
-                                        PositionConfigurationPhaseTypes.DESCRIPTION,
-                                    )?.data as DraftPositionData) || [],
+                                        PositionConfigurationPhaseTypes.TECHNICAL_TEST,
+                                    )?.data as TechnicalAssessment) || [],
                                 }
                               : phase,
                           ) ?? [],

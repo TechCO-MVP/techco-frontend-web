@@ -28,6 +28,24 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
   const { lang } = params;
   const baseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
+  function findPosition(
+    positions: HiringPositionData[],
+    notification: NotificationPayload["message"],
+  ): HiringPositionData | undefined {
+    if (notification.position_id) {
+      const byPositionId = positions.find(
+        (position) => position._id === notification.position_id,
+      );
+      if (byPositionId) return byPositionId;
+    }
+    if (notification.pipe_id) {
+      return positions.find(
+        (position) => position.pipe_id === notification.pipe_id,
+      );
+    }
+    return undefined;
+  }
+
   const onNotificationClick = useCallback(
     (message: NotificationPayload["message"]) => {
       const cachedQueries = queryClient.getQueriesData<HiringPositionData[]>({
@@ -35,11 +53,21 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
         exact: false,
       });
 
-      const allPositions = cachedQueries.flatMap(([, data]) => data ?? []);
-      const position = allPositions.find(
-        (position) => position.pipe_id === message.pipe_id,
+      console.log(
+        "%c[Debug] message",
+        "background-color: teal; font-size: 20px; color: white",
+        message,
       );
-      if (!position) return;
+      const allPositions = cachedQueries.flatMap(([, data]) => data ?? []);
+      const position = findPosition(allPositions, message);
+      if (!position) {
+        console.warn("[Notifications] Position not found", {
+          message,
+          position,
+          allPositions,
+        });
+        return;
+      }
       dispatch(
         setNotificationsState({
           showCandidateDetails: {

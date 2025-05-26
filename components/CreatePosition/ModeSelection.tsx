@@ -109,7 +109,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
 
   const activePhase = useMemo(() => {
     const phase = currentPosition?.phases?.find(
-      (phase) => phase.status === "DRAFT",
+      (phase) => phase.status === "DRAFT" || phase.status === "IN_PROGRESS",
     );
     const descriptionPhase = currentPosition?.phases?.find(
       (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
@@ -121,12 +121,6 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     return null;
   }, [currentPosition]);
 
-  console.log(
-    "%c[Debug] activePhase",
-    "background-color: teal; font-size: 20px; color: white",
-    activePhase,
-  );
-
   const redirectToCopy = () => {
     if (!activePhase) return;
     switch (activePhase?.type) {
@@ -136,14 +130,27 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
         );
         break;
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-      default:
         router.push(
           `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/soft-skills/copy`,
         );
         break;
+      case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
+        router.push(
+          `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/technical-test/copy`,
+        );
+        break;
+      default:
+        router.push(
+          `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/description/copy`,
+        );
     }
   };
 
+  console.log(
+    "%c[Debug] activePhase",
+    "background-color: teal; font-size: 20px; color: white",
+    activePhase,
+  );
   useEffect(() => {
     if (
       activePhase &&
@@ -263,7 +270,11 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     }
   };
 
-  if (isLoading) return <ModeSelectionSkeleton />;
+  if (
+    isLoading ||
+    activePhase?.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
+  )
+    return <ModeSelectionSkeleton />;
   return (
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
@@ -287,16 +298,14 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
 
       <div className="flex justify-end gap-4 pt-6">
         {activePhase?.type !==
-          PositionConfigurationPhaseTypes.READY_TO_PUBLISH &&
-          activePhase?.type !==
-            PositionConfigurationPhaseTypes.FINAL_INTERVIEW && (
-            <AnimatedModal
-              dictionary={dictionary}
-              mode="stepper"
-              defaultOpen={false}
-              type={activePhase?.type}
-            />
-          )}
+          PositionConfigurationPhaseTypes.FINAL_INTERVIEW && (
+          <AnimatedModal
+            dictionary={dictionary}
+            mode="stepper"
+            defaultOpen={false}
+            type={activePhase?.type}
+          />
+        )}
         <InfoSheet
           type={
             activePhase?.type || PositionConfigurationPhaseTypes.DESCRIPTION

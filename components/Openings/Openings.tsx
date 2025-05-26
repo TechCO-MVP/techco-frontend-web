@@ -139,12 +139,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           description: "La vacante ha sido eliminada correctamente",
         });
         setIsConfirmDeleteDialogOpen(false);
+        refetch();
       },
-      onError: () => {
+      onError: (error) => {
         toast({
           title: "Error",
-          description: "Error al eliminar la vacante",
+          description: error?.message,
         });
+        setIsConfirmDeleteDialogOpen(false);
       },
     });
 
@@ -157,7 +159,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const [selectedCompany, setSelectedCompany] = useState<Business | null>(
     rootBusiness,
   );
-  const { data } = usePositionConfigurations({
+  const { data, refetch } = usePositionConfigurations({
     all: true,
     businessId: selectedCompany?._id || "",
   });
@@ -792,13 +794,22 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <TableBody>
                   {paginatedActives.map((position) => (
                     <TableRow
+                      id={position._id}
                       key={position._id}
                       className={cn(
                         "cursor-pointer",
                         pulsingRow === position._id &&
                           "animate-blink border-2 border-[#1976D2]",
                       )}
-                      onClick={() => router.push(`positions/${position._id}`)}
+                      onClick={() => {
+                        const params = new URLSearchParams(
+                          window.location.search,
+                        );
+
+                        router.push(
+                          `positions/${position._id}?${params.toString()}`,
+                        );
+                      }}
                     >
                       <TableCell>
                         <Badge
@@ -1025,6 +1036,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 <TableBody>
                   {paginatedDrafts.map((position) => (
                     <TableRow
+                      id={position._id}
                       key={position._id}
                       className={cn(
                         "cursor-pointer",

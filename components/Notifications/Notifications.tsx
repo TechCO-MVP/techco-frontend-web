@@ -97,14 +97,7 @@ export function Notifications({
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
-    console.log(
-      sorted.filter(
-        (n) =>
-          (n.notification_type !== NotificationType.TAGGED_IN_COMMENT &&
-            !n.phase_type) ||
-          n.phase_type === PhaseType.INFORMATIVE,
-      ),
-    );
+
     return {
       action_required: sorted.filter(
         (n) => n.phase_type === PhaseType.ACTION_CALL,

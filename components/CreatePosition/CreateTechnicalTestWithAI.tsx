@@ -113,6 +113,12 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
         })),
       );
     }
+    const technicalTestPhase = currentPosition?.phases.find(
+      (phase) => phase.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
+    );
+    if (technicalTestPhase) {
+      setProgress(technicalTestPhase.data as TechnicalAssessment);
+    }
   }, [currentPosition]);
 
   useEffect(() => {
@@ -237,6 +243,92 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
             }}
           />
         )}
+      </section>
+
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> Instrucciones</h2>
+        </div>
+        <div className="cursor-text leading-relaxed text-gray-600">
+          Formato del archivo
+          <ul className="mb-2 list-disc pl-6">
+            <li>El documento debe ser entregado en formato PDF.</li>
+            <li>No debe tener contraseña ni estar protegido</li>
+          </ul>
+          <p>Plazo de entrega</p>
+          <ul className="mb-2 list-disc pl-6">
+            <li>
+              Tienes un plazo de 2 días calendario para enviar la prueba
+              resuelta, contados a partir de la fecha de recepción de este
+              mensaje.
+            </li>
+            <li>
+              Asegúrate de enviar el archivo antes del vencimiento del plazo.
+            </li>
+          </ul>
+          <p>
+            Contenido del documento:{" "}
+            <span className="font-semibold">
+              En el PDF solo debes incluir lo siguiente:
+            </span>
+          </p>
+          <ul className="mb-2 list-disc pl-6">
+            <li>Tu nombre completo como presentante del assessment.</li>
+            <li>
+              El título exacto de cada pregunta, tal como aparece en la prueba.
+            </li>
+            <li>
+              La respuesta correspondiente justo debajo del título de cada
+              pregunta.
+            </li>
+          </ul>
+          <p>Formato del contenido</p>
+          <ul className="mb-2 list-disc pl-6">
+            <li>Por favor, no modifiques el enunciado de las preguntas.</li>
+            <li>
+              Asegúrate de que cada respuesta esté debidamente identificada y
+              organizada según su pregunta correspondiente.
+            </li>
+            <li>
+              Si incluyes código, puede ir en formato texto o capturas, pero
+              asegúrate de que sea legible.
+            </li>
+          </ul>
+          <p>Recomendaciones adicionales</p>
+          <ul className="mb-2 list-disc pl-6">
+            <li>
+              Revisa la ortografía y redacción antes de enviar el documento.
+            </li>
+            <li>
+              Si usaste recursos externos o bibliografía, puedes mencionarlos al
+              final del documento.
+            </li>
+            <li>
+              Verifica que el archivo se abra correctamente antes de enviarlo
+            </li>
+            <li>
+              El nombre del archivo puede seguir este formato:
+              Assessment_técnico_NombreApellido.pdf.
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> Criterios de evaluación</h2>
+        </div>
+        <p className="mb-2 text-gray-600">
+          Tu respuesta será evaluada con base en los siguientes criterios (cada
+          uno de 1 a 5 puntos):
+        </p>
+        <ol className="mb-2 list-decimal pl-6 text-gray-600">
+          <li> Capacidad de análisis del problema</li>
+          <li> Relevancia y lógica de la solución propuesta</li>
+          <li> Priorización y enfoque</li>
+          <li> Claridad en la comunicación escrita</li>
+          <li> Creatividad o iniciativa</li>
+          <li> Alineación con los objetivos del rol o negocio</li>
+        </ol>
       </section>
 
       <section className="w-full space-y-3">

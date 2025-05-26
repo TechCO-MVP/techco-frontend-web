@@ -20,7 +20,7 @@ import { usePipefyPipe } from "@/hooks/use-pipefy-pipe";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileFilterStatus } from "@/hooks/use-profile-filter-status";
 import BoardSkeleton from "./Skeleton";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   calculateTime,
   cn,
@@ -55,6 +55,8 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     "Finalistas",
     "Descartados",
   ];
+  const searchParams = useSearchParams();
+  const businessParam = searchParams.get("business_id");
 
   const { positionDetailsPage: i18n } = dictionary;
   const params = useParams<{ id: string; lang: Locale }>();
@@ -78,12 +80,17 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   }, [users, currentUser]);
   const { positions } = useOpenPositions({
     userId: localUser?._id,
-    businessId: rootBusiness?._id,
+    businessId: businessParam || rootBusiness?._id,
   });
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);
   }, [positions, id]);
-
+  console.log(
+    "%c[Debug] selectedPosition",
+    "background-color: teal; font-size: 20px; color: white",
+    selectedPosition,
+    positions,
+  );
   const { toast } = useToast();
 
   const {
@@ -154,7 +161,10 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     <div className="flex w-full flex-col">
       <div className="mb-8 flex justify-between border-b pb-8">
         <div className="flex w-full flex-col items-start gap-2">
-          <Link href={`/${lang}/dashboard/positions`} replace>
+          <Link
+            href={`/${lang}/dashboard/positions?business_id=${businessParam || rootBusiness?._id}`}
+            replace
+          >
             <Button variant="ghost" className="-mx-8 text-sm">
               <ChevronLeft className="h-4 w-4" />
               {i18n.goBack}

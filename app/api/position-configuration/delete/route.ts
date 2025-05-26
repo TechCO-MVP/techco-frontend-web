@@ -31,14 +31,19 @@ export async function DELETE(req: Request) {
     console.log("response", json);
     if (!response.ok) {
       return NextResponse.json(
-        { error: json?.error || "Failed to create position configuration" },
+        {
+          error:
+            json?.message ||
+            json?.error ||
+            "Failed to delete position configuration",
+        },
         { status: response.status },
       );
     }
 
     return NextResponse.json(json);
   } catch (error) {
-    console.error("POST /position-configuration/create error:", error);
+    console.error("POST /position-configuration/delete error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
