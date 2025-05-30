@@ -1,8 +1,8 @@
-import { apiEndpoints } from "@/lib/api-endpoints";
-import { PositionResponse } from "@/types";
+import { ApplicationForm } from "@/components/ApplicationForm/ApplicationForm";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-import { PositiondetailsPage } from "@/components/PositionDetailsPage/PositionDetailsPage";
+import { apiEndpoints } from "@/lib/api-endpoints";
+import { PositionResponse } from "@/types";
 
 export default async function Page({
   params,
@@ -11,8 +11,7 @@ export default async function Page({
   params: Promise<{ lang: Locale; company_name: string; vacancy_name: string }>;
   searchParams: Promise<{ token?: string }>;
 }) {
-  const { vacancy_name, company_name, lang } = await params;
-
+  const { lang } = await params;
   const dictionary = await getDictionary(lang);
   const { token } = await searchParams;
   if (!token) return <p>Missing token</p>;
@@ -33,19 +32,7 @@ export default async function Page({
     body: { data: positionData },
   } = position;
 
-  console.log(
-    "%c[Debug] position 111",
-    "background-color: teal; font-size: 20px; color: white",
-    positionData,
-  );
-
   return (
-    <PositiondetailsPage
-      positionData={positionData}
-      dictionary={dictionary}
-      company_name={company_name}
-      vacancy_name={vacancy_name}
-      token={token}
-    />
+    <ApplicationForm positionData={positionData} dictionary={dictionary} />
   );
 }

@@ -97,6 +97,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     data,
     isLoading: loadingPipe,
     isPending: pendingPipes,
+    refetch: refetchPipe,
   } = usePipefyPipe({
     pipeId:
       filterStatus?.body.status === "completed"
@@ -135,7 +136,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     onCardMove,
     confirmMove,
     cancelMove,
-  } = useBoardActions({ board, setBoard });
+  } = useBoardActions({ board, setBoard, refetchPipe });
 
   useEffect(() => {
     setBoard(data);
@@ -346,11 +347,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           Limpiar Selección
         </Button>
       </div>
-      <div className="relative flex gap-4">
-        {!loadingPipe &&
-          !loadingProfiles &&
-          filterStatus?.body.status !== "completed" && (
-            <div className="absolute left-0 top-0 z-20 flex h-[687px] w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+      {!loadingPipe &&
+        !loadingProfiles &&
+        filterStatus?.body.status !== "completed" && (
+          <div className="relative flex h-full gap-4">
+            <div className="absolute left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
               <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
               <Text type="p" className="text-lg font-semibold">
                 🔄 {i18n.inProgressTitle}
@@ -370,8 +371,8 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                 💡 {i18n.inProgressMessage}
               </Text>
             </div>
-          )}
-      </div>
+          </div>
+        )}
       {filterStatus?.body.status !== "in_progress" &&
         (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles) && (
           <div className="flex gap-4">

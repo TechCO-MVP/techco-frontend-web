@@ -19,7 +19,7 @@ export function useHiringProcess({ hiringProcessId }: HiringProcessParams) {
       });
 
       const response = await fetch(
-        `/api/hiring-process?${queryParams.toString()}`,
+        `/api/hiring-process/id?${queryParams.toString()}`,
       );
 
       if (!response.ok) {
@@ -38,6 +38,7 @@ export function useHiringProcess({ hiringProcessId }: HiringProcessParams) {
     gcTime: 1000 * 60 * 10,
     retry: 1,
     refetchOnWindowFocus: false,
+    enabled: !!hiringProcessId,
   });
 
   const hiringProcess = queryResult.data ?? null;

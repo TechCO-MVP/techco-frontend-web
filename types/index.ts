@@ -168,6 +168,35 @@ export type HiringProcess = {
   card_id: string;
   phase_id: string;
   position_id: string;
+  phases: {
+    [key: string]: {
+      phase_id: number;
+      fields: Record<string, any>;
+      custom_fields: {
+        responsibilities: Record<string, boolean>;
+        skills: Record<string, boolean>;
+      };
+    };
+  };
+  profile: {
+    education: {
+      description: string | null;
+      description_html: string | null;
+      end_year: string;
+      institute_logo_url: string;
+      start_year: string;
+      title: string;
+    }[];
+    experience: {
+      company: string;
+      company_id: string;
+      company_logo_url: string;
+      description: string;
+      description_html: string;
+      end_date: string;
+      start_date: string;
+    }[];
+  };
 };
 
 export type HiringPositionData = {
@@ -465,6 +494,24 @@ export type ProfileFilterStartUrlResponse = {
   message: string;
   body: {
     profile_filter: {
+      _id: string;
+    };
+  };
+};
+export interface UpdateHiringProcessCustomFieldsInput {
+  id: string;
+  phases: {
+    [key: string]: {
+      phase_id: string;
+      custom_fields: Record<string, unknown>;
+    };
+  };
+}
+
+export type UpdateHiringProcessCustomFieldsResponse = {
+  message: string;
+  body: {
+    data: {
       _id: string;
     };
   };

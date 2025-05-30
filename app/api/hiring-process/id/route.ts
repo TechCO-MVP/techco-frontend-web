@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { apiEndpoints } from "@/lib/api-endpoints";
-import { HiringProcessResponse } from "@/types";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const cookieStore = await cookies();
@@ -13,24 +12,18 @@ export async function GET(req: Request) {
       { status: 401 },
     );
   }
-
   const url = new URL(req.url);
-  const hiringProcessId = url.searchParams.get("hiring_process_id");
-
-  if (!hiringProcessId) {
+  const id = url.searchParams.get("hiring_process_id");
+  if (!id) {
     return NextResponse.json(
-      { error: "Missing required query parameter: hiring_process_id" },
+      { error: "Missing required path parameter: id" },
       { status: 400 },
     );
   }
 
-  const queryParams = new URLSearchParams({
-    hiring_process_id: hiringProcessId,
-  });
-
   try {
     const response = await fetch(
-      `${apiEndpoints.getHiringProcess()}?${queryParams.toString()}`,
+      `${apiEndpoints.getHiringProcess()}?hiring_process_id=${id}`,
       {
         method: "GET",
         headers: {
@@ -38,33 +31,23 @@ export async function GET(req: Request) {
           "x-api-key": process.env.API_KEY ?? "",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store",
       },
     );
+
+    const json = await response.json();
 
     if (!response.ok) {
       return NextResponse.json(
         {
-          error: `Failed to fetch data: ${response.statusText}`,
-          message: await response.json(),
-          status: response.status,
+          error: json?.error || "Failed to fetch hiring process",
         },
         { status: response.status },
       );
     }
 
-    const json: HiringProcessResponse = await response.json();
-
-    if (!json.body) {
-      return NextResponse.json(
-        { error: "Unexpected API response format" },
-        { status: 500 },
-      );
-    }
-
     return NextResponse.json(json);
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("GET /hiring-process error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

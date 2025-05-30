@@ -91,6 +91,9 @@ export const apiEndpoints = {
   updatePositionConfiguration() {
     return `${BASE_URL}/position_configuration/update`;
   },
+  updateHiringProcessCustomFields() {
+    return `${BASE_URL}/hiring_process/custom_fields/update`;
+  },
   listPositionConfigurations() {
     return `${BASE_URL}/position_configuration/list`;
   },

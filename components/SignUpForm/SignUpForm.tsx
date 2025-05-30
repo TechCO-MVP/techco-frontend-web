@@ -77,6 +77,7 @@ export function SignUpForm({
             country: data.country,
             role: data.role,
             firstSignIn: true,
+            fullName: data.full_name,
           }),
         );
         router.push(paths.codeValidationSignUp());

@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 interface UseBoardDragDropParams {
   board?: BoardState;
   setBoard: React.Dispatch<React.SetStateAction<BoardState | undefined>>;
+  refetchPipe: () => void;
 }
 
 interface PendingMove {
@@ -15,7 +16,11 @@ interface PendingMove {
   newPosition: number;
 }
 
-export function useBoardActions({ board, setBoard }: UseBoardDragDropParams) {
+export function useBoardActions({
+  board,
+  setBoard,
+  refetchPipe,
+}: UseBoardDragDropParams) {
   const [draggedCard, setDraggedCard] = useState<{
     id: string;
     node: PipefyNode;
@@ -35,58 +40,7 @@ export function useBoardActions({ board, setBoard }: UseBoardDragDropParams) {
         title: "Cambio de Fase Correcto",
         description: "El candidato ha sido movido a la siguiente fase.",
       });
-      const { cardId, sourceColumnId, targetColumnId, newPosition } =
-        pendingMove;
-
-      setBoard((prevBoard) => {
-        if (!prevBoard) return prevBoard;
-
-        const updatedColumns = prevBoard.columns.map((column) => {
-          if (column.id === sourceColumnId) {
-            // Remove the card from the source column
-            const filteredCards = column.cards.nodes.filter(
-              (card) => card.id !== cardId,
-            );
-            return {
-              ...column,
-              cards: {
-                nodes: filteredCards.map((card, index) => ({
-                  ...card,
-                  position: index,
-                })),
-              },
-            };
-          }
-
-          if (column.id === targetColumnId) {
-            const sourceColumn = prevBoard.columns.find(
-              (col) => col.id === sourceColumnId,
-            );
-            if (!sourceColumn) return column;
-
-            const movedCard = sourceColumn.cards.nodes.find(
-              (card) => card.id === cardId,
-            );
-            if (!movedCard) return column;
-
-            const updatedCards = [
-              ...column.cards.nodes.slice(0, newPosition),
-              { ...movedCard, position: newPosition },
-              ...column.cards.nodes.slice(newPosition),
-            ].map((card, index) => ({ ...card, position: index }));
-
-            return {
-              ...column,
-              cards: { nodes: updatedCards },
-            };
-          }
-
-          return column;
-        });
-
-        return { ...prevBoard, columns: updatedColumns };
-      });
-
+      refetchPipe();
       setIsAlertOpen(false);
       setPendingMove(null);
       console.log("Card moved successfully:", data.moveCardToPhase.card);

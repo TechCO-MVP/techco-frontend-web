@@ -237,6 +237,7 @@
     "documentsTabTitle": "Documennts",
     "commentsTabTitle": "Comments",
     "historyTabTitle": "History",
+    "resultsTabTitle": "Results",
     "candidateMatchLabel": "How well does the candidate match the vacancy?",
     "missingSkillsLabel": "Skills that we could not demonstrate in the candidate",
     "recommendationLabel": "Recommendation",

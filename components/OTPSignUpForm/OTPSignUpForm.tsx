@@ -64,6 +64,7 @@ export function OTPSignUpForm({
         companySize: authState.companySize,
         country: authState.country,
         role: authState.role,
+        fullName: authState.fullName,
       });
       if (!response.success) {
         return setError(response.message);

@@ -647,7 +647,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </Link>
           </div>
           <Text className="text-muted-foreground">
-            {formatDate(rootBusiness?.created_at)}
+            {formatDate(selectedCompany?.created_at)}
           </Text>
           <div className="mt-4 flex items-center gap-4">
             <span>

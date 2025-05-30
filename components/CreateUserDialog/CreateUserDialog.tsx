@@ -355,7 +355,6 @@ export const CreateUserDialog: FC<Readonly<CreateUserDialogProps>> = ({
                   errors={errors}
                   dirtyFields={dirtyFields}
                   options={[
-                    { value: "super_admin", label: "Super Admin" },
                     { value: "business_admin", label: "Business Admin" },
                     { value: "position_owner", label: "Position Owner" },
                     { value: "recruiter", label: "Recruiter" },

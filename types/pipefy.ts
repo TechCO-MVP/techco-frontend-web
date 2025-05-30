@@ -97,6 +97,11 @@ export type PipefyPipeResponse = {
 
 export type PipefyCardResponse = {
   card: {
+    current_phase: {
+      id: string;
+      name: string;
+    };
+    fields: PipefyField[];
     pipe: {
       phases: {
         id: string;
@@ -124,6 +129,11 @@ export type UpdateFieldResponse = {
   success: boolean;
   message?: string;
 };
+
+export enum CandidateSources {
+  LinkedIn = "LinkedIn",
+  TalentConnect = "TalentConnect",
+}
 export type PipefyFieldType =
   | "assignee_select"
   | "attachment"

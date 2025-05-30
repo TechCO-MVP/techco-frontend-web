@@ -34,6 +34,7 @@ export async function verifyCodeSignUp(
         country_code: countryCode,
         company_name: data.company,
         company_position: data.role,
+        full_name: data.fullName,
       }),
     });
 

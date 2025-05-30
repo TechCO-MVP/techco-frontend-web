@@ -3,6 +3,14 @@ import { gql } from "graphql-request";
 export const GET_CARD = gql`
   query GetCard($cardId: ID!) {
     card(id: $cardId) {
+      current_phase {
+        id
+        name
+      }
+      fields {
+        value
+        indexName
+      }
       pipe {
         phases {
           id

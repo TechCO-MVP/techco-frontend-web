@@ -44,8 +44,8 @@ export function useOpenPositions({
       const data: HiringPositionResponse = await response.json();
       return data.body.data;
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+    staleTime: 0,
+    gcTime: 0,
     retry: 3,
     refetchOnWindowFocus: false,
     enabled: Boolean(businessId && userId),

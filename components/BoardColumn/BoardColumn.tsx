@@ -72,7 +72,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
   return (
     <div
       className={cn(
-        "max-h-screen w-[21.5rem] min-w-[21.5rem] overflow-hidden rounded-lg bg-gray-100 p-4 shadow-md hover:overflow-y-auto",
+        "flex h-full w-[21.5rem] min-w-[21.5rem] flex-col overflow-hidden rounded-lg bg-gray-100 shadow-md",
         {
           "border border-green-200 bg-green-200": draggedCard && canDrop,
           "border border-red-500 bg-red-200": draggedCard && !canDrop,
@@ -82,21 +82,28 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       onDrop={handleDrop}
       onDragLeave={handleDragLeave}
     >
-      <h2 className="mb-4 text-lg font-semibold">
-        {column.name} ({column.cards_count})
-      </h2>
-      <div className="space-y-6">
-        {column.cards.nodes.map((card) => (
-          <UserCard
-            dictionary={dictionary}
-            pipe={pipe}
-            key={card.id}
-            card={card}
-            column={column}
-            onCardMove={handleCardMove}
-            setDraggedCard={setDraggedCard}
-          />
-        ))}
+      {/* Fixed header */}
+      <div className="flex-shrink-0 p-4 pb-0">
+        <h2 className="mb-4 text-lg font-semibold">
+          {column.name} ({column.cards_count})
+        </h2>
+      </div>
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-hidden p-4 pt-0 hover:overflow-y-auto">
+        <div className="space-y-6">
+          {column.cards.nodes.map((card) => (
+            <UserCard
+              dictionary={dictionary}
+              pipe={pipe}
+              key={card.id}
+              card={card}
+              column={column}
+              onCardMove={handleCardMove}
+              setDraggedCard={setDraggedCard}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
