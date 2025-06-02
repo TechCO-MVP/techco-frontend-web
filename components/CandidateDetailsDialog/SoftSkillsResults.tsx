@@ -9,23 +9,19 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HiringProcess } from "@/types";
+import { HiringPositionData, HiringProcess } from "@/types";
 
 interface SoftSkillsResultsProps {
   data?: HiringProcess["phases"];
   candidateName?: string;
-  targetSalary?: number;
-  salaryRange?: {
-    min: number;
-    max: number;
-  };
+  position?: HiringPositionData;
 }
 
 export function SoftSkillsResults({
   data,
   candidateName = "El candidato",
-  targetSalary = 10000000,
-  salaryRange = { min: 8000000, max: 9000000 },
+
+  position,
 }: SoftSkillsResultsProps) {
   // Get the first (and likely only) phase data
   const phaseData = Object.values(data ?? {})[0];
@@ -43,10 +39,15 @@ export function SoftSkillsResults({
   );
   const overallScore = (skillsScore + responsibilitiesScore) / 2;
 
+  const expectedSalary = Number(phaseData.custom_fields.expected_salary);
+  const maxSalary = Number(
+    position?.salary?.salary || position?.salary?.salary_range?.max || 0,
+  );
+
   // Calculate salary status
-  const isAboveRange = targetSalary > salaryRange.max;
+  const isAboveRange = maxSalary > 0 && expectedSalary > maxSalary;
   const salaryPercentageAbove = isAboveRange
-    ? Math.round(((targetSalary - salaryRange.max) / salaryRange.max) * 100)
+    ? Math.round(((expectedSalary - maxSalary) / maxSalary) * 100)
     : 0;
 
   const formatCurrency = (amount: number) => {
@@ -176,13 +177,27 @@ export function SoftSkillsResults({
               <div className="space-y-3">
                 <div>
                   <p className="font-semibold">
-                    {candidateName} aspira a {formatCurrency(targetSalary)}.
+                    {candidateName} aspira a {formatCurrency(expectedSalary)}.
                   </p>
-                  <p className="text-sm text-gray-600">
-                    La banda para esta posición va de{" "}
-                    {formatCurrency(salaryRange.min)} a{" "}
-                    {formatCurrency(salaryRange.max)}.
-                  </p>
+                  {position?.salary?.salary && (
+                    <p className="text-sm text-gray-600">
+                      El salario para esta posición es de
+                      {formatCurrency(Number(position?.salary?.salary))}
+                    </p>
+                  )}
+                  {position?.salary?.salary_range?.max && (
+                    <p className="text-sm text-gray-600">
+                      La banda para esta posición va de
+                      {formatCurrency(
+                        Number(position?.salary?.salary_range?.min) || 0,
+                      )}{" "}
+                      a{" "}
+                      {formatCurrency(
+                        Number(position?.salary?.salary_range?.max) || 0,
+                      )}
+                      .
+                    </p>
+                  )}
                   {isAboveRange && (
                     <p className="text-sm font-medium text-red-600">
                       Está un {salaryPercentageAbove}% por encima del rango.

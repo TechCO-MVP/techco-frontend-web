@@ -39,6 +39,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { SoftSkillsResults } from "./SoftSkillsResults";
 import ResultsTabContent from "./ResultsTabContent";
+import { HiringPositionData } from "@/types";
 
 interface CandidateDetailsDialogProps {
   card: PipefyNode;
@@ -46,6 +47,7 @@ interface CandidateDetailsDialogProps {
   dictionary: Dictionary;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  position?: HiringPositionData;
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
@@ -53,6 +55,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   dictionary,
   open,
   setOpen,
+  position,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
   const { showCandidateDetails } = notificationsState;
@@ -497,7 +500,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
         </div>
         <div className="max-h-[75vh] w-[410px] max-w-[410px] overflow-auto">
           <div className="flex flex-col gap-4">
-            <SoftSkillsResults data={hiringProcess?.phases} />
+            <SoftSkillsResults
+              data={hiringProcess?.phases}
+              position={position}
+            />
           </div>
         </div>
         <div className="max-h-[75vh] w-[540px] overflow-hidden">

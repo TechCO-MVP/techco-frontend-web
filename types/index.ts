@@ -175,6 +175,7 @@ export type HiringProcess = {
       custom_fields: {
         responsibilities: Record<string, boolean>;
         skills: Record<string, boolean>;
+        expected_salary: string;
       };
     };
   };
@@ -213,6 +214,14 @@ export type HiringPositionData = {
   created_at: string;
   hiring_processes: HiringProcess[];
   position_configuration_id?: string;
+  salary?: {
+    currency: string;
+    salary?: string;
+    salary_range?: {
+      min: string;
+      max: string;
+    };
+  };
 };
 
 export type PositionFilterStatusResponse = {

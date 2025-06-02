@@ -33,13 +33,14 @@ import { Dictionary } from "@/types/i18n";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "@/lib/store/hooks";
 import { selectNotificationsState } from "@/lib/store/features/notifications/notifications";
+import { HiringPositionData } from "@/types";
 
 interface CardProps {
   dictionary: Dictionary;
   card: PipefyNode;
   column: PipefyPhase;
   pipe: PipefyPipe;
-
+  position?: HiringPositionData;
   onCardMove: (draggedId: string, targetId: string) => void;
   setDraggedCard: (
     card: { id: string; node: PipefyNode; sourceColumn: PipefyPhase } | null,
@@ -52,6 +53,7 @@ export const UserCard: React.FC<CardProps> = ({
   setDraggedCard,
   pipe,
   dictionary,
+  position,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
   const { showCandidateDetails } = notificationsState;
@@ -232,6 +234,7 @@ export const UserCard: React.FC<CardProps> = ({
         dictionary={dictionary}
         pipe={pipe}
         card={card}
+        position={position}
       />
     </Card>
   );

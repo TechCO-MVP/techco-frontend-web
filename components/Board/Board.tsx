@@ -392,6 +392,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         {board &&
           filteredBoard?.map((column) => (
             <BoardColumn
+              position={selectedPosition}
               dictionary={dictionary}
               pipe={board.pipe}
               key={column.id}

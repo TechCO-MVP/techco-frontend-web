@@ -31,7 +31,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const { createPositionPage: i18n } = dictionary;
   const [, setSelectedDialCode] = useState("+51");
   const { footer } = dictionary;
-
+  const [expectedSalary, setExpectedSalary] = useState<string>("");
   const [steps, setSteps] = useState<Step[]>([
     {
       title: i18n.descriptionStep,
@@ -124,6 +124,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     handleUpdateHiringProcessCustomFields({
       responsibilities: responsibilityAnswers,
       skills: skillAnswers,
+      expected_salary: expectedSalary,
     });
     console.log(
       "%c[Debug] ",
@@ -143,7 +144,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     positionData.position_responsabilities.every(
       (resp) => typeof responsibilityAnswers[resp] === "boolean",
     );
-  const canSubmit = allSkillsAnswered && allResponsibilitiesAnswered;
+  const canSubmit =
+    allSkillsAnswered && allResponsibilitiesAnswered && expectedSalary;
 
   return (
     <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">
@@ -339,6 +341,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             <Input
               placeholder="Escribe aquí tu expectativa salarial"
               className="max-w-md"
+              value={expectedSalary}
+              onChange={(e) => setExpectedSalary(e.target.value)}
             />
           </div>
 
