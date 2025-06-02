@@ -158,6 +158,17 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
       title: "Link de la vacante copiado",
     });
   };
+
+  const showInProgress =
+    !loadingPipe &&
+    !loadingProfiles &&
+    filterStatus?.body.status !== "completed";
+
+  const showSkeleton =
+    !showInProgress &&
+    filterStatus?.body.status !== "in_progress" &&
+    (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles);
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-8 flex justify-between border-b pb-8">
@@ -347,38 +358,35 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           Limpiar Selección
         </Button>
       </div>
-      {!loadingPipe &&
-        !loadingProfiles &&
-        filterStatus?.body.status !== "completed" && (
-          <div className="relative flex h-full gap-4">
-            <div className="absolute left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
-              <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
-              <Text type="p" className="text-lg font-semibold">
-                🔄 {i18n.inProgressTitle}
-              </Text>
-              <Text
-                type="p"
-                size="small"
-                className="mb-4 max-w-[563px] text-center text-muted-foreground"
-              >
-                📡 {i18n.inProgressDetails}
-              </Text>
-              <Text
-                type="p"
-                size="small"
-                className="max-w-[563px] text-center text-muted-foreground"
-              >
-                💡 {i18n.inProgressMessage}
-              </Text>
-            </div>
+      {showInProgress && (
+        <div className="relative flex h-full gap-4">
+          <div className="absolute left-0 top-0 z-20 flex h-full w-full flex-col items-center justify-center gap-2 bg-[#D6D6D6]">
+            <SmilePlus className="h-10 w-10 stroke-muted-foreground" />
+            <Text type="p" className="text-lg font-semibold">
+              🔄 {i18n.inProgressTitle}
+            </Text>
+            <Text
+              type="p"
+              size="small"
+              className="mb-4 max-w-[563px] text-center text-muted-foreground"
+            >
+              📡 {i18n.inProgressDetails}
+            </Text>
+            <Text
+              type="p"
+              size="small"
+              className="max-w-[563px] text-center text-muted-foreground"
+            >
+              💡 {i18n.inProgressMessage}
+            </Text>
           </div>
-        )}
-      {filterStatus?.body.status !== "in_progress" &&
-        (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles) && (
-          <div className="flex gap-4">
-            <BoardSkeleton />
-          </div>
-        )}
+        </div>
+      )}
+      {showSkeleton && (
+        <div className="flex gap-4">
+          <BoardSkeleton />
+        </div>
+      )}
 
       <div className="flex max-h-[calc(100vh-400px)] gap-4 overflow-x-auto">
         {board &&
