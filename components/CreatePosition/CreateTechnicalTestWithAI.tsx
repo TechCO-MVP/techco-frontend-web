@@ -130,7 +130,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
   }, [isLoading, messages]);
 
   useEffect(() => {
-    if (progress) return;
+    if (progress?.your_mission && progress.challenge) return;
     const msg = messages.filter((msg) => msg.role === "assistant").pop();
     if (!msg) return;
 

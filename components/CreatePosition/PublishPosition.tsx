@@ -203,7 +203,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
   if (isLoading) return <ModeSelectionSkeleton />;
   return (
     <div className="flex w-full flex-col px-8 py-2">
-      <div className="relative flex flex-col gap-2">
+      <div className="mx-auto mb-14 w-full max-w-[60rem] space-y-8 p-6">
         <Link
           href={`/${lang}/dashboard/positions?tab=drafts&business_id=${businessId}&position_id=${position_id}`}
           replace
@@ -213,14 +213,14 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             {i18n.goBack}
           </Button>
         </Link>
-        <Stepper
-          phase={PositionConfigurationPhaseTypes.READY_TO_PUBLISH}
-          steps={steps}
-          setSteps={setSteps}
-          i18n={i18n}
-        />
-
-        <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
+        <div className="mx-auto flex w-fit min-w-[60rem] flex-col gap-7 rounded-md px-10 py-2 shadow-md">
+          <Stepper
+            phase={PositionConfigurationPhaseTypes.READY_TO_PUBLISH}
+            steps={steps}
+            setSteps={setSteps}
+            i18n={i18n}
+          />
+        </div>
       </div>
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <div className="items -center flex gap-8 md:flex-row">
