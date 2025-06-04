@@ -344,9 +344,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
             setSelectedOption(
               PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
             );
-            startNextPhase(
-              PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
-            );
+            redirectToCopy();
           }}
           icon={<Copy className="h-10 w-10 stroke-talent-green-500" />}
         />

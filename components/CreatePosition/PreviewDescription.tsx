@@ -533,33 +533,31 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           onSave={() => onSaveDraft()}
         />
       )}
-      {mode !== "edit" && isCompleted && (
-        <StickyFooter
-          showCancelButton={false}
-          canSave={isCompleted}
-          cancelLabel={i18n.cancelLabel}
-          saveLabel={
-            descriptionPhase?.status === "COMPLETED"
-              ? `Guardar Cambios`
-              : `${i18n.continuedNextPhase} 2`
-          }
-          isSaving={isCompletePhasePending || isPending}
-          onCancel={() => {
-            checkUnsavedChanges();
-          }}
-          onSave={() => {
-            if (descriptionPhase?.status === "COMPLETED") {
-              onSaveDraft();
-            } else {
-              completePhase({
-                position_configuration_id: position_id,
-                data: positionData,
-              });
-            }
-          }}
-          saveButtonIcon={<ChevronRight className="h-4 w-4" />}
-        />
-      )}
+      {mode !== "edit" &&
+        isCompleted &&
+        descriptionPhase?.status !== "COMPLETED" && (
+          <StickyFooter
+            showCancelButton={false}
+            canSave={isCompleted}
+            cancelLabel={i18n.cancelLabel}
+            saveLabel={i18n.continuedNextPhase}
+            isSaving={isCompletePhasePending || isPending}
+            onCancel={() => {
+              checkUnsavedChanges();
+            }}
+            onSave={() => {
+              if (descriptionPhase?.status === "COMPLETED") {
+                onSaveDraft();
+              } else {
+                completePhase({
+                  position_configuration_id: position_id,
+                  data: positionData,
+                });
+              }
+            }}
+            saveButtonIcon={<ChevronRight className="h-4 w-4" />}
+          />
+        )}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>

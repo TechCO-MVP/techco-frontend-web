@@ -121,6 +121,12 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
     }
   }, [currentPosition]);
 
+  const technicalSkillsPhase = useMemo(() => {
+    return currentPosition?.phases.find(
+      (phase) => phase.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
+    );
+  }, [currentPosition]);
+
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
       const container = messageRef.current;
@@ -393,7 +399,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
         />
       )}
 
-      {mode === "preview" && (
+      {mode === "preview" && technicalSkillsPhase?.status !== "COMPLETED" && (
         <StickyFooter
           showCancelButton={false}
           canSave={true}

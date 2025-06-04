@@ -15,7 +15,7 @@ import { countryLabelLookup, getErrorMessage, formatDate } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { updateCompanyAction } from "@/actions/companies/update";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Business } from "@/types";
 import { FormSelect } from "../FormSelect/FormSelect";
 import { Loader2 } from "lucide-react";
@@ -38,6 +38,16 @@ type CompanyDetailsFormProps = {
   dictionary: Dictionary;
   businesses: Business[];
 };
+
+// Helper to get company initials
+function getCompanyInitials(name?: string) {
+  if (!name) return "UN";
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
 
 export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
   dictionary,
@@ -141,15 +151,9 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
         <div className="mt-6 flex items-center justify-center gap-6">
           <div className="flex flex-col">
             <Avatar className="h-20 w-20">
-              <AvatarImage
-                src={
-                  logo ||
-                  selectedCompany?.logo ||
-                  "https://picsum.photos/200/200"
-                }
-                alt="@username"
-              />
-              <AvatarFallback>{selectedCompany?.name}</AvatarFallback>
+              <AvatarFallback className="text-2xl">
+                {getCompanyInitials(selectedCompany?.name)}
+              </AvatarFallback>
             </Avatar>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger>

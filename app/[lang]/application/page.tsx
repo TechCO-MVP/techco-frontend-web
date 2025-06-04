@@ -40,7 +40,11 @@ export default async function Page({
   const {
     body: { data: positionData },
   } = position;
-
+  console.log(
+    "%c[Debug] positionData",
+    "background-color: teal; font-size: 20px; color: white",
+    positionData,
+  );
   return (
     <>
       <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">

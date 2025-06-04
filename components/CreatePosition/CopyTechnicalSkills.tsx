@@ -4,6 +4,7 @@ import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FC, useMemo, useState } from "react";
+import React from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
@@ -13,6 +14,7 @@ import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import {
   DraftPositionData,
   PositionConfigurationPhaseTypes,
+  PositionConfigurationTypes,
   TechnicalAssessment,
 } from "@/types";
 import { useUsers } from "@/hooks/use-users";
@@ -32,6 +34,7 @@ import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-conf
 
 import { TechnicalSkillsSheet } from "./TechnicalSkillsSheet";
 import { Input } from "../ui/input";
+import { useNextPhase } from "@/hooks/use-next-phase";
 
 type CopyTechnicalSkillsProps = {
   dictionary: Dictionary;
@@ -51,21 +54,38 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
   const { createPositionPage: i18n } = dictionary;
   const [selectedPosition, setSelectedPosition] = useState<string>();
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const { data: positionConfiguration } = usePositionConfigurations({
     all: true,
     businessId: id,
   });
 
-  const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
-    onSuccess: (data) => {
-      console.info("Save Draft success", data);
-
+  const { mutate: nextPhase, isPending: isNextPhasePending } = useNextPhase({
+    onSuccess() {
       queryClient.invalidateQueries({
         queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
       });
       router.push(
         `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}/technical-test`,
       );
+    },
+    onError(error) {
+      console.log("[Error]", error);
+    },
+  });
+
+  const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
+    onSuccess: (data) => {
+      console.info("Save Draft success", data);
+      nextPhase({
+        position_configuration_id: position_id,
+        configuration_type:
+          PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
+      });
     },
     onError: (error) => {
       console.error("Save Draft error", error);
@@ -108,6 +128,16 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
     });
   }, [completedTechnicalSkills, searchQuery]);
 
+  const paginatedTechnicalSkills = useMemo(() => {
+    if (!filteredTechnicalSkills) return [];
+    const start = (page - 1) * pageSize;
+    return filteredTechnicalSkills.slice(start, start + pageSize);
+  }, [filteredTechnicalSkills, page, pageSize]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [searchQuery, filteredTechnicalSkills?.length]);
+
   console.log(
     "%c[Debug] completedSoftSkills",
     "background-color: teal; font-size: 20px; color: white",
@@ -117,7 +147,7 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
     <div className="flex w-full flex-col px-8 py-2">
       <div className="relative flex flex-col gap-2">
         <Link
-          href={`/${lang}/dashboard/positions?tab=drafts&position_id=${position_id}&business_id=${id}`}
+          href={`/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`}
           replace
         >
           <Button variant="ghost" className="-mx-8 text-sm">
@@ -164,7 +194,7 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTechnicalSkills?.map((position) => (
+            {paginatedTechnicalSkills?.map((position) => (
               <TableRow key={position._id} className={cn("cursor-pointer")}>
                 <TableCell
                   title={(position?.phases[0]?.data as DraftPositionData)?.role}
@@ -233,7 +263,8 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
                     variant="link"
                     className="flex items-center justify-center gap-2 underline"
                   >
-                    {isPending && selectedPosition === position._id ? (
+                    {(isPending || isNextPhasePending) &&
+                    selectedPosition === position._id ? (
                       <Loader2 className="ml-2 h-4 w-4 animate-spin" />
                     ) : (
                       "Crear una copia"
@@ -244,6 +275,62 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
             ))}
           </TableBody>
         </Table>
+        <div className="mt-4 flex items-center justify-between">
+          <div />
+          <div className="flex items-center gap-2">
+            <label htmlFor="page-size" className="text-sm font-medium">
+              Por página
+            </label>
+            <select
+              id="page-size"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+              className="rounded border px-2 py-1"
+              aria-label="Tamaño de página"
+            >
+              {[5, 10, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="outline"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="Anterior"
+            >
+              Anterior
+            </Button>
+            <span>
+              Página {page} de{" "}
+              {Math.ceil((filteredTechnicalSkills?.length ?? 0) / pageSize)}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setPage((p) =>
+                  Math.min(
+                    Math.ceil(
+                      (filteredTechnicalSkills?.length ?? 0) / pageSize,
+                    ),
+                    p + 1,
+                  ),
+                )
+              }
+              disabled={
+                page ===
+                Math.ceil((filteredTechnicalSkills?.length ?? 0) / pageSize)
+              }
+              aria-label="Siguiente"
+            >
+              Siguiente
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

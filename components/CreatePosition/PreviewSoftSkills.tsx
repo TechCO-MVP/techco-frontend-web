@@ -156,31 +156,29 @@ export const PreviewSoftSkills: FC<Props> = ({ dictionary }) => {
         ))}
       </section>
 
-      <StickyFooter
-        showCancelButton={false}
-        canSave={true}
-        cancelLabel={i18n.cancelLabel}
-        saveLabel={
-          softSkillsPhase?.status === "COMPLETED"
-            ? `Guardar Cambios`
-            : `${i18n.continuedNextPhase} 3`
-        }
-        isSaving={isCompletePhasePending}
-        onCancel={() => {}}
-        onSave={() => {
-          if (softSkillsPhase?.status === "COMPLETED") {
-            router.push(
-              `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
-            );
-          } else {
-            completePhase({
-              position_configuration_id: position_id,
-              data: positionData,
-            });
-          }
-        }}
-        saveButtonIcon={<ChevronRight className="h-4 w-4" />}
-      />
+      {softSkillsPhase?.status !== "COMPLETED" && (
+        <StickyFooter
+          showCancelButton={false}
+          canSave={true}
+          cancelLabel={i18n.cancelLabel}
+          saveLabel={`${i18n.continuedNextPhase} 3`}
+          isSaving={isCompletePhasePending}
+          onCancel={() => {}}
+          onSave={() => {
+            if (softSkillsPhase?.status === "COMPLETED") {
+              router.push(
+                `/${lang}/dashboard/companies/${id}/position-configuration/${position_id}`,
+              );
+            } else {
+              completePhase({
+                position_configuration_id: position_id,
+                data: positionData,
+              });
+            }
+          }}
+          saveButtonIcon={<ChevronRight className="h-4 w-4" />}
+        />
+      )}
     </div>
   );
 };

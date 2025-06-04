@@ -81,6 +81,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Locale } from "@/i18n-config";
 import AnimatedModal from "../ChatBot/AnimatedModal";
 import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
+import { Input } from "../ui/input";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -96,6 +97,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const tabParam = searchParams.get("tab");
   const businessParam = searchParams.get("business_id");
   const positionParam = searchParams.get("position_id");
+  const [searchQuery, setSearchQuery] = useState("");
   const defaultTab =
     tabParam === "actives" || tabParam === "drafts" ? tabParam : "actives";
   const [positionToDelete, setPositionToDelete] = useState<string>();
@@ -278,11 +280,23 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     return b.hiring_priority.localeCompare(a.hiring_priority);
   });
 
-  const paginatedDrafts = useMemo(() => {
+  const filteredDrafts = useMemo(() => {
     if (!positionConfigurationList) return [];
+    return positionConfigurationList.filter((position) => {
+      const searchMatch =
+        !searchQuery ||
+        (position.phases[0]?.data as DraftPositionData)?.role
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      return searchMatch;
+    });
+  }, [positionConfigurationList, searchQuery]);
+
+  const paginatedDrafts = useMemo(() => {
+    if (!filteredDrafts) return [];
     const start = (draftsPage - 1) * draftsPageSize;
-    return positionConfigurationList.slice(start, start + draftsPageSize);
-  }, [positionConfigurationList, draftsPage, draftsPageSize]);
+    return filteredDrafts.slice(start, start + draftsPageSize);
+  }, [filteredDrafts, draftsPage, draftsPageSize]);
 
   useEffect(() => {
     setDraftsPage(1);
@@ -1076,8 +1090,19 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           )}
         </TabsContent>
         <TabsContent value="drafts" className="h-full w-full">
-          {paginatedDrafts.length > 0 ? (
+          {positionConfigurationList?.length &&
+          positionConfigurationList.length > 0 ? (
             <>
+              <div className="mb-4 flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Buscar  vacante..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-0"
+                  aria-label="Buscar por nombre de vacante"
+                />
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>

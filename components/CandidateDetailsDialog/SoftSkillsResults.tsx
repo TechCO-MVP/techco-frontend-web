@@ -28,6 +28,7 @@ export function SoftSkillsResults({
   if (!phaseData) return null;
   // Calculate scores
   const calculateScore = (items: Record<string, boolean>) => {
+    if (!items) return 0;
     const totalItems = Object.keys(items).length;
     const trueItems = Object.values(items).filter(Boolean).length;
     return totalItems > 0 ? (trueItems / totalItems) * 5 : 0;
