@@ -8,13 +8,18 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { countryLabelLookup, formatDate } from "@/lib/utils";
+import { countryLabelLookup, findPhaseByName, formatDate } from "@/lib/utils";
 import { Linkedin } from "@/icons";
 import { Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,7 +44,14 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { SoftSkillsResults } from "./SoftSkillsResults";
 import ResultsTabContent from "./ResultsTabContent";
-import { HiringPositionData } from "@/types";
+import { AssistantName, HiringPositionData, PHASE_NAMES } from "@/types";
+
+import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
+import { FirstInterviewResults } from "./FirstInterviewResults";
+import { TechnicalAssessmentResults } from "./TechnicalAssessmentResults";
+import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
+import { useAssistantResponse } from "@/hooks/use-assistant-response";
+import { STATEMENT_BUTTON_TEXT } from "@/constants";
 
 interface CandidateDetailsDialogProps {
   card: PipefyNode;
@@ -58,6 +70,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   position,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
+  const [fetchProcessId, setFetchProcessId] = useState<string | null>(null);
   const { showCandidateDetails } = notificationsState;
   const { userCard: i18n } = dictionary;
   const { rootBusiness } = useBusinesses();
@@ -67,6 +80,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const recomendation = fieldMap[PipefyFieldValues.Recomendation];
   const positionMatch = fieldMap[PipefyFieldValues.PositionMatch];
   const candidateName = fieldMap[PipefyFieldValues.CandidateName];
+  const aspectsNotDemostrated =
+    fieldMap[PipefyFieldValues.AspectsNotDemostrated];
   const avatarUrl =
     fieldMap[PipefyFieldValues.Avatar] || "https://picsum.photos/200/200";
   const candidateCountry = fieldMap[PipefyFieldValues.CandidateCountry] || "CO";
@@ -94,6 +109,18 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const localUser = useMemo(() => {
     return users.find((user) => user.email === currentUser?.email);
   }, [users, currentUser]);
+
+  const { fileProcessingStatus } = useFileProcessingStatus(fetchProcessId);
+
+  const { mutate: getAssistantResponse } = useAssistantResponse({
+    onSuccess(data) {
+      console.log("[Success]", data);
+    },
+    onError(error) {
+      console.log("[Error]", error);
+    },
+  });
+
   const { positions } = useOpenPositions({
     userId: localUser?._id,
     businessId: businessParam || rootBusiness?._id,
@@ -108,10 +135,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     );
   }, [selectedPosition, card]);
 
-  console.log(
-    "%c[Debug] hiringProcess",
-    "background-color: teal; font-size: 20px; color: white",
-    hiringProcess,
+  const currentPhase = findPhaseByName(
+    // PHASE_NAMES.INITIAL_FILTER,
+    card.current_phase.name,
+    position?.position_flow,
   );
 
   const [publicFormUrl, setPublicFormUrl] = useState("");
@@ -168,15 +195,132 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     }
   };
 
+  const getDataForPhase = (phaseId: string) => {
+    return hiringProcess?.phases[phaseId];
+  };
+
+  // This logic is to get the run_id from the file processing status
+  // Only for the cultural fit assessment phase
+  useEffect(() => {
+    if (!open || fetchProcessId) return;
+    if (
+      card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS
+    ) {
+      const phaseData = getDataForPhase(card.current_phase.id);
+      if (
+        phaseData?.custom_fields.process_id &&
+        !phaseData?.custom_fields.cultural_assessment_result
+      ) {
+        setFetchProcessId(phaseData?.custom_fields.process_id);
+      }
+    }
+  });
+
+  // This logic is to get the assistant response with the assessment result
+  useEffect(() => {
+    if (!open) return;
+    if (!fileProcessingStatus) return;
+    if (
+      card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS &&
+      hiringProcess
+    ) {
+      const phaseData = getDataForPhase(card.current_phase.id);
+      if (!phaseData?.custom_fields.cultural_assessment_result) {
+        getAssistantResponse({
+          run_id: fileProcessingStatus.run_id,
+          assistant_type: AssistantName.CULTURAL_FIT_ASSESSMENT,
+          thread_id: fileProcessingStatus.thread_id,
+          hiring_process_id: hiringProcess._id,
+        });
+      }
+    }
+  }, [fileProcessingStatus]);
+
+  useEffect(() => {
+    if (!open) return;
+    console.log(
+      "%c[Debug] ",
+      "background-color: teal; font-size: 20px; color: white",
+      { hiringProcess, card, currentPhase },
+    );
+  }, [open, hiringProcess, card, currentPhase]);
+
+  const dynamicValues = useMemo(() => {
+    const statements = card.current_phase.fields.filter(
+      (f) => f.type === "statement",
+    );
+
+    const values: Record<string, string> = {};
+
+    for (const statement of statements) {
+      const desc = statement.description ?? "";
+      const matches = [...desc.matchAll(/{{\s*phase\d+\.field(\d+)\s*}}/g)];
+
+      for (const match of matches) {
+        const fieldId = match[1];
+
+        const matchingField = card.fields.find(
+          (f) => f.phase_field?.internal_id === fieldId,
+        );
+
+        if (matchingField) {
+          values[fieldId] = matchingField.value ?? "";
+        }
+      }
+    }
+
+    return values;
+  }, [card]);
+
+  const renderCallToActionContent = (phaseName: string) => {
+    switch (phaseName) {
+      case PHASE_NAMES.INITIAL_FILTER:
+        return (
+          <div className="flex flex-col gap-4">
+            <SoftSkillsResults
+              data={getDataForPhase(card.current_phase.id)}
+              position={position}
+              phase={currentPhase}
+            />
+          </div>
+        );
+      case PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS:
+        return <CulturalAssessmentResults phase={currentPhase} />;
+      case PHASE_NAMES.FIRST_INTERVIEW_RESULTS:
+        return (
+          <FirstInterviewResults
+            candidateName={candidateName}
+            phase={currentPhase}
+          />
+        );
+      case PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS:
+        return <TechnicalAssessmentResults phase={currentPhase} />;
+    }
+  };
+
+  const renderButtonText = (text: string) => {
+    if (text === STATEMENT_BUTTON_TEXT) {
+      return (
+        <p className="text-sm font-bold text-[#090909]">
+          {Object.values(dynamicValues).join(" ")}
+        </p>
+      );
+    }
+    return null;
+  };
+
   return (
     <Dialog modal open={open} onOpenChange={handleOpenChange}>
       <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
+      <DialogDescription className="hidden">
+        {i18n.candidateDetails}
+      </DialogDescription>
       <DialogContent
         onInteractOutside={(event) => event.preventDefault()}
-        className="flex max-h-[80vh] min-h-[80vh] max-w-[80vw]"
+        className="flex max-h-[80vh] min-h-[80vh] max-w-[1350px]"
       >
         <div className="flex flex-col border-r-4">
-          <div className="flex flex-col gap-2 pt-10">
+          <div className="flex flex-col gap-2 pt-2">
             <div className="mb-2 flex gap-4">
               <div className="flex flex-col items-center justify-center gap-1.5">
                 <Avatar className="h-16 w-16">
@@ -293,10 +437,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   {i18n.missingSkillsLabel}
                 </Heading>
                 <Text className="mb-4 text-sm text-muted-foreground" type="p">
-                  No se lograron evidenciar algunas habilidades técnicas como
-                  Programación en Python, Java y SQL, Inglés avanzado y Gestión
-                  de proyectos. En cuanto a habilidades blandas, no se observó
-                  suficiente dominio en Liderazgo y Adaptabilidad.
+                  {aspectsNotDemostrated}
                 </Text>
               </div>
               <div className="mb-8 flex flex-col gap-2">
@@ -498,7 +639,53 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             </TabsContent>
           </Tabs>
         </div>
-        <div className="max-h-[75vh] w-[410px] max-w-[410px] overflow-auto">
+
+        {currentPhase &&
+          currentPhase.phase.phase_classification === "INFORMATIVE" && (
+            <div className="max-h-[75vh] w-[650px] max-w-[650px] overflow-auto">
+              {currentPhase.interviewerData?.sections.map((section) => {
+                return (
+                  <div key={section.title} className="flex flex-col gap-2">
+                    <Heading className="text-base font-bold" level={2}>
+                      {currentPhase.groupName}
+                    </Heading>
+                    <Heading className="text-sm font-bold" level={2}>
+                      {section.title}
+                    </Heading>
+                    <Text className="text-sm text-[#090909]">
+                      {section.subtitle}
+                    </Text>
+                    <Text className="text-sm text-[#090909]">
+                      {section.description}
+                    </Text>
+                    {renderButtonText(section.button_text)}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        {currentPhase &&
+          currentPhase.phase.phase_classification === "CALL_TO_ACTION" && (
+            <>
+              <div className="flex max-h-[75vh] w-full max-w-[550px] flex-col gap-4 overflow-auto">
+                {renderCallToActionContent(currentPhase.phase.name)}
+              </div>
+              <div className="flex w-full flex-col gap-4">
+                {!isPending && publicFormUrl && (
+                  <iframe
+                    className="h-full w-full"
+                    src={publicFormUrl}
+                  ></iframe>
+                )}
+              </div>
+            </>
+          )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+/**
+ *     <div className="max-h-[75vh] w-[410px] max-w-[410px] overflow-auto">
           <div className="flex flex-col gap-4">
             <SoftSkillsResults
               data={hiringProcess?.phases}
@@ -531,9 +718,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   </Button>
                 ),
             )}
-          </div> */}
+          </div> }
         </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+ */

@@ -2,7 +2,7 @@ import { apiEndpoints } from "@/lib/api-endpoints";
 import { PositionResponse } from "@/types";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-import { PositiondetailsPage } from "@/components/PositionDetailsPage/PositionDetailsPage";
+import { CandidateProgress } from "@/components/CandidateProgress/CandidateProgress";
 
 export default async function Page({
   params,
@@ -33,14 +33,8 @@ export default async function Page({
     body: { data: positionData },
   } = position;
 
-  console.log(
-    "%c[Debug] position 111",
-    "background-color: teal; font-size: 20px; color: white",
-    positionData,
-  );
-
   return (
-    <PositiondetailsPage
+    <CandidateProgress
       positionData={positionData}
       dictionary={dictionary}
       company_name={company_name}

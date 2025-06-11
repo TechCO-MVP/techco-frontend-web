@@ -540,7 +540,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             showCancelButton={false}
             canSave={isCompleted}
             cancelLabel={i18n.cancelLabel}
-            saveLabel={i18n.continuedNextPhase}
+            saveLabel={`${i18n.continuedNextPhase} 2`}
             isSaving={isCompletePhasePending || isPending}
             onCancel={() => {
               checkUnsavedChanges();

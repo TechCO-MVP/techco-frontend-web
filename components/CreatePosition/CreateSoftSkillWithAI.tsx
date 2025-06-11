@@ -100,9 +100,17 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       business_id: payload.business_id,
       options: payload.options,
     };
+    const canBeCompleted =
+      (payload.assesment as Assessment).soft_skills.length > 0 &&
+      (payload.assesment as Assessment).soft_skills.every(
+        (skill) => skill.dimensions.length > 0,
+      );
     if (payload.assesment && Object.keys(payload.assesment).length > 0)
       setProgress(payload.assesment as Assessment);
-    if (payload.response_type === BotResponseTypes.FINAL_CONFIRMATION)
+    if (
+      canBeCompleted &&
+      payload.response_type === BotResponseTypes.FINAL_CONFIRMATION
+    )
       setIsCompleted(true);
     setLiveMessages((prev) => [...prev, newUserMessage]);
 
@@ -219,10 +227,23 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
     const raw = msg.content?.[0]?.text?.value;
     try {
       const parsed = JSON.parse(raw);
+      const canBeCompleted =
+        (parsed.assesment as Assessment).soft_skills.length > 0 &&
+        (parsed.assesment as Assessment).soft_skills.every(
+          (skill) => skill.dimensions.length > 0,
+        );
+      console.log(
+        "%c[Debug] parsed",
+        "background-color: teal; font-size: 20px; color: white",
+        { parsed, canBeCompleted },
+      );
       if (parsed?.assesment && Object.keys(parsed.assesment).length > 0) {
         setProgress(parsed.assesment as Assessment);
       }
-      if (parsed?.response_type === BotResponseTypes.FINAL_CONFIRMATION) {
+      if (
+        canBeCompleted &&
+        parsed?.response_type === BotResponseTypes.FINAL_CONFIRMATION
+      ) {
         setIsCompleted(true);
       }
     } catch {}
@@ -335,12 +356,10 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
             const isAssistant = msg.role === "assistant";
             const content = msg.content?.[0]?.text?.value;
             let parsedMessage = content;
-            let responseType: string | undefined;
 
             try {
               const parsed = JSON.parse(content || "");
               parsedMessage = parsed.message || content;
-              responseType = parsed.response_type;
             } catch {
               // If it's plain text or JSON fails, we fall back to raw value
             }
@@ -349,9 +368,7 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
               <Fragment key={msg.id}>
                 {isAssistant ? (
                   <div className="max-w-[475px] text-sm leading-5 text-muted-foreground">
-                    {responseType !== BotResponseTypes.FINAL_CONFIRMATION && (
-                      <p className="mb-2">{parsedMessage}</p>
-                    )}
+                    <p className="mb-2">{parsedMessage}</p>
 
                     {/* {(!waitingResponse &&
                       msg.id === firstMessageId &&
@@ -383,13 +400,13 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
                         />
                       )} */}
 
-                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
+                    {/* {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
                       <div className="rounded-2xl text-sm leading-relaxed">
                         <p className="mb-1 block">
                           {i18n.finalConfirmationMessage}
                         </p>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 ) : (
                   <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">
@@ -406,7 +423,6 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
             const isLastAssistant =
               msg.role === "assistant" && i === liveMessages.length - 1;
             const text = msg.message;
-            const responseType = msg.response_type;
 
             return (
               <Fragment key={msg.id}>
@@ -443,13 +459,13 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
                         />
                       )} */}
 
-                    {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
+                    {/* {responseType === BotResponseTypes.FINAL_CONFIRMATION && (
                       <div className="rounded-2xl text-sm leading-relaxed">
                         <p className="mb-1 block">
                           {i18n.finalConfirmationMessage}
                         </p>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 ) : (
                   <div className="max-w-[475px] place-self-end rounded-md bg-[#7676801F] p-6">

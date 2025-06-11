@@ -6,25 +6,31 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HiringPositionData, HiringProcess } from "@/types";
+
+import {
+  HiringPositionData,
+  HiringProcess,
+  PositionPhaseSearchResult,
+} from "@/types";
+import { Heading } from "../Typography/Heading";
+import { Text } from "../Typography/Text";
 
 interface SoftSkillsResultsProps {
-  data?: HiringProcess["phases"];
+  data?: HiringProcess["phases"][number];
   candidateName?: string;
   position?: HiringPositionData;
+  phase: PositionPhaseSearchResult | null;
 }
 
 export function SoftSkillsResults({
-  data,
+  data: phaseData,
   candidateName = "El candidato",
-
+  phase,
   position,
 }: SoftSkillsResultsProps) {
   // Get the first (and likely only) phase data
-  const phaseData = Object.values(data ?? {})[0];
+
   if (!phaseData) return null;
   // Calculate scores
   const calculateScore = (items: Record<string, boolean>) => {
@@ -60,15 +66,20 @@ export function SoftSkillsResults({
     }).format(amount);
   };
 
-  const ScoreDisplay = ({ score, label }: { score: number; label: string }) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-600">{label}</span>
-        <span className="text-lg font-bold text-green-600">
-          {score.toFixed(1)} de 5
-        </span>
+  const ScoreDisplay = () => (
+    <div className="mb-2 flex items-center gap-4">
+      <div className="flex-1">
+        <div className="mb-2 flex space-x-1">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className={`h-3 flex-1 rounded-sm ${
+                i <= Math.floor(overallScore) ? "bg-green-500" : "bg-gray-200"
+              }`}
+            />
+          ))}
+        </div>
       </div>
-      <Progress value={(score / 5) * 100} className="h-2" />
     </div>
   );
 
@@ -94,40 +105,37 @@ export function SoftSkillsResults({
   );
 
   return (
-    <Card style={{ scrollbarGutter: "stable" }} className="mx-auto w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">Revisión inicial</CardTitle>
-        <div className="space-y-2">
-          <p className="font-semibold text-green-600">
-            ¡{candidateName} aceptó participar en el proceso!
-          </p>
-          <p className="text-sm text-gray-600">
-            Ya analizamos su perfil con nuestro sistema de preselección
-            automática.
-          </p>
-        </div>
-      </CardHeader>
+    <div className="mx-auto max-w-4xl bg-white p-6">
+      <div className="mb-8">
+        {phase?.interviewerData?.sections.map((section) => {
+          return (
+            <div key={section.title} className="mb-4 flex flex-col gap-2">
+              <Heading className="text-base font-bold" level={2}>
+                {phase.groupName}
+              </Heading>
+              <Heading className="text-sm font-bold" level={2}>
+                {section.title}
+              </Heading>
+              <Text className="text-sm text-[#090909]">{section.subtitle}</Text>
+              <Text className="text-sm text-[#090909]">
+                {section.description}
+              </Text>
+            </div>
+          );
+        })}
+      </div>
 
-      <CardContent className="space-y-6">
+      <div className="space-y-4">
         {/* Overall Score */}
         <div className="space-y-4">
-          <div>
-            <h3 className="mb-2 font-semibold">Qué debes hacer:</h3>
-            <p className="mb-4 text-sm text-gray-600">
-              Si consideras que puede avanzar, confirmalo desde el formulario de
-              la derecha y enviaremos de inmediato su evaluación de fit
-              cultural.
-            </p>
-          </div>
-
           <div>
             <p className="mb-2 font-semibold">
               Esta fue su calificación inicial:
             </p>
-            <ScoreDisplay score={overallScore} label="" />
+            <ScoreDisplay />
           </div>
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[#090909]">
             A continuación, puedes ver el detalle de cómo se construyó ese
             puntaje.
           </p>
@@ -209,7 +217,7 @@ export function SoftSkillsResults({
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

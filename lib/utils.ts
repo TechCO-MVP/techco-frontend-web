@@ -4,7 +4,11 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import jwt from "jsonwebtoken";
 import { COUNTRIES } from "@/lib/data/countries";
-import { DraftPositionData } from "@/types";
+import {
+  DraftPositionData,
+  PositionFlow,
+  PositionPhaseSearchResult,
+} from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -164,4 +168,28 @@ export function isPositionDescriptionComplete(
     typeof data.seniority === "string" &&
     data.seniority.trim() !== ""
   );
+}
+
+export function findPhaseByName(
+  phaseName: string,
+  flowData?: PositionFlow,
+): PositionPhaseSearchResult | null {
+  if (!flowData) return null;
+  // Normalize the search term (case-insensitive, trim whitespace)
+  const normalizedPhaseName = phaseName.toLowerCase().trim();
+
+  for (const group of flowData.groups) {
+    for (const phase of group.phases) {
+      if (phase.name.toLowerCase().trim() === normalizedPhaseName) {
+        return {
+          phase,
+          groupName: group.name,
+          candidateData: phase.candidate_data,
+          interviewerData: phase.interviewer_data,
+        };
+      }
+    }
+  }
+
+  return null;
 }

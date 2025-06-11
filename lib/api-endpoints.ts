@@ -37,6 +37,9 @@ export const apiEndpoints = {
   getHiringProcess() {
     return `${BASE_URL}/hiring_process/id`;
   },
+  sendFileToAssistant() {
+    return `${BASE_URL}/hiring_process/send_file_to_assistant`;
+  },
   createUser() {
     return `${BASE_URL}/user/create`;
   },
@@ -81,6 +84,12 @@ export const apiEndpoints = {
   },
   messageHistory() {
     return `${BASE_URL}/llm/message_history`;
+  },
+  checkFileProcessingStatus() {
+    return `${BASE_URL}/hiring_process/check_status`;
+  },
+  assistantResponse() {
+    return `${BASE_URL}/hiring_process/assistant/response`;
   },
   createPositionConfiguration() {
     return `${BASE_URL}/position_configuration/create`;

@@ -17,4 +17,7 @@ export const QUERIES = {
   MESSAGE_HISTORY: (threadId?: string, limit?: number, messageId?: string) =>
     ["message-history", threadId, limit, messageId] as const,
   POSITION_CONFIG_LIST_ALL: () => ["position-config-list"] as const,
+  POSITION_BY_ID: (id: string) => ["position-by-id", id] as const,
+  FILE_PROCESSING_STATUS: (id: string) =>
+    ["file-processing-status", id] as const,
 };

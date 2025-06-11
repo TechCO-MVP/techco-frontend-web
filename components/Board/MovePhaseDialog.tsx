@@ -38,7 +38,7 @@ export const MovePhaseDialog: React.FC<MovePhaseDialogProps> = ({
           <DialogDescription>{i18n.moveToPhaseDialogInfo}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-10 flex flex-col gap-8 sm:flex-col">
-          <Button variant="default" onClick={onConfirm}>
+          <Button variant="talentGreen" onClick={onConfirm}>
             {i18n.confirmMove}
           </Button>
           <Button variant="ghost" onClick={onCancel}>

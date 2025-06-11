@@ -233,6 +233,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
 
   const canCopy = () => {
     const configs = positionConfiguration?.body?.data;
+
     if (!configs || configs.length === 0) return false;
     switch (activePhase?.type) {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
@@ -244,7 +245,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
                 phase.status === "COMPLETED",
             ).length > 0,
         );
-        return completedDescriptions.length > 1;
+        return completedDescriptions.length > 0;
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
         const completedSoftSkills = configs.filter(
           (config) =>
@@ -254,7 +255,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
                 phase.status === "COMPLETED",
             ).length > 0,
         );
-        return completedSoftSkills.length > 1;
+        return completedSoftSkills.length > 0;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
         const completedTechnicalTests = configs.filter(
           (config) =>
@@ -264,7 +265,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
                 phase.status === "COMPLETED",
             ).length > 0,
         );
-        return completedTechnicalTests.length > 1;
+        return completedTechnicalTests.length > 0;
       default:
         return false;
     }

@@ -13,13 +13,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DIAL_CODES } from "@/lib/data/countries";
-import { PositionConfigurationPhaseTypes, PositionData } from "@/types";
+import {
+  PHASE_NAMES,
+  PositionConfigurationPhaseTypes,
+  PositionData,
+} from "@/types";
 import Image from "next/image";
 import { Text } from "../Typography/Text";
 import { DetailsSheet } from "../PositionDetailsPage/DetailsSheet";
 import { useUpdateHiringProcessCustomFields } from "@/hooks/use-update-hiring-process-custom-fields";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
-
+import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
 type ApplicationFormProps = {
   dictionary: Dictionary;
   positionData: PositionData;
@@ -59,10 +63,28 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     cardId: positionData.hiring_card_id,
   });
 
+  const { mutate: moveCardToPhase } = useMoveCardToPhase({
+    onSuccess: (data) => {
+      console.log("Card moved to phase", data);
+    },
+    onError: (error) => {
+      console.error("Error moving card to phase", error);
+    },
+  });
+
+  const nextPhase = card?.pipe.phases.find(
+    (phase) => phase.name === PHASE_NAMES.INITIAL_FILTER,
+  );
+
   const { mutate: updateHiringProcessCustomFields } =
     useUpdateHiringProcessCustomFields({
-      onSuccess: (data) => {
-        console.log("Hiring process custom fields updated", data);
+      onSuccess: () => {
+        if (nextPhase) {
+          moveCardToPhase({
+            cardId: positionData.hiring_card_id,
+            destinationPhaseId: nextPhase.id,
+          });
+        }
       },
       onError: (error) => {
         console.error("Error updating hiring process custom fields", error);
@@ -72,11 +94,6 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const handleUpdateHiringProcessCustomFields = (
     customFields: Record<string, unknown>,
   ) => {
-    console.log(
-      "%c[Debug] card",
-      "background-color: teal; font-size: 20px; color: white",
-      card,
-    );
     if (!card?.current_phase.id) return;
 
     updateHiringProcessCustomFields({
@@ -126,14 +143,6 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       skills: skillAnswers,
       expected_salary: expectedSalary,
     });
-    console.log(
-      "%c[Debug] ",
-      "background-color: teal; font-size: 20px; color: white",
-      {
-        responsibilityAnswers,
-        skillAnswers,
-      },
-    );
   };
 
   // Compute if all checkboxes are selected (no undefined values)

@@ -6,12 +6,20 @@ export const GET_CARD = gql`
       current_phase {
         id
         name
+        fields {
+          description
+        }
       }
       fields {
         value
         indexName
+        field {
+          type
+        }
       }
       pipe {
+        id
+        organizationId
         phases {
           id
           name
@@ -87,6 +95,7 @@ export const GET_PIPE = gql`
                 label
                 type
                 options
+                description
               }
               fieldConditions {
                 actions {

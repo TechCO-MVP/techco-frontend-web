@@ -28,6 +28,7 @@ export const SoftSkillsSheet: FC<Props> = ({
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>

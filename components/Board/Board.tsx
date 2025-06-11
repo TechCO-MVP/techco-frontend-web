@@ -85,12 +85,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);
   }, [positions, id]);
-  console.log(
-    "%c[Debug] selectedPosition",
-    "background-color: teal; font-size: 20px; color: white",
-    selectedPosition,
-    positions,
-  );
+
   const { toast } = useToast();
 
   const {

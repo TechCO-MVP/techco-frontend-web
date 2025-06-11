@@ -19,7 +19,7 @@ interface PositionDetailsPageProps {
   token: string;
 }
 
-export const PositiondetailsPage = ({
+export const PositionDetailsPage = ({
   positionData,
   dictionary,
   company_name,
