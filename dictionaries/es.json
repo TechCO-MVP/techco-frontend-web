@@ -283,7 +283,8 @@
     "whatWeOfferLabel": "Lo que ofrecemos",
     "skillsLabel": "Requisitos clave",
     "sendApplicationLabel": "Enviar mi aplicación",
-    "iWantToApply": "Quiero postularme"
+    "iWantToApply": "Quiero postularme",
+    "abandonProcessLabel": "Retirarme del proceso"
   },
   "createPositionPage": {
     "seeHowItWorks": "Ver cómo funciona",

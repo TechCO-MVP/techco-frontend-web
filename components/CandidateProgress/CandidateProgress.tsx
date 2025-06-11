@@ -27,6 +27,7 @@ import {
 import Image from "next/image";
 import { DetailsSheet } from "../PositionDetailsPage/DetailsSheet";
 import { Button } from "../ui/button";
+import { AbandonProcessDialog } from "./AbandonProcessDialog";
 
 interface CandidateProgressProps {
   positionData: PositionData;
@@ -55,7 +56,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
     return <LoadingSkeleton />;
 
   const currentPhase = findPhaseByName(
-    // PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+    // PHASE_NAMES.FINALISTS,
     card.current_phase.name,
     position.position_flow,
   );
@@ -167,6 +168,21 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       <Text className="text-left text-sm text-[#090909]">
                         {section.description}
                       </Text>
+                      {card.current_phase.fields.map((field, index) => {
+                        return field.type === "statement" ? (
+                          <div
+                            className="flex gap-2 text-sm text-[#090909]"
+                            key={index}
+                            dangerouslySetInnerHTML={{
+                              __html: field.description,
+                            }}
+                          ></div>
+                        ) : null;
+                      })}
+                      <AbandonProcessDialog
+                        dictionary={dictionary}
+                        cardId={positionData.hiring_card_id}
+                      />
                     </div>
                   );
                 })}

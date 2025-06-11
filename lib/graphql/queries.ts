@@ -8,6 +8,7 @@ export const GET_CARD = gql`
         name
         fields {
           description
+          type
         }
       }
       fields {

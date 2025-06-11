@@ -282,7 +282,8 @@
     "whatWeOfferLabel": "What we offer",
     "skillsLabel": "Key skills",
     "sendApplicationLabel": "Send my application",
-    "iWantToApply": "I want to apply"
+    "iWantToApply": "I want to apply",
+    "abandonProcessLabel": "Abandon process"
   },
   "createPositionPage": {
     "seeHowItWorks": "See how it works",

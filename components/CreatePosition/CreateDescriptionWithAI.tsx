@@ -426,7 +426,7 @@ export const CreateDescriptionWithAI: FC<Readonly<CreateWithAIProps>> = ({
               value={message}
               disabled={waitingResponse || isLoading}
               onChange={(e) => setMessage(e.target.value)}
-              className="mt-10 h-14 rounded-md border-none bg-[#F7F9FB] focus-visible:ring-0"
+              className="mt-10 h-14 rounded-md border-none bg-[#F7F9FB] pr-10 focus-visible:ring-0"
               placeholder="Type message"
             />
             {waitingResponse ? (
