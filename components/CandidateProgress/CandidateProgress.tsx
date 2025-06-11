@@ -298,6 +298,8 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
               ).includes(card.current_phase.name) && (
                 <div className="mb-4 flex items-center justify-between">
                   <AttachFileDialog
+                    position={position}
+                    card={card}
                     nextPhase={nextPhase}
                     organizationId={card.pipe.organizationId}
                     hiringProcessId={positionData.hiring_id}

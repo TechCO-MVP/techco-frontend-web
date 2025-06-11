@@ -36,7 +36,7 @@ export const SOURCE_OPTIONS = [
 export const STATUS_OPTIONS = ["Activo", "Descartado", "Desistió del proceso"];
 
 export const UPLOAD_FILE_PROMPT =
-  "Por favor califica esta prueba con base en tu Prompt";
+  "Analiza las respuestas contenidas en el documento PDF adjunto, correspondiente a una prueba aplicada. Evalúa cada respuesta con base en los criterios definidos en tu prompt como asistente.";
 
 export const CULTURAL_FIT_FIELD_ID =
   "305713420_334881894_resultadoadndelcandidato";

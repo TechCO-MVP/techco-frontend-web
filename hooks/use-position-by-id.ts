@@ -1,10 +1,10 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { HiringPositionData, HiringPositionByIdResponse } from "@/types";
+import { PositionData, HiringPositionByIdResponse } from "@/types";
 import { QUERIES } from "@/constants/queries";
 
 type Params = {
   id: string;
-  options?: Partial<UseQueryOptions<HiringPositionData>>;
+  options?: Partial<UseQueryOptions<PositionData>>;
 };
 
 export function usePositionById({ id, options }: Params) {

@@ -142,6 +142,13 @@ export type PositionData = {
   hiring_id: string;
   hiring_profile_name: string | null;
   hiring_card_id: string;
+  position_flow: PositionFlow;
+  position_assessments: {
+    type:
+      | PositionConfigurationPhaseTypes.SOFT_SKILLS
+      | PositionConfigurationPhaseTypes.TECHNICAL_TEST;
+    data: Assessment | TechnicalAssessment;
+  }[];
 };
 
 export type PositionResponseBody = {
@@ -265,7 +272,7 @@ export type HiringPositionResponse = {
 export type HiringPositionByIdResponse = {
   message: string;
   body: {
-    data: HiringPositionData;
+    data: PositionData;
   };
 };
 export type Stakeholder = {
