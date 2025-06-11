@@ -23,8 +23,8 @@ export function useBusinesses() {
 
       return data.body;
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+    staleTime: 0,
+    gcTime: 0,
     retry: 1,
     refetchOnWindowFocus: false,
   });
