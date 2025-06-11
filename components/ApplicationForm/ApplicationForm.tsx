@@ -95,12 +95,16 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     customFields: Record<string, unknown>,
   ) => {
     if (!card?.current_phase.id) return;
+    const nextPhase = card?.pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.INITIAL_FILTER,
+    );
+    if (!nextPhase) return;
 
     updateHiringProcessCustomFields({
       id: positionData.hiring_id,
       phases: {
-        [card.current_phase.id]: {
-          phase_id: card.current_phase.id,
+        [nextPhase.id]: {
+          phase_id: nextPhase.id,
           custom_fields: customFields,
         },
       },
