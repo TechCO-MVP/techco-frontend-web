@@ -161,7 +161,16 @@ type HiringUser = {
 export type HiringResponsibleUser = HiringUser & {
   can_edit: boolean;
 };
-
+export type CulturalAssessmentResult = {
+  comportamientos: {
+    dimension: string;
+    pregunta: string;
+    respuesta_candidato: string;
+    calificacion: number; // 1 to 5
+    justificacion: string;
+  }[];
+  feedback_general: string;
+};
 export type HiringProcess = {
   _id: string;
   business_id: string;
@@ -176,6 +185,8 @@ export type HiringProcess = {
         responsibilities: Record<string, boolean>;
         skills: Record<string, boolean>;
         expected_salary: string;
+        process_id: string;
+        cultural_assessment_result: CulturalAssessmentResult | null;
       };
     };
   };
@@ -214,6 +225,13 @@ export type HiringPositionData = {
   created_at: string;
   hiring_processes: HiringProcess[];
   position_configuration_id?: string;
+  position_flow: PositionFlow;
+  position_assessments: {
+    type:
+      | PositionConfigurationPhaseTypes.SOFT_SKILLS
+      | PositionConfigurationPhaseTypes.TECHNICAL_TEST;
+    data: Assessment | TechnicalAssessment;
+  }[];
   salary?: {
     currency: string;
     salary?: string;
@@ -244,7 +262,12 @@ export type HiringPositionResponse = {
     data: HiringPositionData[];
   };
 };
-
+export type HiringPositionByIdResponse = {
+  message: string;
+  body: {
+    data: HiringPositionData;
+  };
+};
 export type Stakeholder = {
   stakeholder_id: string;
   stakeholder_name: string;
@@ -273,6 +296,11 @@ export type NotificationStatus = "NEW" | "READ" | "REVIEWED";
 export enum PhaseType {
   INFORMATIVE = "Informativa",
   ACTION_CALL = "Llamado a la acción",
+}
+
+export enum AssistantName {
+  CULTURAL_FIT_ASSESSMENT = "soft_assessment_assistant",
+  TECHNICAL_ASSESSMENT = "technical_assessment_assistant",
 }
 export enum NotificationType {
   PHASE_CHANGE = "PHASE_CHANGE",
@@ -629,6 +657,30 @@ export type AssessmentSoftSkillDimension = {
   question: string;
   explanation: string;
 };
+export type FileProcessingStatus = {
+  process_id: string;
+  run_id: string;
+  created_at: string;
+  thread_id: string;
+  expires_at: string;
+  status: "COMPLETED" | "IN_PROGRESS" | "FAILED";
+};
+
+export type AssistantResponse = {
+  message: string;
+  data: {
+    message: string;
+    response_type: string;
+    assesment_result: CulturalAssesmentResult | TechnicalAssesmentResult;
+  };
+};
+
+export type AssistantResponseInput = {
+  run_id: string;
+  assistant_type: AssistantName;
+  thread_id: string;
+  hiring_process_id: string;
+};
 
 /**
  * {
@@ -646,3 +698,78 @@ export type TechnicalAssessment = {
   challenge: string;
   your_mission: string;
 };
+
+export interface PositionFlowDataSection {
+  title: string;
+  subtitle: string;
+  description: string;
+  button_text: string;
+}
+
+export interface PositionFlowData {
+  sections: PositionFlowDataSection[];
+}
+
+export interface PositionFlowPhase {
+  name: string;
+  phase_classification: "INFORMATIVE" | "CALL_TO_ACTION";
+  candidate_data: PositionFlowData | null;
+  interviewer_data: PositionFlowData | null;
+}
+export interface PhaseFlowGroup {
+  name: string;
+  phases: PositionFlowPhase[];
+}
+
+export interface PositionFlow {
+  flow_type: string;
+  pipe_id: number;
+  groups: PhaseFlowGroup[];
+}
+
+export interface PositionPhaseSearchResult {
+  phase: PositionFlowPhase;
+  groupName: string;
+  candidateData: PositionFlowData | null;
+  interviewerData: PositionFlowData | null;
+}
+
+export type CulturalAssesmentResult = {
+  comportamientos: {
+    dimension: string;
+    pregunta: string;
+    respuesta_candidato: string;
+    calificacion: number; // 1 to 5
+    justificacion: string;
+  }[];
+  feedback_general: string;
+};
+
+export type TechnicalAssesmentResult = {
+  dimensiones: {
+    nombre: string;
+    calificacion: number; // 1 to 5
+    justificacion: string;
+  }[];
+  feedback_general: string;
+};
+
+export const PHASE_NAMES = {
+  SUGGESTED_CANDIDATES: "Candidatos sugeridos",
+  OFFER_SENT: "Oferta enviada",
+  INITIAL_FILTER: "Filtro inicial",
+  CULTURAL_FIT_ASSESSMENT: "Assessment fit Cultural",
+  CULTURAL_FIT_ASSESSMENT_RESULTS: "Resultado Fit Cultural",
+  FIRST_INTERVIEW_REQUESTED: "Primera entrevista solicitada",
+  FIRST_INTERVIEW_SCHEDULED: "Primera entrevista programada",
+  FIRST_INTERVIEW_RESULTS: "Resultado primer entrevista",
+  TECHNICAL_ASSESSMENT: "Assessment técnico",
+  TECHNICAL_ASSESSMENT_RESULTS: "Resultado Assessment técnico",
+  FINAL_INTERVIEW_REQUESTED: "Entrevista final solicitada",
+  FINAL_INTERVIEW_SCHEDULED: "Entrevista final programada",
+  FINAL_INTERVIEW_RESULTS: "Resultado entrevista final",
+  FINALISTS: "Finalistas",
+  SELECTED_CANDIDATES: "Candidato seleccionado",
+  REJECTED: "Descartados",
+  ABBANDONED_PROCESS: "Abandonaron el proceso",
+} as const;

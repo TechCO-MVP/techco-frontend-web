@@ -38,6 +38,7 @@ export class PipefyBoardTransformer {
               field: field.field,
               internal_id: field.internal_id,
               options: field.options,
+              description: field.description,
             })),
           })),
         },

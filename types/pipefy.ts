@@ -74,6 +74,7 @@ export type PipefyConditionExpression = {
 };
 export type PipefyField = {
   id: string;
+  description: string;
   type: PipefyFieldType;
   label: string;
   required?: boolean;
@@ -100,9 +101,12 @@ export type PipefyCardResponse = {
     current_phase: {
       id: string;
       name: string;
+      fields: PipefyField[];
     };
     fields: PipefyField[];
     pipe: {
+      id: string;
+      organizationId: string;
       phases: {
         id: string;
         name: string;
@@ -180,4 +184,5 @@ export enum PipefyFieldValues {
   PositionMatch = "field_21_string",
   Recomendation = "field_23_string",
   CandidateBio = "field_24_string",
+  AspectsNotDemostrated = "field_22_string",
 }
