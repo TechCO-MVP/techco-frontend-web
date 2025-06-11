@@ -1,18 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { apiEndpoints } from "@/lib/api-endpoints";
 export async function PUT(req: Request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("idToken")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Unauthorized: Missing token" },
-        { status: 401 },
-      );
-    }
-
     const body = await req.json();
 
     const response = await fetch(
@@ -22,7 +11,6 @@ export async function PUT(req: Request) {
         headers: {
           "Content-Type": "application/json",
           "x-api-key": process.env.API_KEY ?? "",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       },
