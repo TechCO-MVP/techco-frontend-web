@@ -45,9 +45,9 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
         return "Descripción";
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        return "Assessment Fit cultural";
+        return "ADN Del Talento";
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        return "Assessment Técnico";
+        return "Caso de Negocio";
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         return "¡Listo!";
       case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:

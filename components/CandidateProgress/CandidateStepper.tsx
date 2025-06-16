@@ -17,6 +17,20 @@ export const CandidateStepper = ({
   const activeIndex = groups.findIndex(
     (group) => group.name === currentPhase.groupName,
   );
+
+  const getGroupTitle = (groupName: string) => {
+    switch (groupName) {
+      case "Descartados":
+        return "No Continua";
+      case "Fit cultural":
+        return "ADN Del Talento";
+      case "Assessment técnico":
+        return "Caso de Negocio";
+      default:
+        return groupName;
+    }
+  };
+
   const steps = groups.map((group, idx) => {
     let status: string;
     if (idx < activeIndex) {
@@ -28,7 +42,7 @@ export const CandidateStepper = ({
     }
     return {
       number: idx + 1,
-      title: group.name === "Descartados" ? "No Continua" : group.name,
+      title: getGroupTitle(group.name),
       status,
       isActive: idx === activeIndex,
     };
