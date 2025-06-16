@@ -385,9 +385,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
         return `Descripción (1 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        return `Assessment Fit cultural (2 de ${totalPhases})`;
+        return `ADN Del Talento (2 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
-        return `Assessment Técnico (3 de ${totalPhases})`;
+        return `Caso de Negocio (3 de ${totalPhases})`;
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
         return "¡Listo!";
       case PositionConfigurationPhaseTypes.FINAL_INTERVIEW:
