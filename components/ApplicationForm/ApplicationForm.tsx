@@ -210,23 +210,23 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             src="/assets/talent_connect.svg"
             alt="TechCo"
           />
+          <ul className="flex justify-end space-x-4">
+            <li>
+              <DetailsSheet
+                customTrigger={
+                  <Button
+                    variant="outline"
+                    className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
+                  >
+                    Ver detalles de la oferta
+                  </Button>
+                }
+                positionData={positionData}
+                dictionary={dictionary}
+              />
+            </li>
+          </ul>
         </nav>
-        <ul className="flex justify-end space-x-4">
-          <li>
-            <DetailsSheet
-              customTrigger={
-                <Button
-                  variant="outline"
-                  className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
-                >
-                  Ver detalles de la oferta
-                </Button>
-              }
-              positionData={positionData}
-              dictionary={dictionary}
-            />
-          </li>
-        </ul>
       </header>
       <div
         className="min-h-100vh flex h-full min-h-screen w-full flex-col justify-center bg-gray-50 pb-20"
@@ -309,6 +309,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   <div className="flex gap-4">
                     <div className="flex items-center space-x-2">
                       <Checkbox
+                        className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
                         id={`skill-${skill.name}-yes`}
                         checked={skillAnswers[skill.name] === true}
                         onCheckedChange={() =>
@@ -324,6 +325,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
+                        className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
                         id={`skill-${skill.name}-no`}
                         checked={skillAnswers[skill.name] === false}
                         onCheckedChange={() =>
@@ -359,6 +361,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   <div className="flex gap-4">
                     <div className="flex items-center space-x-2">
                       <Checkbox
+                        className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
                         id={`resp-${resp}-yes`}
                         checked={responsibilityAnswers[resp] === true}
                         onCheckedChange={() =>
@@ -371,6 +374,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
+                        className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
                         id={`resp-${resp}-no`}
                         checked={responsibilityAnswers[resp] === false}
                         onCheckedChange={() =>

@@ -309,3 +309,27 @@ export function calculateSalaryRangeScore(
   // 1: Outside the above margins (> ±51%)
   return 1;
 }
+
+/**
+ * Sanitizes HTML content by removing empty paragraphs and unnecessary whitespace
+ * @param html - The HTML content to sanitize
+ * @returns Sanitized HTML content
+ */
+export const sanitizeHtml = (html: string): string => {
+  if (!html) return "";
+
+  return (
+    html
+      // Replace multiple consecutive empty paragraphs with a single one
+      .replace(/(<p>\s*<\/p>\s*){2,}/g, "<p></p>")
+      // Remove empty paragraphs that only contain spaces, &nbsp;, <br>, or formatting tags
+      .replace(
+        /<p>\s*(?:<(?:br|strong|em)>\s*)*(?:&nbsp;|\s)*(?:<\/(?:br|strong|em)>\s*)*<\/p>/g,
+        "",
+      )
+      // Remove multiple consecutive <br> tags
+      .replace(/(<br\s*\/?>\s*){2,}/g, "<br>")
+      // Trim whitespace at the start and end
+      .trim()
+  );
+};

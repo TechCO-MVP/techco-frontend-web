@@ -14,7 +14,7 @@ import { PositionDetailsPage } from "../PositionDetailsPage/PositionDetailsPage"
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
 import LoadingSkeleton from "../PositionDetailsPage/Skeleton";
 import { usePositionById } from "@/hooks/use-position-by-id";
-import { findPhaseByName } from "@/lib/utils";
+import { findPhaseByName, sanitizeHtml } from "@/lib/utils";
 import { CandidateStepper } from "./CandidateStepper";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
@@ -155,23 +155,23 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                 src="/assets/talent_connect.svg"
                 alt="TechCo"
               />
+              <ul className="hidden justify-end space-x-4 md:flex">
+                <li>
+                  <DetailsSheet
+                    customTrigger={
+                      <Button
+                        variant="outline"
+                        className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
+                      >
+                        Ver detalles de la oferta
+                      </Button>
+                    }
+                    positionData={positionData}
+                    dictionary={dictionary}
+                  />
+                </li>
+              </ul>
             </nav>
-            <ul className="hidden justify-end space-x-4 md:flex">
-              <li>
-                <DetailsSheet
-                  customTrigger={
-                    <Button
-                      variant="outline"
-                      className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
-                    >
-                      Ver detalles de la oferta
-                    </Button>
-                  }
-                  positionData={positionData}
-                  dictionary={dictionary}
-                />
-              </li>
-            </ul>
           </header>
           <div className="mx-auto flex w-full max-w-[1280px] flex-col bg-white px-4 py-8 text-center">
             <CandidateStepper
@@ -213,22 +213,26 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       <Text className="text-left text-sm text-[#090909]">
                         {section.description}
                       </Text>
-                      {section.button_text &&
-                        section.button_text === STATEMENT_BUTTON_TEXT && (
-                          <>
-                            {card.current_phase.fields.map((field, index) => {
-                              return field.type === "statement" ? (
-                                <div
-                                  className="flex gap-2 text-sm text-[#090909]"
-                                  key={index}
-                                  dangerouslySetInnerHTML={{
-                                    __html: field.description,
-                                  }}
-                                ></div>
-                              ) : null;
-                            })}
-                          </>
-                        )}
+                      {(card.current_phase.name ===
+                        PHASE_NAMES.FIRST_INTERVIEW_SCHEDULED ||
+                        card.current_phase.name ===
+                          PHASE_NAMES.FINAL_INTERVIEW_SCHEDULED ||
+                        (section.button_text &&
+                          section.button_text === STATEMENT_BUTTON_TEXT)) && (
+                        <>
+                          {card.current_phase.fields.map((field, index) => {
+                            return field.type === "statement" ? (
+                              <div
+                                className="flex w-full flex-col items-center gap-2 text-sm text-[#090909]"
+                                key={index}
+                                dangerouslySetInnerHTML={{
+                                  __html: sanitizeHtml(field.description),
+                                }}
+                              ></div>
+                            ) : null;
+                          })}
+                        </>
+                      )}
                       <div className="flex gap-2">
                         <AbandonProcessDialog
                           dictionary={dictionary}

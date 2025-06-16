@@ -101,7 +101,7 @@ export const CandidateStepper = ({
         </div>
 
         {/* Desktop Timeline - Horizontal */}
-        <div className="hidden px-8 py-12 md:block">
+        <div className="hidden px-8 py-4 md:block">
           <div className="relative">
             {/* Horizontal connecting line */}
             <div className="absolute left-6 right-6 top-6 h-0.5 bg-gray-300"></div>
