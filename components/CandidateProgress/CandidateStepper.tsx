@@ -12,9 +12,7 @@ export const CandidateStepper = ({
   currentPhase: PositionPhaseSearchResult | null;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const groups = positionFlow.groups.filter(
-    (group) => group.name !== "Descartados",
-  );
+  const groups = positionFlow.groups;
   if (!currentPhase) return null;
   const activeIndex = groups.findIndex(
     (group) => group.name === currentPhase.groupName,
@@ -30,7 +28,7 @@ export const CandidateStepper = ({
     }
     return {
       number: idx + 1,
-      title: group.name,
+      title: group.name === "Descartados" ? "No Continua" : group.name,
       status,
       isActive: idx === activeIndex,
     };
@@ -42,7 +40,7 @@ export const CandidateStepper = ({
     : steps.filter((step) => step.isActive);
 
   return (
-    <div className="w-full p-6">
+    <div className="absolute left-0 top-0 w-full p-6 md:relative">
       <div className="mx-auto rounded-lg bg-white shadow-sm">
         {/* Header with chevron - only show on mobile */}
         <div className="flex justify-end p-4 md:hidden">
@@ -135,7 +133,12 @@ export const CandidateStepper = ({
 
                     {/* Step content */}
                     <div>
-                      <div className="mb-1 text-sm font-medium text-gray-500">
+                      <div
+                        className={cn(
+                          "mb-1 text-sm font-medium text-gray-500",
+                          step.title === "No Continua" && "text-white",
+                        )}
+                      >
                         PASO {step.number}
                       </div>
                       <div className="mb-1 text-sm font-semibold leading-tight text-gray-900">
@@ -147,6 +150,7 @@ export const CandidateStepper = ({
                           isActive && "text-[#FF9500]",
                           isPending && "text-gray-500",
                           isCompleted && "text-[#34C759]",
+                          step.title === "No Continua" && "text-white",
                         )}
                       >
                         {step.status}

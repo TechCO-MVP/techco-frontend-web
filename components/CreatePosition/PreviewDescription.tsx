@@ -205,7 +205,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       currency: positionData.salary?.currency || "USD",
     }).format(Number(positionData.salary?.salary));
 
-    return `${salary}`;
+    return `${salary} `;
   };
 
   const checkUnsavedChanges = () => {

@@ -44,13 +44,13 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { SoftSkillsResults } from "./SoftSkillsResults";
 import ResultsTabContent from "./ResultsTabContent";
-import { AssistantName, HiringPositionData, PHASE_NAMES } from "@/types";
+import { HiringPositionData, PHASE_NAMES } from "@/types";
 
 import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
 import { FirstInterviewResults } from "./FirstInterviewResults";
 import { TechnicalAssessmentResults } from "./TechnicalAssessmentResults";
-import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
-import { useAssistantResponse } from "@/hooks/use-assistant-response";
+// import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
+// import { useAssistantResponse } from "@/hooks/use-assistant-response";
 import { STATEMENT_BUTTON_TEXT } from "@/constants";
 
 interface CandidateDetailsDialogProps {
@@ -70,7 +70,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   position,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
-  const [fetchProcessId, setFetchProcessId] = useState<string | null>(null);
+  // const [fetchProcessId, setFetchProcessId] = useState<string | null>(null);
   const { showCandidateDetails } = notificationsState;
   const { userCard: i18n } = dictionary;
   const { rootBusiness } = useBusinesses();
@@ -110,16 +110,16 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     return users.find((user) => user.email === currentUser?.email);
   }, [users, currentUser]);
 
-  const { fileProcessingStatus } = useFileProcessingStatus(fetchProcessId);
+  // const { fileProcessingStatus } = useFileProcessingStatus(fetchProcessId);
 
-  const { mutate: getAssistantResponse } = useAssistantResponse({
-    onSuccess(data) {
-      console.log("[Success]", data);
-    },
-    onError(error) {
-      console.log("[Error]", error);
-    },
-  });
+  // const { mutate: getAssistantResponse } = useAssistantResponse({
+  //   onSuccess(data) {
+  //     console.log("[Success]", data);
+  //   },
+  //   onError(error) {
+  //     console.log("[Error]", error);
+  //   },
+  // });
 
   const { positions } = useOpenPositions({
     userId: localUser?._id,
@@ -136,7 +136,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   }, [selectedPosition, card]);
 
   const currentPhase = findPhaseByName(
-    // PHASE_NAMES.INITIAL_FILTER,
     card.current_phase.name,
     position?.position_flow,
   );
@@ -201,40 +200,40 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   // This logic is to get the run_id from the file processing status
   // Only for the cultural fit assessment phase
-  useEffect(() => {
-    if (!open || fetchProcessId) return;
-    if (
-      card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS
-    ) {
-      const phaseData = getDataForPhase(card.current_phase.id);
-      if (
-        phaseData?.custom_fields.process_id &&
-        !phaseData?.custom_fields.cultural_assessment_result
-      ) {
-        setFetchProcessId(phaseData?.custom_fields.process_id);
-      }
-    }
-  });
+  // useEffect(() => {
+  //   if (!open || fetchProcessId) return;
+  //   if (
+  //     card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS
+  //   ) {
+  //     const phaseData = getDataForPhase(card.current_phase.id);
+  //     if (
+  //       phaseData?.custom_fields.process_id &&
+  //       !phaseData?.custom_fields.cultural_assessment_result
+  //     ) {
+  //       setFetchProcessId(phaseData?.custom_fields.process_id);
+  //     }
+  //   }
+  // });
 
   // This logic is to get the assistant response with the assessment result
-  useEffect(() => {
-    if (!open) return;
-    if (!fileProcessingStatus) return;
-    if (
-      card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS &&
-      hiringProcess
-    ) {
-      const phaseData = getDataForPhase(card.current_phase.id);
-      if (!phaseData?.custom_fields.cultural_assessment_result) {
-        getAssistantResponse({
-          run_id: fileProcessingStatus.run_id,
-          assistant_type: AssistantName.CULTURAL_FIT_ASSESSMENT,
-          thread_id: fileProcessingStatus.thread_id,
-          hiring_process_id: hiringProcess._id,
-        });
-      }
-    }
-  }, [fileProcessingStatus]);
+  // useEffect(() => {
+  //   if (!open) return;
+  //   if (!fileProcessingStatus) return;
+  //   if (
+  //     card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS &&
+  //     hiringProcess
+  //   ) {
+  //     const phaseData = getDataForPhase(card.current_phase.id);
+  //     if (!phaseData?.custom_fields.cultural_assessment_result) {
+  //       getAssistantResponse({
+  //         run_id: fileProcessingStatus.run_id,
+  //         assistant_type: AssistantName.CULTURAL_FIT_ASSESSMENT,
+  //         thread_id: fileProcessingStatus.thread_id,
+  //         hiring_process_id: hiringProcess._id,
+  //       });
+  //     }
+  //   }
+  // }, [fileProcessingStatus]);
 
   useEffect(() => {
     if (!open) return;
@@ -275,17 +274,36 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const renderCallToActionContent = (phaseName: string) => {
     switch (phaseName) {
       case PHASE_NAMES.INITIAL_FILTER:
+        const offerSentPhase = pipe.phases.find(
+          (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
+        );
+        console.log(
+          "%c[Debug] offerSentPhase",
+          "background-color: teal; font-size: 20px; color: white",
+          offerSentPhase,
+        );
+        if (!offerSentPhase) return null;
         return (
           <div className="flex flex-col gap-4">
             <SoftSkillsResults
-              data={getDataForPhase(card.current_phase.id)}
+              data={getDataForPhase(offerSentPhase.id)}
               position={position}
               phase={currentPhase}
             />
           </div>
         );
       case PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS:
-        return <CulturalAssessmentResults phase={currentPhase} />;
+        const culturalAssessmentPhase = pipe.phases.find(
+          (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+        );
+        if (!culturalAssessmentPhase) return null;
+        const data = getDataForPhase(culturalAssessmentPhase.id);
+        console.log(
+          "%c[Debug] CULTURAL_FIT_ASSESSMENT_RESULTS",
+          "background-color: teal; font-size: 20px; color: white",
+          data,
+        );
+        return <CulturalAssessmentResults data={data} phase={currentPhase} />;
       case PHASE_NAMES.FIRST_INTERVIEW_RESULTS:
         return (
           <FirstInterviewResults
@@ -294,6 +312,18 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
           />
         );
       case PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS:
+        const technicalAssessmentPhase = pipe.phases.find(
+          (phase) => phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT,
+        );
+        if (!technicalAssessmentPhase) return null;
+        const technicalAssessmentData = getDataForPhase(
+          technicalAssessmentPhase.id,
+        );
+        console.log(
+          "%c[Debug] TECHNICAL_ASSESSMENT_RESULTS",
+          "background-color: teal; font-size: 20px; color: white",
+          technicalAssessmentData,
+        );
         return <TechnicalAssessmentResults phase={currentPhase} />;
     }
   };

@@ -168,13 +168,16 @@ type HiringUser = {
 export type HiringResponsibleUser = HiringUser & {
   can_edit: boolean;
 };
-export type CulturalAssessmentResult = {
+export type CulturalAssessmentResultType = {
   comportamientos: {
-    dimension: string;
-    pregunta: string;
-    respuesta_candidato: string;
-    calificacion: number; // 1 to 5
-    justificacion: string;
+    name: string;
+    dimensions: {
+      dimension: string;
+      pregunta: string;
+      respuesta_candidato: string;
+      calificacion: number; // 1 to 5
+      justificacion: string;
+    }[];
   }[];
   feedback_general: string;
 };
@@ -193,7 +196,7 @@ export type HiringProcess = {
         skills: Record<string, boolean>;
         expected_salary: string;
         process_id: string;
-        cultural_assessment_result: CulturalAssessmentResult | null;
+        cultural_assessment_result: CulturalAssessmentResultType | null;
       };
     };
   };

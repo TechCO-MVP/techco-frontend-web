@@ -193,3 +193,119 @@ export function findPhaseByName(
 
   return null;
 }
+
+export const calculateScore = (items: Record<string, boolean | undefined>) => {
+  if (!items) return 0;
+  const totalItems = Object.keys(items).length;
+  const trueItems = Object.values(items).filter(Boolean).length;
+  return totalItems > 0 ? (trueItems / totalItems) * 5 : 0;
+};
+
+/**
+ * Calculates a score (1-5) based on the percentage difference between expected and offered salary.
+ * @param expectedSalary - The candidate's expected salary
+ * @param positionSalary - The offered salary for the position
+ * @returns number (1-5)
+ */
+export function calculateSalaryScore(
+  expectedSalary: number,
+  positionSalary: number,
+): number {
+  if (
+    !expectedSalary ||
+    !positionSalary ||
+    expectedSalary <= 0 ||
+    positionSalary <= 0
+  ) {
+    return 1; // Defensive: lowest score if invalid input
+  }
+  const diffPercent =
+    ((positionSalary - expectedSalary) / expectedSalary) * 100;
+  const absDiff = Math.abs(diffPercent);
+
+  if (absDiff <= 5) {
+    return 5;
+  } else if (
+    (diffPercent >= -15 && diffPercent <= -6) ||
+    (diffPercent >= 6 && diffPercent <= 15)
+  ) {
+    return 4;
+  } else if (
+    (diffPercent >= -30 && diffPercent <= -16) ||
+    (diffPercent >= 16 && diffPercent <= 30)
+  ) {
+    return 3;
+  } else if (
+    (diffPercent >= -50 && diffPercent <= -31) ||
+    (diffPercent >= 31 && diffPercent <= 50)
+  ) {
+    return 2;
+  } else {
+    return 1;
+  }
+}
+
+/**
+ * Calculates a score (1-5) based on the candidate's expected salary relative to the position's salary range.
+ * @param positionSalaryRange - The salary range for the position { min, max }
+ * @param expectedSalary - The candidate's expected salary
+ * @returns number (1-5)
+ */
+export function calculateSalaryRangeScore(
+  positionSalaryRange: { min: number; max: number },
+  expectedSalary: number,
+): number {
+  const { min, max } = positionSalaryRange;
+  if (
+    !min ||
+    !max ||
+    min <= 0 ||
+    max <= 0 ||
+    min > max ||
+    !expectedSalary ||
+    expectedSalary <= 0
+  ) {
+    return 1; // Defensive: lowest score if invalid input
+  }
+
+  // Calculate thresholds
+  const min5 = min * 0.95;
+  const min20 = min * 0.8;
+  const min50 = min * 0.5;
+
+  const max5 = max * 1.05;
+  const max20 = max * 1.2;
+  const max50 = max * 1.5;
+
+  // 5: Within the range
+  if (expectedSalary >= min && expectedSalary <= max) {
+    return 5;
+  }
+
+  // 4: Between -5% of min and min, or max and +5% of max
+  if (
+    (expectedSalary >= min5 && expectedSalary < min) ||
+    (expectedSalary > max && expectedSalary <= max5)
+  ) {
+    return 4;
+  }
+
+  // 3: Between -20% to -6% of min, or +6% to +20% of max
+  if (
+    (expectedSalary >= min20 && expectedSalary < min5) ||
+    (expectedSalary > max5 && expectedSalary <= max20)
+  ) {
+    return 3;
+  }
+
+  // 2: Between -50% to -21% of min, or +21% to +50% of max
+  if (
+    (expectedSalary >= min50 && expectedSalary < min20) ||
+    (expectedSalary > max20 && expectedSalary <= max50)
+  ) {
+    return 2;
+  }
+
+  // 1: Outside the above margins (> ±51%)
+  return 1;
+}

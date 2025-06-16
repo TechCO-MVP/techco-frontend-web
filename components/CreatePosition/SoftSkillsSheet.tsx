@@ -35,7 +35,7 @@ export const SoftSkillsSheet: FC<Props> = ({
         {customTrigger ? (
           customTrigger
         ) : (
-          <Button variant="talentGreen" className="h-8">
+          <Button disabled={!assessment} variant="talentGreen" className="h-8">
             <Eye /> {i18n.previewSoftSkillsBtnLabel}
           </Button>
         )}

@@ -6,6 +6,8 @@ import {
   PositionConfigurationPhaseTypes,
   PositionData,
 } from "@/types";
+import type { TechnicalAssessment as TechnicalAssessmentType } from "@/types";
+
 import { Dictionary } from "@/types/i18n";
 import { FC } from "react";
 import { PositionDetailsPage } from "../PositionDetailsPage/PositionDetailsPage";
@@ -16,8 +18,12 @@ import { findPhaseByName } from "@/lib/utils";
 import { CandidateStepper } from "./CandidateStepper";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { AttachFileDialog } from "./AttachFileDialog";
-import { CULTURAL_FIT_FIELD_ID, TECHNICAL_TEST_FIELD_ID } from "@/constants";
+
+import {
+  CULTURAL_FIT_FIELD_ID,
+  STATEMENT_BUTTON_TEXT,
+  TECHNICAL_TEST_FIELD_ID,
+} from "@/constants";
 import {
   Accordion,
   AccordionContent,
@@ -28,6 +34,9 @@ import Image from "next/image";
 import { DetailsSheet } from "../PositionDetailsPage/DetailsSheet";
 import { Button } from "../ui/button";
 import { AbandonProcessDialog } from "./AbandonProcessDialog";
+import { CulturalAssessment } from "./CulturalAssessment";
+import { TechnicalAssessment } from "./TechnicalAssessment";
+import { CurrentPhaseFormDialog } from "./CurrentPhaseFormDialog";
 
 interface CandidateProgressProps {
   positionData: PositionData;
@@ -71,10 +80,6 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
     },
   );
 
-  const nextPhase = card?.pipe.phases.find(
-    (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT_RESULTS,
-  );
-
   const renderSoftSkillAssessment = () => {
     const assessment = position.position_assessments.find(
       (assessment) =>
@@ -82,26 +87,51 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
     )?.data as Assessment;
     if (!assessment) return null;
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col p-6 pb-16">
-        {assessment.soft_skills.map((skill, index) => (
-          <div key={index}>
-            <h3 className="mb-4 text-xl font-bold">
-              Competencia: {skill.name}
-            </h3>
-            <p className="mb-4 text-gray-600">{skill.description}</p>
-            {skill.dimensions.map((dimension, index) => (
-              <div key={index} className="flex flex-col gap-2">
-                <h4 className="mb-4 text-lg font-bold">
-                  Dimensión: {dimension.name}
-                </h4>
-                <p className="text-gray-600">
-                  <b className="text-black">Pregunta</b>: {dimension.question}
-                </p>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <CulturalAssessment
+        position={position}
+        card={card}
+        organizationId={card.pipe.organizationId}
+        hiringProcessId={positionData.hiring_id}
+        cardId={hiring_card_id}
+        fieldId={
+          card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
+            ? CULTURAL_FIT_FIELD_ID
+            : TECHNICAL_TEST_FIELD_ID
+        }
+        assistantName={
+          card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
+            ? AssistantName.CULTURAL_FIT_ASSESSMENT
+            : AssistantName.TECHNICAL_ASSESSMENT
+        }
+        softSkills={assessment.soft_skills}
+      />
+    );
+  };
+
+  const renderTechnicalAssessment = () => {
+    const assessment = position.position_assessments.find(
+      (assessment) =>
+        assessment.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
+    )?.data as TechnicalAssessmentType;
+    if (!assessment) return null;
+    return (
+      <TechnicalAssessment
+        assessment={assessment}
+        position={position}
+        assistantName={
+          card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
+            ? AssistantName.CULTURAL_FIT_ASSESSMENT
+            : AssistantName.TECHNICAL_ASSESSMENT
+        }
+        organizationId={card.pipe.organizationId}
+        hiringProcessId={positionData.hiring_id}
+        fieldId={
+          card.current_phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
+            ? CULTURAL_FIT_FIELD_ID
+            : TECHNICAL_TEST_FIELD_ID
+        }
+        cardId={hiring_card_id}
+      />
     );
   };
 
@@ -126,7 +156,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                 alt="TechCo"
               />
             </nav>
-            <ul className="flex justify-end space-x-4">
+            <ul className="hidden justify-end space-x-4 md:flex">
               <li>
                 <DetailsSheet
                   customTrigger={
@@ -143,13 +173,28 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
               </li>
             </ul>
           </header>
-          <div className="mx-auto flex w-[1280px] flex-col bg-white px-4 py-8 text-center">
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col bg-white px-4 py-8 text-center">
             <CandidateStepper
               currentPhase={currentPhase}
               positionFlow={position.position_flow}
             />
-            <div className="mx-auto max-w-2xl">
+
+            <div className="mx-auto mt-[120px] max-w-2xl px-4 md:mt-0 md:px-0">
               <div className="mx-auto mb-8 max-w-2xl">
+                <div className="mb-4 flex justify-end md:hidden">
+                  <DetailsSheet
+                    customTrigger={
+                      <Button
+                        variant="outline"
+                        className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
+                      >
+                        Ver detalles de la oferta
+                      </Button>
+                    }
+                    positionData={positionData}
+                    dictionary={dictionary}
+                  />
+                </div>
                 {currentPhase?.candidateData?.sections.map((section) => {
                   return (
                     <div
@@ -168,21 +213,37 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       <Text className="text-left text-sm text-[#090909]">
                         {section.description}
                       </Text>
-                      {card.current_phase.fields.map((field, index) => {
-                        return field.type === "statement" ? (
-                          <div
-                            className="flex gap-2 text-sm text-[#090909]"
-                            key={index}
-                            dangerouslySetInnerHTML={{
-                              __html: field.description,
-                            }}
-                          ></div>
-                        ) : null;
-                      })}
-                      <AbandonProcessDialog
-                        dictionary={dictionary}
-                        cardId={positionData.hiring_card_id}
-                      />
+                      {section.button_text &&
+                        section.button_text === STATEMENT_BUTTON_TEXT && (
+                          <>
+                            {card.current_phase.fields.map((field, index) => {
+                              return field.type === "statement" ? (
+                                <div
+                                  className="flex gap-2 text-sm text-[#090909]"
+                                  key={index}
+                                  dangerouslySetInnerHTML={{
+                                    __html: field.description,
+                                  }}
+                                ></div>
+                              ) : null;
+                            })}
+                          </>
+                        )}
+                      <div className="flex gap-2">
+                        <AbandonProcessDialog
+                          dictionary={dictionary}
+                          cardId={positionData.hiring_card_id}
+                        />
+                        {section.button_text &&
+                          section.button_text !== STATEMENT_BUTTON_TEXT &&
+                          card.current_phase.name !==
+                            PHASE_NAMES.CULTURAL_FIT_ASSESSMENT && (
+                            <CurrentPhaseFormDialog
+                              cardId={positionData.hiring_card_id}
+                              label={section.button_text}
+                            />
+                          )}
+                      </div>
                     </div>
                   );
                 })}
@@ -279,7 +340,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                         </div>
                       </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="assessment">
+                    <AccordionItem value="assessment" className="border-0">
                       <AccordionTrigger className="bg-[#F5F5F5] px-2 font-bold">
                         Prueba
                       </AccordionTrigger>
@@ -290,33 +351,106 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                   </Accordion>
                 </div>
               )}
-              {(
-                [
-                  PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
-                  PHASE_NAMES.TECHNICAL_ASSESSMENT,
-                ] as string[]
-              ).includes(card.current_phase.name) && (
+
+              {card.current_phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT && (
                 <div className="mb-4 flex items-center justify-between">
-                  <AttachFileDialog
-                    position={position}
-                    card={card}
-                    nextPhase={nextPhase}
-                    organizationId={card.pipe.organizationId}
-                    hiringProcessId={positionData.hiring_id}
-                    cardId={hiring_card_id}
-                    fieldId={
-                      card.current_phase.name ===
-                      PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
-                        ? CULTURAL_FIT_FIELD_ID
-                        : TECHNICAL_TEST_FIELD_ID
-                    }
-                    assistantName={
-                      card.current_phase.name ===
-                      PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
-                        ? AssistantName.CULTURAL_FIT_ASSESSMENT
-                        : AssistantName.TECHNICAL_ASSESSMENT
-                    }
-                  />
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="mx-auto w-full max-w-2xl"
+                  >
+                    <AccordionItem value="instructions" className="border-0">
+                      <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 font-bold">
+                        Instrucciones
+                      </AccordionTrigger>
+                      <AccordionContent className="flex flex-col gap-4 text-balance py-4 text-left">
+                        <div className="cursor-text leading-relaxed text-[#090909]">
+                          Formato del archivo
+                          <ul className="mb-2 list-disc pl-6">
+                            <li>
+                              El documento debe ser entregado en formato PDF.
+                            </li>
+                            <li>No debe tener contraseña ni estar protegido</li>
+                          </ul>
+                          <p>Plazo de entrega</p>
+                          <ul className="mb-2 list-disc pl-6">
+                            <li>
+                              Tienes un plazo de 2 días calendario para enviar
+                              la prueba resuelta, contados a partir de la fecha
+                              de recepción de este mensaje.
+                            </li>
+                            <li>
+                              Asegúrate de enviar el archivo antes del
+                              vencimiento del plazo.
+                            </li>
+                          </ul>
+                          <p>
+                            Contenido del documento:{" "}
+                            <span className="font-semibold">
+                              En el PDF solo debes incluir lo siguiente:
+                            </span>
+                          </p>
+                          <ul className="mb-2 list-disc pl-6">
+                            <li>
+                              Tu nombre completo como presentante del
+                              assessment.
+                            </li>
+                            <li>
+                              El título exacto de cada pregunta, tal como
+                              aparece en la prueba.
+                            </li>
+                            <li>
+                              La respuesta correspondiente justo debajo del
+                              título de cada pregunta.
+                            </li>
+                          </ul>
+                          <p>Formato del contenido</p>
+                          <ul className="mb-2 list-disc pl-6">
+                            <li>
+                              Por favor, no modifiques el enunciado de las
+                              preguntas.
+                            </li>
+                            <li>
+                              Asegúrate de que cada respuesta esté debidamente
+                              identificada y organizada según su pregunta
+                              correspondiente.
+                            </li>
+                            <li>
+                              Si incluyes código, puede ir en formato texto o
+                              capturas, pero asegúrate de que sea legible.
+                            </li>
+                          </ul>
+                          <p>Recomendaciones adicionales</p>
+                          <ul className="mb-2 list-disc pl-6">
+                            <li>
+                              Revisa la ortografía y redacción antes de enviar
+                              el documento.
+                            </li>
+                            <li>
+                              Si usaste recursos externos o bibliografía, puedes
+                              mencionarlos al final del documento.
+                            </li>
+                            <li>
+                              Verifica que el archivo se abra correctamente
+                              antes de enviarlo
+                            </li>
+                            <li>
+                              El nombre del archivo puede seguir este formato:
+                              Assessment_cultural_NombreApellido.pdf.
+                            </li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="assessment" className="border-0">
+                      <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 font-bold">
+                        Prueba
+                      </AccordionTrigger>
+                      <AccordionContent className="flex flex-col gap-4 text-balance">
+                        {renderTechnicalAssessment()}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
               )}
             </div>

@@ -192,7 +192,6 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
               <CountryLabel label={getCountryLabel()} />
             </div>
             <Text className="text-muted-foreground">
-              {i18n.createdByLabel} Mao Molina |
               {formatDate(selectedCompany?.created_at)}
             </Text>
           </div>

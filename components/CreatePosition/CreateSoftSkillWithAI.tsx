@@ -101,11 +101,11 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
       options: payload.options,
     };
     const canBeCompleted =
-      (payload.assesment as Assessment).soft_skills.length > 0 &&
-      (payload.assesment as Assessment).soft_skills.every(
+      (payload?.assesment as Assessment)?.soft_skills?.length > 0 &&
+      (payload?.assesment as Assessment)?.soft_skills?.every(
         (skill) => skill.dimensions.length > 0,
       );
-    if (payload.assesment && Object.keys(payload.assesment).length > 0)
+    if (payload?.assesment && Object.keys(payload.assesment).length > 0)
       setProgress(payload.assesment as Assessment);
     if (
       canBeCompleted &&
@@ -228,8 +228,8 @@ export const CreateSoftSkillWithAI: FC<Readonly<CreateWithAIProps>> = ({
     try {
       const parsed = JSON.parse(raw);
       const canBeCompleted =
-        (parsed.assesment as Assessment).soft_skills.length > 0 &&
-        (parsed.assesment as Assessment).soft_skills.every(
+        (parsed.assesment as Assessment)?.soft_skills?.length > 0 &&
+        (parsed.assesment as Assessment)?.soft_skills?.every(
           (skill) => skill.dimensions.length > 0,
         );
       console.log(

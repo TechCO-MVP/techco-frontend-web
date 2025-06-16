@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dictionary } from "@/types/i18n";
 import { FC, useState } from "react";
-import { Step, Stepper } from "../CreatePosition/Stepper";
 import {
   Select,
   SelectContent,
@@ -13,17 +12,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DIAL_CODES } from "@/lib/data/countries";
-import {
-  PHASE_NAMES,
-  PositionConfigurationPhaseTypes,
-  PositionData,
-} from "@/types";
+import { PHASE_NAMES, PositionData } from "@/types";
 import Image from "next/image";
 import { Text } from "../Typography/Text";
 import { DetailsSheet } from "../PositionDetailsPage/DetailsSheet";
 import { useUpdateHiringProcessCustomFields } from "@/hooks/use-update-hiring-process-custom-fields";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
 import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
+import { Loader2 } from "lucide-react";
+import { CandidateStepper } from "../CandidateProgress/CandidateStepper";
+import {
+  calculateSalaryRangeScore,
+  calculateSalaryScore,
+  calculateScore,
+  findPhaseByName,
+} from "@/lib/utils";
+import { usePositionById } from "@/hooks/use-position-by-id";
+import LoadingSkeleton from "../PositionDetailsPage/Skeleton";
+import { toast } from "@/hooks/use-toast";
+import { INITIAL_FILTER_SCORE_THRESHOLD } from "@/constants";
 type ApplicationFormProps = {
   dictionary: Dictionary;
   positionData: PositionData;
@@ -32,79 +39,104 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   dictionary,
   positionData,
 }) => {
-  const { createPositionPage: i18n } = dictionary;
   const [, setSelectedDialCode] = useState("+51");
   const { footer } = dictionary;
   const [expectedSalary, setExpectedSalary] = useState<string>("");
-  const [steps, setSteps] = useState<Step[]>([
-    {
-      title: i18n.descriptionStep,
-      status: "COMPLETED",
-      type: PositionConfigurationPhaseTypes.DESCRIPTION,
-    },
-    {
-      title: i18n.softSkillsStep,
-      status: "IN_PROGRESS",
-      type: PositionConfigurationPhaseTypes.SOFT_SKILLS,
-    },
-    {
-      title: i18n.technicalSkillsStep,
-      status: "DRAFT",
-      type: PositionConfigurationPhaseTypes.TECHNICAL_TEST,
-    },
-    {
-      title: i18n.publishedStep,
-      status: "DRAFT",
-      type: PositionConfigurationPhaseTypes.READY_TO_PUBLISH,
-    },
-  ]);
 
-  const { card } = usePipefyCard({
+  const { card, isLoading: isLoadingCard } = usePipefyCard({
     cardId: positionData.hiring_card_id,
   });
 
-  const { mutate: moveCardToPhase } = useMoveCardToPhase({
-    onSuccess: (data) => {
-      console.log("Card moved to phase", data);
-    },
-    onError: (error) => {
-      console.error("Error moving card to phase", error);
-    },
+  const { data: position, isLoading: isPositionLoading } = usePositionById({
+    id: positionData.position_id,
   });
 
-  const nextPhase = card?.pipe.phases.find(
-    (phase) => phase.name === PHASE_NAMES.INITIAL_FILTER,
-  );
-
-  const { mutate: updateHiringProcessCustomFields } =
-    useUpdateHiringProcessCustomFields({
-      onSuccess: () => {
-        if (nextPhase) {
-          moveCardToPhase({
-            cardId: positionData.hiring_card_id,
-            destinationPhaseId: nextPhase.id,
-          });
-        }
+  const { mutate: moveCardToPhase, isPending: isMovingCardToPhase } =
+    useMoveCardToPhase({
+      onSuccess: (data) => {
+        console.log("Card moved to phase", data);
+        toast({
+          title: "Formulario enviado correctamente",
+          description: "El formulario ha sido enviado correctamente",
+        });
       },
       onError: (error) => {
-        console.error("Error updating hiring process custom fields", error);
+        console.error("Error moving card to phase", error);
       },
     });
+
+  const nextPhase = card?.pipe.phases.find(
+    (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+  );
+
+  const {
+    mutate: updateHiringProcessCustomFields,
+    isPending: isUpdatingHiringProcessCustomFields,
+  } = useUpdateHiringProcessCustomFields({
+    onSuccess: () => {
+      const skillsScore = calculateScore(skillAnswers);
+      const responsibilitiesScore = calculateScore(responsibilityAnswers);
+      let salaryScore = 5;
+      if (positionData.position_salary_range?.salary) {
+        salaryScore = calculateSalaryScore(
+          Number(expectedSalary),
+          Number(position?.position_salary_range?.salary),
+        );
+      }
+      if (positionData.position_salary_range?.salary_range) {
+        salaryScore = calculateSalaryRangeScore(
+          {
+            min: Number(positionData.position_salary_range.salary_range.min),
+            max: Number(positionData.position_salary_range.salary_range.max),
+          },
+          Number(expectedSalary),
+        );
+      }
+      const overallScore =
+        (skillsScore + responsibilitiesScore + salaryScore) / 3;
+      console.log(
+        "%c[Debug] skillAnswers",
+        "background-color: teal; font-size: 20px; color: white",
+        {
+          nextPhase,
+          responsibilityAnswers,
+          skillAnswers,
+          expectedSalary,
+          skillsScore,
+          responsibilitiesScore,
+          salaryScore,
+          overallScore,
+        },
+      );
+      if (nextPhase && overallScore >= INITIAL_FILTER_SCORE_THRESHOLD) {
+        moveCardToPhase({
+          cardId: positionData.hiring_card_id,
+          destinationPhaseId: nextPhase.id,
+        });
+      }
+    },
+    onError: (error) => {
+      console.error("Error updating hiring process custom fields", error);
+    },
+  });
 
   const handleUpdateHiringProcessCustomFields = (
     customFields: Record<string, unknown>,
   ) => {
-    if (!card?.current_phase.id) return;
-    const nextPhase = card?.pipe.phases.find(
-      (phase) => phase.name === PHASE_NAMES.INITIAL_FILTER,
+    const offerSentPhase = card?.pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
     );
-    if (!nextPhase) return;
-
+    if (!offerSentPhase) return;
+    console.log(
+      "%c[Debug] offerSentPhase",
+      "background-color: teal; font-size: 20px; color: white",
+      offerSentPhase,
+    );
     updateHiringProcessCustomFields({
       id: positionData.hiring_id,
       phases: {
-        [nextPhase.id]: {
-          phase_id: nextPhase.id,
+        [offerSentPhase.id]: {
+          phase_id: offerSentPhase.id,
           custom_fields: customFields,
         },
       },
@@ -149,6 +181,13 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     });
   };
 
+  if (isLoadingCard || !card || isPositionLoading || !position)
+    return <LoadingSkeleton />;
+  const currentPhase = findPhaseByName(
+    // PHASE_NAMES.FINALISTS,
+    card.current_phase.name,
+    position.position_flow,
+  );
   // Compute if all checkboxes are selected (no undefined values)
   const allSkillsAnswered = positionData.position_skills.every(
     (skill) => typeof skillAnswers[skill.name] === "boolean",
@@ -199,13 +238,16 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       >
         <div className="mx-auto flex w-[75vw] flex-col overflow-y-auto overflow-x-hidden border-b-[5px] border-b-talent-orange-500 bg-white px-4 py-12 shadow-talent-green">
           {/* Progress Tracker */}
-          <div className="mx-auto mb-12 flex max-w-3xl flex-col gap-7 overflow-hidden px-10 py-8 shadow-md">
-            <Stepper steps={steps} setSteps={setSteps} i18n={i18n} />
+          <div className="mx-auto flex w-full flex-col bg-white px-4 py-8 text-center">
+            <CandidateStepper
+              currentPhase={currentPhase}
+              positionFlow={position.position_flow}
+            />
           </div>
           <div className="mb-12 h-[1px] w-full bg-gray-200"></div>
 
           {/* Welcome Section */}
-          <div className="mb-8 px-28">
+          <div className="mb-8 px-4 md:px-28">
             <h1 className="mb-2 text-3xl font-bold">
               ¡Bienvenid@, {positionData.hiring_profile_name}!
             </h1>
@@ -220,7 +262,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Contact Information */}
-          <div className="mb-8 px-28">
+          <div className="mb-8 px-4 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Contacto</h2>
             <p className="mb-2 text-sm">Correo electrónico.</p>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -250,7 +292,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Skills Section */}
-          <div className="mb-8 px-28">
+          <div className="mb-8 px-4 md:px-28">
             <h3 className="mb-2 text-sm">
               ¿Con cuáles de estas habilidades cuentas? (Selecciona una opción
               para cada habilidad)
@@ -302,7 +344,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Previous Responsibilities */}
-          <div className="mb-8 border-t px-28 pt-6">
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">
               Responsabilidades anteriores
             </h2>
@@ -346,7 +388,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Salary Expectation */}
-          <div className="mb-8 border-t px-28 pt-6">
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Aspiración salarial</h2>
             <p className="mb-2 text-sm">
               ¿Cuál es tu aspiración salarial para este cargo?
@@ -360,7 +402,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Form Buttons */}
-          <div className="flex gap-4 border-t px-28 pt-6">
+          <div className="flex gap-4 border-t px-4 pt-6 md:px-28">
             <Button
               variant="ghost"
               className="hover: bg-secondary px-8 text-talent-green-500"
@@ -370,9 +412,17 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             <Button
               onClick={sendApplication}
               variant="talentGreen"
-              disabled={!canSubmit}
+              disabled={
+                !canSubmit ||
+                isUpdatingHiringProcessCustomFields ||
+                isMovingCardToPhase ||
+                isLoadingCard
+              }
             >
               Enviar formulario
+              {(isUpdatingHiringProcessCustomFields ||
+                isMovingCardToPhase ||
+                isLoadingCard) && <Loader2 className="h-4 w-4 animate-spin" />}
             </Button>
           </div>
         </div>

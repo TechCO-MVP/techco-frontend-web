@@ -15,7 +15,7 @@ import {
 } from "@/types";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-
+import { calculateScore } from "@/lib/utils";
 interface SoftSkillsResultsProps {
   data?: HiringProcess["phases"][number];
   candidateName?: string;
@@ -33,12 +33,6 @@ export function SoftSkillsResults({
 
   if (!phaseData) return null;
   // Calculate scores
-  const calculateScore = (items: Record<string, boolean>) => {
-    if (!items) return 0;
-    const totalItems = Object.keys(items).length;
-    const trueItems = Object.values(items).filter(Boolean).length;
-    return totalItems > 0 ? (trueItems / totalItems) * 5 : 0;
-  };
 
   const skillsScore = calculateScore(phaseData.custom_fields.skills);
   const responsibilitiesScore = calculateScore(

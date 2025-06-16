@@ -29,6 +29,7 @@ export async function updateField(
         },
       },
     );
+    console.log("updateField response", response);
     return response;
   } catch (error) {
     console.error("GraphQL Error:", error);

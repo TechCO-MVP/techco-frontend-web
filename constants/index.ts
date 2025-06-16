@@ -46,3 +46,5 @@ export const TECHNICAL_TEST_FIELD_ID =
 export const STATEMENT_BUTTON_TEXT = "statement_pipefy";
 
 export const ABANDON_PROCESS_PHASE_NAME = "Abandonaron el proceso";
+
+export const INITIAL_FILTER_SCORE_THRESHOLD = 4;

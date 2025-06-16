@@ -72,6 +72,9 @@ export const GET_PIPE = gql`
         }
         cards {
           nodes {
+            attachments {
+              url
+            }
             phases_history {
               duration
               lastTimeIn
