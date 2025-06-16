@@ -91,6 +91,15 @@ export function TechnicalAssessmentResults({ phase }: Props) {
           );
         })}
 
+        {mockData.feedback_general && (
+          <div className="mb-4 mt-6 rounded-lg bg-blue-50 p-4">
+            <h3 className="mb-2 font-semibold text-gray-900">
+              Feedback General
+            </h3>
+            <p className="text-gray-700">{mockData.feedback_general}</p>
+          </div>
+        )}
+
         {/* Overall Score */}
         <div className="mb-6">
           <p className="mb-2 font-semibold text-gray-900">
