@@ -12,6 +12,7 @@ interface PhaseData {
   name: string;
   score?: number;
   maxScore: number;
+  component?: React.ReactNode;
   status: "completed" | "pending" | "in-progress";
   details?: {
     description?: string;
@@ -46,7 +47,9 @@ export default function ProcessOverview({
   };
 
   const PhaseRow = ({ phase }: { phase: PhaseData }) => {
-    const hasDetails = phase.details && Object.keys(phase.details).length > 0;
+    const hasDetails =
+      phase.component ||
+      (phase.details && Object.keys(phase.details).length > 0);
 
     if (!hasDetails) {
       return (
@@ -95,46 +98,20 @@ export default function ProcessOverview({
         </AccordionTrigger>
         <AccordionContent
           style={{ scrollbarGutter: "stable" }}
-          className="w-fit max-w-[400px] px-6 pb-4"
+          className="w-fit max-w-[400px] px-2 pb-4"
         >
-          <div className="space-y-3 text-sm">
-            {phase.details?.description && (
-              <div>
-                <span className="font-medium text-gray-700">Descripción: </span>
-                <span className="text-gray-600">
-                  {phase.details.description}
-                </span>
-              </div>
-            )}
-            {phase.details?.completedDate && (
-              <div>
-                <span className="font-medium text-gray-700">
-                  Fecha de finalización:{" "}
-                </span>
-                <span className="text-gray-600">
-                  {phase.details.completedDate}
-                </span>
-              </div>
-            )}
-            {phase.details?.duration && (
-              <div>
-                <span className="font-medium text-gray-700">Duración: </span>
-                <span className="text-gray-600">{phase.details.duration}</span>
-              </div>
-            )}
-            {phase.details?.evaluator && (
-              <div>
-                <span className="font-medium text-gray-700">Evaluador: </span>
-                <span className="text-gray-600">{phase.details.evaluator}</span>
-              </div>
-            )}
-            {phase.details?.notes && (
-              <div>
-                <span className="font-medium text-gray-700">Notas: </span>
-                <span className="text-gray-600">{phase.details.notes}</span>
-              </div>
-            )}
-          </div>
+          {phase.component ? (
+            phase.component
+          ) : (
+            <div className="space-y-3 text-sm">
+              {phase.details?.notes && (
+                <div>
+                  <span className="font-medium text-gray-700">Feedback: </span>
+                  <span className="text-gray-600">{phase.details.notes}</span>
+                </div>
+              )}
+            </div>
+          )}
         </AccordionContent>
       </AccordionItem>
     );
@@ -146,7 +123,7 @@ export default function ProcessOverview({
       className="mx-auto w-[410px] p-0"
     >
       <CardContent className="p-0">
-        <div className="space-y-6">
+        <div className="space-y-6 p-8">
           <div>
             <CardTitle className="mb-6 text-xl font-bold">
               Resultado general del proceso

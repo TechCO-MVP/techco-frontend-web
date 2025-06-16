@@ -28,7 +28,7 @@ import { PipefyFieldValues, PipefyNode, PipefyPipe } from "@/types/pipefy";
 import { usePublicPhaseFormLink } from "@/hooks/use-public-phase-form-link";
 
 import { CommentBox } from "../CommentBox/CommentBox";
-import { PhaseHistory } from "../PhaseHistory/PhaseHistory";
+// import { PhaseHistory } from "../PhaseHistory/PhaseHistory";
 
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import { useParams, useSearchParams } from "next/navigation";
@@ -94,6 +94,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const processStartDate =
     fieldMap[PipefyFieldValues.ProcessStartDate] || undefined;
   const candidateSource = fieldMap[PipefyFieldValues.CandidateSource];
+  const firstInterviewScore = fieldMap[PipefyFieldValues.FirstInterviewScore];
+  const firstInterviewFeedback =
+    fieldMap[PipefyFieldValues.FirstInterviewFeedback];
+  const finalInterviewScore = fieldMap[PipefyFieldValues.FinalInterviewScore];
+  const finalInterviewFeedback =
+    fieldMap[PipefyFieldValues.FinalInterviewFeedback];
   const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
   const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
   const params = useParams<{ id: string }>();
@@ -244,6 +250,45 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     );
   }, [open, hiringProcess, card, currentPhase]);
 
+  const renderCulturalAssessmentResults = () => {
+    const culturalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+    );
+    if (!culturalAssessmentPhase) return null;
+    const data = getDataForPhase(culturalAssessmentPhase.id);
+    return <CulturalAssessmentResults data={data} phase={currentPhase} />;
+  };
+
+  const renderTechnicalAssessmentResults = () => {
+    const technicalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT,
+    );
+    if (!technicalAssessmentPhase) return null;
+
+    return <TechnicalAssessmentResults phase={currentPhase} />;
+  };
+
+  const renderSoftSkillsResults = () => {
+    const offerSentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
+    );
+    console.log(
+      "%c[Debug] offerSentPhase",
+      "background-color: teal; font-size: 20px; color: white",
+      offerSentPhase,
+    );
+    if (!offerSentPhase) return null;
+    return (
+      <div className="flex flex-col gap-4">
+        <SoftSkillsResults
+          data={getDataForPhase(offerSentPhase.id)}
+          position={position}
+          phase={currentPhase}
+        />
+      </div>
+    );
+  };
+
   const dynamicValues = useMemo(() => {
     const statements = card.current_phase.fields.filter(
       (f) => f.type === "statement",
@@ -355,7 +400,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               <div className="flex flex-col items-center justify-center gap-1.5">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={avatarUrl} alt="Profile picture" />
-                  <AvatarFallback>{candidateName.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <Badge
                   variant="outline"
@@ -407,12 +452,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               >
                 {i18n.commentsTabTitle}
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
                 value="history"
               >
                 {i18n.historyTabTitle}
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger
                 className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
                 value="results"
@@ -506,7 +551,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                 </Heading>
                 {hiringProcess?.profile.experience?.map((experience, idx) => {
                   return (
-                    <div className="flex items-center gap-4" key={idx}>
+                    <div className="mb-4 flex items-center gap-4" key={idx}>
                       <Avatar className="h-12 w-12">
                         <AvatarImage
                           src={experience.company_logo_url}
@@ -589,12 +634,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                 />
               </div>
             </TabsContent>
-            <TabsContent
+            {/* <TabsContent
               value="history"
               className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
             >
               <PhaseHistory dictionary={dictionary} pipe={pipe} card={card} />
-            </TabsContent>
+            </TabsContent> */}
             <TabsContent
               style={{ scrollbarGutter: "stable" }}
               value="results"
@@ -608,6 +653,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                     score: 4.8,
                     maxScore: 5,
                     status: "completed" as const,
+                    component: renderSoftSkillsResults(),
                     details: {
                       description:
                         "Evaluación automática del perfil del candidato",
@@ -624,6 +670,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                     score: 3,
                     maxScore: 5,
                     status: "completed" as const,
+                    component: renderCulturalAssessmentResults(),
                     details: {
                       description:
                         "Evaluación de compatibilidad cultural con la empresa",
@@ -637,7 +684,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   {
                     id: "primer-entrevista",
                     name: "Primer entrevista",
-                    score: 4.8,
+                    score: Number(firstInterviewScore) || 0,
                     maxScore: 5,
                     status: "completed" as const,
                     details: {
@@ -646,20 +693,31 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                       completedDate: "22 de Mayo, 2024",
                       duration: "60 minutos",
                       evaluator: "Carlos Ruiz - HR Manager",
-                      notes: "Excelente comunicación y experiencia relevante.",
+                      notes: firstInterviewFeedback || "",
                     },
                   },
                   {
                     id: "assessment-tecnico",
                     name: "Assessment Técnico",
-                    status: "pending" as const,
+                    status: "completed" as const,
                     maxScore: 5,
+                    score: 4.4,
+                    component: renderTechnicalAssessmentResults(),
                   },
                   {
                     id: "entrevista-final",
                     name: "Entrevista final",
-                    status: "pending" as const,
+                    status: "completed" as const,
                     maxScore: 5,
+                    score: Number(finalInterviewScore) || 0,
+                    details: {
+                      description:
+                        "Entrevista final con el equipo de recursos humanos",
+                      completedDate: "22 de Mayo, 2024",
+                      duration: "60 minutos",
+                      evaluator: "Carlos Ruiz - HR Manager",
+                      notes: finalInterviewFeedback || "",
+                    },
                   },
                 ]}
                 totalWeightedScore={3.15}

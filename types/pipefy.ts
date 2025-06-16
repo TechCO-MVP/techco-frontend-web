@@ -185,4 +185,8 @@ export enum PipefyFieldValues {
   Recomendation = "field_23_string",
   CandidateBio = "field_24_string",
   AspectsNotDemostrated = "field_22_string",
+  FirstInterviewScore = "field_90_string",
+  FirstInterviewFeedback = "field_70_string",
+  FinalInterviewScore = "field_91_string",
+  FinalInterviewFeedback = "field_82_string",
 }

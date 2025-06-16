@@ -2,7 +2,7 @@
 import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, SquareArrowUpRight } from "lucide-react";
@@ -40,6 +40,8 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
   const { toast } = useToast();
   const [steps, setSteps] = useState<Step[]>([]);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
   const queryClient = useQueryClient();
   const params = useParams<{ lang: Locale; id: string; position_id: string }>();
   const { lang, id: businessId, position_id } = params;
@@ -256,36 +258,47 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
               </div>
             </div>
 
-            <div className="space-y-3">
-              <h2 className="font-semibold">¿Qué sigue?</h2>
-              <p className="text-sm text-gray-700">
-                Cuando hagas clic en <strong>Publicar vacante</strong>,
-                activaremos el tablero de seguimiento. Ahí podrás:
-              </p>
-              <ul className="list-disc space-y-1 pl-5 text-sm text-gray-700">
-                <li>
-                  Ver en tiempo real quién se postula y cómo avanza el proceso.
-                </li>
-                <li>Gestionar cada paso con total claridad y control.</li>
-                <li>Recibir alertas cuando haya novedades importantes.</li>
-              </ul>
-            </div>
+            {!modeParam && (
+              <>
+                <div className="space-y-3">
+                  <h2 className="font-semibold">¿Qué sigue?</h2>
+                  <p className="text-sm text-gray-700">
+                    Cuando hagas clic en <strong>Publicar vacante</strong>,
+                    activaremos el tablero de seguimiento. Ahí podrás:
+                  </p>
+                  <ul className="list-disc space-y-1 pl-5 text-sm text-gray-700">
+                    <li>
+                      Ver en tiempo real quién se postula y cómo avanza el
+                      proceso.
+                    </li>
+                    <li>Gestionar cada paso con total claridad y control.</li>
+                    <li>Recibir alertas cuando haya novedades importantes.</li>
+                  </ul>
+                </div>
 
-            <p className="text-sm text-gray-700">
-              Todo está listo para que encuentres al mejor talento, sin perder
-              tiempo. 🚀
-            </p>
+                <p className="text-sm text-gray-700">
+                  Todo está listo para que encuentres al mejor talento, sin
+                  perder tiempo. 🚀
+                </p>
+              </>
+            )}
 
-            <StickyFooter
-              showCancelButton={false}
-              canSave={true}
-              cancelLabel={i18n.cancelLabel}
-              saveLabel={`${i18n.publishPositionBtnLabel}`}
-              isSaving={isPending || isNextPhasePending}
-              onCancel={() => {}}
-              onSave={createPosition}
-              saveButtonIcon={<ChevronRight className="h-4 w-4" />}
-            />
+            {modeParam !== "edit" && (
+              <StickyFooter
+                showCancelButton={false}
+                canSave={true}
+                cancelLabel={i18n.cancelLabel}
+                saveLabel={
+                  modeParam === "duplicate"
+                    ? i18n.duplicatePositionBtnLabel
+                    : i18n.publishPositionBtnLabel
+                }
+                isSaving={isPending || isNextPhasePending}
+                onCancel={() => {}}
+                onSave={createPosition}
+                saveButtonIcon={<ChevronRight className="h-4 w-4" />}
+              />
+            )}
           </div>
         </div>
       </div>

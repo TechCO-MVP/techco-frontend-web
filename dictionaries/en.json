@@ -373,6 +373,7 @@
     "cancelEditDialogCancel": "No, continue editing",
     "continuedNextPhase": "Continue phase",
     "publishPositionBtnLabel": "Publish position",
+    "duplicatePositionBtnLabel": "Duplicate position",
     "selectTemplateTitle": "Choose the process that best fits your vacancy",
     "selectTemplateDescription": "Three different paths, but with a single promise: finding the ideal person, without assumptions and with what really matters.",
     "selectTemplateBtnLabel": "Select template",

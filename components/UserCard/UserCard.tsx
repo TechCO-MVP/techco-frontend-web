@@ -168,7 +168,7 @@ export const UserCard: React.FC<CardProps> = ({
           <div className="flex flex-col items-center justify-center gap-1.5">
             <Avatar className="h-16 w-16">
               <AvatarImage src={avatarUrl} alt="Profile picture" />
-              <AvatarFallback>{candidateName.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
             </Avatar>
             <Badge
               variant="outline"

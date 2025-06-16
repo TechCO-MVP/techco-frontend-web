@@ -2,7 +2,7 @@
 import { Locale } from "@/i18n-config";
 import { Dictionary } from "@/types/i18n";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { BrainCog, ChevronLeft, Copy } from "lucide-react";
@@ -31,6 +31,13 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const params = useParams<{ lang: Locale; id: string; position_id: string }>();
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  console.log(
+    "%c[Debug] modeParam",
+    "background-color: teal; font-size: 20px; color: white",
+    modeParam,
+  );
   const [selectedOption, setSelectedOption] =
     useState<PositionConfigurationTypes | null>(null);
   const { lang, id: businessId, position_id } = params;
@@ -82,7 +89,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
           break;
         case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
           router.push(
-            `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish`,
+            `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish?mode=${modeParam}`,
           );
           break;
         default:
@@ -157,7 +164,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       activePhase.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
     ) {
       router.push(
-        `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish`,
+        `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish?mode=${modeParam}`,
       );
     }
   }, [activePhase]);

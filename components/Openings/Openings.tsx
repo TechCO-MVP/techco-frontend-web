@@ -1,6 +1,6 @@
 "use client";
 import { Dictionary } from "@/types/i18n";
-import { FC, useEffect, useMemo, useState, useTransition } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import LoadingSkeleton from "./LoadingSkeleton";
 import {
@@ -23,11 +23,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import {
@@ -57,11 +52,11 @@ import {
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
   TechnicalAssessment,
-  UpdatePositionStatusData,
+  // UpdatePositionStatusData,
 } from "@/types";
 import { Notifications } from "@/components/Notifications/Notifications";
 import { usePipefyPipes } from "@/hooks/use-pipefy-pipes";
-import * as actions from "@/actions";
+// import * as actions from "@/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import { useUsers } from "@/hooks/use-users";
@@ -105,7 +100,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const [statusFilter, setStatusFilter] = useState<string | null>();
   const priorityOptions = ["high", "medium", "low"];
   const statusOptions = ["CANCELED", "ACTIVE", "FINISHED", "INACTIVE", "DRAFT"];
-  const [isPending, startTransition] = useTransition();
+  // const [_, startTransition] = useTransition();
   const queryClient = useQueryClient();
   const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
     useState(false);
@@ -154,7 +149,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       },
     });
 
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>("desc");
   const {
     rootBusiness,
     businesses,
@@ -275,9 +270,10 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const [draftsPageSize, setDraftsPageSize] = useState(5);
   const sortedPositions = [...filteredPositions].sort((a, b) => {
     if (!sortOrder) return 0; // No sorting
-    if (sortOrder === "asc")
-      return a.hiring_priority.localeCompare(b.hiring_priority);
-    return b.hiring_priority.localeCompare(a.hiring_priority);
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    if (sortOrder === "asc") return dateA - dateB;
+    return dateB - dateA;
   });
 
   const filteredDrafts = useMemo(() => {
@@ -359,29 +355,29 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     });
   };
 
-  const onUpdateState = async (
-    position: HiringPositionData,
-    status: UpdatePositionStatusData["status"],
-  ) => {
-    try {
-      if (!localUser) return;
-      startTransition(async () => {
-        const updatePositionResponse = await actions.updatePositionStatus({
-          status,
-          positionId: position._id,
-          userId: localUser?._id,
-        });
-        console.log("updatePositionResponse", updatePositionResponse);
-        if (updatePositionResponse.success) {
-          queryClient.invalidateQueries({
-            queryKey: QUERIES.POSITION_LIST(rootBusiness?._id, localUser?._id),
-          });
-        }
-      });
-    } catch (error: unknown) {
-      console.error("Error@onUpdateState", error);
-    }
-  };
+  // const onUpdateState = async (
+  //   position: HiringPositionData,
+  //   status: UpdatePositionStatusData["status"],
+  // ) => {
+  //   try {
+  //     if (!localUser) return;
+  //     startTransition(async () => {
+  //       const updatePositionResponse = await actions.updatePositionStatus({
+  //         status,
+  //         positionId: position._id,
+  //         userId: localUser?._id,
+  //       });
+  //       console.log("updatePositionResponse", updatePositionResponse);
+  //       if (updatePositionResponse.success) {
+  //         queryClient.invalidateQueries({
+  //           queryKey: QUERIES.POSITION_LIST(rootBusiness?._id, localUser?._id),
+  //         });
+  //       }
+  //     });
+  //   } catch (error: unknown) {
+  //     console.error("Error@onUpdateState", error);
+  //   }
+  // };
 
   const getTitle = (position: PositionConfiguration): string => {
     const totalPhases = position.phases.length;
@@ -699,7 +695,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             className="rounded-none border-talent-green-500 text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
             value="actives"
           >
-            Vancantes
+            Vacantes
           </TabsTrigger>
           <TabsTrigger
             className="rounded-none border-talent-green-500 text-black shadow-none data-[state=active]:border-b-2 data-[state=active]:text-talent-green-500 data-[state=active]:shadow-none"
@@ -936,7 +932,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 router.push(
-                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}`,
+                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=edit`,
                                 );
                               }}
                             >
@@ -944,70 +940,15 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="cursor-pointer"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=duplicate`,
+                                );
+                              }}
                             >
                               {i18n.duplicateLabel}
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuSub>
-                              <DropdownMenuSubTrigger className="cursor-pointer">
-                                {i18n.changeStateLabel}
-                              </DropdownMenuSubTrigger>
-                              <DropdownMenuPortal>
-                                <DropdownMenuSubContent>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    disabled={isPending}
-                                    onClick={(e) => {
-                                      onUpdateState(position, "CANCELED");
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {i18n.cancelStateLabel}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    disabled={isPending}
-                                    onClick={(e) => {
-                                      onUpdateState(position, "ACTIVE");
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {i18n.activeStateLabel}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    disabled={isPending}
-                                    onClick={(e) => {
-                                      onUpdateState(position, "FINISHED");
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {i18n.terminatedStateLabel}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    disabled={isPending}
-                                    onClick={(e) => {
-                                      onUpdateState(position, "INACTIVE");
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {i18n.inactiveStateLabel}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    disabled={isPending}
-                                    onClick={(e) => {
-                                      onUpdateState(position, "DRAFT");
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {i18n.draftStateLabel}
-                                  </DropdownMenuItem>
-                                </DropdownMenuSubContent>
-                              </DropdownMenuPortal>
-                            </DropdownMenuSub>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

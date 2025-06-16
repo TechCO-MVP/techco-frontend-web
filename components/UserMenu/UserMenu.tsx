@@ -59,7 +59,10 @@ export const UserMenu: FC<Readonly<Props>> = ({ lang }) => {
                 <p className="text-sm font-medium leading-none">
                   {currentUser?.name}
                 </p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p
+                  title={currentUser?.email}
+                  className="max-w-[140px] overflow-hidden truncate whitespace-nowrap text-xs leading-none text-muted-foreground"
+                >
                   {currentUser?.email}
                 </p>
               </div>

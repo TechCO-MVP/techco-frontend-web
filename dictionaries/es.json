@@ -373,6 +373,7 @@
     "cancelEditDialogCancel": "No, seguir editando",
     "continuedNextPhase": "Continuar paso",
     "publishPositionBtnLabel": "Publicar vacante",
+    "duplicatePositionBtnLabel": "Duplicar vacante",
     "selectTemplateTitle": "Elige el proceso que mejor va con tu vacante",
     "selectTemplateDescription": "Tres caminos diferentes, pero con una sola promesa: encontrar a la persona ideal, sin suposiciones y con lo que de verdad importa.",
     "selectTemplateBtnLabel": "Seleccionar plantilla",
