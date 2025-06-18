@@ -132,6 +132,10 @@ export const CulturalAssessment = ({
         organizationId,
         fileName: "cultural-assessment.pdf",
       });
+      toast({
+        title: "¡Recibimos tu prueba! ",
+        description: "Te contamos pronto qué sigue.",
+      });
     },
     onError: (error) => {
       console.error(error);
@@ -182,10 +186,6 @@ export const CulturalAssessment = ({
       setIsUploadingFile(false);
       setSelectedFile(null);
       setPresignedUrl("");
-      toast({
-        title: "Prueba enviada.",
-        description: "El archivo se ha subido correctamente",
-      });
     } catch (error) {
       console.error(error);
       setIsUploadingFile(false);
