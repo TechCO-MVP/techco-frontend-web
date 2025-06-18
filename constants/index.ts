@@ -43,6 +43,10 @@ export const CULTURAL_FIT_FIELD_ID =
 export const TECHNICAL_TEST_FIELD_ID =
   "305713420_338699108_resultadoassessmenttecnico";
 
+export const CANDIDATE_EMAIL_FIELD_ID = "305713420_334105217_candidateemail";
+export const CANDIDATE_PHONE_FIELD_ID =
+  "305713420_334105217_candidatesphonenumber";
+
 export const STATEMENT_BUTTON_TEXT = "statement_pipefy";
 
 export const ABANDON_PROCESS_PHASE_NAME = "Abandonaron el proceso";

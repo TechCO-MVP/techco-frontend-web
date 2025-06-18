@@ -55,6 +55,9 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   const { hiring_card_id } = positionData;
   const { card, isLoading } = usePipefyCard({
     cardId: hiring_card_id,
+    options: {
+      refetchInterval: 10000,
+    },
   });
 
   const { data: position, isLoading: isPositionLoading } = usePositionById({

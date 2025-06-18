@@ -42,6 +42,14 @@ export const UPDATE_CARD_FIELD = `
   }
 `;
 
+export const UPDATE_FIELDS_VALUES = gql`
+  mutation UpdateFieldsValues($input: UpdateFieldsValuesInput!) {
+    updateFieldsValues(input: $input) {
+      success
+    }
+  }
+`;
+
 export const CREATE_PRESIGNED_URL = gql`
   mutation CreatePresignedUrl($input: CreatePresignedUrlInput!) {
     createPresignedUrl(input: $input) {
@@ -73,6 +81,21 @@ export const CREATE_PRESIGNED_URL = gql`
     new_value:"ON24"
   }) {
     card
+  }
+}
+ */
+
+/**
+ * 
+ * mutation {
+  updateFieldsValues(input: {
+    nodeId: "1160646375",
+    values: [
+      {fieldId: "305713420_334105217_candidateemail", value: "mail2@mail.com"},
+      {fieldId: "305713420_334105217_rolealignment" value: "Alta"}
+    ]
+  }) {
+    success
   }
 }
  */

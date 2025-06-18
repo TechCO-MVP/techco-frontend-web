@@ -12,10 +12,13 @@ export const GET_CARD = gql`
         }
       }
       fields {
+        name
         value
         indexName
         field {
+          id
           type
+          internal_id
         }
       }
       pipe {

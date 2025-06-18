@@ -30,22 +30,53 @@ import {
 import { usePositionById } from "@/hooks/use-position-by-id";
 import LoadingSkeleton from "../PositionDetailsPage/Skeleton";
 import { toast } from "@/hooks/use-toast";
-import { INITIAL_FILTER_SCORE_THRESHOLD } from "@/constants";
+import {
+  CANDIDATE_EMAIL_FIELD_ID,
+  CANDIDATE_PHONE_FIELD_ID,
+  INITIAL_FILTER_SCORE_THRESHOLD,
+} from "@/constants";
+import { useRouter } from "next/navigation";
+import { Locale } from "@/i18n-config";
+import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
+import { CandidateSources, PipefyFieldValues } from "@/types/pipefy";
+import { useUpdateFieldsValues } from "@/hooks/use-update-fields";
 type ApplicationFormProps = {
+  lang: Locale;
   dictionary: Dictionary;
   positionData: PositionData;
+  companyName: string;
+  vacancyName: string;
+  token: string;
 };
 export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
+  lang,
   dictionary,
   positionData,
+  companyName,
+  vacancyName,
+  token,
 }) => {
-  const [, setSelectedDialCode] = useState("+51");
+  const [selectedDialCode, setSelectedDialCode] = useState("+51");
   const { footer } = dictionary;
   const [expectedSalary, setExpectedSalary] = useState<string>("");
-
+  const [candidateEmail, setCandidateEmail] = useState<string>("");
+  const [candidatePhone, setCandidatePhone] = useState<string>("");
+  const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
     cardId: positionData.hiring_card_id,
   });
+  const fieldMap = PipefyBoardTransformer.mapFields(card?.fields || []);
+  const candidateSource = fieldMap[PipefyFieldValues.CandidateSource];
+  const linkedinSource = candidateSource === CandidateSources.LinkedIn;
+  const { mutate: updateFieldsValues, isPending: isUpdatingFieldsValues } =
+    useUpdateFieldsValues({
+      onSuccess: () => {
+        console.log("Fields updated");
+      },
+      onError: (error) => {
+        console.error("Error updating fields values", error);
+      },
+    });
 
   const { data: position, isLoading: isPositionLoading } = usePositionById({
     id: positionData.position_id,
@@ -59,6 +90,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           title: "Formulario enviado correctamente",
           description: "El formulario ha sido enviado correctamente",
         });
+        router.push(`/${lang}/${companyName}/${vacancyName}?token=${token}`);
       },
       onError: (error) => {
         console.error("Error moving card to phase", error);
@@ -113,6 +145,12 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           cardId: positionData.hiring_card_id,
           destinationPhaseId: nextPhase.id,
         });
+      } else {
+        toast({
+          title: "Formulario enviado correctamente",
+          description: "El formulario ha sido enviado correctamente",
+        });
+        router.push(`/${lang}/${companyName}/${vacancyName}?token=${token}`);
       }
     },
     onError: (error) => {
@@ -146,7 +184,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   console.log(
     "%c[Debug] positionData",
     "background-color: teal; font-size: 20px; color: white",
-    positionData,
+    { positionData, card },
   );
 
   // State to track true/false for each skill
@@ -174,6 +212,23 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   };
 
   const sendApplication = () => {
+    const values = [];
+    if (candidateEmail) {
+      values.push({
+        fieldId: CANDIDATE_EMAIL_FIELD_ID,
+        value: candidateEmail,
+      });
+    }
+    if (candidatePhone) {
+      values.push({
+        fieldId: CANDIDATE_PHONE_FIELD_ID,
+        value: candidatePhone,
+      });
+    }
+    updateFieldsValues({
+      nodeId: positionData.hiring_card_id,
+      values,
+    });
     handleUpdateHiringProcessCustomFields({
       responsibilities: responsibilityAnswers,
       skills: skillAnswers,
@@ -196,8 +251,15 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     positionData.position_responsabilities.every(
       (resp) => typeof responsibilityAnswers[resp] === "boolean",
     );
+
+  const phoneCompleted = selectedDialCode && candidatePhone;
+  const emailCompleted = !linkedinSource ? true : candidateEmail;
   const canSubmit =
-    allSkillsAnswered && allResponsibilitiesAnswered && expectedSalary;
+    allSkillsAnswered &&
+    allResponsibilitiesAnswered &&
+    expectedSalary &&
+    phoneCompleted &&
+    emailCompleted;
 
   return (
     <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">
@@ -264,9 +326,17 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           {/* Contact Information */}
           <div className="mb-8 px-4 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Contacto</h2>
-            <p className="mb-2 text-sm">Correo electrónico.</p>
+            {!linkedinSource && (
+              <p className="mb-2 text-sm">Correo electrónico.</p>
+            )}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Input placeholder="Correo@prueba.com" />
+              {!linkedinSource && (
+                <Input
+                  value={candidateEmail}
+                  onChange={(e) => setCandidateEmail(e.target.value)}
+                  placeholder="Correo@prueba.com"
+                />
+              )}
               <div className="flex">
                 <Select
                   defaultValue="+51"
@@ -284,6 +354,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   </SelectContent>
                 </Select>
                 <Input
+                  value={candidatePhone}
+                  onChange={(e) => setCandidatePhone(e.target.value)}
                   placeholder="300 123 456"
                   className="flex-1 rounded-l-none"
                 />
@@ -420,11 +492,13 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                 !canSubmit ||
                 isUpdatingHiringProcessCustomFields ||
                 isMovingCardToPhase ||
-                isLoadingCard
+                isLoadingCard ||
+                isUpdatingFieldsValues
               }
             >
               Enviar formulario
-              {(isUpdatingHiringProcessCustomFields ||
+              {(isUpdatingFieldsValues ||
+                isUpdatingHiringProcessCustomFields ||
                 isMovingCardToPhase ||
                 isLoadingCard) && <Loader2 className="h-4 w-4 animate-spin" />}
             </Button>

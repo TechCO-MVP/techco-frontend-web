@@ -11,7 +11,7 @@ export default async function Page({
   params: Promise<{ lang: Locale; company_name: string; vacancy_name: string }>;
   searchParams: Promise<{ token?: string }>;
 }) {
-  const { lang } = await params;
+  const { lang, company_name, vacancy_name } = await params;
   const dictionary = await getDictionary(lang);
   const { token } = await searchParams;
   if (!token) return <p>Missing token</p>;
@@ -33,6 +33,13 @@ export default async function Page({
   } = position;
 
   return (
-    <ApplicationForm positionData={positionData} dictionary={dictionary} />
+    <ApplicationForm
+      lang={lang}
+      token={token}
+      companyName={company_name}
+      vacancyName={vacancy_name}
+      positionData={positionData}
+      dictionary={dictionary}
+    />
   );
 }
