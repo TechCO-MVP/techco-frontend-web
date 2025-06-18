@@ -55,6 +55,7 @@ export const CulturalAssessment = ({
     Record<string, Record<string, string>>
   >({});
   const [presignedUrl, setPresignedUrl] = useState("");
+  const [isCompleted, setIsCompleted] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const { uploadFile } = useUploadFile();
@@ -124,6 +125,7 @@ export const CulturalAssessment = ({
   };
   const { mutate: uploadPdf, isPending: isUploadingPdf } = useUploadPdf({
     onSuccess: async (data) => {
+      setIsCompleted(true);
       console.log("uploadPdf success", data);
       console.log("getting presigned url");
       getPresignedUrl({
@@ -181,7 +183,7 @@ export const CulturalAssessment = ({
       setSelectedFile(null);
       setPresignedUrl("");
       toast({
-        title: "Archivo subido correctamente",
+        title: "Prueba enviada.",
         description: "El archivo se ha subido correctamente",
       });
     } catch (error) {
@@ -278,31 +280,35 @@ export const CulturalAssessment = ({
           );
         })}
       </div>
-      <div className="flex justify-end">
-        <Button
-          disabled={
-            isGetPresignedUrlPending ||
-            isUploadingPdf ||
-            isUploadingFile ||
-            softSkills.some((skill) =>
-              skill.dimensions.some(
-                (dimension) =>
-                  !responses[skill.name] ||
-                  !responses[skill.name][dimension.name] ||
-                  responses[skill.name][dimension.name].trim() === "",
-              ),
-            )
-          }
-          variant="talentGreen"
-          className="ml-auto mt-4"
-          onClick={generateAssessmentPdfFile}
-        >
-          {(isUploadingPdf || isGetPresignedUrlPending || isUploadingFile) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          Enviar prueba
-        </Button>
-      </div>
+      {!isCompleted && (
+        <div className="flex justify-end">
+          <Button
+            disabled={
+              isGetPresignedUrlPending ||
+              isUploadingPdf ||
+              isUploadingFile ||
+              softSkills.some((skill) =>
+                skill.dimensions.some(
+                  (dimension) =>
+                    !responses[skill.name] ||
+                    !responses[skill.name][dimension.name] ||
+                    responses[skill.name][dimension.name].trim() === "",
+                ),
+              )
+            }
+            variant="talentGreen"
+            className="ml-auto mt-4"
+            onClick={generateAssessmentPdfFile}
+          >
+            {(isUploadingPdf ||
+              isGetPresignedUrlPending ||
+              isUploadingFile) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Enviar prueba
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
