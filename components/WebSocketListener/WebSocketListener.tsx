@@ -102,7 +102,12 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
       const { message } = payload;
       const isNew = message.status === "NEW";
       const isComment = message.notification_type === "TAGGED_IN_COMMENT";
-
+      const isPhaseChange = message.notification_type === "PHASE_CHANGE";
+      if (isPhaseChange) {
+        queryClient.refetchQueries({
+          queryKey: QUERIES.PIPE_DATA_ALL,
+        });
+      }
       showNotification({
         id: message._id,
         title: message.position_name,
