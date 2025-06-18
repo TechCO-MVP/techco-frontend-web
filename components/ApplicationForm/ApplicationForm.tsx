@@ -97,10 +97,6 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       },
     });
 
-  const nextPhase = card?.pipe.phases.find(
-    (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
-  );
-
   const {
     mutate: updateHiringProcessCustomFields,
     isPending: isUpdatingHiringProcessCustomFields,
@@ -126,6 +122,13 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       }
       const overallScore =
         (skillsScore + responsibilitiesScore + salaryScore) / 3;
+
+      const canAdvance = overallScore >= INITIAL_FILTER_SCORE_THRESHOLD;
+      const nextPhase = card?.pipe.phases.find((phase) =>
+        canAdvance
+          ? phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT
+          : phase.name === PHASE_NAMES.INITIAL_FILTER,
+      );
       console.log(
         "%c[Debug] skillAnswers",
         "background-color: teal; font-size: 20px; color: white",
@@ -140,17 +143,11 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           overallScore,
         },
       );
-      if (nextPhase && overallScore >= INITIAL_FILTER_SCORE_THRESHOLD) {
+      if (nextPhase) {
         moveCardToPhase({
           cardId: positionData.hiring_card_id,
           destinationPhaseId: nextPhase.id,
         });
-      } else {
-        toast({
-          title: "Formulario enviado correctamente",
-          description: "El formulario ha sido enviado correctamente",
-        });
-        router.push(`/${lang}/${companyName}/${vacancyName}?token=${token}`);
       }
     },
     onError: (error) => {
