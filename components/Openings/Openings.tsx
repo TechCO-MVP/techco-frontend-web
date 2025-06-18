@@ -279,6 +279,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const filteredDrafts = useMemo(() => {
     if (!positionConfigurationList) return [];
     return positionConfigurationList.filter((position) => {
+      const isCompleted = position.status === "COMPLETED";
+      if (isCompleted) return false;
       const searchMatch =
         !searchQuery ||
         (position.phases[0]?.data as DraftPositionData)?.role

@@ -191,19 +191,19 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
     const lowRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range?.min ?? 0));
+    }).format(Number(positionData.salary?.salary_range?.min ?? "0"));
     const highRange = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range?.max ?? 0));
-    return `${lowRange} - ${highRange} ${positionData.salary?.currency}`;
+    }).format(Number(positionData.salary?.salary_range?.max ?? "0"));
+    return ` ${lowRange} - ${highRange} ${positionData.salary?.currency}`;
   };
 
   const formatFixedSalary = () => {
     const salary = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary));
+    }).format(Number(positionData.salary?.salary ?? "0"));
 
     return `${salary} `;
   };
@@ -256,7 +256,17 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">{positionData.role} </h1>
+        {mode === "preview" ? (
+          <h1 className="text-4xl font-bold">{positionData.role}</h1>
+        ) : (
+          <Input
+            className="text-4xl font-bold"
+            value={positionData.role}
+            onChange={(e) =>
+              setPositionData({ ...positionData, role: e.target.value })
+            }
+          />
+        )}
         <div className="flex gap-2">
           {mode === "preview" && (
             <Button
@@ -379,7 +389,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         </div>
         {mode === "preview" ? (
           <>
-            {positionData.salary?.salary_range && (
+            {salaryOption === "range" && (
               <div className="space-y-4 text-gray-600">
                 <p>
                   📌 {i18n.salaryDescriptionStart}
@@ -388,7 +398,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               </div>
             )}
 
-            {positionData.salary?.salary && positionData.salary?.salary > 0 && (
+            {salaryOption === "fixed" && (
               <div className="space-y-4 text-gray-600">
                 <p>
                   📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
@@ -396,13 +406,29 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                 </p>
               </div>
             )}
+
+            {salaryOption === "not-specified" && (
+              <div className="space-y-4 text-gray-600">
+                <p>📌 {i18n.salaryNotSpecified}</p>
+              </div>
+            )}
           </>
         ) : (
           <>
             <RadioGroup
-              onValueChange={(value: "fixed" | "range" | "not-specified") =>
-                setSalaryOption(value)
-              }
+              onValueChange={(value: "fixed" | "range" | "not-specified") => {
+                setSalaryOption(value);
+                if (value === "not-specified") {
+                  setPositionData({
+                    ...positionData,
+                    salary: {
+                      currency: positionData?.salary?.currency ?? "USD",
+                      salary: null,
+                      salary_range: null,
+                    },
+                  });
+                }
+              }}
               defaultValue={salaryOption}
             >
               <div className="flex items-center space-x-2">
@@ -424,34 +450,40 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               <div className="space-y-4 text-gray-600">
                 <div className="flex gap-2">
                   <Input
-                    defaultValue={positionData.salary.salary_range?.min ?? 0}
+                    defaultValue={
+                      positionData?.salary?.salary_range?.min ?? "0"
+                    }
                     placeholder="Mínimo"
-                    type="number"
+                    type="text"
                     onChange={(e) =>
                       setPositionData({
                         ...positionData,
                         salary: {
-                          ...positionData.salary,
+                          currency: positionData?.salary?.currency ?? "USD",
+                          salary: null,
                           salary_range: {
                             ...positionData.salary?.salary_range,
-                            min: parseInt(e.target.value),
+                            min: e.target.value,
                           },
                         },
                       })
                     }
                   />
                   <Input
-                    defaultValue={positionData.salary.salary_range?.max ?? 0}
+                    defaultValue={
+                      positionData?.salary?.salary_range?.max ?? "0"
+                    }
                     placeholder="Máximo"
-                    type="number"
+                    type="text"
                     onChange={(e) =>
                       setPositionData({
                         ...positionData,
                         salary: {
-                          ...positionData.salary,
+                          currency: positionData?.salary?.currency ?? "USD",
+                          salary: null,
                           salary_range: {
                             ...positionData.salary?.salary_range,
-                            max: parseInt(e.target.value),
+                            max: e.target.value,
                           },
                         },
                       })
@@ -469,15 +501,16 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               <div className="space-y-4 text-gray-600">
                 <div className="flex gap-2">
                   <Input
-                    defaultValue={positionData.salary.salary}
+                    defaultValue={positionData?.salary?.salary ?? "0"}
                     placeholder="Salario"
-                    type="number"
+                    type="text"
                     onChange={(e) =>
                       setPositionData({
                         ...positionData,
                         salary: {
-                          currency: positionData.salary.currency,
-                          salary: parseInt(e.target.value),
+                          currency: positionData?.salary?.currency ?? "USD",
+                          salary: e.target.value,
+                          salary_range: undefined,
                         },
                       })
                     }

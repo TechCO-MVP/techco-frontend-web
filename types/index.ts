@@ -304,8 +304,8 @@ export type HiringProcessResponse = {
 export type NotificationStatus = "NEW" | "READ" | "REVIEWED";
 
 export enum PhaseType {
-  INFORMATIVE = "Informativa",
-  ACTION_CALL = "Llamado a la acción",
+  INFORMATIVE = "INFORMATIVE",
+  ACTION_CALL = "CALL_TO_ACTION",
 }
 
 export enum AssistantName {
@@ -639,13 +639,13 @@ export interface DraftPositionData {
   work_mode: string;
   status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
   benefits: string[];
-  salary: {
+  salary?: {
     currency: string;
-    salary?: number;
+    salary: string | null;
     salary_range?: {
-      min?: number;
-      max?: number;
-    };
+      min?: string;
+      max?: string;
+    } | null;
   };
 }
 

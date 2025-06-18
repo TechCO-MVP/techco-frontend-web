@@ -64,7 +64,8 @@ const mockDraftPositionData: DraftPositionData = {
   benefits: ["Seguro de salud", "Horario flexible"],
   salary: {
     currency: "PEN",
-    salary_range: { min: 4000, max: 6000 },
+    salary: null,
+    salary_range: { min: "4000", max: "6000" },
   },
 };
 

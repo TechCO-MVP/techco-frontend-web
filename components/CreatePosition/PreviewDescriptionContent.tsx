@@ -100,14 +100,15 @@ export const PreviewDescriptionContent: FC<Props> = ({
           </div>
         )}
 
-        {positionData.salary?.salary && positionData.salary?.salary > 0 && (
-          <div className="space-y-4 text-gray-600">
-            <p>
-              📌 La compensación para este rol es de {formatFixedSalary()}{" "}
-              mensuales, según experiencia y habilidades del candidato.
-            </p>
-          </div>
-        )}
+        {positionData.salary?.salary &&
+          Number(positionData.salary?.salary) > 0 && (
+            <div className="space-y-4 text-gray-600">
+              <p>
+                📌 La compensación para este rol es de {formatFixedSalary()}{" "}
+                mensuales, según experiencia y habilidades del candidato.
+              </p>
+            </div>
+          )}
       </div>
 
       <div className="w-full space-y-3">

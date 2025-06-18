@@ -126,12 +126,12 @@ export const UserCard: React.FC<CardProps> = ({
         setOpen(true);
       }}
       id={`details-${column.id}-${card.id}`}
-      draggable
+      // draggable
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="mb-6 w-[19rem] cursor-pointer p-6 active:cursor-grabbing"
+      className="mb-6 w-[19rem] cursor-pointer p-6"
     >
       <div>
         <div className="mb-4 flex h-8 items-center justify-between">

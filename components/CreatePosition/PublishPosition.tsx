@@ -283,6 +283,35 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
               </>
             )}
 
+            {modeParam === "duplicate" && (
+              <>
+                <div className="space-y-3">
+                  <h2 className="font-semibold">¿Qué sigue?</h2>
+                  <p className="text-sm text-gray-700">
+                    Cuando hagas clic en <strong>Duplicar vacante</strong>,
+                    activaremos el tablero de seguimiento. Ahí podrás:
+                  </p>
+                  <ul className="list-disc space-y-1 pl-5 text-sm text-gray-700">
+                    <li>
+                      Ver en tiempo real quién se postula y cómo avanza el
+                      proceso.
+                    </li>
+                    <li>Gestionar cada paso con total claridad y control.</li>
+                    <li>Recibir alertas cuando haya novedades importantes.</li>
+                  </ul>
+                </div>
+                <p className="text-sm text-gray-700">
+                  Antes de continuar, revisa bien la información de la vacante
+                  duplicada. Tal como la dejes, así se publicará.
+                </p>
+
+                <p className="text-sm text-gray-700">
+                  Todo está listo para que encuentres al mejor talento, sin
+                  perder tiempo. 🚀
+                </p>
+              </>
+            )}
+
             {modeParam !== "edit" && (
               <StickyFooter
                 showCancelButton={false}
