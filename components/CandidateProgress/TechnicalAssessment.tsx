@@ -25,9 +25,11 @@ import { useUploadFile } from "@/hooks/use-file-upload";
 import * as actions from "@/actions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { PipefyCardResponse, PipefyFieldValues } from "@/types/pipefy";
 export const TechnicalAssessment: React.FC<{
   position: PositionData;
   assessment: TechnicalAssessmentType;
+  card: PipefyCardResponse["card"];
   assistantName: AssistantName;
   organizationId: string;
   hiringProcessId: string;
@@ -36,6 +38,7 @@ export const TechnicalAssessment: React.FC<{
 }> = ({
   assessment,
   position,
+  card,
   assistantName,
   organizationId,
   hiringProcessId,
@@ -47,10 +50,12 @@ export const TechnicalAssessment: React.FC<{
   const [presignedUrl, setPresignedUrl] = useState("");
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const { uploadFile } = useUploadFile();
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const { mutate: getPresignedUrl, isPending: isGetPresignedUrlPending } =
     usePresignedUrl({
       onSuccess: (data) => {
+        setIsCompleted(true);
         console.log("usePresignedUrl success", data);
         setPresignedUrl(data.createPresignedUrl.url);
       },
@@ -58,6 +63,18 @@ export const TechnicalAssessment: React.FC<{
         console.log("usePresignedUrl error", data);
       },
     });
+  // Check if technical assessment was already uploaded
+  const existingAssessment = card.attachments.find(
+    (attachment) =>
+      attachment.field.index_name ===
+      PipefyFieldValues.TechnicalAssessmentResult,
+  );
+
+  useEffect(() => {
+    if (existingAssessment) {
+      setIsCompleted(true);
+    }
+  }, [existingAssessment]);
   const { mutate: uploadPdf, isPending: isUploadingPdf } = useUploadPdf({
     onSuccess: async (data) => {
       console.log("uploadPdf success", data);
@@ -71,6 +88,13 @@ export const TechnicalAssessment: React.FC<{
       console.error(error);
     },
   });
+
+  useEffect(() => {
+    if (existingAssessment) {
+      setIsCompleted(true);
+    }
+  }, [existingAssessment]);
+
   const buildPrompt = (assistantName: AssistantName) => {
     try {
       const culturalFitAssessment = position.position_assessments.find(
@@ -210,19 +234,23 @@ export const TechnicalAssessment: React.FC<{
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <div className="flex justify-end">
-        <Button
-          disabled={isGetPresignedUrlPending || isUploadingPdf || !asnwer}
-          variant="talentGreen"
-          className="ml-auto mt-4"
-          onClick={generateAssessmentPdfFile}
-        >
-          {(isUploadingPdf || isGetPresignedUrlPending || isUploadingFile) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          Enviar prueba
-        </Button>
-      </div>
+      {!isCompleted && (
+        <div className="flex justify-end">
+          <Button
+            disabled={isGetPresignedUrlPending || isUploadingPdf || !asnwer}
+            variant="talentGreen"
+            className="ml-auto mt-4"
+            onClick={generateAssessmentPdfFile}
+          >
+            {(isUploadingPdf ||
+              isGetPresignedUrlPending ||
+              isUploadingFile) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Enviar prueba
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

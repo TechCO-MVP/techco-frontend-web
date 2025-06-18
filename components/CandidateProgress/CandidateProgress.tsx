@@ -119,6 +119,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
     if (!assessment) return null;
     return (
       <TechnicalAssessment
+        card={card}
         assessment={assessment}
         position={position}
         assistantName={

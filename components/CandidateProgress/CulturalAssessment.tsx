@@ -21,7 +21,7 @@ import { pdf } from "@react-pdf/renderer";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useUploadPdf } from "@/hooks/use-upload-pdf";
-import { PipefyCardResponse } from "@/types/pipefy";
+import { PipefyCardResponse, PipefyFieldValues } from "@/types/pipefy";
 import { UPLOAD_FILE_PROMPT } from "@/constants";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -37,6 +37,7 @@ export const CulturalAssessment = ({
   hiringProcessId,
   assistantName,
   softSkills,
+  card,
 }: {
   position: PositionData;
   card: PipefyCardResponse["card"];
@@ -69,6 +70,19 @@ export const CulturalAssessment = ({
         console.log("usePresignedUrl error", data);
       },
     });
+
+  // Check if cultural assessment was already uploaded
+  const existingAssessment = card.attachments.find(
+    (attachment) =>
+      attachment.field.index_name ===
+      PipefyFieldValues.CulturalAssessmentResult,
+  );
+
+  useEffect(() => {
+    if (existingAssessment) {
+      setIsCompleted(true);
+    }
+  }, [existingAssessment]);
 
   const buildPrompt = (assistantName: AssistantName) => {
     try {

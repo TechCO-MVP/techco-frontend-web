@@ -98,6 +98,13 @@ export type PipefyPipeResponse = {
 
 export type PipefyCardResponse = {
   card: {
+    attachments: {
+      url: string;
+      field: {
+        id: string;
+        index_name: string;
+      };
+    }[];
     current_phase: {
       id: string;
       name: string;
@@ -189,4 +196,6 @@ export enum PipefyFieldValues {
   FirstInterviewFeedback = "field_70_string",
   FinalInterviewScore = "field_91_string",
   FinalInterviewFeedback = "field_82_string",
+  CulturalAssessmentResult = "field_38_string",
+  TechnicalAssessmentResult = "field_37_string",
 }

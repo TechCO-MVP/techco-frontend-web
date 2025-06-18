@@ -212,6 +212,19 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
               </Text>
             )}
           </div>
+
+          <FormInput
+            classNames="max-w-full"
+            testId="company-name-input"
+            name="name"
+            label={i18n.nameLabel}
+            placeholder={i18n.namePlaceholder}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
+
           <FormTextarea
             classNames="max-w-full"
             testId="company-description-input"
@@ -331,6 +344,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
 
       <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-end border-t border-gray-200 bg-white px-8 py-4 shadow-lg">
         <Button
+          variant="talentGreen"
           disabled={
             !isValid || isPending || Object.keys(dirtyFields).length === 0
           }
