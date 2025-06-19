@@ -81,7 +81,7 @@ export const TechnicalAssessment: React.FC<{
       console.log("getting presigned url");
       getPresignedUrl({
         organizationId,
-        fileName: "cultural-assessment.pdf",
+        fileName: "technical-assessment.pdf",
       });
     },
     onError: (error) => {
