@@ -1,13 +1,12 @@
 import "@/app/[lang]/globals.css";
 import type { Preview } from "@storybook/react";
 import { localesLoader } from "@/.storybook/loaders/localesLoader";
-import { withTheme } from "@/.storybook/decorators/withTheme";
-
+import { globalDecorators } from "./decorators";
 export const globalTypes = {
   locale: {
     name: "Locale",
     description: "Internationalization locale",
-    defaultValue: "en",
+    defaultValue: "es",
     toolbar: {
       icon: "globe",
       items: [
@@ -30,6 +29,9 @@ export const globalTypes = {
 
 const preview: Preview = {
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -38,7 +40,7 @@ const preview: Preview = {
     },
   },
   loaders: [localesLoader],
-  decorators: [withTheme],
+  decorators: globalDecorators,
 };
 
 export default preview;

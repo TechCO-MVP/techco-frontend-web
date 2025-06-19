@@ -1,6 +1,7 @@
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
-
+import * as actions from "@/actions";
+import { Button } from "@/components/ui/button";
 export default async function IndexPage(props: {
   readonly params: Promise<{ lang: Locale }>;
 }) {
@@ -9,12 +10,22 @@ export default async function IndexPage(props: {
   const dictionary = await getDictionary(lang);
 
   return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <div>
-        <p>
-          {dictionary["server-component"].currentLang}: {lang}
-        </p>
-        <p>{dictionary["server-component"].welcome}</p>
+    <div className="relative flex h-screen items-center justify-center bg-gray-50">
+      <div className="flex h-full w-full flex-col bg-gray-50">
+        <header className="w-full p-4">
+          <nav>
+            <ul className="flex justify-end space-x-4">
+              <li>
+                <form action={actions.signOut}>
+                  <input type="hidden" name="lang" value={lang} />
+                  <Button variant="default" type="submit">
+                    {dictionary["server-component"].logOut}
+                  </Button>
+                </form>
+              </li>
+            </ul>
+          </nav>
+        </header>
       </div>
     </div>
   );

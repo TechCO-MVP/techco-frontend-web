@@ -1,0 +1,57 @@
+import { FC, useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+import { ScrollArea } from "../ui/scroll-area";
+
+import { Button } from "../ui/button";
+import { Eye } from "lucide-react";
+import { Assessment } from "@/types";
+import { Dictionary } from "@/types/i18n";
+import { PreviewSoftSkillsContent } from "./PreviewSoftSkillsContent";
+type Props = {
+  assessment: Assessment | null;
+  dictionary: Dictionary;
+  customTrigger?: React.ReactNode;
+  role?: string;
+};
+
+export const SoftSkillsSheet: FC<Props> = ({
+  assessment,
+  dictionary,
+  customTrigger,
+  role,
+}) => {
+  const { createPositionPage: i18n } = dictionary;
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        {customTrigger ? (
+          customTrigger
+        ) : (
+          <Button disabled={!assessment} variant="talentGreen" className="h-8">
+            <Eye /> {i18n.previewSoftSkillsBtnLabel}
+          </Button>
+        )}
+      </SheetTrigger>
+      <SheetContent className="w-[780px] p-0 sm:max-w-[780px]">
+        <SheetHeader className="border-b bg-white p-12">
+          <SheetTitle className="text-center text-lg font-bold text-gray-900">
+            {i18n.previewSoftSkillsSheetTitle} {role}
+          </SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="h-[calc(100vh-64px)]">
+          <div className="flex flex-col">
+            <PreviewSoftSkillsContent assessment={assessment} />
+          </div>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+};

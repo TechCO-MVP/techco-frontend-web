@@ -44,3 +44,5 @@ next-env.d.ts
 .vscode
 .scannerwork
 sonar.sh
+storybook-static
+.cursor

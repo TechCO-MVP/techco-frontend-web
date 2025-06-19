@@ -1,4 +1,4 @@
-## Tecnoloías principales
+## Tecnologías principales
 
 - **Framework**: [Next.js v15](https://nextjs.org/) 
 - **Lenguaje**: [TypeScript](https://www.typescriptlang.org/) 
@@ -14,7 +14,7 @@
 
 ## Requisitos previos
 
-- Node.js v18 o superior.
+- Node.js v18.18 o superior.
 - npm
 
 ---
@@ -25,15 +25,25 @@ Clona el repositorio y ejecuta los siguientes comandos:
 
 ```bash
 # Clonar el repositorio
-git clone [URL del repositorio]
+git clone git@github.com:TechCO-MVP/techco-frontend-web.git
 
 # Entrar en el directorio
-cd [nombre-del-proyecto]
+cd techco-frontend-web
 
 # Instalar dependencias
-npm install
+npm install --legacy-peer-deps
 
 ```
+
+### Notas sobre `--legacy-peer-deps`
+
+El uso del parámetro `--legacy-peer-deps` durante la instalación de las dependencias es necesario debido a la reciente publicación de [React 19](https://github.com/facebook/react/releases) el 5 de diciembre de 2024. Muchas dependencias de terceros aún no han actualizado sus configuraciones de compatibilidad (`peerDependencies`) para incluir esta nueva versión de React. 
+
+Sin este parámetro, es probable que `npm` arroje errores de incompatibilidad al instalar paquetes que todavía especifican versiones más antiguas de React como requisito en sus `peerDependencies`.
+
+El flag `--legacy-peer-deps` fuerza a `npm` a ignorar estos conflictos y a instalar las dependencias necesarias, aunque no cumplan estrictamente con las versiones especificadas en los `peerDependencies`.
+
+Una vez que las bibliotecas utilizadas en este proyecto actualicen sus configuraciones para ser compatibles con React 19, este flag ya no será necesario.
 
 ---
 
@@ -49,16 +59,16 @@ La aplicación estará disponible en [http://localhost:3000](http://localhost:30
 
 ---
 
-## Estructura del proyecto [TBD]
+## Estructura del proyecto
 
 ```plaintext
+├── .storybook/       # Configuración específica de Storybook
+├── actions/          # Server actions
+├── app/              # Rutas y páginas de Next.js
 ├── components/       # Componentes reutilizables de la aplicación
-├── pages/            # Rutas y páginas de Next.js
-├── redux/            # Configuración y slices de Redux
 ├── dictionaries/     # Archivos de traducción para i18n
 ├── lib/              # Funciones y utilidades reutilizables
-├── __tests__/        # Pruebas unitarias con Vitest
-└── stories/          # Historias para Storybook
+└── __tests__/        # Pruebas unitarias con Vitest
 ```
 
 ---
