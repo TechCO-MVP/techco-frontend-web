@@ -155,8 +155,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   }, [selectedPosition, card]);
 
   const currentPhase = findPhaseByName(
-    // card.current_phase.name,
-    PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS,
+    card.current_phase.name,
+    // PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS,
     position?.position_flow,
   );
 
