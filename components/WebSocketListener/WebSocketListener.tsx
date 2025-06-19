@@ -7,6 +7,7 @@ import {
   NotificationPayload,
   WebSocketMessagePayload,
   HiringPositionData,
+  PhaseType,
 } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
@@ -27,6 +28,17 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
   const params = useParams<{ lang: Locale }>();
   const { lang } = params;
   const baseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+
+  function getCtaLabel(notification: NotificationPayload["message"]): string {
+    switch (notification.phase_type) {
+      case PhaseType.INFORMATIVE:
+        return "Ver candidato";
+      case PhaseType.ACTION_CALL:
+        return "Iniciar acción";
+      default:
+        return "Ver candidato";
+    }
+  }
 
   function findPosition(
     positions: HiringPositionData[],
@@ -116,7 +128,7 @@ export const WebSocketListener: FC<Props> = ({ accessToken }) => {
         description: isComment
           ? "Te mencionó en un comentario"
           : message.message,
-        actionLabel: isComment ? "Ver comentario" : "Ver candidato",
+        actionLabel: getCtaLabel(message),
         timestamp: new Date(`${message.created_at}Z`).toLocaleString(),
         onAction: () => {
           onNotificationClick(message);
