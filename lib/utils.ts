@@ -8,6 +8,8 @@ import {
   DraftPositionData,
   PositionFlow,
   PositionPhaseSearchResult,
+  CulturalAssessmentResultType,
+  TechnicalAssesmentResult,
 } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -333,3 +335,40 @@ export const sanitizeHtml = (html: string): string => {
       .trim()
   );
 };
+
+/**
+ * Calculates the average score from a CulturalAssessmentResultType.
+ * @param result - The cultural assessment result object
+ * @returns number (average calificacion, 1-5 scale, rounded to 2 decimals)
+ */
+export function getCulturalAssessmentScore(
+  result: CulturalAssessmentResultType,
+): number {
+  if (!result || !result.comportamientos || result.comportamientos.length === 0)
+    return 0;
+  const allCalificaciones = result.comportamientos.flatMap((c) =>
+    c.dimensions.map((d) => d.calificacion),
+  );
+  if (allCalificaciones.length === 0) return 0;
+  const avg =
+    allCalificaciones.reduce((sum, v) => sum + v, 0) / allCalificaciones.length;
+  return Number(avg.toFixed(1));
+}
+
+/**
+ * Calculates the average score from a TechnicalAssesmentResult.
+ * @param result - The technical assessment result object
+ * @returns number (average calificacion, 1-5 scale, rounded to 2 decimals)
+ */
+export function getTechnicalAssessmentScore(
+  result: TechnicalAssesmentResult,
+): number {
+  if (!result || !result.dimensiones || result.dimensiones.length === 0)
+    return 0;
+  const allCalificaciones = result.dimensiones.map((d) => d.calificacion);
+  if (allCalificaciones.length === 0) return 0;
+
+  const avg =
+    allCalificaciones.reduce((sum, v) => sum + v, 0) / allCalificaciones.length;
+  return Number(avg.toFixed(1));
+}
