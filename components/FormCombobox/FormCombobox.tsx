@@ -43,7 +43,7 @@ type FormComboboxProps<TSchema extends FieldValues> = {
   control: Control<TSchema>;
   errors: FieldErrors<TSchema>;
   dirtyFields: UseFormStateReturn<TSchema>["dirtyFields"];
-  options: { label: string; value: string }[];
+  options: { label: string; value: string; code?: string }[];
   getErrorMessage: (key?: string) => string;
   containerRef?: React.RefObject<HTMLFormElement | null>;
   classNames?: string;
@@ -71,7 +71,10 @@ export function FormCombobox<TSchema extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => {
-        const selected = options.find((o) => o.value === field.value);
+        const selected = options.find(
+          (o) => o.value === field.value || o.code === field.value,
+        );
+
         const isTouched = !!dirtyFields[name as keyof typeof dirtyFields];
         const hasError = !!errors[name];
 
