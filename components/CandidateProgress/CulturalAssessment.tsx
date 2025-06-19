@@ -150,6 +150,7 @@ export const CulturalAssessment = ({
         title: "¡Recibimos tu prueba! ",
         description: "Te contamos pronto qué sigue.",
       });
+      setResponses({});
     },
     onError: (error) => {
       console.error(error);
