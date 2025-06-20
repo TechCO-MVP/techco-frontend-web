@@ -75,7 +75,11 @@ export default function ProcessOverview({
     }
 
     return (
-      <AccordionItem value={phase.id} className="border-b last:border-b-0">
+      <AccordionItem
+        value={phase.id}
+        className="border-b last:border-b-0"
+        disabled={phase.status === "pending"}
+      >
         <AccordionTrigger className="px-6 py-4 hover:no-underline">
           <div className="flex w-full items-center justify-between pr-4">
             <span
@@ -146,14 +150,18 @@ export default function ProcessOverview({
               </Accordion>
 
               {/* Total Score */}
-              <div className="flex items-center justify-between border-t-2 border-gray-200 bg-gray-50 px-6 py-4">
-                <span className="font-bold text-gray-900">Total ponderado</span>
-                <span
-                  className={`text-lg font-bold ${getScoreColor(totalWeightedScore, maxTotalScore)}`}
-                >
-                  {formatScore(totalWeightedScore, maxTotalScore)}
-                </span>
-              </div>
+              {totalWeightedScore > 0 && (
+                <div className="flex items-center justify-between border-t-2 border-gray-200 bg-gray-50 px-6 py-4">
+                  <span className="font-bold text-gray-900">
+                    Total ponderado
+                  </span>
+                  <span
+                    className={`text-lg font-bold ${getScoreColor(totalWeightedScore, maxTotalScore)}`}
+                  >
+                    {formatScore(totalWeightedScore, maxTotalScore)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

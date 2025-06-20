@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import {
+  calculateScore,
   countryLabelLookup,
   findPhaseByName,
   formatDate,
@@ -54,6 +55,7 @@ import {
   CulturalAssessmentResultType,
   HiringPositionData,
   PHASE_NAMES,
+  PositionConfigurationFlowTypes,
 } from "@/types";
 
 import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
@@ -65,6 +67,22 @@ import {
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
 import { STATEMENT_BUTTON_TEXT } from "@/constants";
+
+interface PhaseData {
+  id: string;
+  name: string;
+  score?: number;
+  maxScore: number;
+  component?: React.ReactNode;
+  status: "completed" | "pending" | "in-progress";
+  details?: {
+    description?: string;
+    completedDate?: string;
+    duration?: string;
+    evaluator?: string;
+    notes?: string;
+  };
+}
 
 interface CandidateDetailsDialogProps {
   card: PipefyNode;
@@ -260,9 +278,9 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     console.log(
       "%c[Debug] ",
       "background-color: teal; font-size: 20px; color: white",
-      { hiringProcess, card, currentPhase },
+      { hiringProcess, card, currentPhase, position },
     );
-  }, [open, hiringProcess, card, currentPhase]);
+  }, [open, hiringProcess, card, currentPhase, position]);
 
   const renderCulturalAssessmentResults = () => {
     const culturalAssessmentPhase = pipe.phases.find(
@@ -421,6 +439,21 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     return getCulturalAssessmentScore(result as CulturalAssessmentResultType);
   };
 
+  const getSoftSkillsScore = () => {
+    const offerSentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
+    );
+    if (!offerSentPhase) return 0;
+    const data = getDataForPhase(offerSentPhase.id);
+    if (!data) return 0;
+    const skillsScore = calculateScore(data.custom_fields.skills);
+    const responsibilitiesScore = calculateScore(
+      data.custom_fields.responsibilities,
+    );
+    const overallScore = (skillsScore + responsibilitiesScore) / 2;
+    return overallScore;
+  };
+
   const getTechnicalAssessmentScoreForResults = () => {
     const technicalAssessmentPhase = pipe.phases.find(
       (phase) => phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT,
@@ -431,6 +464,149 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     if (!result) return 0;
     return getTechnicalAssessmentScore(result as TechnicalAssessmentResult);
   };
+
+  const getSoftSkillsStatus = (): "completed" | "pending" => {
+    const offerSentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
+    );
+    if (!offerSentPhase) return "pending";
+    const data = getDataForPhase(offerSentPhase.id);
+    if (!data) return "pending";
+    const hasCustomFields = Object.keys(data?.custom_fields).length > 0;
+    if (hasCustomFields) return "completed";
+    return "pending";
+  };
+
+  const getCulturalAssessmentStatus = (): "completed" | "pending" => {
+    const culturalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+    );
+    if (!culturalAssessmentPhase) return "pending";
+    const data = getDataForPhase(culturalAssessmentPhase.id);
+    if (!data) return "pending";
+    const hasCustomFields = Object.keys(data?.custom_fields).length > 0;
+    if (hasCustomFields) return "completed";
+    return "pending";
+  };
+
+  const getTechnicalAssessmentStatus = (): "completed" | "pending" => {
+    const technicalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT,
+    );
+    if (!technicalAssessmentPhase) return "pending";
+    const data = getDataForPhase(technicalAssessmentPhase.id);
+    if (!data) return "pending";
+    const hasCustomFields = Object.keys(data?.custom_fields).length > 0;
+    if (hasCustomFields) return "completed";
+    return "pending";
+  };
+
+  // this methods needs to calulate the average using:
+  // - soft skills score
+  // - cultural assessment score
+  // - technical assessment score
+  // - first interview score
+  // - final interview score
+
+  const getTotalWeightedScore = () => {
+    const softSkillsScore = getSoftSkillsScore();
+    const culturalAssessmentScore = getCulturalAssessmentScoreForResults();
+    const technicalAssessmentScore = getTechnicalAssessmentScoreForResults();
+    const firstInterview = Number(firstInterviewScore) || 0;
+    const finalInterview = Number(finalInterviewScore) || 0;
+    const totalWeightedScore =
+      (softSkillsScore +
+        culturalAssessmentScore +
+        technicalAssessmentScore +
+        firstInterview +
+        finalInterview) /
+      5;
+    return totalWeightedScore;
+  };
+
+  const resultsPhases: PhaseData[] = [
+    {
+      id: "revision-inicial",
+      name: "Revisión inicial",
+      score: getSoftSkillsScore(),
+      maxScore: 5,
+      status: getSoftSkillsStatus(),
+      component: renderSoftSkillsResults(),
+      details: {
+        description: "Evaluación automática del perfil del candidato",
+        completedDate: "15 de Mayo, 2024",
+        duration: "Automático",
+        evaluator: "Sistema automático",
+        notes: "El candidato cumple con la mayoría de los requisitos técnicos.",
+      },
+    },
+    {
+      id: "assessment-fit-cultural",
+      name: "Assessment Fit cultural",
+      score: getCulturalAssessmentScoreForResults(),
+      maxScore: 5,
+      status: getCulturalAssessmentStatus(),
+      component: renderCulturalAssessmentResults(),
+      details: {
+        description: "Evaluación de compatibilidad cultural con la empresa",
+        completedDate: "18 de Mayo, 2024",
+        duration: "45 minutos",
+        evaluator: "María González - HR",
+        notes: "Buena actitud, pero necesita mejorar en trabajo en equipo.",
+      },
+    },
+    {
+      id: "primer-entrevista",
+      name: "Primer entrevista",
+      score: Number(firstInterviewScore) || 0,
+      maxScore: 5,
+      status:
+        firstInterviewScore !== undefined && firstInterviewScore !== null
+          ? "completed"
+          : "pending",
+      details: {
+        description: "Entrevista inicial con el equipo de recursos humanos",
+        completedDate: "22 de Mayo, 2024",
+        duration: "60 minutos",
+        evaluator: "Carlos Ruiz - HR Manager",
+        notes: firstInterviewFeedback || "",
+      },
+    },
+    {
+      id: "assessment-tecnico",
+      name: "Assessment Técnico",
+      status: getTechnicalAssessmentStatus(),
+      maxScore: 5,
+      score: getTechnicalAssessmentScoreForResults(),
+      component: renderTechnicalAssessmentResults(),
+    },
+    {
+      id: "entrevista-final",
+      name: "Entrevista final",
+      status:
+        finalInterviewScore !== undefined && finalInterviewScore !== null
+          ? "completed"
+          : "pending",
+      maxScore: 5,
+      score: Number(finalInterviewScore) || 0,
+      details: {
+        description: "Entrevista final con el equipo de recursos humanos",
+        completedDate: "22 de Mayo, 2024",
+        duration: "60 minutos",
+        evaluator: "Carlos Ruiz - HR Manager",
+        notes: finalInterviewFeedback || "",
+      },
+    },
+  ];
+
+  const filteredPhases =
+    position?.flow_type === PositionConfigurationFlowTypes.LOW_PROFILE_FLOW
+      ? resultsPhases.filter(
+          (phase) =>
+            phase.id !== "assessment-tecnico" &&
+            phase.id !== "primer-entrevista",
+        )
+      : resultsPhases;
 
   return (
     <Dialog modal open={open} onOpenChange={handleOpenChange}>
@@ -694,81 +870,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
             >
               <ResultsTabContent
-                phases={[
-                  {
-                    id: "revision-inicial",
-                    name: "Revisión inicial",
-                    score: 4.8,
-                    maxScore: 5,
-                    status: "completed" as const,
-                    component: renderSoftSkillsResults(),
-                    details: {
-                      description:
-                        "Evaluación automática del perfil del candidato",
-                      completedDate: "15 de Mayo, 2024",
-                      duration: "Automático",
-                      evaluator: "Sistema automático",
-                      notes:
-                        "El candidato cumple con la mayoría de los requisitos técnicos.",
-                    },
-                  },
-                  {
-                    id: "assessment-fit-cultural",
-                    name: "Assessment Fit cultural",
-                    score: getCulturalAssessmentScoreForResults(),
-                    maxScore: 5,
-                    status: "completed" as const,
-                    component: renderCulturalAssessmentResults(),
-                    details: {
-                      description:
-                        "Evaluación de compatibilidad cultural con la empresa",
-                      completedDate: "18 de Mayo, 2024",
-                      duration: "45 minutos",
-                      evaluator: "María González - HR",
-                      notes:
-                        "Buena actitud, pero necesita mejorar en trabajo en equipo.",
-                    },
-                  },
-                  {
-                    id: "primer-entrevista",
-                    name: "Primer entrevista",
-                    score: Number(firstInterviewScore) || 0,
-                    maxScore: 5,
-                    status: "completed" as const,
-                    details: {
-                      description:
-                        "Entrevista inicial con el equipo de recursos humanos",
-                      completedDate: "22 de Mayo, 2024",
-                      duration: "60 minutos",
-                      evaluator: "Carlos Ruiz - HR Manager",
-                      notes: firstInterviewFeedback || "",
-                    },
-                  },
-                  {
-                    id: "assessment-tecnico",
-                    name: "Assessment Técnico",
-                    status: "completed" as const,
-                    maxScore: 5,
-                    score: getTechnicalAssessmentScoreForResults(),
-                    component: renderTechnicalAssessmentResults(),
-                  },
-                  {
-                    id: "entrevista-final",
-                    name: "Entrevista final",
-                    status: "completed" as const,
-                    maxScore: 5,
-                    score: Number(finalInterviewScore) || 0,
-                    details: {
-                      description:
-                        "Entrevista final con el equipo de recursos humanos",
-                      completedDate: "22 de Mayo, 2024",
-                      duration: "60 minutos",
-                      evaluator: "Carlos Ruiz - HR Manager",
-                      notes: finalInterviewFeedback || "",
-                    },
-                  },
-                ]}
-                totalWeightedScore={3.15}
+                phases={filteredPhases}
+                totalWeightedScore={getTotalWeightedScore()}
                 maxTotalScore={5}
                 candidateName={candidateName}
               />

@@ -237,6 +237,7 @@ export type HiringPositionData = {
   role: string;
   hiring_priority: "high" | "medium" | "low";
   pipe_id: string;
+  flow_type: PositionConfigurationFlowTypes;
   created_at: string;
   hiring_processes: HiringProcess[];
   position_configuration_id?: string;
@@ -737,7 +738,7 @@ export interface PhaseFlowGroup {
 }
 
 export interface PositionFlow {
-  flow_type: string;
+  flow_type: PositionConfigurationFlowTypes;
   pipe_id: number;
   groups: PhaseFlowGroup[];
 }
