@@ -509,19 +509,45 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   // - final interview score
 
   const getTotalWeightedScore = () => {
-    const softSkillsScore = getSoftSkillsScore();
-    const culturalAssessmentScore = getCulturalAssessmentScoreForResults();
-    const technicalAssessmentScore = getTechnicalAssessmentScoreForResults();
-    const firstInterview = Number(firstInterviewScore) || 0;
-    const finalInterview = Number(finalInterviewScore) || 0;
-    const totalWeightedScore =
-      (softSkillsScore +
-        culturalAssessmentScore +
-        technicalAssessmentScore +
-        firstInterview +
-        finalInterview) /
-      5;
-    return totalWeightedScore;
+    const scores: number[] = [];
+
+    if (getSoftSkillsStatus() === "completed") {
+      scores.push(getSoftSkillsScore());
+    }
+
+    if (getCulturalAssessmentStatus() === "completed") {
+      scores.push(getCulturalAssessmentScoreForResults());
+    }
+
+    const isLowProfile =
+      position?.flow_type === PositionConfigurationFlowTypes.LOW_PROFILE_FLOW;
+
+    if (!isLowProfile) {
+      if (getTechnicalAssessmentStatus() === "completed") {
+        scores.push(getTechnicalAssessmentScoreForResults());
+      }
+
+      if (firstInterviewScore != null && firstInterviewScore.trim() !== "") {
+        const score = Number(firstInterviewScore);
+        if (!isNaN(score)) {
+          scores.push(score);
+        }
+      }
+    }
+
+    if (finalInterviewScore != null && finalInterviewScore.trim() !== "") {
+      const score = Number(finalInterviewScore);
+      if (!isNaN(score)) {
+        scores.push(score);
+      }
+    }
+
+    if (scores.length === 0) {
+      return 0;
+    }
+
+    const totalScore = scores.reduce((acc, score) => acc + score, 0);
+    return totalScore / scores.length;
   };
 
   const resultsPhases: PhaseData[] = [
