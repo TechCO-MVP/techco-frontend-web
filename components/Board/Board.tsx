@@ -42,6 +42,7 @@ import { useBoardActions } from "@/hooks/use-board-actions";
 import { STATUS_OPTIONS, MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
 import { MovePhaseDialog } from "./MovePhaseDialog";
 import { MissingFieldsDialog } from "./MissingFieldsDialog";
+import { usePositionById } from "@/hooks/use-position-by-id";
 type BoardProps = {
   dictionary: Dictionary;
 };
@@ -85,6 +86,10 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const selectedPosition = useMemo(() => {
     return positions.find((position) => position._id === id);
   }, [positions, id]);
+
+  const { data: position, isLoading: isPositionLoading } = usePositionById({
+    id,
+  });
 
   const { toast } = useToast();
 
@@ -162,7 +167,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const showSkeleton =
     !showInProgress &&
     filterStatus?.body.status !== "in_progress" &&
-    (loadingPipe || loadingProfiles || pendingPipes || pendingProfiles);
+    (isPositionLoading ||
+      loadingPipe ||
+      loadingProfiles ||
+      pendingPipes ||
+      pendingProfiles);
 
   return (
     <div className="flex w-full flex-col">
@@ -387,6 +396,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         {board &&
           filteredBoard?.map((column) => (
             <BoardColumn
+              positionFlow={position?.position_flow}
               position={selectedPosition}
               dictionary={dictionary}
               pipe={board.pipe}

@@ -56,6 +56,7 @@ import {
   HiringPositionData,
   PHASE_NAMES,
   PositionConfigurationFlowTypes,
+  PositionFlow,
 } from "@/types";
 
 import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
@@ -91,6 +92,7 @@ interface CandidateDetailsDialogProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   position?: HiringPositionData;
+  positionFlow?: PositionFlow;
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
@@ -99,6 +101,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   open,
   setOpen,
   position,
+  positionFlow,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
   // const [fetchProcessId, setFetchProcessId] = useState<string | null>(null);
@@ -174,8 +177,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   const currentPhase = findPhaseByName(
     card.current_phase.name,
-    // PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS,
-    position?.position_flow,
+    // PHASE_NAMES.FINAL_INTERVIEW_SCHEDULED,
+    positionFlow,
   );
 
   const [publicFormUrl, setPublicFormUrl] = useState("");
@@ -411,6 +414,30 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             phase={currentPhase}
             data={technicalAssessmentData}
           />
+        );
+      default:
+        return (
+          <div className="max-w-4xl bg-white p-6">
+            {currentPhase?.interviewerData?.sections.map((section) => {
+              return (
+                <div key={section.title} className="flex flex-col gap-2">
+                  <Heading className="text-base font-bold" level={2}>
+                    {currentPhase?.groupName}
+                  </Heading>
+                  <Heading className="text-sm font-bold" level={2}>
+                    {section.title}
+                  </Heading>
+                  <Text className="text-sm text-[#090909]">
+                    {section.subtitle}
+                  </Text>
+                  <Text className="text-sm text-[#090909]">
+                    {section.description}
+                  </Text>
+                  {renderButtonText(section.button_text)}
+                </div>
+              );
+            })}
+          </div>
         );
     }
   };

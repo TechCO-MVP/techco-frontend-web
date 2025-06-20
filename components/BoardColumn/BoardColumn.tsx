@@ -5,12 +5,13 @@ import { UserCard } from "../UserCard/UserCard";
 import type { PipefyPhase, PipefyNode, PipefyPipe } from "@/types/pipefy";
 import { cn } from "@/lib/utils";
 import { Dictionary } from "@/types/i18n";
-import { HiringPositionData } from "@/types";
+import { HiringPositionData, PositionFlow } from "@/types";
 
 interface ColumnProps {
   dictionary: Dictionary;
   pipe: PipefyPipe;
   position?: HiringPositionData;
+  positionFlow?: PositionFlow;
   draggedCard: {
     id: string;
     node: PipefyNode;
@@ -30,6 +31,7 @@ interface ColumnProps {
 }
 
 export const BoardColumn: React.FC<ColumnProps> = ({
+  positionFlow,
   position,
   pipe,
   column,
@@ -98,6 +100,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
           {column.cards.nodes.map((card) => (
             <UserCard
               position={position}
+              positionFlow={positionFlow}
               dictionary={dictionary}
               pipe={pipe}
               key={card.id}
