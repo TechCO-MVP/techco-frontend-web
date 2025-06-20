@@ -1,8 +1,10 @@
 "use client";
 
-import { PositionPhaseSearchResult } from "@/types";
+import { HiringProcess, PositionPhaseSearchResult } from "@/types";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
+import { TechnicalAssesmentResult } from "@/types";
+import { getTechnicalAssessmentScore } from "@/lib/utils";
 
 export type TechnicalAssessmentResult = {
   dimensiones: {
@@ -13,50 +15,6 @@ export type TechnicalAssessmentResult = {
   feedback_general: string;
 };
 
-// Mock data based on the image
-const mockData: TechnicalAssessmentResult = {
-  dimensiones: [
-    {
-      nombre: "Coherencia en el análisis del problema",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato identificó correctamente la causa raíz del bug reportado, evitando asumir soluciones sin entender primero el contexto. Explicó paso a paso cómo validó el comportamiento esperado de la función y cómo contrastó ese resultado con el flujo actual. Su enfoque fue estructurado y lógico, lo que demuestra que comprendió el problema antes de comenzar a proponer cambios en el código.",
-    },
-    {
-      nombre: "Calidad y lógica de las decisiones tomadas",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato eligió una solución que no solo resolvía el bug, sino que también evitaba efectos colaterales en otras partes del sistema. Justificó su decisión comparando alternativas y optando por la más eficiente en términos de legibilidad y mantenimiento. Además, explicó por qué descartó otras opciones, demostrando criterio técnico y comprensión del impacto a largo plazo en el código.",
-    },
-    {
-      nombre: "Organización y priorización de ideas",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato estructuró su respuesta de forma clara: primero explicó el problema, luego describió los pasos que siguió para analizarlo, y finalmente detalló la solución implementada. La información fue presentada de forma ordenada y lógica, facilitando su comprensión. Además, priorizó explicar las decisiones más relevantes, sin desviarse en detalles innecesarios.",
-    },
-    {
-      nombre: "Claridad en la comunicación escrita",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato estructuró su respuesta de forma clara: primero explicó el problema, luego describió los pasos que siguió para analizarlo, y finalmente detalló la solución implementada. La información fue presentada de forma ordenada y lógica, facilitando su comprensión. Además, priorizó explicar las decisiones más relevantes, sin desviarse en detalles innecesarios.",
-    },
-    {
-      nombre: "Originalidad o enfoque innovador",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato estructuró su respuesta de forma clara: primero explicó el problema, luego describió los pasos que siguió para analizarlo, y finalmente detalló la solución implementada. La información fue presentada de forma ordenada y lógica, facilitando su comprensión. Además, priorizó explicar las decisiones más relevantes, sin desviarse en detalles innecesarios.",
-    },
-    {
-      nombre: "Conexión con los objetivos del rol o negocio",
-      calificacion: 3.75,
-      justificacion:
-        "El candidato estructuró su respuesta de forma clara: primero explicó el problema, luego describió los pasos que siguió para analizarlo, y finalmente detalló la solución implementada. La información fue presentada de forma ordenada y lógica, facilitando su comprensión. Además, priorizó explicar las decisiones más relevantes, sin desviarse en detalles innecesarios.",
-    },
-  ],
-  feedback_general:
-    "El candidato demuestra sólidas habilidades técnicas y un enfoque metodológico para la resolución de problemas, con especial fortaleza en análisis y toma de decisiones.",
-};
-
 const getScoreColor = (score: number) => {
   if (score >= 4) return "text-green-600";
   if (score >= 3) return "text-yellow-600";
@@ -65,10 +23,14 @@ const getScoreColor = (score: number) => {
 };
 type Props = {
   phase: PositionPhaseSearchResult | null;
+  data?: HiringProcess["phases"][number];
 };
-export function TechnicalAssessmentResults({ phase }: Props) {
-  const overallScore = 4.8;
-  const totalWeighted = 3.15;
+export function TechnicalAssessmentResults({ phase, data }: Props) {
+  if (!data || !data.custom_fields?.assistant_response?.assesment_result)
+    return null;
+  const resultsData = data.custom_fields.assistant_response
+    .assesment_result as TechnicalAssesmentResult;
+  const overallScore = getTechnicalAssessmentScore(resultsData);
 
   return (
     <div className="mx-auto max-w-4xl bg-white p-6">
@@ -91,12 +53,12 @@ export function TechnicalAssessmentResults({ phase }: Props) {
           );
         })}
 
-        {mockData.feedback_general && (
+        {resultsData.feedback_general && (
           <div className="mb-4 mt-6 rounded-lg bg-blue-50 p-4">
             <h3 className="mb-2 font-semibold text-gray-900">
               Feedback General
             </h3>
-            <p className="text-gray-700">{mockData.feedback_general}</p>
+            <p className="text-gray-700">{resultsData.feedback_general}</p>
           </div>
         )}
 
@@ -133,7 +95,7 @@ export function TechnicalAssessmentResults({ phase }: Props) {
 
       {/* Technical Dimensions */}
       <div className="space-y-6">
-        {mockData.dimensiones.map((dimension, index) => (
+        {resultsData.dimensiones.map((dimension, index) => (
           <div
             key={index}
             className="border-b border-gray-200 pb-6 last:border-b-0"
@@ -160,7 +122,7 @@ export function TechnicalAssessmentResults({ phase }: Props) {
       </div>
 
       {/* Total Weighted Score */}
-      <div className="mt-8 rounded-lg bg-gray-50 p-4">
+      {/* <div className="mt-8 rounded-lg bg-gray-50 p-4">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold text-gray-900">
             Total ponderado
@@ -171,7 +133,7 @@ export function TechnicalAssessmentResults({ phase }: Props) {
             {totalWeighted} de 5
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

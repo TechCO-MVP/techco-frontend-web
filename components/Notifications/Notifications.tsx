@@ -36,6 +36,7 @@ export function Notifications({
   const { notifications: i18n } = dictionary;
   const { notifications, isLoading } = useGetNotifications();
   const [toMarkRead, setToMarkRead] = useState<string[]>([]);
+  const [toMarkReviewed, setToMarkReviewed] = useState<string[]>([]);
   const queryClient = useQueryClient();
   const params = useParams<{
     lang: Locale;
@@ -77,16 +78,28 @@ export function Notifications({
   );
 
   useEffect(() => {
-    if (!open && toMarkRead.length > 0) {
+    if (open) return;
+
+    if (toMarkRead.length > 0) {
       mutate({
         notification_ids: toMarkRead,
         status: "READ",
+      });
+    }
+    if (toMarkReviewed.length > 0) {
+      mutate({
+        notification_ids: toMarkReviewed,
+        status: "REVIEWED",
       });
     }
   }, [open, toMarkRead, mutate]);
 
   const markAsRead = (id: string) => {
     setToMarkRead((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
+
+  const markAsReviewed = (id: string) => {
+    setToMarkReviewed((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   // Group and sort notifications by category (fallback logic)
@@ -176,6 +189,7 @@ export function Notifications({
                       <NotificationItem
                         dictionary={dictionary}
                         markAsRead={markAsRead}
+                        markAsReviewed={markAsReviewed}
                         setOpen={setOpen}
                         key={notification._id}
                         notification={notification}
@@ -199,6 +213,7 @@ export function Notifications({
                     <NotificationItem
                       dictionary={dictionary}
                       markAsRead={markAsRead}
+                      markAsReviewed={markAsReviewed}
                       setOpen={setOpen}
                       key={notification._id}
                       notification={notification}
@@ -221,6 +236,7 @@ export function Notifications({
                     <NotificationItem
                       dictionary={dictionary}
                       markAsRead={markAsRead}
+                      markAsReviewed={markAsReviewed}
                       setOpen={setOpen}
                       key={notification._id}
                       notification={notification}

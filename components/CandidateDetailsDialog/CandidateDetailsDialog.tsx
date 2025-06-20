@@ -19,7 +19,13 @@ import { Text } from "../Typography/Text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { countryLabelLookup, findPhaseByName, formatDate } from "@/lib/utils";
+import {
+  countryLabelLookup,
+  findPhaseByName,
+  formatDate,
+  getCulturalAssessmentScore,
+  getTechnicalAssessmentScore,
+} from "@/lib/utils";
 import { Linkedin } from "@/icons";
 import { Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,11 +50,18 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { SoftSkillsResults } from "./SoftSkillsResults";
 import ResultsTabContent from "./ResultsTabContent";
-import { HiringPositionData, PHASE_NAMES } from "@/types";
+import {
+  CulturalAssessmentResultType,
+  HiringPositionData,
+  PHASE_NAMES,
+} from "@/types";
 
 import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
 import { FirstInterviewResults } from "./FirstInterviewResults";
-import { TechnicalAssessmentResults } from "./TechnicalAssessmentResults";
+import {
+  TechnicalAssessmentResult,
+  TechnicalAssessmentResults,
+} from "./TechnicalAssessmentResults";
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
 import { STATEMENT_BUTTON_TEXT } from "@/constants";
@@ -143,6 +156,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   const currentPhase = findPhaseByName(
     card.current_phase.name,
+    // PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS,
     position?.position_flow,
   );
 
@@ -265,7 +279,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     );
     if (!technicalAssessmentPhase) return null;
 
-    return <TechnicalAssessmentResults phase={currentPhase} />;
+    return (
+      <TechnicalAssessmentResults
+        data={getDataForPhase(technicalAssessmentPhase.id)}
+        phase={currentPhase}
+      />
+    );
   };
 
   const renderSoftSkillsResults = () => {
@@ -369,7 +388,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
           "background-color: teal; font-size: 20px; color: white",
           technicalAssessmentData,
         );
-        return <TechnicalAssessmentResults phase={currentPhase} />;
+        return (
+          <TechnicalAssessmentResults
+            phase={currentPhase}
+            data={technicalAssessmentData}
+          />
+        );
     }
   };
 
@@ -382,6 +406,30 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
       );
     }
     return null;
+  };
+
+  // Helper to get the cultural assessment score for the results tab
+  const getCulturalAssessmentScoreForResults = () => {
+    const culturalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.CULTURAL_FIT_ASSESSMENT,
+    );
+    if (!culturalAssessmentPhase) return 0;
+    const data = getDataForPhase(culturalAssessmentPhase.id);
+    const result = data?.custom_fields?.assistant_response?.assesment_result;
+    if (!result) return 0;
+
+    return getCulturalAssessmentScore(result as CulturalAssessmentResultType);
+  };
+
+  const getTechnicalAssessmentScoreForResults = () => {
+    const technicalAssessmentPhase = pipe.phases.find(
+      (phase) => phase.name === PHASE_NAMES.TECHNICAL_ASSESSMENT,
+    );
+    if (!technicalAssessmentPhase) return 0;
+    const data = getDataForPhase(technicalAssessmentPhase.id);
+    const result = data?.custom_fields?.assistant_response?.assesment_result;
+    if (!result) return 0;
+    return getTechnicalAssessmentScore(result as TechnicalAssessmentResult);
   };
 
   return (
@@ -667,7 +715,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   {
                     id: "assessment-fit-cultural",
                     name: "Assessment Fit cultural",
-                    score: 3,
+                    score: getCulturalAssessmentScoreForResults(),
                     maxScore: 5,
                     status: "completed" as const,
                     component: renderCulturalAssessmentResults(),
@@ -701,7 +749,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                     name: "Assessment Técnico",
                     status: "completed" as const,
                     maxScore: 5,
-                    score: 4.4,
+                    score: getTechnicalAssessmentScoreForResults(),
                     component: renderTechnicalAssessmentResults(),
                   },
                   {

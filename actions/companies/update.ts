@@ -4,6 +4,7 @@ import { CompanyDetailsData } from "@/lib/schemas";
 import { apiEndpoints } from "@/lib/api-endpoints";
 import { cookies } from "next/headers";
 import { Business } from "@/types";
+import { countryCodeLookup } from "@/lib/utils";
 
 interface UpdateResponse {
   success: boolean;
@@ -17,7 +18,7 @@ export async function updateCompanyAction(
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("idToken")?.value;
-
+    const countryCode = countryCodeLookup(data.countryCode);
     const response = await fetch(apiEndpoints.updateBusiness(id), {
       method: "PUT",
       headers: {
@@ -27,7 +28,7 @@ export async function updateCompanyAction(
       },
       body: JSON.stringify({
         name: data.name,
-        country_code: data.countryCode,
+        country_code: countryCode,
         description: data.description,
         segment: data.segment,
         industry: data.industry,

@@ -75,12 +75,14 @@ export function NotificationItem({
   setOpen,
   notification,
   markAsRead,
+  markAsReviewed,
   dictionary,
   positions,
 }: {
   notification: NotificationPayload["message"];
   setOpen: Dispatch<SetStateAction<boolean>>;
   markAsRead: (id: string) => void;
+  markAsReviewed: (id: string) => void;
   dictionary: Dictionary;
   positions: HiringPositionData[];
 }) {
@@ -115,6 +117,9 @@ export function NotificationItem({
     );
 
     setOpen(false);
+    if (notification.status !== "REVIEWED") {
+      markAsReviewed(notification._id);
+    }
     router.push(
       `/${lang}/dashboard/positions/${position?._id}?business_id=${notification.business_id}`,
     );

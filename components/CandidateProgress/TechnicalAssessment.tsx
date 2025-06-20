@@ -81,7 +81,7 @@ export const TechnicalAssessment: React.FC<{
       console.log("getting presigned url");
       getPresignedUrl({
         organizationId,
-        fileName: "cultural-assessment.pdf",
+        fileName: "technical-assessment.pdf",
       });
     },
     onError: (error) => {
@@ -123,9 +123,6 @@ export const TechnicalAssessment: React.FC<{
       Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
       Autonomia: ${culturalFitAssessment.how_much_autonomy}.
       Principales retos: ${culturalFitAssessment.challenges_of_the_position}.
-      Objetivo del assessment: ${technicalAssessment.assesment_goal}.
-      Mision del assessment: ${technicalAssessment.your_mission}.
-      Retos del assessment: ${technicalAssessment.challenge}.
       ${UPLOAD_FILE_PROMPT}
      `;
       }
@@ -153,9 +150,10 @@ export const TechnicalAssessment: React.FC<{
       setSelectedFile(null);
       setPresignedUrl("");
       toast({
-        title: "Archivo subido correctamente",
-        description: "El archivo se ha subido correctamente",
+        title: "¡Recibimos tu prueba! ",
+        description: "Te contamos pronto qué sigue.",
       });
+      setAnswer("");
     } catch (error) {
       console.error(error);
       setIsUploadingFile(false);

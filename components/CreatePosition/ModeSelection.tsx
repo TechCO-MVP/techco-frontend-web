@@ -89,7 +89,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
           break;
         case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:
           router.push(
-            `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish?mode=${modeParam}`,
+            `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish${modeParam ? `?mode=${modeParam}` : ""}`,
           );
           break;
         default:
@@ -164,7 +164,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       activePhase.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
     ) {
       router.push(
-        `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish?mode=${modeParam}`,
+        `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/publish${modeParam ? `?mode=${modeParam}` : ""}`,
       );
     }
   }, [activePhase]);

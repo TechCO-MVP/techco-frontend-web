@@ -196,7 +196,12 @@ export type HiringProcess = {
         skills: Record<string, boolean>;
         expected_salary: string;
         process_id: string;
-        cultural_assessment_result: CulturalAssessmentResultType | null;
+        assistant_response: {
+          assesment_result:
+            | CulturalAssessmentResultType
+            | TechnicalAssesmentResult
+            | null;
+        };
       };
     };
   };

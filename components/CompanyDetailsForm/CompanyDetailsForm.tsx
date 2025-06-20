@@ -34,6 +34,8 @@ import { useParams } from "next/navigation";
 import { Locale } from "@/i18n-config";
 import { useUsers } from "@/hooks/use-users";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { FormCombobox } from "../FormCombobox/FormCombobox";
+import { COUNTRIES } from "@/lib/data/countries";
 type CompanyDetailsFormProps = {
   dictionary: Dictionary;
   businesses: Business[];
@@ -79,6 +81,7 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { companiesPage: i18n } = dictionary;
+
   const form = useForm<CompanyDetailsData>({
     mode: "onChange",
     resolver: zodResolver(CompanyDetailsSchema),
@@ -259,6 +262,21 @@ export const CompanyDetailsForm: FC<Readonly<CompanyDetailsFormProps>> = ({
             control={control}
             errors={errors}
             dirtyFields={dirtyFields}
+            getErrorMessage={getErrorMessage(dictionary)}
+          />
+
+          <FormCombobox
+            classNames="max-w-full"
+            testId="country-select-trigger"
+            name="countryCode"
+            label={i18n.countryLabel}
+            placeholder={i18n.countryPlaceholder}
+            searchPlaceholder={i18n.countrySearchPlaceholder}
+            noResultsMessage={i18n.countryNotFound}
+            control={control}
+            errors={errors}
+            dirtyFields={dirtyFields}
+            options={COUNTRIES}
             getErrorMessage={getErrorMessage(dictionary)}
           />
           {/* Form Row */}
