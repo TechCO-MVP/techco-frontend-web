@@ -18,7 +18,9 @@ export async function updateCompanyAction(
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("idToken")?.value;
-    const countryCode = countryCodeLookup(data.countryCode);
+    const countryCode =
+      countryCodeLookup(data.countryCode) || data.countryCode || "CO";
+
     const response = await fetch(apiEndpoints.updateBusiness(id), {
       method: "PUT",
       headers: {
