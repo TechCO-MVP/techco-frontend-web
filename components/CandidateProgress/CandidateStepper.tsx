@@ -33,7 +33,10 @@ export const CandidateStepper = ({
 
   const steps = groups.map((group, idx) => {
     let status: string;
-    if (idx < activeIndex) {
+
+    if (group.name === "Finalistas" && idx === activeIndex) {
+      status = "Completado";
+    } else if (idx < activeIndex) {
       status = "Completado";
     } else if (idx === activeIndex) {
       status = "En Proceso";
