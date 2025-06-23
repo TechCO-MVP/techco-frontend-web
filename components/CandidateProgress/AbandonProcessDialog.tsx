@@ -1,6 +1,6 @@
 "use client";
 
-import { type FC, useEffect, useState } from "react";
+import { Dispatch, type FC, SetStateAction, useEffect, useState } from "react";
 
 import {
   Dialog,
@@ -20,11 +20,13 @@ import { ABANDON_PROCESS_PHASE_NAME } from "@/constants";
 type Props = {
   cardId: string;
   dictionary: Dictionary;
+  setShouldRefetch: Dispatch<SetStateAction<boolean>>;
 };
 
 export const AbandonProcessDialog: FC<Readonly<Props>> = ({
   cardId,
   dictionary,
+  setShouldRefetch,
 }) => {
   const { positionOfferPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
@@ -53,6 +55,7 @@ export const AbandonProcessDialog: FC<Readonly<Props>> = ({
   });
 
   useEffect(() => {
+    setShouldRefetch(!open);
     if (!open) {
       setConfirmed(false);
     }
