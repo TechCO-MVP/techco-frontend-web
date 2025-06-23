@@ -9,7 +9,7 @@ import {
 import type { TechnicalAssessment as TechnicalAssessmentType } from "@/types";
 
 import { Dictionary } from "@/types/i18n";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { PositionDetailsPage } from "../PositionDetailsPage/PositionDetailsPage";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
 import LoadingSkeleton from "../PositionDetailsPage/Skeleton";
@@ -52,11 +52,13 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   vacancy_name,
   token,
 }) => {
+  const [shouldRefetch, setShouldRefetch] = useState(true);
   const { hiring_card_id } = positionData;
   const { card, isLoading } = usePipefyCard({
     cardId: hiring_card_id,
     options: {
       refetchInterval: 10000,
+      enabled: shouldRefetch,
     },
   });
 
@@ -239,6 +241,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       )}
                       <div className="flex gap-2">
                         <AbandonProcessDialog
+                          setShouldRefetch={setShouldRefetch}
                           dictionary={dictionary}
                           cardId={positionData.hiring_card_id}
                         />
