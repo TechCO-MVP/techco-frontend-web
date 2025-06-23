@@ -26,6 +26,7 @@ import {
   formatDate,
   getCulturalAssessmentScore,
   getTechnicalAssessmentScore,
+  sanitizeHtml,
 } from "@/lib/utils";
 import { Linkedin } from "@/icons";
 import { Mail } from "lucide-react";
@@ -68,6 +69,7 @@ import {
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
 import { STATEMENT_BUTTON_TEXT } from "@/constants";
+import { usePipefyCard } from "@/hooks/use-pipefy-card";
 
 interface PhaseData {
   id: string;
@@ -149,6 +151,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const localUser = useMemo(() => {
     return users.find((user) => user.email === currentUser?.email);
   }, [users, currentUser]);
+
+  const { card: userCard } = usePipefyCard({
+    cardId: card.id,
+  });
 
   // const { fileProcessingStatus } = useFileProcessingStatus(fetchProcessId);
 
@@ -329,32 +335,32 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     );
   };
 
-  const dynamicValues = useMemo(() => {
-    const statements = card.current_phase.fields.filter(
-      (f) => f.type === "statement",
-    );
+  // const dynamicValues = useMemo(() => {
+  //   const statements = card.current_phase.fields.filter(
+  //     (f) => f.type === "statement",
+  //   );
 
-    const values: Record<string, string> = {};
+  //   const values: Record<string, string> = {};
 
-    for (const statement of statements) {
-      const desc = statement.description ?? "";
-      const matches = [...desc.matchAll(/{{\s*phase\d+\.field(\d+)\s*}}/g)];
+  //   for (const statement of statements) {
+  //     const desc = statement.description ?? "";
+  //     const matches = [...desc.matchAll(/{{\s*phase\d+\.field(\d+)\s*}}/g)];
 
-      for (const match of matches) {
-        const fieldId = match[1];
+  //     for (const match of matches) {
+  //       const fieldId = match[1];
 
-        const matchingField = card.fields.find(
-          (f) => f.phase_field?.internal_id === fieldId,
-        );
+  //       const matchingField = card.fields.find(
+  //         (f) => f.phase_field?.internal_id === fieldId,
+  //       );
 
-        if (matchingField) {
-          values[fieldId] = matchingField.value ?? "";
-        }
-      }
-    }
+  //       if (matchingField) {
+  //         values[fieldId] = matchingField.value ?? "";
+  //       }
+  //     }
+  //   }
 
-    return values;
-  }, [card]);
+  //   return values;
+  // }, [card]);
 
   const renderCallToActionContent = (phaseName: string) => {
     switch (phaseName) {
@@ -444,11 +450,17 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   const renderButtonText = (text: string) => {
     if (text === STATEMENT_BUTTON_TEXT) {
-      return (
-        <p className="text-sm font-bold text-[#090909]">
-          {Object.values(dynamicValues).join(" ")}
-        </p>
-      );
+      return userCard?.current_phase.fields.map((field, index) => {
+        return field.type === "statement" ? (
+          <div
+            className="flex w-full flex-col items-center gap-2 text-sm text-[#090909]"
+            key={index}
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(field.description),
+            }}
+          ></div>
+        ) : null;
+      });
     }
     return null;
   };
