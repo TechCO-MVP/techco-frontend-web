@@ -21,7 +21,6 @@ export const VALIDATION_ERROR_KEYS: {
 };
 
 export const ROLES: { value: UserRole["role"]; label: string }[] = [
-  { value: "super_admin", label: "Super Admin" },
   { value: "business_admin", label: "Business Admin" },
   { value: "position_owner", label: "Position Owner" },
   { value: "recruiter", label: "Recruiter" },

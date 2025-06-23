@@ -56,6 +56,7 @@ import {
   HiringPositionData,
   PHASE_NAMES,
   PositionConfigurationFlowTypes,
+  PositionFlow,
 } from "@/types";
 
 import { CulturalAssessmentResults } from "./CulturalAssessmentResults";
@@ -91,6 +92,7 @@ interface CandidateDetailsDialogProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   position?: HiringPositionData;
+  positionFlow?: PositionFlow;
 }
 export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   card,
@@ -99,6 +101,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   open,
   setOpen,
   position,
+  positionFlow,
 }) => {
   const notificationsState = useAppSelector(selectNotificationsState);
   // const [fetchProcessId, setFetchProcessId] = useState<string | null>(null);
@@ -174,8 +177,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
   const currentPhase = findPhaseByName(
     card.current_phase.name,
-    // PHASE_NAMES.TECHNICAL_ASSESSMENT_RESULTS,
-    position?.position_flow,
+    // PHASE_NAMES.FINAL_INTERVIEW_SCHEDULED,
+    positionFlow,
   );
 
   const [publicFormUrl, setPublicFormUrl] = useState("");
@@ -412,6 +415,30 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             data={technicalAssessmentData}
           />
         );
+      default:
+        return (
+          <div className="max-w-4xl bg-white p-6">
+            {currentPhase?.interviewerData?.sections.map((section) => {
+              return (
+                <div key={section.title} className="flex flex-col gap-2">
+                  <Heading className="text-base font-bold" level={2}>
+                    {currentPhase?.groupName}
+                  </Heading>
+                  <Heading className="text-sm font-bold" level={2}>
+                    {section.title}
+                  </Heading>
+                  <Text className="text-sm text-[#090909]">
+                    {section.subtitle}
+                  </Text>
+                  <Text className="text-sm text-[#090909]">
+                    {section.description}
+                  </Text>
+                  {renderButtonText(section.button_text)}
+                </div>
+              );
+            })}
+          </div>
+        );
     }
   };
 
@@ -509,19 +536,45 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   // - final interview score
 
   const getTotalWeightedScore = () => {
-    const softSkillsScore = getSoftSkillsScore();
-    const culturalAssessmentScore = getCulturalAssessmentScoreForResults();
-    const technicalAssessmentScore = getTechnicalAssessmentScoreForResults();
-    const firstInterview = Number(firstInterviewScore) || 0;
-    const finalInterview = Number(finalInterviewScore) || 0;
-    const totalWeightedScore =
-      (softSkillsScore +
-        culturalAssessmentScore +
-        technicalAssessmentScore +
-        firstInterview +
-        finalInterview) /
-      5;
-    return totalWeightedScore;
+    const scores: number[] = [];
+
+    if (getSoftSkillsStatus() === "completed") {
+      scores.push(getSoftSkillsScore());
+    }
+
+    if (getCulturalAssessmentStatus() === "completed") {
+      scores.push(getCulturalAssessmentScoreForResults());
+    }
+
+    const isLowProfile =
+      position?.flow_type === PositionConfigurationFlowTypes.LOW_PROFILE_FLOW;
+
+    if (!isLowProfile) {
+      if (getTechnicalAssessmentStatus() === "completed") {
+        scores.push(getTechnicalAssessmentScoreForResults());
+      }
+
+      if (firstInterviewScore != null && firstInterviewScore.trim() !== "") {
+        const score = Number(firstInterviewScore);
+        if (!isNaN(score)) {
+          scores.push(score);
+        }
+      }
+    }
+
+    if (finalInterviewScore != null && finalInterviewScore.trim() !== "") {
+      const score = Number(finalInterviewScore);
+      if (!isNaN(score)) {
+        scores.push(score);
+      }
+    }
+
+    if (scores.length === 0) {
+      return 0;
+    }
+
+    const totalScore = scores.reduce((acc, score) => acc + score, 0);
+    return totalScore / scores.length;
   };
 
   const resultsPhases: PhaseData[] = [
