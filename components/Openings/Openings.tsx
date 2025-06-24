@@ -34,12 +34,13 @@ import {
   BadgeInfo,
   SquarePenIcon,
   TrashIcon,
+  MoreHorizontal,
 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import {
@@ -74,6 +75,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import AnimatedModal from "../ChatBot/AnimatedModal";
 import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
 import { Input } from "../ui/input";
+import { Locale } from "@/i18n-config";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -83,6 +85,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-first_time_onboarding`,
   );
   const { toast } = useToast();
+  const params = useParams<{ lang: Locale; id: string }>();
+  const { lang } = params;
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const businessParam = searchParams.get("business_id");
@@ -885,8 +889,37 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                         {position.hiring_priority}
                       </TableCell>
                       <TableCell>{position.owner_position_user_name}</TableCell>
-                      <TableCell>
+                      <TableCell className="flex items-center justify-between gap-4">
                         <span>{position.recruiter_user_name}</span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <MoreHorizontal width="16" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=edit`,
+                                );
+                              }}
+                            >
+                              {i18n.editLabel}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=duplicate`,
+                                );
+                              }}
+                            >
+                              {i18n.duplicateLabel}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
