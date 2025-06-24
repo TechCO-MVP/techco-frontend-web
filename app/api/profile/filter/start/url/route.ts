@@ -1,18 +1,8 @@
 import { apiEndpoints } from "@/lib/api-endpoints";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("idToken")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Unauthorized: Missing token" },
-        { status: 401 },
-      );
-    }
     const body = await req.json();
 
     const response = await fetch(`${apiEndpoints.profileFilterStartUrl()}`, {
@@ -20,7 +10,6 @@ export async function POST(req: Request) {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY ?? "",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
     });
