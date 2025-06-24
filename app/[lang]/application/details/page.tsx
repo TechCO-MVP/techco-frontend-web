@@ -105,6 +105,15 @@ export default async function Page({
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
+                <h2>🧑‍💻 Experiencia requerida </h2>
+              </div>
+              <p className="cursor-text leading-relaxed text-gray-600">
+                {positionData.position_seniority}
+              </p>
+            </section>
+
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 font-semibold">
                 <h2>🚀 {i18n.responsabilitiesLabel}</h2>
               </div>
               <ul className="space-y-2">
@@ -118,6 +127,25 @@ export default async function Page({
                 ))}
               </ul>
             </section>
+
+            {positionData.position_education &&
+              positionData.position_education.length > 0 && (
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 font-semibold">
+                    <h2> 🎓 Educación</h2>
+                  </div>
+                  <ul className="space-y-2">
+                    {positionData.position_education?.map((item, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-2 text-gray-600"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
 
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
