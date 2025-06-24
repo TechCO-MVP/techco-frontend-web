@@ -56,6 +56,14 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           {positionData.position_description}
         </p>
       </section>
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2>🧑‍💻 Experiencia requerida </h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.position_seniority}
+        </p>
+      </section>
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🚀 Responsabilidades</h2>
@@ -68,6 +76,22 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           ))}
         </ul>
       </div>
+
+      {positionData.position_education &&
+        positionData.position_education.length > 0 && (
+          <div className="w-full space-y-3">
+            <div className="flex flex-col gap-2 font-semibold">
+              <h2> 🎓 Educación</h2>
+            </div>
+            <ul className="list-disc space-y-1 pl-6 text-gray-600">
+              {positionData.position_education?.map((item, idx) => (
+                <li key={idx} className="text-sm capitalize">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
@@ -86,6 +110,12 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         <div className="flex items-center gap-2 font-semibold">
           <h2> 💰 Rango Salarial</h2>
         </div>
+
+        {!positionData.position_salary_range && (
+          <div className="space-y-4 text-gray-600">
+            <p>📌 La compensación salarial se compartirá durante el proceso.</p>
+          </div>
+        )}
         {positionData.position_salary_range?.salary_range && (
           <div className="space-y-4 text-gray-600">
             <p>
