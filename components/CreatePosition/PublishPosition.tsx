@@ -176,7 +176,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             role={(currentPosition?.phases[0]?.data as DraftPositionData)?.role}
             customTrigger={
               <Button variant="outline" className="w-[242px] justify-between">
-                Assessment fit cultural
+                ADN Del Talento
                 <SquareArrowUpRight className="h-4 w-4" />
               </Button>
             }
@@ -190,7 +190,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             dictionary={dictionary}
             customTrigger={
               <Button variant="outline" className="w-[242px] justify-between">
-                Assessment Técnico
+                Caso de Negocio
                 <SquareArrowUpRight className="h-4 w-4" />
               </Button>
             }

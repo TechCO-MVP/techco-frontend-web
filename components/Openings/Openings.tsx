@@ -28,7 +28,6 @@ import {
 import {
   ArrowUpDown,
   ChevronDown,
-  MoreHorizontal,
   Plus,
   SlidersHorizontal,
   Settings,
@@ -40,14 +39,13 @@ import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { Button } from "../ui/button";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBusinesses } from "@/hooks/use-businesses";
 import {
   Assessment,
   Business,
   DraftPositionData,
-  HiringPositionData,
   PositionConfiguration,
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
@@ -73,7 +71,6 @@ import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 import { useDeletePositionConfiguration } from "@/hooks/use-delete-position-configuration";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "../ui/scroll-area";
-import { Locale } from "@/i18n-config";
 import AnimatedModal from "../ChatBot/AnimatedModal";
 import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
 import { Input } from "../ui/input";
@@ -86,8 +83,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     `${MODE_SELECTION_ONBOARDING_HIDE_KEY}-first_time_onboarding`,
   );
   const { toast } = useToast();
-  const params = useParams<{ lang: Locale; id: string }>();
-  const { lang } = params;
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const businessParam = searchParams.get("business_id");
@@ -397,32 +392,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
       default:
         return position.current_phase;
     }
-  };
-
-  const getStakeHolders = (position: HiringPositionData) => {
-    if (position.responsible_users.length === 1)
-      return <span>{position.responsible_users[0].user_name}</span>;
-    return (
-      <div className="flex items-center gap-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex gap-4">
-              <Badge className="border-[#E4E4E7] bg-white px-[10px] pt-[2px] text-foreground hover:bg-white">
-                {position.responsible_users.length}
-              </Badge>
-              <BadgeInfo />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {position.responsible_users.map((user) => (
-              <DropdownMenuItem key={user.user_id}>
-                {user.user_name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
   };
 
   const redirectToPosition = (position: PositionConfiguration) => {
@@ -867,9 +836,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                     <TableHead className="font-bold text-black">
                       {i18n.recruiterHeading}
                     </TableHead>
-                    <TableHead className="font-bold text-black">
-                      {i18n.stakeholdersHeading}
-                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -921,38 +887,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                       <TableCell>{position.owner_position_user_name}</TableCell>
                       <TableCell>
                         <span>{position.recruiter_user_name}</span>
-                      </TableCell>
-                      <TableCell className="flex items-center justify-between gap-4">
-                        {getStakeHolders(position)}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger>
-                            <MoreHorizontal width="16" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                router.push(
-                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=edit`,
-                                );
-                              }}
-                            >
-                              {i18n.editLabel}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                router.push(
-                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=duplicate`,
-                                );
-                              }}
-                            >
-                              {i18n.duplicateLabel}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}

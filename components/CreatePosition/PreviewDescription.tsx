@@ -336,6 +336,15 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           />
         )}
       </section>
+
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2>🧑‍💻 Experiencia requerida </h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.seniority}
+        </p>
+      </section>
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🚀 {i18n.responsabilitiesLabel}</h2>
@@ -353,6 +362,28 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             items={positionData.responsabilities}
             onItemsChange={(items) =>
               setPositionData({ ...positionData, responsabilities: items })
+            }
+          />
+        )}
+      </div>
+
+      <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🎓 {i18n.educationLabel}</h2>
+        </div>
+        {mode === "preview" ? (
+          <ul className="list-disc space-y-1 pl-6">
+            {positionData.education?.map((item, idx) => (
+              <li key={idx} className="capitalize text-gray-600">
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EditableList
+            items={positionData.education ?? []}
+            onItemsChange={(items) =>
+              setPositionData({ ...positionData, education: items })
             }
           />
         )}

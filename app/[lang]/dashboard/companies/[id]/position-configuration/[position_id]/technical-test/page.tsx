@@ -1,4 +1,4 @@
-import { CreateManually } from "@/components/CreatePosition/CreateManually";
+import { CreateTechnicalTestManually } from "@/components/CreatePosition/CreateTechnicalTestManually";
 import { CreateTechnicalTestWithAI } from "@/components/CreatePosition/CreateTechnicalTestWithAI";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
@@ -17,7 +17,7 @@ export default async function DescriptionPage(props: {
     case PositionConfigurationTypes.AI_TEMPLATE:
       return <CreateTechnicalTestWithAI dictionary={dictionary} />;
     case PositionConfigurationTypes.CUSTOM:
-      return <CreateManually dictionary={dictionary} />;
+      return <CreateTechnicalTestManually dictionary={dictionary} />;
     case PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE:
       return <CreateTechnicalTestWithAI dictionary={dictionary} />;
 

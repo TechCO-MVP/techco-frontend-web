@@ -60,6 +60,15 @@ export const PreviewDescriptionContent: FC<Props> = ({
           {positionData.description}
         </p>
       </section>
+
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2>🧑‍💻 Experiencia requerida </h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.seniority}
+        </p>
+      </section>
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🚀 Responsabilidades</h2>
@@ -72,6 +81,21 @@ export const PreviewDescriptionContent: FC<Props> = ({
           ))}
         </ul>
       </div>
+
+      {positionData.education && positionData.education.length > 0 && (
+        <div className="w-full space-y-3">
+          <div className="flex flex-col gap-2 font-semibold">
+            <h2> 🎓 Educación</h2>
+          </div>
+          <ul className="list-disc space-y-1 pl-6 text-gray-600">
+            {positionData.education?.map((item, idx) => (
+              <li key={idx} className="text-sm capitalize">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">

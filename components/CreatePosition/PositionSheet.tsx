@@ -28,6 +28,11 @@ export const PositionSheet: FC<Props> = ({
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
+  console.log(
+    "%c[Debug] positionData",
+    "background-color: teal; font-size: 20px; color: white",
+    positionData,
+  );
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>

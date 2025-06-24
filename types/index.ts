@@ -633,6 +633,7 @@ export interface DraftPositionData {
   city: string;
   description: string;
   responsabilities: string[];
+  education?: string[];
   skills: {
     name: string;
     required: boolean;

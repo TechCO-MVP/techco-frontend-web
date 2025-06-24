@@ -10,6 +10,7 @@ import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 import { OptionCard } from "../OptionCard/OptionCard";
 import {
+  PositionConfigurationFlowTypes,
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
 } from "@/types";
@@ -57,6 +58,16 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
         selectedOption === PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE
       ) {
         redirectToCopy();
+        return;
+      }
+
+      if (
+        selectedOption === PositionConfigurationTypes.CUSTOM &&
+        currentPhase?.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST
+      ) {
+        router.push(
+          `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/technical-test?type=${PositionConfigurationTypes.CUSTOM}`,
+        );
         return;
       }
       if (!currentPhase) {
@@ -278,6 +289,56 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     }
   };
 
+  const renderCreateWithAi = () => {
+    if (
+      currentPosition?.flow_type ===
+        PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW &&
+      activePhase?.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST
+    ) {
+      return null;
+    }
+    return (
+      <OptionCard
+        loading={
+          isPending && selectedOption === PositionConfigurationTypes.AI_TEMPLATE
+        }
+        selectBtnLabel={i18n.selectBtnLabel}
+        title={i18n.createWithAi}
+        description={getAiDescription()}
+        onClick={() => {
+          setSelectedOption(PositionConfigurationTypes.AI_TEMPLATE);
+          startNextPhase(PositionConfigurationTypes.AI_TEMPLATE);
+        }}
+        icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
+      />
+    );
+  };
+
+  const renderCreateManually = () => {
+    if (
+      currentPosition?.flow_type ===
+        PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW &&
+      activePhase?.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST
+    ) {
+      return (
+        <OptionCard
+          loading={
+            isPending && selectedOption === PositionConfigurationTypes.CUSTOM
+          }
+          selectBtnLabel={i18n.selectBtnLabel}
+          title={i18n.createManually}
+          description={i18n.createManuallyDescription}
+          onClick={() => {
+            setSelectedOption(PositionConfigurationTypes.CUSTOM);
+            startNextPhase(PositionConfigurationTypes.CUSTOM);
+          }}
+          icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
+        />
+      );
+    }
+    return null;
+  };
+
   if (
     isLoading ||
     activePhase?.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
@@ -322,21 +383,8 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
         />
       </div>
       <div className="mt-14 flex justify-center gap-8">
-        <OptionCard
-          loading={
-            isPending &&
-            selectedOption === PositionConfigurationTypes.AI_TEMPLATE
-          }
-          selectBtnLabel={i18n.selectBtnLabel}
-          title={i18n.createWithAi}
-          description={getAiDescription()}
-          onClick={() => {
-            setSelectedOption(PositionConfigurationTypes.AI_TEMPLATE);
-            startNextPhase(PositionConfigurationTypes.AI_TEMPLATE);
-          }}
-          icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
-        />
-
+        {renderCreateWithAi()}
+        {renderCreateManually()}
         <OptionCard
           loading={
             isPending &&

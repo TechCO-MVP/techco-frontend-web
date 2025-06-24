@@ -30,14 +30,16 @@ import { DialogDescription, DialogFooter } from "../ui/dialog";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { DialogContent } from "../ui/dialog";
 import { Dialog } from "../ui/dialog";
+import { toast } from "@/hooks/use-toast";
+import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-configuration";
 
-type CreateWithAIProps = {
+type CreateTechnicalTestManuallyProps = {
   dictionary: Dictionary;
 };
 
-export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
-  dictionary,
-}) => {
+export const CreateTechnicalTestManually: FC<
+  Readonly<CreateTechnicalTestManuallyProps>
+> = ({ dictionary }) => {
   const params = useParams<{
     lang: Locale;
     id: string;
@@ -47,7 +49,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
   const queryClient = useQueryClient();
   const { lang, position_id, id } = params;
   const [, setIsCompleted] = useState(false);
-  const [mode, setMode] = useState<"preview" | "edit">("preview");
+  const [mode, setMode] = useState<"preview" | "edit">("edit");
   const initialData = useRef<TechnicalAssessment>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -57,6 +59,30 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
   const messageRef = useRef<HTMLDivElement | null>(null);
   const { isLoading: loadingBusiness, businesses } = useBusinesses();
   const currentBusiness = businesses.find((business) => business._id === id);
+
+  const { mutate: saveDraft, isPending } = useUpdatePositionConfiguration({
+    onSuccess: (data) => {
+      console.info("Save Draft success", data);
+      initialData.current = progress;
+      toast({
+        description: i18n.draftSavedMessage,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
+      });
+      if (
+        progress?.assesment_goal &&
+        progress?.challenge &&
+        progress?.your_mission
+      ) {
+        setIsCompleted(true);
+        setMode("preview");
+      }
+    },
+    onError: (error) => {
+      console.error("Save Draft error", error);
+    },
+  });
 
   const { mutate: completePhase, isPending: isCompletePhasePending } =
     useCompletePhase({
@@ -160,6 +186,24 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
     }
     setDialogOpen(true);
   };
+
+  const onSaveDraft = () => {
+    if (!currentPhase) return;
+    if (!currentPosition) return;
+    setDialogOpen(false);
+    saveDraft({
+      ...currentPosition,
+      phases:
+        currentPosition?.phases.map((phase) =>
+          phase.name === currentPhase?.name
+            ? {
+                ...phase,
+                data: progress,
+              }
+            : phase,
+        ) ?? [],
+    });
+  };
   if (isLoading || loadingBusiness || loadingConfiguration)
     return <LoadingSkeleton />;
 
@@ -196,7 +240,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
               variant="outline"
             >
               <EditIcon />
-              Editar Caso de Negocio
+              Editar
             </Button>
           )}
         </div>
@@ -238,7 +282,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
           </p>
         ) : (
           <Textarea
-            placeholder="Enter your description here"
+            placeholder="Objetivo del assessment"
             className="w-full"
             value={progress?.assesment_goal}
             onChange={(e) => {
@@ -347,7 +391,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
           </p>
         ) : (
           <Textarea
-            placeholder="Enter your description here"
+            placeholder="El Reto"
             className="w-full"
             value={progress?.challenge}
             onChange={(e) => {
@@ -370,7 +414,7 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
           </ol>
         ) : (
           <Textarea
-            placeholder="Enter your description here"
+            placeholder="Tu Misión"
             className="w-full"
             value={progress?.your_mission}
             onChange={(e) => {
@@ -388,13 +432,12 @@ export const CreateTechnicalTestWithAI: FC<Readonly<CreateWithAIProps>> = ({
           canSave={isDirty}
           cancelLabel={i18n.cancelLabel}
           saveLabel={i18n.saveLabel}
-          isSaving={false}
+          isSaving={isPending}
           onCancel={() => {
             checkUnsavedChanges();
           }}
           onSave={() => {
-            setMode("preview");
-            initialData.current = progress;
+            onSaveDraft();
           }}
         />
       )}
