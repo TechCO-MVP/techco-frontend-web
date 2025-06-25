@@ -876,7 +876,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                           alt="Profile picture"
                         />
                         <AvatarFallback>
-                          {education.title.charAt(0)}
+                          {education.title?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
