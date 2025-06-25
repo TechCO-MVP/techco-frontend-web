@@ -194,6 +194,7 @@ export type HiringProcess = {
       phase_id: number;
       fields: Record<string, any>;
       custom_fields: {
+        accepted_terms?: boolean;
         responsibilities: Record<string, boolean>;
         skills: Record<string, boolean>;
         expected_salary: string;

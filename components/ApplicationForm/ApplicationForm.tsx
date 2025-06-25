@@ -232,6 +232,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       responsibilities: responsibilityAnswers,
       skills: skillAnswers,
       expected_salary: expectedSalary,
+      accepted_terms: acceptedTerms,
     });
   };
 
