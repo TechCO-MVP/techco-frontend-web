@@ -44,7 +44,7 @@ export const PositionDetailsPage = ({
           backgroundColor: "rgba(255,255,255,0.8)",
         }}
       >
-        <div className="mx-auto flex h-[85vh] w-[85vw] flex-col items-center justify-center bg-white px-4 py-12 text-center">
+        <div className="mx-auto flex h-full w-[85vw] flex-col items-center justify-center bg-white px-4 py-12 text-center md:h-[85vh]">
           <div className="mb-8">
             <Image
               src="/assets/talent_connect.svg"
@@ -56,7 +56,7 @@ export const PositionDetailsPage = ({
           </div>
 
           <div className="mb-6 space-y-1 text-sm text-muted-foreground">
-            <p className="uppercase tracking-wide">
+            <p className="flex flex-wrap items-center justify-center uppercase tracking-wide">
               <span>{positionData.position_city}</span>
               <span className="mx-2">•</span>
               <span>{countryNameLookup(positionData.position_country)}</span>
@@ -85,6 +85,7 @@ export const PositionDetailsPage = ({
             variant="talentGreen"
           >
             <Link
+              className="flex h-10 items-center justify-center"
               href={{
                 pathname: linkedinSource
                   ? `${vacancy_name}/details`

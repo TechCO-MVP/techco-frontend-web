@@ -65,7 +65,7 @@ export default async function Page({
             backgroundColor: "rgba(255,255,255,0.8)",
           }}
         >
-          <div className="mx-auto flex h-[85vh] w-[85vw] max-w-[1000px] flex-col items-center justify-center border-b-[5px] border-b-talent-orange-500 bg-white px-4 py-12 text-center shadow-talent-green">
+          <div className="mx-auto mb-8 flex h-full w-[85vw] max-w-[1000px] flex-col items-center justify-center border-b-[5px] border-b-talent-orange-500 bg-white px-4 py-12 text-center shadow-talent-green md:h-[85vh]">
             <div className="mb-8">
               <Image
                 src="/assets/talent_connect.svg"
@@ -77,7 +77,7 @@ export default async function Page({
             </div>
 
             <div className="mb-6 space-y-1 text-sm text-muted-foreground">
-              <p className="uppercase tracking-wide">
+              <p className="flex flex-wrap items-center justify-center uppercase tracking-wide">
                 <span>{positionData.position_city}</span>
                 <span className="mx-2">•</span>
                 <span>{countryNameLookup(positionData.position_country)}</span>
@@ -96,14 +96,13 @@ export default async function Page({
 
             <p className="mb-8 max-w-prose text-muted-foreground">
               {positionData.business_name} {positionData.business_description}
-            </p>
-
             <Button
               className="mb-4 w-full max-w-md"
               variant="talentGreen"
               size="lg"
             >
               <Link
+                className="flex h-10 items-center justify-center"
                 href={{
                   pathname: `application/details`,
                   query: { positionId },

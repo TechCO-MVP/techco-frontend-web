@@ -40,6 +40,7 @@ import { Locale } from "@/i18n-config";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { CandidateSources, PipefyFieldValues } from "@/types/pipefy";
 import { useUpdateFieldsValues } from "@/hooks/use-update-fields";
+import { CurrentPhaseFormDialog } from "../CandidateProgress/CurrentPhaseFormDialog";
 type ApplicationFormProps = {
   lang: Locale;
   dictionary: Dictionary;
@@ -181,7 +182,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   console.log(
     "%c[Debug] positionData",
     "background-color: teal; font-size: 20px; color: white",
-    { positionData, card },
+    { positionData, card, position },
   );
 
   // State to track true/false for each skill
@@ -477,6 +478,31 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               onChange={(e) => setExpectedSalary(e.target.value)}
             />
           </div>
+
+          {positionData.position_education &&
+            positionData.position_education.length > 0 && (
+              <div className="mb-8 border-t px-4 pt-6 md:px-28">
+                <h2 className="mb-2 text-lg font-medium">
+                  Formación académica esperada para este cargo
+                </h2>
+                <ul className="mb-2 list-disc space-y-2">
+                  {positionData.position_education?.map((item, idx) => (
+                    <li key={idx} className="text-sm">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mb-2 text-sm">
+                  Por favor, haz clic en el botón “Adjuntar” y comparte los
+                  documentos que consideres relevantes para validar tu
+                  experiencia y formación académ
+                </p>
+                <CurrentPhaseFormDialog
+                  cardId={positionData.hiring_card_id}
+                  label="Adjuntar documentos"
+                />
+              </div>
+            )}
 
           {/* Form Buttons */}
           <div className="flex flex-col gap-2 border-t px-4 pt-6 md:px-28">
