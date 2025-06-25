@@ -208,6 +208,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     }));
   };
 
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
   const sendApplication = () => {
     const values = [];
     if (candidateEmail) {
@@ -256,7 +258,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     allResponsibilitiesAnswered &&
     expectedSalary &&
     phoneCompleted &&
-    emailCompleted;
+    emailCompleted &&
+    acceptedTerms;
 
   return (
     <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">
@@ -475,30 +478,52 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Form Buttons */}
-          <div className="flex gap-4 border-t px-4 pt-6 md:px-28">
-            <Button
-              variant="ghost"
-              className="hover: bg-secondary px-8 text-talent-green-500"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={sendApplication}
-              variant="talentGreen"
-              disabled={
-                !canSubmit ||
-                isUpdatingHiringProcessCustomFields ||
-                isMovingCardToPhase ||
-                isLoadingCard ||
-                isUpdatingFieldsValues
-              }
-            >
-              Enviar formulario
-              {(isUpdatingFieldsValues ||
-                isUpdatingHiringProcessCustomFields ||
-                isMovingCardToPhase ||
-                isLoadingCard) && <Loader2 className="h-4 w-4 animate-spin" />}
-            </Button>
+          <div className="flex flex-col gap-2 border-t px-4 pt-6 md:px-28">
+            <div className="mb-2 flex items-center space-x-2">
+              <Checkbox
+                id="accept-terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+                className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+              />
+              <label htmlFor="accept-terms" className="select-none text-sm">
+                Acepto los{" "}
+                <a
+                  href="/terms"
+                  target="_blank"
+                  className="font-bold text-talent-green-700 underline"
+                >
+                  términos y condiciones
+                </a>
+              </label>
+            </div>
+            <div className="flex gap-4">
+              <Button
+                variant="ghost"
+                className="hover: bg-secondary px-8 text-talent-green-500"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={sendApplication}
+                variant="talentGreen"
+                disabled={
+                  !canSubmit ||
+                  isUpdatingHiringProcessCustomFields ||
+                  isMovingCardToPhase ||
+                  isLoadingCard ||
+                  isUpdatingFieldsValues
+                }
+              >
+                Enviar formulario
+                {(isUpdatingFieldsValues ||
+                  isUpdatingHiringProcessCustomFields ||
+                  isMovingCardToPhase ||
+                  isLoadingCard) && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
