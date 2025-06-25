@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePublicPhaseFormLink } from "@/hooks/use-public-phase-form-link";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   cardId: string;
@@ -54,6 +55,9 @@ export const CurrentPhaseFormDialog: FC<Readonly<Props>> = ({
         className={cn(`max-h-[80vh] min-h-[80vh] max-w-[70vw] overflow-y-auto`)}
       >
         <div className="flex w-full flex-col items-center justify-center rounded-md bg-white">
+          {isPending && (
+            <Loader2 className="h-10 w-10 animate-spin text-talent-green-500" />
+          )}
           {publicPhaseFormUrl && !isPending && (
             <iframe
               id="start-form"

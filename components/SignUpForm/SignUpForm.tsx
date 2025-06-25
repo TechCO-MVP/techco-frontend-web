@@ -20,12 +20,14 @@ import { Dictionary } from "@/types/i18n";
 import { useRouter } from "next/navigation";
 import { paths } from "@/lib/paths";
 import { Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function SignUpForm({
   dictionary,
 }: {
   readonly dictionary: Dictionary;
 }) {
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { signUp: i18n } = dictionary;
@@ -215,10 +217,28 @@ export function SignUpForm({
             ]}
             getErrorMessage={getErrorMessage(dictionary)}
           />
+          <div className="mb-2 flex items-center space-x-2">
+            <Checkbox
+              id="accept-terms"
+              checked={acceptedTerms}
+              onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+              className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+            />
+            <label htmlFor="accept-terms" className="select-none text-sm">
+              Acepto los{" "}
+              <a
+                href="terms"
+                target="_blank"
+                className="font-bold text-talent-green-700 underline"
+              >
+                términos y condiciones
+              </a>
+            </label>
+          </div>
           <Button
             variant="talentGreen"
             data-testid="signup-submit-button"
-            disabled={!isValid || isPending}
+            disabled={!isValid || isPending || !acceptedTerms}
             type="submit"
             className="mx-auto mt-4 w-full max-w-[22rem] bg-talent-orange-500"
           >
