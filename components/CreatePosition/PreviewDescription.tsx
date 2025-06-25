@@ -352,7 +352,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.responsabilities?.map((item, idx) => (
-              <li key={idx} className="capitalize text-gray-600">
+              <li key={idx} className="text-gray-600">
                 {item}
               </li>
             ))}
@@ -374,7 +374,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.education?.map((item, idx) => (
-              <li key={idx} className="capitalize text-gray-600">
+              <li key={idx} className="text-gray-600">
                 {item}
               </li>
             ))}
@@ -396,7 +396,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.skills?.map((item, idx) => (
-              <li key={idx} className="capitalize text-gray-600">
+              <li key={idx} className="text-gray-600">
                 {item.name}
               </li>
             ))}
@@ -570,7 +570,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {mode === "preview" ? (
           <ul className="list-disc space-y-1 pl-6">
             {positionData.benefits?.map((item, idx) => (
-              <li key={idx} className="capitalize text-gray-600">
+              <li key={idx} className="text-gray-600">
                 {item}
               </li>
             ))}

@@ -70,7 +70,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.position_responsabilities?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item}
             </li>
           ))}
@@ -85,7 +85,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
             </div>
             <ul className="list-disc space-y-1 pl-6 text-gray-600">
               {positionData.position_education?.map((item, idx) => (
-                <li key={idx} className="text-sm capitalize">
+                <li key={idx} className="text-sm">
                   {item}
                 </li>
               ))}
@@ -99,7 +99,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.position_skills?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item.name}
             </li>
           ))}
@@ -143,7 +143,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.position_benefits?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item}
             </li>
           ))}

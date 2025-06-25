@@ -75,7 +75,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.responsabilities?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item}
             </li>
           ))}
@@ -89,7 +89,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
           </div>
           <ul className="list-disc space-y-1 pl-6 text-gray-600">
             {positionData.education?.map((item, idx) => (
-              <li key={idx} className="text-sm capitalize">
+              <li key={idx} className="text-sm">
                 {item}
               </li>
             ))}
@@ -103,7 +103,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.skills?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item.name}
             </li>
           ))}
@@ -141,7 +141,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
           {positionData.benefits?.map((item, idx) => (
-            <li key={idx} className="text-sm capitalize">
+            <li key={idx} className="text-sm">
               {item}
             </li>
           ))}
