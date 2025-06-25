@@ -479,14 +479,14 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             />
           </div>
 
-          {positionData.position_education &&
-            positionData.position_education.length > 0 && (
+          {position.position_education &&
+            position.position_education.length > 0 && (
               <div className="mb-8 border-t px-4 pt-6 md:px-28">
                 <h2 className="mb-2 text-lg font-medium">
                   Formación académica esperada para este cargo
                 </h2>
                 <ul className="mb-2 list-disc space-y-2">
-                  {positionData.position_education?.map((item, idx) => (
+                  {position.position_education?.map((item, idx) => (
                     <li key={idx} className="text-sm">
                       {item}
                     </li>
@@ -498,7 +498,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   experiencia y formación académ
                 </p>
                 <CurrentPhaseFormDialog
-                  cardId={positionData.hiring_card_id}
+                  cardId={position.hiring_card_id}
                   label="Adjuntar documentos"
                 />
               </div>
