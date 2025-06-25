@@ -498,7 +498,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   experiencia y formación académ
                 </p>
                 <CurrentPhaseFormDialog
-                  cardId={position.hiring_card_id}
+                  cardId={positionData.hiring_card_id}
                   label="Adjuntar documentos"
                 />
               </div>
