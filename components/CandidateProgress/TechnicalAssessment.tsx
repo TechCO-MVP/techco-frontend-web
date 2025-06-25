@@ -118,7 +118,9 @@ export const TechnicalAssessment: React.FC<{
       }
       if (assistantName === AssistantName.TECHNICAL_ASSESSMENT) {
         if (!technicalAssessment) return UPLOAD_FILE_PROMPT;
-        return `Descripcion de la empresa ${position.business_description}.
+        return `Por favor califica el caso de negocio que está en el documento adjunto en tu tool "File search",
+        basándote en tu "System instructions" y el siguiente contexto de la vacante:
+        Descripcion de la empresa ${position.business_description}.
       Descripcion de la posicion ${position.position_description}.
       Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
       Autonomia: ${culturalFitAssessment.how_much_autonomy}.

@@ -94,9 +94,14 @@ export const CulturalAssessment = ({
         (assessment) =>
           assessment.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
       )?.data as TechnicalAssessment;
+
+      const totalSoftSkills = culturalFitAssessment?.soft_skills.length || 0;
+      const totalDimensions = totalSoftSkills * 3;
       if (assistantName === AssistantName.CULTURAL_FIT_ASSESSMENT) {
         if (!culturalFitAssessment) return UPLOAD_FILE_PROMPT;
-        return `Descripcion de la empresa: ${position.business_description}.
+        return `Por favor califica las ${totalDimensions} respuestas que están en el documento adjunto en tu tool "File search",
+        basándote en tu "System instructions" y el siguiente contexto de la vacante:
+        Descripcion de la empresa: ${position.business_description}.
       Descripcion de la posicion: ${position.position_description}.
       Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
       Autonomia: ${culturalFitAssessment.how_much_autonomy}.
