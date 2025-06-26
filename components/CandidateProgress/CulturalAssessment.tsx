@@ -99,14 +99,24 @@ export const CulturalAssessment = ({
       const totalDimensions = totalSoftSkills * 3;
       if (assistantName === AssistantName.CULTURAL_FIT_ASSESSMENT) {
         if (!culturalFitAssessment) return UPLOAD_FILE_PROMPT;
-        return `Por favor califica las ${totalDimensions} respuestas que están en el documento adjunto en tu tool "File search",
-        basándote en tu "System instructions" y el siguiente contexto de la vacante:
+        return `
+        ⚠️ INSTRUCCIÓN OBLIGATORIA - NO OMITIR ⚠️
+
+        TIENES QUE CALIFICAR LAS ${totalDimensions} PREGUNTAS.
+        NO TE PUEDE FALTAR NINGUNA.
+        TU MISIÓN ES ENCARGARTE DE ESO.
+
+        👉 Las ${totalDimensions} preguntas están en el documento adjunto en tu herramienta "File search".
+        📌 Debes calificar cada una de las preguntas, UNA POR UNA, siguiendo rigurosamente las pautas definidas en tus "System Instructions".
+
+        ESTA TAREA ES INNEGOCIABLE.
+        NO CONTINÚES NI GENERES RESPUESTAS HASTA HABER CALIFICADO LAS ${totalDimensions} PREGUNTAS COMPLETAS.
+        BASATE EN EL SIGUIENTE CONTEXTO:
         Descripcion de la empresa: ${position.business_description}.
-      Descripcion de la posicion: ${position.position_description}.
-      Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
-      Autonomia: ${culturalFitAssessment.how_much_autonomy}.
-      Principales retos: ${culturalFitAssessment.challenges_of_the_position}.
-      ${UPLOAD_FILE_PROMPT}
+        Descripcion de la posicion: ${position.position_description}.
+        Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
+        Autonomia: ${culturalFitAssessment.how_much_autonomy}.
+        Principales retos: ${culturalFitAssessment.challenges_of_the_position}.
      `;
       }
       if (assistantName === AssistantName.TECHNICAL_ASSESSMENT) {
