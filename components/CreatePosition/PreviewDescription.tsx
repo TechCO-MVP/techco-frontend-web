@@ -201,7 +201,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       return ` ${lowRange} - ${highRange} ${positionData.salary?.currency}`;
     } catch (error) {
       console.error("Error formatting salary range", error);
-      return ` ${positionData.salary?.salary_range?.min} - ${positionData.salary?.salary_range?.max} ${positionData.salary?.currency}`;
+      return ` ${positionData.salary?.salary_range?.min} - ${positionData.salary?.salary_range?.max} ${positionData.salary?.currency} `;
     }
   };
 
@@ -215,7 +215,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       return `${salary} `;
     } catch (error) {
       console.error("Error formatting fixed salary", error);
-      return ` ${positionData.salary?.salary} ${positionData.salary?.currency}`;
+      return ` ${positionData.salary?.salary} ${positionData.salary?.currency} `;
     }
   };
 

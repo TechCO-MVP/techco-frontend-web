@@ -43,26 +43,36 @@ export default async function Page({
   );
   const formatSalaryRange = () => {
     if (!positionData.position_salary_range) return "";
-    const range = positionData.position_salary_range.salary_range;
-    const currency = positionData.position_salary_range.currency;
-    const lowRange = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-    }).format(Number(range.min));
-    const highRange = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-    }).format(Number(range.max));
-    return `${lowRange} - ${highRange} ${currency}`;
+    try {
+      const range = positionData.position_salary_range.salary_range;
+      const currency = positionData.position_salary_range.currency;
+      const lowRange = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+      }).format(Number(range.min));
+      const highRange = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+      }).format(Number(range.max));
+      return ` ${lowRange} - ${highRange} ${currency} `;
+    } catch (error) {
+      console.error("Error formatting salary range", error);
+      return ` ${positionData.position_salary_range?.salary_range?.min} - ${positionData.position_salary_range?.salary_range?.max} ${positionData.position_salary_range?.currency} `;
+    }
   };
 
   const formatFixedSalary = () => {
-    const salary = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: positionData.position_salary_range?.currency || "USD",
-    }).format(Number(positionData.position_salary_range?.salary));
+    try {
+      const salary = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: positionData.position_salary_range?.currency || "USD",
+      }).format(Number(positionData.position_salary_range?.salary));
 
-    return `${salary} `;
+      return `${salary} `;
+    } catch (error) {
+      console.error("Error formatting fixed salary", error);
+      return ` ${positionData.position_salary_range?.salary} ${positionData.position_salary_range?.currency} `;
+    }
   };
   return (
     <div className="relative flex h-full min-h-screen items-center justify-center bg-gray-50">

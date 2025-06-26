@@ -20,10 +20,10 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         style: "currency",
         currency: positionData.position_salary_range?.currency || "USD",
       }).format(Number(positionData.position_salary_range?.salary_range?.max));
-      return `${lowRange} - ${highRange} ${positionData.position_salary_range?.currency}`;
+      return ` ${lowRange} - ${highRange} ${positionData.position_salary_range?.currency} `;
     } catch (error) {
       console.error("Error formatting salary range", error);
-      return ` ${positionData.position_salary_range?.salary_range?.min} - ${positionData.position_salary_range?.salary_range?.max} ${positionData.position_salary_range?.currency}`;
+      return ` ${positionData.position_salary_range?.salary_range?.min} - ${positionData.position_salary_range?.salary_range?.max} ${positionData.position_salary_range?.currency} `;
     }
   };
 
@@ -37,7 +37,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
       return `${salary}`;
     } catch (error) {
       console.error("Error formatting fixed salary", error);
-      return ` ${positionData.position_salary_range?.salary} ${positionData.position_salary_range?.currency}`;
+      return ` ${positionData.position_salary_range?.salary} ${positionData.position_salary_range?.currency} `;
     }
   };
 
