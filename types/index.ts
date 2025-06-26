@@ -492,8 +492,10 @@ export type CreatePositionInput = {
 export type ProfileFilterStartUrlInput = {
   position_id: string;
   business_id: string;
-  email: string;
-  url_profiles: string[];
+  url_profiles: {
+    email: string;
+    url: string;
+  }[];
 };
 
 export type CompletePhaseInput = {

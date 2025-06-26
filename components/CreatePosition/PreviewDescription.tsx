@@ -176,6 +176,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   }, [positionData]);
 
   useEffect(() => {
+    if (isDirty) return;
     if (positionData?.salary?.salary_range?.min) {
       setSalaryOption("range");
     } else if (positionData?.salary?.salary) {
@@ -183,7 +184,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
     } else {
       setSalaryOption("not-specified");
     }
-  }, [positionData]);
+  }, [positionData, isDirty]);
 
   if (!positionData) return null;
 
@@ -481,12 +482,13 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               <div className="space-y-4 text-gray-600">
                 <div className="flex gap-2">
                   <Input
-                    defaultValue={
-                      positionData?.salary?.salary_range?.min ?? "0"
-                    }
+                    value={positionData?.salary?.salary_range?.min ?? "0"}
                     placeholder="Mínimo"
                     type="text"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const value = e.target.value
+                        .replace(/[^0-9.]/g, "")
+                        .replace(/(\..*)\./g, "$1");
                       setPositionData({
                         ...positionData,
                         salary: {
@@ -494,19 +496,20 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                           salary: null,
                           salary_range: {
                             ...positionData.salary?.salary_range,
-                            min: e.target.value,
+                            min: value,
                           },
                         },
-                      })
-                    }
+                      });
+                    }}
                   />
                   <Input
-                    defaultValue={
-                      positionData?.salary?.salary_range?.max ?? "0"
-                    }
+                    value={positionData?.salary?.salary_range?.max ?? "0"}
                     placeholder="Máximo"
                     type="text"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const value = e.target.value
+                        .replace(/[^0-9.]/g, "")
+                        .replace(/(\..*)\./g, "$1");
                       setPositionData({
                         ...positionData,
                         salary: {
@@ -514,11 +517,11 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                           salary: null,
                           salary_range: {
                             ...positionData.salary?.salary_range,
-                            max: e.target.value,
+                            max: value,
                           },
                         },
-                      })
-                    }
+                      });
+                    }}
                   />
                 </div>
                 <p>
@@ -532,19 +535,22 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               <div className="space-y-4 text-gray-600">
                 <div className="flex gap-2">
                   <Input
-                    defaultValue={positionData?.salary?.salary ?? "0"}
+                    value={positionData?.salary?.salary ?? "0"}
                     placeholder="Salario"
                     type="text"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const value = e.target.value
+                        .replace(/[^0-9.]/g, "")
+                        .replace(/(\..*)\./g, "$1");
                       setPositionData({
                         ...positionData,
                         salary: {
                           currency: positionData?.salary?.currency ?? "USD",
-                          salary: e.target.value,
+                          salary: value,
                           salary_range: undefined,
                         },
-                      })
-                    }
+                      });
+                    }}
                   />
                 </div>
                 <p>

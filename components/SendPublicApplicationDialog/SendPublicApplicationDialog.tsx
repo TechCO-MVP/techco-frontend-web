@@ -49,13 +49,17 @@ export const SendPublicApplicationDialog: FC<Readonly<Props>> = ({
     mutate({
       position_id: positionData.position_id,
       business_id: positionData.business_id,
-      email: formData.email,
-      url_profiles: [formData.linkedin],
+      url_profiles: [
+        {
+          email: formData.email,
+          url: formData.linkedin,
+        },
+      ],
     });
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="hover:bg-talent-green-600 mb-4 h-10 w-full max-w-md rounded-md bg-talent-green-500 text-white">
+      <DialogTrigger className="mb-4 h-10 w-full max-w-md rounded-md bg-talent-green-500 text-white hover:bg-talent-green-600">
         {i18n.iWantToApply}
       </DialogTrigger>
 
