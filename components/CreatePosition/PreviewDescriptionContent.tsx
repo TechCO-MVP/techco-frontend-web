@@ -15,24 +15,34 @@ export const PreviewDescriptionContent: FC<Props> = ({
   if (!positionData) return null;
 
   const formatSalaryRange = () => {
-    const lowRange = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range?.min));
-    const highRange = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary_range?.max));
-    return `${lowRange} - ${highRange} ${positionData.salary?.currency}`;
+    try {
+      const lowRange = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: positionData.salary?.currency || "USD",
+      }).format(Number(positionData.salary?.salary_range?.min ?? "0"));
+      const highRange = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: positionData.salary?.currency || "USD",
+      }).format(Number(positionData.salary?.salary_range?.max ?? "0"));
+      return ` ${lowRange} - ${highRange} ${positionData.salary?.currency}`;
+    } catch (error) {
+      console.error("Error formatting salary range", error);
+      return ` ${positionData.salary?.salary_range?.min} - ${positionData.salary?.salary_range?.max} ${positionData.salary?.currency}`;
+    }
   };
 
   const formatFixedSalary = () => {
-    const salary = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: positionData.salary?.currency || "USD",
-    }).format(Number(positionData.salary?.salary));
+    try {
+      const salary = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: positionData.salary?.currency || "USD",
+      }).format(Number(positionData.salary?.salary ?? "0"));
 
-    return `${salary}`;
+      return `${salary} `;
+    } catch (error) {
+      console.error("Error formatting fixed salary", error);
+      return ` ${positionData.salary?.salary} ${positionData.salary?.currency}`;
+    }
   };
 
   return (
