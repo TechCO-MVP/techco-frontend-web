@@ -111,12 +111,6 @@ export const CulturalAssessment = ({
 
         ESTA TAREA ES INNEGOCIABLE.
         NO CONTINÚES NI GENERES RESPUESTAS HASTA HABER CALIFICADO LAS ${totalDimensions} PREGUNTAS COMPLETAS.
-        BASATE EN EL SIGUIENTE CONTEXTO:
-        Descripcion de la empresa: ${position.business_description}.
-        Descripcion de la posicion: ${position.position_description}.
-        Tiene personas a cargo: ${culturalFitAssessment.is_lead_position ? "Si" : "No"}.
-        Autonomia: ${culturalFitAssessment.how_much_autonomy}.
-        Principales retos: ${culturalFitAssessment.challenges_of_the_position}.
      `;
       }
       if (assistantName === AssistantName.TECHNICAL_ASSESSMENT) {
