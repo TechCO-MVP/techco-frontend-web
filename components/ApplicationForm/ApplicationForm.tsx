@@ -34,13 +34,14 @@ import {
   CANDIDATE_EMAIL_FIELD_ID,
   CANDIDATE_PHONE_FIELD_ID,
   INITIAL_FILTER_SCORE_THRESHOLD,
+  REJECTED_PHASE_NAME,
 } from "@/constants";
 import { useRouter } from "next/navigation";
 import { Locale } from "@/i18n-config";
 import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { CandidateSources, PipefyFieldValues } from "@/types/pipefy";
 import { useUpdateFieldsValues } from "@/hooks/use-update-fields";
-import { CurrentPhaseFormDialog } from "../CandidateProgress/CurrentPhaseFormDialog";
+import { AttachFileDialog } from "../CandidateProgress/AttachFileDialog";
 type ApplicationFormProps = {
   lang: Locale;
   dictionary: Dictionary;
@@ -62,6 +63,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const [expectedSalary, setExpectedSalary] = useState<string>("");
   const [candidateEmail, setCandidateEmail] = useState<string>("");
   const [candidatePhone, setCandidatePhone] = useState<string>("");
+  const [hasSeniority, setHasSeniority] = useState<boolean>();
   const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
     cardId: positionData.hiring_card_id,
@@ -98,6 +100,22 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       },
     });
 
+  const discardProcess = () => {
+    const rejectedPhase = card?.pipe.phases.find(
+      (phase) => phase.name === REJECTED_PHASE_NAME,
+    );
+    console.log(
+      "%c[Debug] Discard process",
+      "background-color: teal; font-size: 20px; color: white",
+      { rejectedPhase },
+    );
+    if (!rejectedPhase) return;
+    moveCardToPhase({
+      cardId: positionData.hiring_card_id,
+      destinationPhaseId: rejectedPhase.id,
+    });
+  };
+
   const {
     mutate: updateHiringProcessCustomFields,
     isPending: isUpdatingHiringProcessCustomFields,
@@ -105,6 +123,9 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     onSuccess: () => {
       const skillsScore = calculateScore(skillAnswers);
       const responsibilitiesScore = calculateScore(responsibilityAnswers);
+      if (hasSeniority === false) {
+        return discardProcess();
+      }
       let salaryScore = 5;
       if (positionData.position_salary_range?.salary) {
         salaryScore = calculateSalaryScore(
@@ -121,8 +142,10 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           Number(expectedSalary),
         );
       }
+      const seniorityScore = hasSeniority ? 5 : 0;
       const overallScore =
-        (skillsScore + responsibilitiesScore + salaryScore) / 3;
+        (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) /
+        4;
 
       const canAdvance = overallScore >= INITIAL_FILTER_SCORE_THRESHOLD;
       const nextPhase = card?.pipe.phases.find((phase) =>
@@ -326,7 +349,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           </div>
 
           {/* Contact Information */}
-          <div className="mb-8 px-4 md:px-28">
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Contacto</h2>
             {!linkedinSource && (
               <p className="mb-2 text-sm">Correo electrónico.</p>
@@ -365,8 +388,45 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             </div>
           </div>
 
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
+            <h2 className="mb-2 text-lg font-medium">Experiencia laboral</h2>
+            <h3 className="mb-2 text-sm">
+              Queremos que nos cuentes con total sinceridad si cuentas con la
+              siguiente experiencia, tal como se describe a continuación. Esta
+              información será verificada con los documentos que adjuntes. Si no
+              cumples con este requisito, lamentablemente no podremos tener en
+              cuenta tu postulación.
+            </h3>
+            <span>{position.position_seniority}</span>
+            <div className="flex gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+                  id={`seniority-yes`}
+                  checked={hasSeniority === true}
+                  onCheckedChange={() => setHasSeniority(true)}
+                />
+                <label htmlFor={`seniority-yes`} className="text-sm">
+                  Sí
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+                  id={`seniority-no`}
+                  checked={hasSeniority === false}
+                  onCheckedChange={() => setHasSeniority(false)}
+                />
+                <label htmlFor={`seniority-no`} className="text-sm">
+                  No
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* Skills Section */}
-          <div className="mb-8 px-4 md:px-28">
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
+            <h2 className="mb-2 text-lg font-medium">Habilidades</h2>
             <h3 className="mb-2 text-sm">
               ¿Con cuáles de estas habilidades cuentas? (Selecciona una opción
               para cada habilidad)
@@ -475,34 +535,39 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               placeholder="Escribe aquí tu expectativa salarial"
               className="max-w-md"
               value={expectedSalary}
-              onChange={(e) => setExpectedSalary(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value
+                  .replace(/[^0-9.]/g, "")
+                  .replace(/(\..*)\./g, "$1");
+                setExpectedSalary(value);
+              }}
             />
           </div>
 
-          {position.position_education &&
-            position.position_education.length > 0 && (
-              <div className="mb-8 border-t px-4 pt-6 md:px-28">
-                <h2 className="mb-2 text-lg font-medium">
-                  Formación académica esperada para este cargo
-                </h2>
-                <ul className="mb-2 list-disc space-y-2">
-                  {position.position_education?.map((item, idx) => (
-                    <li key={idx} className="text-sm">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mb-2 text-sm">
-                  Por favor, haz clic en el botón “Adjuntar” y comparte los
-                  documentos que consideres relevantes para validar tu
-                  experiencia y formación académ
-                </p>
-                <CurrentPhaseFormDialog
-                  cardId={positionData.hiring_card_id}
-                  label="Adjuntar documentos"
-                />
-              </div>
-            )}
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
+            <h2 className="mb-2 text-lg font-medium">Documentos</h2>
+            <p className="mb-4 text-sm">
+              Para que tu postulación sea tenida en cuenta, es obligatorio
+              adjuntar tu hoja de vida y los documentos que respalden tu
+              experiencia laboral
+            </p>
+            <p className="mb-4 text-sm">
+              Formación académica esperada para este cargo:
+            </p>
+            <ul className="mb-4 space-y-2">
+              {position.position_education?.map((education, index) => (
+                <li key={index} className="flex items-start text-sm">
+                  <span className="mr-3 mt-1">•</span>
+                  <span className="leading-relaxed">{education}</span>
+                </li>
+              ))}
+            </ul>
+
+            <AttachFileDialog
+              organizationId={card.pipe.organizationId}
+              cardId={positionData.hiring_card_id}
+            />
+          </div>
 
           {/* Form Buttons */}
           <div className="flex flex-col gap-2 border-t px-4 pt-6 md:px-28">

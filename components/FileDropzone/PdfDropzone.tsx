@@ -4,14 +4,14 @@ import { Button } from "../ui/button";
 import { Text } from "../Typography/Text";
 
 interface PdfDropzoneProps {
-  onPdfAccepted: (file: File) => void;
+  onPdfAccepted: (files: File[]) => void;
   label?: string;
   error?: string;
 }
 
 export function PdfDropzone({
   onPdfAccepted,
-  label = "Arrastra aquí tu PDF o haz clic para seleccionar",
+  label = "Arrastra aquí tus archivos o haz clic para seleccionar",
   error: externalError,
 }: PdfDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -19,13 +19,18 @@ export function PdfDropzone({
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    const file = files[0];
-    if (file.type !== "application/pdf") {
-      setInternalError("Solo se permiten archivos PDF.");
-      return;
+    const validFiles: File[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type !== "application/pdf") {
+        setInternalError("Solo se permiten archivos PDF.");
+        continue;
+      }
+      validFiles.push(file);
     }
+    if (validFiles.length === 0) return;
     setInternalError(null);
-    onPdfAccepted(file);
+    onPdfAccepted(validFiles);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -56,10 +61,11 @@ export function PdfDropzone({
         className="hidden"
         onChange={handleChange}
         tabIndex={-1}
+        multiple
       />
       <Text className="mb-2">{label}</Text>
       <Button variant="outline" type="button" tabIndex={-1}>
-        Seleccionar PDF
+        Seleccionar archivos
       </Button>
       {error && <Text className="mt-2 text-red-500">{error}</Text>}
     </div>

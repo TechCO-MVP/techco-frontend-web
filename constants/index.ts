@@ -46,8 +46,12 @@ export const CANDIDATE_EMAIL_FIELD_ID = "305713420_334105217_candidateemail";
 export const CANDIDATE_PHONE_FIELD_ID =
   "305713420_334105217_candidatesphonenumber";
 
+export const CERTIFICATES_FIELD_ID = "305713420_334881894_certificates";
+
 export const STATEMENT_BUTTON_TEXT = "statement_pipefy";
 
 export const ABANDON_PROCESS_PHASE_NAME = "Abandonaron el proceso";
+
+export const REJECTED_PHASE_NAME = "Descartados";
 
 export const INITIAL_FILTER_SCORE_THRESHOLD = 4;

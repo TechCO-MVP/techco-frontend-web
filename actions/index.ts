@@ -10,5 +10,6 @@ export * from "./users/update-user";
 export * from "./users/update-status";
 export * from "./positions/update-status";
 export * from "./pipefy/update-field";
+export * from "./pipefy/update-attachments";
 export * from "./chatbox/sendResponse";
 export * from "./positions/update-status";
