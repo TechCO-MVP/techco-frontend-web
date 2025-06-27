@@ -72,11 +72,11 @@ export const PositionDetailsPage = ({
           </h1>
 
           <p className="mb-6 text-xl">
-            ¡{positionData.hiring_profile_name}, {i18n.joinOurTeam}!
+            ¡{positionData.hiring_profile_name}! {i18n.joinOurTeam}
           </p>
 
           <p className="mb-8 max-w-prose text-muted-foreground">
-            {positionData.business_description}
+            {positionData.position_description}
           </p>
 
           <Button

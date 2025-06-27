@@ -546,8 +546,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
 
           <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Documentos</h2>
-            <p className="mb-4 text-sm">
-              Para que tu postulación sea tenida en cuenta, es obligatorio
+            <p className="mb-4 text-sm font-bold">
+              ⚠️ Para que tu postulación sea tenida en cuenta, es obligatorio
               adjuntar tu hoja de vida y los documentos que respalden tu
               experiencia laboral
             </p>

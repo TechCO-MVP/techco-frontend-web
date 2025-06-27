@@ -95,7 +95,7 @@ export default async function Page({
             <p className="mb-6 text-xl">¡{i18n.joinOurTeam}!</p>
 
             <p className="mb-8 max-w-prose text-muted-foreground">
-              {positionData.business_name} {positionData.business_description}
+              {positionData.position_description}
             </p>
             <Button
               className="mb-4 w-full max-w-md"
