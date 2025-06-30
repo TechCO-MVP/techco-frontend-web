@@ -357,7 +357,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
             src="/assets/talent_connect.svg"
             alt="TechCo"
           />
-          <ul className="flex justify-end space-x-4">
+          <ul className="mt-[200px] flex justify-end space-x-4 md:mt-0">
             <li>
               <DetailsSheet
                 customTrigger={

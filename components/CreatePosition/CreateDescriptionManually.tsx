@@ -203,7 +203,7 @@ export const CreateDescriptionManually: FC<
         </div>
         <Input
           placeholder="Ejemplo: Gerente de ventas"
-          className="w-[250px] text-4xl"
+          className="w-full text-4xl"
           value={positionData.role || ""}
           onChange={(e) =>
             setPositionData({ ...positionData, role: e.target.value })
@@ -215,6 +215,7 @@ export const CreateDescriptionManually: FC<
           <h2>📍 {i18n.locationLabel}</h2>
         </div>
         <LocationSelector
+          fullWidth={true}
           dictionary={dictionary}
           defaultCity={positionData.city}
           defaultCountry={positionData.country_code}
@@ -236,7 +237,7 @@ export const CreateDescriptionManually: FC<
             setPositionData({ ...positionData, work_mode: value });
           }}
         >
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Modo de trabajo" />
           </SelectTrigger>
           <SelectContent>
@@ -264,7 +265,7 @@ export const CreateDescriptionManually: FC<
             setPositionData({ ...positionData, hiring_priority: value });
           }}
         >
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Prioridad de contratación" />
           </SelectTrigger>
           <SelectContent>
@@ -380,7 +381,7 @@ export const CreateDescriptionManually: FC<
               });
             }}
           >
-            <SelectTrigger className="w-[250px]">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Moneda" />
             </SelectTrigger>
             <SelectContent>

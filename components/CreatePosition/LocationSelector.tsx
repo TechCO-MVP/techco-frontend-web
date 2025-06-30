@@ -29,6 +29,7 @@ type Props = {
   defaultCity?: string;
   defaultCountry?: string;
   dictionary: Dictionary;
+  fullWidth?: boolean;
 };
 
 export const LocationSelector: FC<Props> = ({
@@ -37,6 +38,7 @@ export const LocationSelector: FC<Props> = ({
   defaultCity,
   defaultCountry,
   dictionary,
+  fullWidth = false,
 }) => {
   const { createPositionPage: i18n } = dictionary;
   const [open, setOpen] = useState(false);
@@ -49,7 +51,7 @@ export const LocationSelector: FC<Props> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[250px] justify-between"
+            className={cn("w-[250px] justify-between", fullWidth && "w-full")}
           >
             {defaultCountry
               ? COUNTRIES.find(
@@ -59,7 +61,7 @@ export const LocationSelector: FC<Props> = ({
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[250px] p-0">
+        <PopoverContent className={cn("w-[250px] p-0", fullWidth && "w-full")}>
           <Command>
             <CommandInput
               placeholder={i18n.countrySearchPlaceholder}
@@ -96,7 +98,7 @@ export const LocationSelector: FC<Props> = ({
       </Popover>
       <Input
         defaultValue={defaultCity}
-        className="w-[250px] focus-visible:ring-0"
+        className={cn("w-[250px] focus-visible:ring-0", fullWidth && "w-full")}
         placeholder="Ciudad"
         type="text"
         onChange={(e) => onCityChange?.(e.target.value)}
