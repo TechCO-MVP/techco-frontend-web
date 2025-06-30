@@ -300,65 +300,27 @@ export const CreateTechnicalTestManually: FC<
           <h2> Instrucciones</h2>
         </div>
         <div className="cursor-text leading-relaxed text-gray-600">
-          Formato del archivo
-          <ul className="mb-2 list-disc pl-6">
-            <li>El documento debe ser entregado en formato PDF.</li>
-            <li>No debe tener contraseña ni estar protegido</li>
-          </ul>
           <p>Plazo de entrega</p>
           <ul className="mb-2 list-disc pl-6">
             <li>
-              Tienes un plazo de 2 días calendario para enviar la prueba
-              resuelta, contados a partir de la fecha de recepción de este
-              mensaje.
-            </li>
-            <li>
-              Asegúrate de enviar el archivo antes del vencimiento del plazo.
+              Tienes 2 días calendario para completar y enviar tu prueba,
+              contados a partir de la fecha de recepción de este mensaje.
+              Finaliza y envía todo dentro de este plazo.
             </li>
           </ul>
-          <p>
-            Contenido del documento:{" "}
-            <span className="font-semibold">
-              En el PDF solo debes incluir lo siguiente:
-            </span>
-          </p>
-          <ul className="mb-2 list-disc pl-6">
-            <li>Tu nombre completo como presentante del assessment.</li>
-            <li>
-              El título exacto de cada pregunta, tal como aparece en la prueba.
-            </li>
-            <li>
-              La respuesta correspondiente justo debajo del título de cada
-              pregunta.
-            </li>
-          </ul>
-          <p>Formato del contenido</p>
-          <ul className="mb-2 list-disc pl-6">
-            <li>Por favor, no modifiques el enunciado de las preguntas.</li>
-            <li>
-              Asegúrate de que cada respuesta esté debidamente identificada y
-              organizada según su pregunta correspondiente.
-            </li>
-            <li>
-              Si incluyes código, puede ir en formato texto o capturas, pero
-              asegúrate de que sea legible.
-            </li>
-          </ul>
-          <p>Recomendaciones adicionales</p>
+          <p>Recomendaciones</p>
           <ul className="mb-2 list-disc pl-6">
             <li>
-              Revisa la ortografía y redacción antes de enviar el documento.
+              Responde con claridad y revisa ortografía y redacción antes de
+              enviar.
             </li>
             <li>
-              Si usaste recursos externos o bibliografía, puedes mencionarlos al
-              final del documento.
+              Si lo necesitas, puedes incluir enlaces a recursos o ejemplos que
+              complementen tus respuestas.
             </li>
             <li>
-              Verifica que el archivo se abra correctamente antes de enviarlo
-            </li>
-            <li>
-              El nombre del archivo puede seguir este formato:
-              Assessment_técnico_NombreApellido.pdf.
+              Verifica toda tu información antes de enviarla, ya que solo
+              tendrás una oportunidad para hacerlo.
             </li>
           </ul>
         </div>

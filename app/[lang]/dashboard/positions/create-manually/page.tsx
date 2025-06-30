@@ -1,4 +1,4 @@
-import { CreateManually } from "@/components/CreatePosition/CreateManually";
+import { CreateDescriptionManually } from "@/components/CreatePosition/CreateDescriptionManually";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 
@@ -10,5 +10,5 @@ export default async function CompaniesPage(props: {
 
   const dictionary = await getDictionary(lang);
 
-  return <CreateManually dictionary={dictionary} />;
+  return <CreateDescriptionManually dictionary={dictionary} />;
 }

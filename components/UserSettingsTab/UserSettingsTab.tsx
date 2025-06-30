@@ -23,7 +23,7 @@ import {
 import * as actions from "@/actions";
 
 import { Input } from "../ui/input";
-import { ArrowUpDown, SlidersHorizontal, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import LoadingSkeleton from "./LoadingSkeleton";
@@ -166,9 +166,6 @@ export const UserSettingsTab: FC<Readonly<UserSettingsTabProps>> = ({
             )}
           >
             <ArrowUpDown /> Estado
-          </Button>
-          <Button variant="ghost" className="border border-dashed shadow-sm">
-            <SlidersHorizontal /> Filtro
           </Button>
         </div>
       </div>

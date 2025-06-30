@@ -592,7 +592,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const resultsPhases: PhaseData[] = [
     {
       id: "revision-inicial",
-      name: "Revisión inicial",
+      name: "ADN del Talento",
       score: getSoftSkillsScore(),
       maxScore: 5,
       status: getSoftSkillsStatus(),
@@ -607,7 +607,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     },
     {
       id: "assessment-fit-cultural",
-      name: "Assessment Fit cultural",
+      name: "Retos y Comportamientos",
       score: getCulturalAssessmentScoreForResults(),
       maxScore: 5,
       status: getCulturalAssessmentStatus(),
@@ -639,7 +639,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     },
     {
       id: "assessment-tecnico",
-      name: "Assessment Técnico",
+      name: "Caso de Negocio",
       status: getTechnicalAssessmentStatus(),
       maxScore: 5,
       score: getTechnicalAssessmentScoreForResults(),

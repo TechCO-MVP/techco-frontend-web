@@ -128,15 +128,15 @@ const onboardingContentByPhase: Record<
     slides: [
       {
         title: " ¡Bienvenido a bordo!",
-        text: "<p style='text-align: justify;'> Gracias por unirte. <strong>Aquí vas a encontrar todo lo que necesitas para crear procesos de selección más fáciles, rápidos y ajustados a lo que tu empresa realmente necesita.</strong> Y lo mejor: no estarás solo, te vamos a acompañar paso a paso.</p>",
+        text: "<p style='text-align: justify;'>Aquí no solo haces seguimiento. Aquí eliges mejor. <strong>Comienza tu proceso de reclutamiento automatizado con una plataforma que no se limita a rastrear candidatos, sino que te entrega talento validado, sin sesgos y basado en meritocracia real.</strong> <br /> Y lo mejor: no estarás solo, te vamos a acompañar paso a paso.</p>",
       },
       {
-        title: "Tu nuevo aliado: la inteligencia artificial Tici",
-        text: "<p style='text-align: justify;'>Vamos a ayudarte a crear:</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li>Descripciones de vacantes atractivas.</li> <li>Pruebas técnicas alineadas al rol.</li> <li>Evaluaciones de fit cultural personalizadas.</li> </ul>. <p style='text-align: justify;'> Todo adaptado al estilo y las necesidades de tu empresa. <strong> Tú nos cuentas, la IA te ayuda a construir.</strong> </p>",
+        title: "Tu nuevo aliado: TICI",
+        text: "<p style='text-align: justify;'>Vamos a ayudarte a crear:</p> <ul style='list-style-type: disc; display:flex; justify-content:center; flex-direction: column; align-items: flex-start;'> <li style='text-align: left;'>Perfiles atractivos que conectan con el talento ideal con match predictivo sin intervención humana. </li> <li style='text-align: left;'>Retos y comportamientos que revelan habilidades reales.</li><li style='text-left: justify;'>Evaluaciones de  con casos de negocio personalizados bajo los estandares propios de tu empresa.</li>  </ul>. <p style='text-align: justify;'><strong> Todo nace desde lo que tu empresa necesita </strong></p>",
       },
       {
         title: "Todo el proceso, en un solo lugar",
-        text: "<p style='text-align: justify;'>Tendrás un tablero visual donde podrás ver en qué etapa está cada candidato.</p> <p style='text-align: justify;'> Muchas tareas estarán automatizadas, así que podrás gestionar sin complicarte.</p>",
+        text: "<p style='text-align: justify;'>Tendrás un panel visual donde verás en tiempo real en qué etapa está cada candidato y en base a su puntaje pasara de manera automatizada a las etapas del proceso.</p> <p style='text-align: justify;'> <strong>Siéntate y tómate un cafe, aquí TICI lo gestionara sin complicarte.</strong></p>",
       },
       {
         title: "¿Manejas varias empresas o ciudades?",

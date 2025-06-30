@@ -43,9 +43,9 @@ export const Stepper: FC<StepperProps> = ({ steps, i18n, phase }) => {
   const getTitle = (step: Step): string => {
     switch (step.type) {
       case PositionConfigurationPhaseTypes.DESCRIPTION:
-        return "Descripción";
+        return "ADN del Talento";
       case PositionConfigurationPhaseTypes.SOFT_SKILLS:
-        return "ADN Del Talento";
+        return "Retos y Comportamientos";
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
         return "Caso de Negocio";
       case PositionConfigurationPhaseTypes.READY_TO_PUBLISH:

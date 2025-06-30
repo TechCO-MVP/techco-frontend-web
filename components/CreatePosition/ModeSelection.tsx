@@ -60,6 +60,15 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
         redirectToCopy();
         return;
       }
+      if (
+        selectedOption === PositionConfigurationTypes.CUSTOM &&
+        currentPhase?.type === PositionConfigurationPhaseTypes.DESCRIPTION
+      ) {
+        router.push(
+          `/${lang}/dashboard/companies/${businessId}/position-configuration/${position_id}/description?type=${PositionConfigurationTypes.CUSTOM}`,
+        );
+        return;
+      }
 
       if (
         selectedOption === PositionConfigurationTypes.CUSTOM &&
@@ -315,6 +324,23 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
   };
 
   const renderCreateManually = () => {
+    if (activePhase?.type === PositionConfigurationPhaseTypes.DESCRIPTION) {
+      return (
+        <OptionCard
+          loading={
+            isPending && selectedOption === PositionConfigurationTypes.CUSTOM
+          }
+          selectBtnLabel={i18n.selectBtnLabel}
+          title={i18n.createDescriptionManually}
+          description={i18n.createDescriptionManuallyDescription}
+          onClick={() => {
+            setSelectedOption(PositionConfigurationTypes.CUSTOM);
+            startNextPhase(PositionConfigurationTypes.CUSTOM);
+          }}
+          icon={<BrainCog className="h-10 w-10 stroke-talent-green-500" />}
+        />
+      );
+    }
     if (
       currentPosition?.flow_type ===
         PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW &&

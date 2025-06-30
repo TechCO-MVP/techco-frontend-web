@@ -160,7 +160,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             business={currentBusiness ? currentBusiness : undefined}
             customTrigger={
               <Button variant="outline" className="w-[242px] justify-between">
-                Descripción de la vacante
+                ADN Del Talento
                 <SquareArrowUpRight className="h-4 w-4" />
               </Button>
             }
@@ -176,7 +176,7 @@ export const PublishPosition: FC<Readonly<PublishPositionProps>> = ({
             role={(currentPosition?.phases[0]?.data as DraftPositionData)?.role}
             customTrigger={
               <Button variant="outline" className="w-[242px] justify-between">
-                ADN Del Talento
+                Retos y Comportamientos
                 <SquareArrowUpRight className="h-4 w-4" />
               </Button>
             }

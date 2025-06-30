@@ -318,6 +318,8 @@
     "pending": "Pending",
     "completed": "Completed",
     "doesNotApply": "Not Applicable",
+    "createDescriptionManually": "Create manually",
+    "createDescriptionManuallyDescription": "Take full control and build the job opening from scratch.",
     "createWithAi": "Create with Artificial Intelligence",
     "createWithAiDescription": "Save time and let AI structure the job opening for you.",
     "createWithAiSoftSkills": "Receive step-by-step guidance to build a test 100% aligned with your organizational culture. We help you identify key values and translate them into a powerful and personalized test.",

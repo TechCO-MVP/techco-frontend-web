@@ -19,7 +19,7 @@ import { DetailsSheet } from "../PositionDetailsPage/DetailsSheet";
 import { useUpdateHiringProcessCustomFields } from "@/hooks/use-update-hiring-process-custom-fields";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
 import { useMoveCardToPhase } from "@/hooks/use-move-card-to-phase";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { CandidateStepper } from "../CandidateProgress/CandidateStepper";
 import {
   calculateSalaryRangeScore,
@@ -31,7 +31,11 @@ import { usePositionById } from "@/hooks/use-position-by-id";
 import LoadingSkeleton from "../PositionDetailsPage/Skeleton";
 import { toast } from "@/hooks/use-toast";
 import {
+  CANDIDATE_BIRTHDAY_FIELD_ID,
+  CANDIDATE_DNI_FIELD_ID,
   CANDIDATE_EMAIL_FIELD_ID,
+  CANDIDATE_FATHERS_FULLNAME_FIELD_ID,
+  CANDIDATE_MOTHERS_FULLNAME_FIELD_ID,
   CANDIDATE_PHONE_FIELD_ID,
   INITIAL_FILTER_SCORE_THRESHOLD,
   REJECTED_PHASE_NAME,
@@ -42,6 +46,12 @@ import { PipefyBoardTransformer } from "@/lib/pipefy/board-transformer";
 import { CandidateSources, PipefyFieldValues } from "@/types/pipefy";
 import { useUpdateFieldsValues } from "@/hooks/use-update-fields";
 import { AttachFileDialog } from "../CandidateProgress/AttachFileDialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { es } from "date-fns/locale";
+import { Calendar } from "../ui/calendar";
+import { format } from "date-fns";
+import { Label } from "@/components/ui/label";
+import { GLORIA_BUSINESSES_ID } from "@/constants";
 type ApplicationFormProps = {
   lang: Locale;
   dictionary: Dictionary;
@@ -64,6 +74,14 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const [candidateEmail, setCandidateEmail] = useState<string>("");
   const [candidatePhone, setCandidatePhone] = useState<string>("");
   const [hasSeniority, setHasSeniority] = useState<boolean>();
+  const [candidateBirthday, setCandidateBirthday] = useState<Date | undefined>(
+    undefined,
+  );
+  const [candidateDni, setCandidateDni] = useState<string>("");
+  const [candidateFathersFullname, setCandidateFathersFullname] =
+    useState<string>("");
+  const [candidateMothersFullname, setCandidateMothersFullname] =
+    useState<string>("");
   const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
     cardId: positionData.hiring_card_id,
@@ -71,6 +89,10 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const fieldMap = PipefyBoardTransformer.mapFields(card?.fields || []);
   const candidateSource = fieldMap[PipefyFieldValues.CandidateSource];
   const linkedinSource = candidateSource === CandidateSources.LinkedIn;
+  const isGloriaBusiness = GLORIA_BUSINESSES_ID.includes(
+    positionData.business_id,
+  );
+
   const { mutate: updateFieldsValues, isPending: isUpdatingFieldsValues } =
     useUpdateFieldsValues({
       onSuccess: () => {
@@ -248,6 +270,32 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
         value: candidatePhone,
       });
     }
+    if (isGloriaBusiness) {
+      if (candidateBirthday) {
+        values.push({
+          fieldId: CANDIDATE_BIRTHDAY_FIELD_ID,
+          value: format(candidateBirthday, "yyyy-MM-dd"),
+        });
+      }
+      if (candidateDni) {
+        values.push({
+          fieldId: CANDIDATE_DNI_FIELD_ID,
+          value: candidateDni,
+        });
+      }
+      if (candidateFathersFullname) {
+        values.push({
+          fieldId: CANDIDATE_FATHERS_FULLNAME_FIELD_ID,
+          value: candidateFathersFullname,
+        });
+      }
+      if (candidateMothersFullname) {
+        values.push({
+          fieldId: CANDIDATE_MOTHERS_FULLNAME_FIELD_ID,
+          value: candidateMothersFullname,
+        });
+      }
+    }
     updateFieldsValues({
       nodeId: positionData.hiring_card_id,
       values,
@@ -278,12 +326,24 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
 
   const phoneCompleted = selectedDialCode && candidatePhone;
   const emailCompleted = !linkedinSource ? true : candidateEmail;
+  const birthdayCompleted = isGloriaBusiness ? candidateBirthday : true;
+  const dniCompleted = isGloriaBusiness ? candidateDni : true;
+  const fathersFullnameCompleted = isGloriaBusiness
+    ? candidateFathersFullname
+    : true;
+  const mothersFullnameCompleted = isGloriaBusiness
+    ? candidateMothersFullname
+    : true;
   const canSubmit =
     allSkillsAnswered &&
     allResponsibilitiesAnswered &&
     expectedSalary &&
     phoneCompleted &&
     emailCompleted &&
+    birthdayCompleted &&
+    dniCompleted &&
+    fathersFullnameCompleted &&
+    mothersFullnameCompleted &&
     acceptedTerms;
 
   return (
@@ -387,6 +447,87 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               </div>
             </div>
           </div>
+          {isGloriaBusiness && (
+            <div className="mb-8 border-t px-4 pt-6 md:px-28">
+              <h2 className="mb-2 text-lg font-medium">Datos personales</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm" htmlFor="candidate-birthday">
+                    Fecha de nacimiento
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={
+                          "relative w-full justify-start pl-10 text-left font-normal" +
+                          (!candidateBirthday ? " text-muted-foreground" : "")
+                        }
+                        type="button"
+                      >
+                        <CalendarIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                        {candidateBirthday
+                          ? format(candidateBirthday, "PPP", { locale: es })
+                          : "Selecciona una fecha"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={candidateBirthday}
+                        onSelect={setCandidateBirthday}
+                        initialFocus
+                        locale={es}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm" htmlFor="candidate-dni">
+                    DNI
+                  </Label>
+                  <Input
+                    id="candidate-dni"
+                    value={candidateDni}
+                    onChange={(e) => setCandidateDni(e.target.value)}
+                    placeholder="12345678"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label
+                    className="text-sm"
+                    htmlFor="candidate-fathers-fullname"
+                  >
+                    Nombre completo del padre
+                  </Label>
+                  <Input
+                    id="candidate-fathers-fullname"
+                    value={candidateFathersFullname}
+                    onChange={(e) =>
+                      setCandidateFathersFullname(e.target.value)
+                    }
+                    placeholder="Juan Pérez"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label
+                    className="text-sm"
+                    htmlFor="candidate-mothers-fullname"
+                  >
+                    Nombre completo de la madre
+                  </Label>
+                  <Input
+                    id="candidate-mothers-fullname"
+                    value={candidateMothersFullname}
+                    onChange={(e) =>
+                      setCandidateMothersFullname(e.target.value)
+                    }
+                    placeholder="María López"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Experiencia laboral</h2>
@@ -547,9 +688,9 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           <div className="mb-8 border-t px-4 pt-6 md:px-28">
             <h2 className="mb-2 text-lg font-medium">Documentos</h2>
             <p className="mb-4 text-sm font-bold">
-              ⚠️ Para que tu postulación sea tenida en cuenta, es obligatorio
-              adjuntar tu hoja de vida y los documentos que respalden tu
-              experiencia laboral
+              ⚠️ Recuerda: tu postulación solo será válida si adjuntas tu hoja
+              de vida y los documentos que certifiquen tu experiencia y
+              habilidades para el cargo.
             </p>
             <p className="mb-4 text-sm">
               Formación académica esperada para este cargo:
@@ -571,6 +712,14 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
 
           {/* Form Buttons */}
           <div className="flex flex-col gap-2 border-t px-4 pt-6 md:px-28">
+            <div className="mb-4">
+              <p className="text-sm">
+                Tendrás un enlace único para hacer seguimiento a todo tu
+                proceso. Cada cambio de estado se notificará a través de tu
+                correo electrónico, así que asegúrate de registrar uno que
+                revises con frecuencia.
+              </p>
+            </div>
             <div className="mb-2 flex items-center space-x-2">
               <Checkbox
                 id="accept-terms"

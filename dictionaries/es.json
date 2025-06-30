@@ -319,6 +319,8 @@
     "pending": "Pendiente",
     "completed": "Completado",
     "doesNotApply": "No aplica",
+    "createDescriptionManually": "Crear de forma manual",
+    "createDescriptionManuallyDescription": "Toma el control total de tu vacante y define cada detalle a tu manera. Escribe desde cero la descripción que mejor refleje tu cultura, tus retos y lo que esperas de quien se sume a tu equipo.",
     "createWithAi": "Crear con acompañamiento de Tici",
     "createWithAiDescription": "Tici genera automaticamente una descripcion de vacante completa, con base en tu necesidad. No es un texto generico: es una oferta que comunica tu cultura, tus retos y lo que esperas de quien se una a tu equipo.",
     "createWithAiSoftSkills": "Recibe guía paso a paso para construir un test alineado 100% a tu cultura organizacional. Te ayudamos a identificar los valores clave y traducirlos en un test poderoso y personalizado.",

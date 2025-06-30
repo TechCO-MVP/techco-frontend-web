@@ -42,7 +42,7 @@ export const Search: FC<Readonly<SearchProps>> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[350px] max-w-[18rem] justify-between shadow-sm"
+            className="w-[250px] max-w-[18rem] justify-between shadow-sm"
           >
             {value
               ? users.find(

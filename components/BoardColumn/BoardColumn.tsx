@@ -74,6 +74,25 @@ export const BoardColumn: React.FC<ColumnProps> = ({
     onCardMove(column.id, draggedId, targetId);
   };
 
+  const getColumnTitle = (columnName: string) => {
+    switch (columnName) {
+      case "Candidatos sugeridos":
+        return "Candidatos encontrados";
+      case "Filtro inicial":
+        return "No pasaron el filtro inicial";
+      case "Assessment Fit Cultural":
+        return "Retos y Comportamientos";
+      case "Resultado Fit Cultural":
+        return "Resultado Retos y Comportamientos";
+      case "Assessment Técnico":
+        return "Caso de Negocio";
+      case "Resultado Assessment Técnico":
+        return "Resultado Caso de Negocio";
+      default:
+        return columnName;
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -90,7 +109,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       {/* Fixed header */}
       <div className="flex-shrink-0 p-4 pb-0">
         <h2 className="mb-4 text-lg font-semibold">
-          {column.name} ({column.cards_count})
+          {getColumnTitle(column.name)} ({column.cards_count})
         </h2>
       </div>
 

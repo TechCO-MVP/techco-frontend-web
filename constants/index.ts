@@ -29,7 +29,7 @@ export const ROLES: { value: UserRole["role"]; label: string }[] = [
 export const MATCH_OPTIONS = ["Alta", "Media - Alta", "Media", "Baja"];
 export const SOURCE_OPTIONS = [
   "Talent Connect",
-  "URL de la oferta",
+  "A través de la URL de la vacante",
   "Ingreso manual",
 ];
 export const STATUS_OPTIONS = ["Activo", "Descartado", "Desistió del proceso"];
@@ -43,8 +43,19 @@ export const TECHNICAL_TEST_FIELD_ID =
   "305713420_338699108_resultadoassessmenttecnico";
 
 export const CANDIDATE_EMAIL_FIELD_ID = "305713420_334105217_candidateemail";
+
 export const CANDIDATE_PHONE_FIELD_ID =
   "305713420_334105217_candidatesphonenumber";
+
+export const CANDIDATE_BIRTHDAY_FIELD_ID = "306495670_339242211_birthdate";
+
+export const CANDIDATE_DNI_FIELD_ID = "306495670_339242211_dni";
+
+export const CANDIDATE_FATHERS_FULLNAME_FIELD_ID =
+  "306495670_339242211_fathersfullname";
+
+export const CANDIDATE_MOTHERS_FULLNAME_FIELD_ID =
+  "306495670_339242211_mothersfullname";
 
 export const CERTIFICATES_FIELD_ID = "305713420_334881894_certificates";
 
@@ -55,3 +66,9 @@ export const ABANDON_PROCESS_PHASE_NAME = "Abandonaron el proceso";
 export const REJECTED_PHASE_NAME = "Descartados";
 
 export const INITIAL_FILTER_SCORE_THRESHOLD = 4;
+
+export const GLORIA_BUSINESSES_ID = [
+  "685b1e10e6cc8b62bd5c3082",
+  "685dacc01c0b92f2b7120140",
+  "685c113b7d122deeabcd0f50",
+];

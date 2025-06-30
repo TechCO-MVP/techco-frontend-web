@@ -1,4 +1,4 @@
-import { CreateManually } from "@/components/CreatePosition/CreateManually";
+import { CreateDescriptionManually } from "@/components/CreatePosition/CreateDescriptionManually";
 import { CreateSoftSkillWithAI } from "@/components/CreatePosition/CreateSoftSkillWithAI";
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
@@ -17,7 +17,7 @@ export default async function DescriptionPage(props: {
     case PositionConfigurationTypes.AI_TEMPLATE:
       return <CreateSoftSkillWithAI dictionary={dictionary} />;
     case PositionConfigurationTypes.CUSTOM:
-      return <CreateManually dictionary={dictionary} />;
+      return <CreateDescriptionManually dictionary={dictionary} />;
     case PositionConfigurationTypes.OTHER_POSITION_AS_TEMPLATE:
       return <CreateSoftSkillWithAI dictionary={dictionary} />;
 

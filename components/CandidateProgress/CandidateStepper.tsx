@@ -20,10 +20,14 @@ export const CandidateStepper = ({
 
   const getGroupTitle = (groupName: string) => {
     switch (groupName) {
+      case "Filtro inicial":
+        return "ADN del Talento";
       case "Descartados":
         return "No Continua";
       case "Fit cultural":
-        return "ADN Del Talento";
+        return "Retos y Comportamientos";
+      case "Finalistas":
+        return "Finalista";
       case "Assessment técnico":
         return "Caso de Negocio";
       default:

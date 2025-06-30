@@ -30,23 +30,23 @@ export function useBoardFilters(board?: BoardState) {
   const phases = board?.pipe.phases ?? [];
 
   const quickFilterMap: Record<string, string[]> = {
-    "Filtro inicial": ["Oferta enviada", "Filtro inicial"],
-    "Fit cultural": ["Assessment fit Cultural", "Resultado Fit Cultural"],
+    "ADN del Talento": ["Oferta enviada", "Filtro inicial"],
+    "Retos y Comportamientos": [
+      "Assessment fit Cultural",
+      "Resultado Fit Cultural",
+    ],
     "Primer entrevista": [
       "Primera entrevista solicitada",
       "Primera entrevista programada",
       "Resultado primer entrevista",
     ],
-    "Assessment técnico": [
-      "Assessment técnico",
-      "Resultado Assessment técnico",
-    ],
+    "Caso de Negocio": ["Assessment técnico", "Resultado Assessment técnico"],
     "Entrevista final": [
       "Entrevista final solicitada",
       "Entrevista final programada",
       "Resultado entrevista final",
     ],
-    Finalistas: ["Finalistas", "Candidato seleccionado"],
+    "Talento sin sesgos": ["Finalistas", "Candidato seleccionado"],
     Descartados: ["Descartados"],
   };
 

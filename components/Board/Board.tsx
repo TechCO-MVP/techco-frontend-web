@@ -39,7 +39,7 @@ import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
 import { useBoardFilters } from "@/hooks/use-board-filters";
 import { useBoardActions } from "@/hooks/use-board-actions";
-import { STATUS_OPTIONS, MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
+import { MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
 import { MovePhaseDialog } from "./MovePhaseDialog";
 import { MissingFieldsDialog } from "./MissingFieldsDialog";
 import { usePositionById } from "@/hooks/use-position-by-id";
@@ -48,12 +48,12 @@ type BoardProps = {
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   const quickFilters = [
-    "Filtro inicial",
-    "Fit cultural",
+    "ADN del Talento",
+    "Retos y Comportamientos",
     "Primer entrevista",
-    "Assessment técnico",
+    "Caso de Negocio",
     "Entrevista final",
-    "Finalistas",
+    "Talento sin sesgos",
     "Descartados",
   ];
   const searchParams = useSearchParams();
@@ -112,10 +112,8 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     setSearchTerm,
     matchFilter,
     sourceFilter,
-    statusFilter,
     handleMatchChange,
     handleSourceChange,
-    handleStatusChange,
     filteredBoard,
     resultCount,
     toggleQuickFilter,
@@ -299,32 +297,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                         id={option}
                         checked={sourceFilter === option}
                         onCheckedChange={() => handleSourceChange(option)}
-                      />
-                      <label
-                        htmlFor={option}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {option}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                <Separator />
-
-                <div className="grid gap-2">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-bold">
-                      {dictionary.userCard.candidateSource}
-                    </h4>
-                  </div>
-
-                  {STATUS_OPTIONS.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option}
-                        checked={statusFilter === option}
-                        onCheckedChange={() => handleStatusChange(option)}
                       />
                       <label
                         htmlFor={option}

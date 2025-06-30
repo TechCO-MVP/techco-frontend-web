@@ -274,78 +274,28 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       </AccordionTrigger>
                       <AccordionContent className="flex flex-col gap-4 text-balance py-4 text-left">
                         <div className="cursor-text leading-relaxed text-[#090909]">
-                          Formato del archivo
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              El documento debe ser entregado en formato PDF.
-                            </li>
-                            <li>No debe tener contraseña ni estar protegido</li>
-                          </ul>
                           <p>Plazo de entrega</p>
                           <ul className="mb-2 list-disc pl-6">
                             <li>
-                              Tienes un plazo de 2 días calendario para enviar
-                              la prueba resuelta, contados a partir de la fecha
-                              de recepción de este mensaje.
-                            </li>
-                            <li>
-                              Asegúrate de enviar el archivo antes del
-                              vencimiento del plazo.
+                              Tienes 2 días calendario para completar y enviar
+                              tu prueba, contados a partir de la fecha de
+                              recepción de este mensaje. Finaliza y envía todo
+                              dentro de este plazo.
                             </li>
                           </ul>
-                          <p>
-                            Contenido del documento:{" "}
-                            <span className="font-semibold">
-                              En el PDF solo debes incluir lo siguiente:
-                            </span>
-                          </p>
+                          <p>Recomendaciones</p>
                           <ul className="mb-2 list-disc pl-6">
                             <li>
-                              Tu nombre completo como presentante del
-                              assessment.
+                              Responde con claridad y revisa ortografía y
+                              redacción antes de enviar.
                             </li>
                             <li>
-                              El título exacto de cada pregunta, tal como
-                              aparece en la prueba.
+                              Si lo necesitas, puedes incluir enlaces a recursos
+                              o ejemplos que complementen tus respuestas.
                             </li>
                             <li>
-                              La respuesta correspondiente justo debajo del
-                              título de cada pregunta.
-                            </li>
-                          </ul>
-                          <p>Formato del contenido</p>
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              Por favor, no modifiques el enunciado de las
-                              preguntas.
-                            </li>
-                            <li>
-                              Asegúrate de que cada respuesta esté debidamente
-                              identificada y organizada según su pregunta
-                              correspondiente.
-                            </li>
-                            <li>
-                              Si incluyes código, puede ir en formato texto o
-                              capturas, pero asegúrate de que sea legible.
-                            </li>
-                          </ul>
-                          <p>Recomendaciones adicionales</p>
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              Revisa la ortografía y redacción antes de enviar
-                              el documento.
-                            </li>
-                            <li>
-                              Si usaste recursos externos o bibliografía, puedes
-                              mencionarlos al final del documento.
-                            </li>
-                            <li>
-                              Verifica que el archivo se abra correctamente
-                              antes de enviarlo
-                            </li>
-                            <li>
-                              El nombre del archivo puede seguir este formato:
-                              Assessment_cultural_NombreApellido.pdf.
+                              Verifica toda tu información antes de enviarla, ya
+                              que solo tendrás una oportunidad para hacerlo.
                             </li>
                           </ul>
                         </div>
@@ -353,7 +303,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                     </AccordionItem>
                     <AccordionItem value="assessment" className="border-0">
                       <AccordionTrigger className="bg-[#F5F5F5] px-2 font-bold">
-                        Prueba
+                        Haz click acá para iniciar tu prueba
                       </AccordionTrigger>
                       <AccordionContent className="flex flex-col gap-4 text-balance">
                         {renderSoftSkillAssessment()}
@@ -370,84 +320,34 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                     collapsible
                     className="mx-auto w-full max-w-2xl"
                   >
-                    <AccordionItem value="instructions" className="border-0">
-                      <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 font-bold">
+                    <AccordionItem value="instructions">
+                      <AccordionTrigger className="bg-[#F5F5F5] px-2 font-bold">
                         Instrucciones
                       </AccordionTrigger>
                       <AccordionContent className="flex flex-col gap-4 text-balance py-4 text-left">
                         <div className="cursor-text leading-relaxed text-[#090909]">
-                          Formato del archivo
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              El documento debe ser entregado en formato PDF.
-                            </li>
-                            <li>No debe tener contraseña ni estar protegido</li>
-                          </ul>
                           <p>Plazo de entrega</p>
                           <ul className="mb-2 list-disc pl-6">
                             <li>
-                              Tienes un plazo de 2 días calendario para enviar
-                              la prueba resuelta, contados a partir de la fecha
-                              de recepción de este mensaje.
-                            </li>
-                            <li>
-                              Asegúrate de enviar el archivo antes del
-                              vencimiento del plazo.
+                              Tienes 2 días calendario para completar y enviar
+                              tu prueba, contados a partir de la fecha de
+                              recepción de este mensaje. Finaliza y envía todo
+                              dentro de este plazo.
                             </li>
                           </ul>
-                          <p>
-                            Contenido del documento:{" "}
-                            <span className="font-semibold">
-                              En el PDF solo debes incluir lo siguiente:
-                            </span>
-                          </p>
+                          <p>Recomendaciones</p>
                           <ul className="mb-2 list-disc pl-6">
                             <li>
-                              Tu nombre completo como presentante del
-                              assessment.
+                              Responde con claridad y revisa ortografía y
+                              redacción antes de enviar.
                             </li>
                             <li>
-                              El título exacto de cada pregunta, tal como
-                              aparece en la prueba.
+                              Si lo necesitas, puedes incluir enlaces a recursos
+                              o ejemplos que complementen tus respuestas.
                             </li>
                             <li>
-                              La respuesta correspondiente justo debajo del
-                              título de cada pregunta.
-                            </li>
-                          </ul>
-                          <p>Formato del contenido</p>
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              Por favor, no modifiques el enunciado de las
-                              preguntas.
-                            </li>
-                            <li>
-                              Asegúrate de que cada respuesta esté debidamente
-                              identificada y organizada según su pregunta
-                              correspondiente.
-                            </li>
-                            <li>
-                              Si incluyes código, puede ir en formato texto o
-                              capturas, pero asegúrate de que sea legible.
-                            </li>
-                          </ul>
-                          <p>Recomendaciones adicionales</p>
-                          <ul className="mb-2 list-disc pl-6">
-                            <li>
-                              Revisa la ortografía y redacción antes de enviar
-                              el documento.
-                            </li>
-                            <li>
-                              Si usaste recursos externos o bibliografía, puedes
-                              mencionarlos al final del documento.
-                            </li>
-                            <li>
-                              Verifica que el archivo se abra correctamente
-                              antes de enviarlo
-                            </li>
-                            <li>
-                              El nombre del archivo puede seguir este formato:
-                              Assessment_cultural_NombreApellido.pdf.
+                              Verifica toda tu información antes de enviarla, ya
+                              que solo tendrás una oportunidad para hacerlo.
                             </li>
                           </ul>
                         </div>
@@ -455,7 +355,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                     </AccordionItem>
                     <AccordionItem value="assessment" className="border-0">
                       <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 font-bold">
-                        Prueba
+                        Haz click acá para iniciar tu prueba
                       </AccordionTrigger>
                       <AccordionContent className="flex flex-col gap-4 text-balance">
                         {renderTechnicalAssessment()}

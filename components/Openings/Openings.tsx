@@ -96,9 +96,9 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     tabParam === "actives" || tabParam === "drafts" ? tabParam : "actives";
   const [positionToDelete, setPositionToDelete] = useState<string>();
   const [priorityFilter, setPriorityFilter] = useState<string | null>();
-  const [statusFilter, setStatusFilter] = useState<string | null>();
+
   const priorityOptions = ["high", "medium", "low"];
-  const statusOptions = ["CANCELED", "ACTIVE", "FINISHED", "INACTIVE", "DRAFT"];
+
   // const [_, startTransition] = useTransition();
   const queryClient = useQueryClient();
   const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
@@ -249,21 +249,15 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           ?.toLowerCase()
           .includes(priorityFilter.toLocaleLowerCase());
 
-      const statusMatch =
-        !statusFilter ||
-        position.status
-          ?.toLowerCase()
-          .includes(statusFilter.toLocaleLowerCase());
-
       const dateMatch =
         !dateCutoff || new Date(position.created_at) >= dateCutoff;
 
-      const isMatch = searchMatch && priorityMatch && statusMatch && dateMatch;
+      const isMatch = searchMatch && priorityMatch && dateMatch;
 
       return isMatch;
     });
     return filtered;
-  }, [searchTerm, priorityFilter, positions, statusFilter, dateFilter]);
+  }, [searchTerm, priorityFilter, positions, dateFilter]);
 
   const [draftsPage, setDraftsPage] = useState(1);
   const [draftsPageSize, setDraftsPageSize] = useState(5);
@@ -439,6 +433,12 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
           router.push(
             `companies/${selectedCompany?._id}/position-configuration/${position._id}/description/copy`,
           );
+        } else if (
+          phase.configuration_type === PositionConfigurationTypes.CUSTOM
+        ) {
+          router.push(
+            `companies/${selectedCompany?._id}/position-configuration/${position._id}/description?type=${PositionConfigurationTypes.CUSTOM}`,
+          );
         }
 
         break;
@@ -554,10 +554,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
 
   const handlePriorityChange = (value: string) => {
     setPriorityFilter((prev) => (prev === value ? null : value));
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter((prev) => (prev === value ? null : value));
   };
 
   const handleDateChange = (value: number) => {
@@ -746,34 +742,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                               className="text-sm font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
                               {option}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-
-                      <Separator />
-                      <div className="grid gap-2">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-bold">
-                            {i18n.stateLabel}
-                          </h4>
-                        </div>
-
-                        {statusOptions.map((option) => (
-                          <div
-                            key={option}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={option}
-                              checked={statusFilter === option}
-                              onCheckedChange={() => handleStatusChange(option)}
-                            />
-                            <label
-                              htmlFor={option}
-                              className="text-sm font-medium capitalize leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {option.toLowerCase()}
                             </label>
                           </div>
                         ))}
