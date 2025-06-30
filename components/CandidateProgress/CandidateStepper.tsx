@@ -106,7 +106,7 @@ export const CandidateStepper = ({
                     <div className="mb-1 text-sm font-medium text-gray-500">
                       PASO {step.number}
                     </div>
-                    <div className="mb-1 text-lg font-semibold text-gray-900">
+                    <div className="mb-1 text-left text-lg font-semibold text-gray-900">
                       {step.title}
                     </div>
                     <div
