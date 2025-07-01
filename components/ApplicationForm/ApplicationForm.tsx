@@ -349,15 +349,16 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   return (
     <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">
       <header className="w-full px-20 py-8">
-        <nav className="flex items-center justify-between">
+        <nav className="flex flex-col items-center justify-between md:flex-row">
           <Image
             priority
             width={152}
             height={36}
             src="/assets/talent_connect.svg"
             alt="TechCo"
+            className="hidden md:block"
           />
-          <ul className="mt-[200px] flex justify-end space-x-4 md:mt-0">
+          <ul className="mt-[250px] flex justify-end space-x-4 md:mt-0">
             <li>
               <DetailsSheet
                 customTrigger={

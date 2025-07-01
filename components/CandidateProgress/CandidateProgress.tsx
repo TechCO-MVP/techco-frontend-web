@@ -185,7 +185,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
               positionFlow={position.position_flow}
             />
 
-            <div className="mx-auto mt-[120px] max-w-2xl px-4 md:mt-0 md:px-0">
+            <div className="mx-auto mt-[140px] max-w-2xl px-4 md:mt-0 md:px-0">
               <div className="mx-auto mb-8 max-w-2xl">
                 <div className="mb-4 flex justify-end md:hidden">
                   <DetailsSheet
@@ -370,6 +370,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
       </div>
     );
   };
+
   if (
     card.current_phase.name === PHASE_NAMES.SUGGESTED_CANDIDATES ||
     card.current_phase.name === PHASE_NAMES.OFFER_SENT

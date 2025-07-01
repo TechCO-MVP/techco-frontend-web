@@ -80,13 +80,13 @@ export const BoardColumn: React.FC<ColumnProps> = ({
         return "Candidatos encontrados";
       case "Filtro inicial":
         return "No pasaron el filtro inicial";
-      case "Assessment Fit Cultural":
+      case "Assessment fit Cultural":
         return "Retos y Comportamientos";
       case "Resultado Fit Cultural":
         return "Resultado Retos y Comportamientos";
-      case "Assessment Técnico":
+      case "Assessment técnico":
         return "Caso de Negocio";
-      case "Resultado Assessment Técnico":
+      case "Resultado Assessment técnico":
         return "Resultado Caso de Negocio";
       default:
         return columnName;
