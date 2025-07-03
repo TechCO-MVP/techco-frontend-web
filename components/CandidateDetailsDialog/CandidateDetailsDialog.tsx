@@ -607,7 +607,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     },
     {
       id: "assessment-fit-cultural",
-      name: "Retos y Comportamientos",
+      name: "Resultado Retos y comportamientos",
       score: getCulturalAssessmentScoreForResults(),
       maxScore: 5,
       status: getCulturalAssessmentStatus(),
@@ -639,7 +639,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     },
     {
       id: "assessment-tecnico",
-      name: "Caso de Negocio",
+      name: "Resultado Caso de negocio",
       status: getTechnicalAssessmentStatus(),
       maxScore: 5,
       score: getTechnicalAssessmentScoreForResults(),

@@ -76,16 +76,18 @@ export const BoardColumn: React.FC<ColumnProps> = ({
 
   const getColumnTitle = (columnName: string) => {
     switch (columnName) {
+      case "Oferta enviada":
+        return "Candidatos interesados";
       case "Candidatos sugeridos":
-        return "Candidatos encontrados";
+        return "Coincidencias iniciales";
       case "Filtro inicial":
-        return "No pasaron el filtro inicial";
+        return "No match ADN del talento";
       case "Assessment fit Cultural":
-        return "Retos y Comportamientos";
+        return "¡Match en ADN del talento! (Esperando prueba de Retos y Comportamientos)";
       case "Resultado Fit Cultural":
         return "Resultado Retos y Comportamientos";
       case "Assessment técnico":
-        return "Caso de Negocio";
+        return "¡Match en Retos y Comportamientos! (Esperando Caso de negocio)";
       case "Resultado Assessment técnico":
         return "Resultado Caso de Negocio";
       default:

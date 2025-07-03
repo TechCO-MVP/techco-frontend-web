@@ -55,7 +55,7 @@ export default function ProcessOverview({
       return (
         <div className="flex items-center justify-between border-b px-6 py-4 last:border-b-0">
           <span
-            className={`font-medium ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
+            className={`text-left font-medium ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
           >
             {phase.name}
           </span>
@@ -83,7 +83,7 @@ export default function ProcessOverview({
         <AccordionTrigger className="px-6 py-4 hover:no-underline">
           <div className="flex w-full items-center justify-between pr-4">
             <span
-              className={`font-medium ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
+              className={`text-left font-medium ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
             >
               {phase.name}
             </span>
