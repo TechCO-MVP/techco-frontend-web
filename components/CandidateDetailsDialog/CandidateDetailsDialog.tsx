@@ -324,12 +324,17 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
       offerSentPhase,
     );
     if (!offerSentPhase) return null;
+    const initialFilterPhase = findPhaseByName(
+      PHASE_NAMES.INITIAL_FILTER,
+      positionFlow,
+    );
+
     return (
       <div className="flex flex-col gap-4">
         <SoftSkillsResults
           data={getDataForPhase(offerSentPhase.id)}
           position={position}
-          phase={currentPhase}
+          phase={initialFilterPhase}
         />
       </div>
     );
