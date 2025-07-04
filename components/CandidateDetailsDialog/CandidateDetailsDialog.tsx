@@ -20,6 +20,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { CountryLabel } from "../CountryLabel/CountryLabel";
 import {
+  calculateSalaryRangeScore,
+  calculateSalaryScore,
   calculateScore,
   countryLabelLookup,
   findPhaseByName,
@@ -509,7 +511,25 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     const responsibilitiesScore = calculateScore(
       data.custom_fields.responsibilities,
     );
-    const overallScore = (skillsScore + responsibilitiesScore) / 2;
+    const expectedSalary = data.custom_fields.expected_salary;
+    let salaryScore = 5;
+    if (position?.salary?.salary) {
+      salaryScore = calculateSalaryScore(
+        Number(expectedSalary),
+        Number(position?.salary?.salary),
+      );
+    }
+    if (position?.salary?.salary_range) {
+      salaryScore = calculateSalaryRangeScore(
+        {
+          min: Number(position?.salary?.salary_range.min),
+          max: Number(position?.salary?.salary_range.max),
+        },
+        Number(expectedSalary),
+      );
+    }
+    const overallScore =
+      (skillsScore + responsibilitiesScore + salaryScore) / 3;
     return overallScore;
   };
 
