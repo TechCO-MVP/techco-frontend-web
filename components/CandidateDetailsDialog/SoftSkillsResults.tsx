@@ -49,10 +49,18 @@ export function SoftSkillsResults({
     position?.salary?.salary || position?.salary?.salary_range?.max || 0,
   );
 
+  const minSalary = Number(
+    position?.salary?.salary || position?.salary?.salary_range?.min || 0,
+  );
+
   // Calculate salary status
   const isAboveRange = maxSalary > 0 && expectedSalary > maxSalary;
+  const isBelowRange = minSalary > 0 && expectedSalary < minSalary;
   const salaryPercentageAbove = isAboveRange
     ? Math.round(((expectedSalary - maxSalary) / maxSalary) * 100)
+    : 0;
+  const salaryPercentageBelow = isBelowRange
+    ? Math.round(((expectedSalary - minSalary) / minSalary) * 100)
     : 0;
 
   let salaryScore = 5;
@@ -213,6 +221,11 @@ export function SoftSkillsResults({
                 {isAboveRange && (
                   <Badge variant="destructive" className="text-xs">
                     Fuera del rango (+{salaryPercentageAbove}%)
+                  </Badge>
+                )}
+                {isBelowRange && (
+                  <Badge variant="destructive" className="text-xs">
+                    Fuera del rango (-{salaryPercentageBelow}%)
                   </Badge>
                 )}
               </div>
