@@ -15,7 +15,11 @@ import {
 } from "@/types";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { calculateScore } from "@/lib/utils";
+import {
+  calculateSalaryRangeScore,
+  calculateSalaryScore,
+  calculateScore,
+} from "@/lib/utils";
 interface SoftSkillsResultsProps {
   data?: HiringProcess["phases"][number];
   candidateName?: string;
@@ -50,6 +54,23 @@ export function SoftSkillsResults({
   const salaryPercentageAbove = isAboveRange
     ? Math.round(((expectedSalary - maxSalary) / maxSalary) * 100)
     : 0;
+
+  let salaryScore = 5;
+  if (position?.salary?.salary) {
+    salaryScore = calculateSalaryScore(
+      Number(expectedSalary),
+      Number(position?.salary?.salary),
+    );
+  }
+  if (position?.salary?.salary_range) {
+    salaryScore = calculateSalaryRangeScore(
+      {
+        min: Number(position.salary.salary_range.min),
+        max: Number(position.salary.salary_range.max),
+      },
+      Number(expectedSalary),
+    );
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-CO", {
@@ -186,6 +207,9 @@ export function SoftSkillsResults({
             <AccordionTrigger className="text-left hover:no-underline">
               <div className="flex w-full items-center justify-between pr-4">
                 <span className="font-semibold">Salario</span>
+                <span className="font-bold text-green-600">
+                  {salaryScore.toFixed(2)} de 5
+                </span>
                 {isAboveRange && (
                   <Badge variant="destructive" className="text-xs">
                     Fuera del rango (+{salaryPercentageAbove}%)
