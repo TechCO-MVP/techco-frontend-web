@@ -244,7 +244,22 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const getDataForPhase = (phaseId: string) => {
     return hiringProcess?.phases[phaseId];
   };
-
+  const getGroupTitle = (groupName: string) => {
+    switch (groupName) {
+      case "Filtro inicial":
+        return "ADN del Talento";
+      case "Descartados":
+        return "No Continua";
+      case "Fit cultural":
+        return "Retos y Comportamientos";
+      case "Finalistas":
+        return "Finalista";
+      case "Assessment técnico":
+        return "Caso de Negocio";
+      default:
+        return groupName;
+    }
+  };
   // This logic is to get the run_id from the file processing status
   // Only for the cultural fit assessment phase
   // useEffect(() => {
@@ -433,7 +448,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               return (
                 <div key={section.title} className="flex flex-col gap-2">
                   <Heading className="text-base font-bold" level={2}>
-                    {currentPhase?.groupName}
+                    {getGroupTitle(currentPhase?.groupName || "")}
                   </Heading>
                   <Heading className="text-sm font-bold" level={2}>
                     {section.title}
@@ -956,7 +971,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                 return (
                   <div key={section.title} className="flex flex-col gap-2">
                     <Heading className="text-base font-bold" level={2}>
-                      {currentPhase.groupName}
+                      {getGroupTitle(currentPhase.groupName)}
                     </Heading>
                     <Heading className="text-sm font-bold" level={2}>
                       {section.title}

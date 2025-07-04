@@ -98,6 +98,23 @@ export function SoftSkillsResults({
     </div>
   );
 
+  const getGroupTitle = (groupName: string) => {
+    switch (groupName) {
+      case "Filtro inicial":
+        return "ADN del Talento";
+      case "Descartados":
+        return "No Continua";
+      case "Fit cultural":
+        return "Retos y Comportamientos";
+      case "Finalistas":
+        return "Finalista";
+      case "Assessment técnico":
+        return "Caso de Negocio";
+      default:
+        return groupName;
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl bg-white p-6">
       <div className="mb-8">
@@ -105,7 +122,7 @@ export function SoftSkillsResults({
           return (
             <div key={section.title} className="mb-4 flex flex-col gap-2">
               <Heading className="text-base font-bold" level={2}>
-                {phase.groupName}
+                {getGroupTitle(phase.groupName)}
               </Heading>
               <Heading className="text-sm font-bold" level={2}>
                 {section.title}

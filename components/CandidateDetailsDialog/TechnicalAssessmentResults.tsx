@@ -31,7 +31,22 @@ export function TechnicalAssessmentResults({ phase, data }: Props) {
   const resultsData = data.custom_fields.assistant_response
     .assesment_result as TechnicalAssesmentResult;
   const overallScore = getTechnicalAssessmentScore(resultsData);
-
+  const getGroupTitle = (groupName: string) => {
+    switch (groupName) {
+      case "Filtro inicial":
+        return "ADN del Talento";
+      case "Descartados":
+        return "No Continua";
+      case "Fit cultural":
+        return "Retos y Comportamientos";
+      case "Finalistas":
+        return "Finalista";
+      case "Assessment técnico":
+        return "Caso de Negocio";
+      default:
+        return groupName;
+    }
+  };
   return (
     <div className="mx-auto max-w-4xl bg-white p-6">
       {/* Header Section */}
@@ -40,7 +55,7 @@ export function TechnicalAssessmentResults({ phase, data }: Props) {
           return (
             <div key={section.title} className="mb-4 flex flex-col gap-2">
               <Heading className="text-base font-bold" level={2}>
-                {phase.groupName}
+                {getGroupTitle(phase.groupName)}
               </Heading>
               <Heading className="text-sm font-bold" level={2}>
                 {section.title}
