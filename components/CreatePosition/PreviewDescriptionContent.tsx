@@ -54,6 +54,22 @@ export const PreviewDescriptionContent: FC<Props> = ({
           {countryNameLookup(positionData.country_code || "CO")}
         </span>
       </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 💻 Modo de trabajo</h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.work_mode}
+        </p>
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> ⚡️ Prioridad de contratación</h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.hiring_priority}
+        </p>
+      </div>
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 🌍 Sobre nosotros</h2>

@@ -388,6 +388,54 @@ export const CreateDescriptionManually: FC<
           }
         />
       </div>
+      {/* Idioma y Nivel */}
+      <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🌐 Idioma requerido</h2>
+        </div>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <Label htmlFor="language">Idioma</Label>
+            <Input
+              id="language"
+              placeholder="Ingresa el idioma que requiere la vacante (Inglés, Francés, Italiano…)"
+              value={positionData.languages?.[0]?.name || ""}
+              onChange={(e) => {
+                const newLang = e.target.value;
+                setPositionData({
+                  ...positionData,
+                  languages: [
+                    {
+                      name: newLang,
+                      level: positionData.languages?.[0]?.level || "",
+                    },
+                  ],
+                });
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <Label htmlFor="level">Nivel</Label>
+            <Input
+              id="level"
+              placeholder="Ingresa el nivel del idioma (principiante, intermedio, avanzado…)"
+              value={positionData.languages?.[0]?.level || ""}
+              onChange={(e) => {
+                const newLevel = e.target.value;
+                setPositionData({
+                  ...positionData,
+                  languages: [
+                    {
+                      name: positionData.languages?.[0]?.name || "",
+                      level: newLevel,
+                    },
+                  ],
+                });
+              }}
+            />
+          </div>
+        </div>
+      </div>
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 💰{i18n.salaryRangeLabel}</h2>
