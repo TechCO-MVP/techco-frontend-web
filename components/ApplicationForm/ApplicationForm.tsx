@@ -48,10 +48,11 @@ import { useUpdateFieldsValues } from "@/hooks/use-update-fields";
 import { AttachFileDialog } from "../CandidateProgress/AttachFileDialog";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { es } from "date-fns/locale";
-import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { GLORIA_BUSINESSES_ID } from "@/constants";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+
 type ApplicationFormProps = {
   lang: Locale;
   dictionary: Dictionary;
@@ -77,6 +78,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const [candidateBirthday, setCandidateBirthday] = useState<Date | undefined>(
     undefined,
   );
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
   const [candidateDni, setCandidateDni] = useState<string>("");
   const [candidateFathersFullname, setCandidateFathersFullname] =
     useState<string>("");
@@ -92,6 +95,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const isGloriaBusiness = GLORIA_BUSINESSES_ID.includes(
     positionData.business_id,
   );
+  const defaultClassNames = getDefaultClassNames();
 
   const { mutate: updateFieldsValues, isPending: isUpdatingFieldsValues } =
     useUpdateFieldsValues({
@@ -456,7 +460,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   <Label className="text-sm" htmlFor="candidate-birthday">
                     Fecha de nacimiento
                   </Label>
-                  <Popover>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -472,13 +476,24 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                           : "Selecciona una fecha"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
+                    <PopoverContent className="w-auto p-4" align="start">
+                      <DayPicker
+                        animate
                         mode="single"
+                        captionLayout="dropdown"
                         selected={candidateBirthday}
-                        onSelect={setCandidateBirthday}
-                        initialFocus
+                        onSelect={(date) => {
+                          setCandidateBirthday(date);
+                          setCalendarOpen(false);
+                        }}
                         locale={es}
+                        classNames={{
+                          today: `border-talent-green-500`,
+                          selected: `bg-talent-green-500 border-talent-green-500 text-white rounded-lg`,
+                          chevron: `${defaultClassNames.chevron} fill-talent-green-500`,
+                          root: `${defaultClassNames.root} capitalize`,
+                          months_dropdown: `${defaultClassNames.months_dropdown} capitalize`,
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
