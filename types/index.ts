@@ -194,6 +194,7 @@ export type HiringProcess = {
       phase_id: number;
       fields: Record<string, any>;
       custom_fields: {
+        has_seniority?: boolean;
         accepted_terms?: boolean;
         responsibilities: Record<string, boolean>;
         skills: Record<string, boolean>;
@@ -240,6 +241,7 @@ export type HiringPositionData = {
   role: string;
   hiring_priority: "high" | "medium" | "low";
   pipe_id: string;
+  seniority: string;
   flow_type: PositionConfigurationFlowTypes;
   created_at: string;
   hiring_processes: HiringProcess[];
@@ -631,6 +633,7 @@ export type MessageHistoryResponse = {
 export interface DraftPositionData {
   business_id: string;
   recruiter_user_id: string;
+  owner_position_user_id: string;
   responsible_users: string[];
   role: string;
   seniority: string;

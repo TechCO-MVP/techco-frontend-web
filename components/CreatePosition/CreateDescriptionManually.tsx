@@ -40,6 +40,8 @@ export const CreateDescriptionManually: FC<
   Readonly<CreateDescriptionManuallyProps>
 > = ({ dictionary }) => {
   const [recruiter, setRecruiter] = useState<User>();
+  const [ownerPositionUser, setOwnerPositionUser] = useState<User>();
+
   const params = useParams<{ lang: Locale; id: string; position_id: string }>();
   const [steps, setSteps] = useState<Step[]>([]);
   const router = useRouter();
@@ -134,6 +136,15 @@ export const CreateDescriptionManually: FC<
       });
     }
   }, [recruiter]);
+
+  useEffect(() => {
+    if (ownerPositionUser && positionData) {
+      setPositionData({
+        ...positionData,
+        owner_position_user_id: ownerPositionUser._id,
+      });
+    }
+  }, [ownerPositionUser]);
 
   function isPositionDataComplete(data: typeof positionData): boolean {
     return (
@@ -289,6 +300,20 @@ export const CreateDescriptionManually: FC<
         </div>
         <Search
           setExistingUser={setRecruiter}
+          placeholder="Buscar usuario"
+          users={users}
+        />
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 👨🏻‍💼 Encargado de la posición</h2>
+          <p className="text-sm text-gray-500">
+            Lo ideal es que sea la persona de la empresa que necesita cubrir
+            este cargo.
+          </p>
+        </div>
+        <Search
+          setExistingUser={setOwnerPositionUser}
           placeholder="Buscar usuario"
           users={users}
         />

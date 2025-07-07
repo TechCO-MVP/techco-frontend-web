@@ -512,6 +512,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
       data.custom_fields.responsibilities,
     );
     const expectedSalary = data.custom_fields.expected_salary;
+    const seniorityScore = data.custom_fields.has_seniority ? 5 : 1;
     let salaryScore = 5;
     if (position?.salary?.salary) {
       salaryScore = calculateSalaryScore(
@@ -529,7 +530,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
       );
     }
     const overallScore =
-      (skillsScore + responsibilitiesScore + salaryScore) / 3;
+      (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) / 4;
     return overallScore;
   };
 

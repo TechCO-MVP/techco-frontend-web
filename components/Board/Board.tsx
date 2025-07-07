@@ -218,14 +218,16 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             <div className="flex items-center gap-8">
               <Notifications positions={positions} dictionary={dictionary} />
 
-              <Button
-                className="place-self-center"
-                variant="outline"
-                onClick={onCopyLink}
-              >
-                <Share2 />
-                Compartir vacante
-              </Button>
+              {filterStatus?.body.status === "completed" && (
+                <Button
+                  className="place-self-center"
+                  variant="outline"
+                  onClick={onCopyLink}
+                >
+                  <Share2 />
+                  Compartir vacante
+                </Button>
+              )}
             </div>
           </div>
         </div>

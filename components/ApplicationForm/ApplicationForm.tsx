@@ -309,6 +309,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       skills: skillAnswers,
       expected_salary: expectedSalary,
       accepted_terms: acceptedTerms,
+      has_seniority: hasSeniority,
     });
   };
 

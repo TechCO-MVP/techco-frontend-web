@@ -14,6 +14,7 @@ import {
   DraftPositionData,
   PositionConfigurationPhaseTypes,
   PositionPhase,
+  User,
 } from "@/types";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
@@ -39,6 +40,15 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { useCompletePhase } from "@/hooks/use-complete-phase";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Search } from "../CreateUserDialog/Search";
 
 type Props = {
   dictionary: Dictionary;
@@ -58,6 +68,8 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   const { toast } = useToast();
   const isDirty = !_.isEqual(positionData, initialData.current);
   const router = useRouter();
+  const [recruiter, setRecruiter] = useState<User>();
+  const [ownerPositionUser, setOwnerPositionUser] = useState<User>();
 
   const { mutate: completePhase, isPending: isCompletePhasePending } =
     useCompletePhase({
@@ -96,7 +108,8 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   }>();
 
   const { position_id, id, lang } = params;
-  const { businesses, rootBusiness } = useBusinesses();
+
+  const { businesses } = useBusinesses();
   const business = useMemo(() => {
     return businesses.find((b) => b._id === id);
   }, [id, businesses]);
@@ -106,8 +119,8 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   });
   console.log("positionConfiguration", positionConfiguration);
   const { currentUser } = useCurrentUser();
-  const { localUser } = useUsers({
-    businessId: rootBusiness?._id,
+  const { localUser, users } = useUsers({
+    businessId: id,
     email: currentUser?.email,
   });
 
@@ -136,12 +149,6 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       (phase) => phase.type === PositionConfigurationPhaseTypes.DESCRIPTION,
     );
   }, [currentPosition]);
-
-  console.log(
-    "%c[Debug] descriptionPhase",
-    "background-color: teal; font-size: 20px; color: white",
-    descriptionPhase,
-  );
 
   function isPositionDataComplete(data: typeof positionData): boolean {
     return (
@@ -176,7 +183,52 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   }, [positionData]);
 
   useEffect(() => {
+    if (recruiter) return;
+    if (positionData?.recruiter_user_id) {
+      setRecruiter(
+        users.find((user) => user._id === positionData.recruiter_user_id),
+      );
+    }
+  }, [positionData, recruiter, users]);
+
+  useEffect(() => {
+    if (ownerPositionUser) return;
+    if (positionData?.owner_position_user_id) {
+      setOwnerPositionUser(
+        users.find((user) => user._id === positionData.owner_position_user_id),
+      );
+    }
+  }, [positionData, ownerPositionUser, users]);
+
+  useEffect(() => {
+    if (recruiter && positionData) {
+      setPositionData({
+        ...positionData,
+        recruiter_user_id: recruiter._id,
+      });
+    }
+  }, [recruiter]);
+
+  useEffect(() => {
+    if (ownerPositionUser && positionData) {
+      setPositionData({
+        ...positionData,
+        owner_position_user_id: ownerPositionUser._id,
+      });
+    }
+  }, [ownerPositionUser]);
+
+  useEffect(() => {
+    console.log(
+      "%c[Debug] positionData",
+      "background-color: teal; font-size: 20px; color: white",
+      positionData,
+    );
+  }, [positionData]);
+
+  useEffect(() => {
     if (isDirty) return;
+
     if (positionData?.salary?.salary_range?.min) {
       setSalaryOption("range");
     } else if (positionData?.salary?.salary) {
@@ -317,6 +369,112 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             onCityChange={(city) =>
               setPositionData({ ...positionData, city: city })
             }
+          />
+        )}
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 💻 Modo de trabajo</h2>
+        </div>
+        {mode === "preview" ? (
+          <p className="cursor-text leading-relaxed text-gray-600">
+            {positionData.work_mode}
+          </p>
+        ) : (
+          <Select
+            value={positionData.work_mode}
+            name="work_mode"
+            onValueChange={(value: string) => {
+              setPositionData({ ...positionData, work_mode: value });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Modo de trabajo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {[
+                  { value: "REMOTE", label: "Remoto" },
+                  { value: "ON_SITE", label: "Presencial" },
+                  { value: "HYBRYD", label: "Híbrido" },
+                ].map((role) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> ⚡️ Prioridad de contratación</h2>
+        </div>
+        {mode === "preview" ? (
+          <p className="cursor-text leading-relaxed text-gray-600">
+            {positionData.hiring_priority}
+          </p>
+        ) : (
+          <Select
+            value={positionData.hiring_priority}
+            name="hiring_priority"
+            onValueChange={(value: string) => {
+              setPositionData({ ...positionData, hiring_priority: value });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Prioridad de contratación" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {[
+                  { value: "high", label: "Alta" },
+                  { value: "medium", label: "Media" },
+                  { value: "low", label: "Baja" },
+                ].map((role) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 👨🏻‍💼 Reclutador responsable</h2>
+        </div>
+        {mode === "preview" ? (
+          <p className="cursor-text leading-relaxed text-gray-600">
+            {recruiter?.full_name}
+          </p>
+        ) : (
+          <Search
+            setExistingUser={setRecruiter}
+            placeholder="Buscar usuario"
+            users={users}
+          />
+        )}
+      </div>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 👨🏻‍💼 Encargado de la posición</h2>
+          <p className="text-sm text-gray-500">
+            Lo ideal es que sea la persona de la empresa que necesita cubrir
+            este cargo.
+          </p>
+        </div>
+        {mode === "preview" ? (
+          <p className="cursor-text leading-relaxed text-gray-600">
+            {ownerPositionUser?.full_name || localUser?.full_name}
+          </p>
+        ) : (
+          <Search
+            setExistingUser={setOwnerPositionUser}
+            placeholder="Buscar usuario"
+            users={users}
           />
         )}
       </div>

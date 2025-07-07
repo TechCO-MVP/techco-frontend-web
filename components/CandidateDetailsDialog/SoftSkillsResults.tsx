@@ -42,7 +42,6 @@ export function SoftSkillsResults({
   const responsibilitiesScore = calculateScore(
     phaseData.custom_fields.responsibilities,
   );
-  const overallScore = (skillsScore + responsibilitiesScore) / 2;
 
   const expectedSalary = Number(phaseData.custom_fields.expected_salary);
   const maxSalary = Number(
@@ -79,6 +78,10 @@ export function SoftSkillsResults({
       Number(expectedSalary),
     );
   }
+
+  const seniorityScore = phaseData.custom_fields.has_seniority ? 5 : 1;
+  const overallScore =
+    (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) / 4;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-CO", {
@@ -183,6 +186,19 @@ export function SoftSkillsResults({
 
         {/* Accordion for detailed breakdown */}
         <Accordion type="multiple" className="w-full">
+          <AccordionItem value="seniority">
+            <AccordionTrigger className="text-left hover:no-underline">
+              <div className="flex w-full items-center justify-between pr-4">
+                <span className="font-semibold">Experiencia</span>
+                <span className="font-bold text-green-600">
+                  {seniorityScore.toFixed(2)} de 5
+                </span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-sm text-gray-600">{position?.seniority}</p>
+            </AccordionContent>
+          </AccordionItem>
           <AccordionItem value="skills">
             <AccordionTrigger className="text-left hover:no-underline">
               <div className="flex w-full items-center justify-between pr-4">
