@@ -245,7 +245,7 @@ export const CreateDescriptionManually: FC<
         {/* #1 - Reclutador responsable */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Reclutador responsable</h2>{" "}
+            <h2> 👩🏼‍💼 Reclutador responsable</h2>{" "}
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />

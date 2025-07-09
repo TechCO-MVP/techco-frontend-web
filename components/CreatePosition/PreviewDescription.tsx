@@ -364,7 +364,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #1 - Reclutador responsable */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Reclutador responsable</h2>
+            <h2> 👩🏼‍💼 Reclutador responsable</h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>

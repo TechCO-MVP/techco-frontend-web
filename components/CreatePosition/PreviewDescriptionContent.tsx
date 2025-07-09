@@ -78,7 +78,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
       {/* #1 - Reclutador responsable */}
       <div className="flex flex-col space-y-3">
         <div className="flex items-center gap-2 font-semibold">
-          <h2> 👨🏻‍💼 Reclutador responsable</h2>
+          <h2> 👩🏼‍💼 Reclutador responsable</h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
           {recruiter?.full_name}
