@@ -231,7 +231,10 @@ export const CreateDescriptionManually: FC<
           defaultCity={positionData.city}
           defaultCountry={positionData.country_code}
           onCountryChange={(country) =>
-            setPositionData({ ...positionData, country_code: country })
+            setPositionData({
+              ...positionData,
+              country_code: country.toUpperCase(),
+            })
           }
           onCityChange={(city) =>
             setPositionData({ ...positionData, city: city })
@@ -629,7 +632,7 @@ export const CreateDescriptionManually: FC<
         onSave={() => {
           completePhase({
             position_configuration_id: position_id,
-            data: positionData,
+            data: { ...positionData, responsible_users: [] },
           });
         }}
         saveButtonIcon={<ChevronRight className="h-4 w-4" />}
