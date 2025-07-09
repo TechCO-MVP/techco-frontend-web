@@ -118,10 +118,10 @@ const onboardingContentByPhase: Record<
     ],
     images: [
       "/assets/soft_skills_onboarding_1.png",
-      "/assets/onboarding.svg",
-      "/assets/onboarding.svg",
-      "/assets/onboarding.svg",
-      "/assets/onboarding.svg",
+      "/assets/soft_skills_onboarding_2.png",
+      "/assets/soft_skills_onboarding_3.png",
+      "/assets/soft_skills_onboarding_4.png",
+      "/assets/soft_skills_onboarding_5.png",
     ],
   },
   first_time_onboarding: {
