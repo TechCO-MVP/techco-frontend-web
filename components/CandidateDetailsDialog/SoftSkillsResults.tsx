@@ -235,9 +235,11 @@ export function SoftSkillsResults({
             <AccordionTrigger className="text-left hover:no-underline">
               <div className="flex w-full items-center justify-between pr-4">
                 <span className="font-semibold">Salario</span>
-                <span className="font-bold text-green-600">
-                  {salaryScore.toFixed(2)} de 5
-                </span>
+                {shouldIncludeSalary && (
+                  <span className="font-bold text-green-600">
+                    {salaryScore.toFixed(2)} de 5
+                  </span>
+                )}
                 {isAboveRange && (
                   <Badge variant="destructive" className="text-xs">
                     Fuera del rango (+{salaryPercentageAbove}%)
