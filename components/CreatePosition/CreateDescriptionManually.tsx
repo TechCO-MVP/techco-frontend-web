@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { EditableList } from "./EditableList";
 import { Label } from "@/components/ui/label";
@@ -38,6 +38,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import Link from "next/link";
 
 type CreateDescriptionManuallyProps = {
   dictionary: Dictionary;
@@ -47,6 +48,7 @@ export const CreateDescriptionManually: FC<
 > = ({ dictionary }) => {
   const [recruiter, setRecruiter] = useState<User>();
   const [ownerPositionUser, setOwnerPositionUser] = useState<User>();
+  const initialized = useRef(false);
 
   const params = useParams<{ lang: Locale; id: string; position_id: string }>();
   const [steps, setSteps] = useState<Step[]>([]);
@@ -118,7 +120,18 @@ export const CreateDescriptionManually: FC<
       return ` ${positionData.salary?.salary} ${positionData.salary?.currency} `;
     }
   };
-
+  useEffect(() => {
+    if (!initialized.current && positionData) {
+      if (positionData.salary?.salary_range?.min) {
+        setSalaryOption("range");
+      } else if (positionData.salary?.salary) {
+        setSalaryOption("fixed");
+      } else {
+        setSalaryOption("not-specified");
+      }
+      initialized.current = true;
+    }
+  }, [positionData]);
   useEffect(() => {
     const currentPosition = positionConfiguration?.body.data?.[0];
     if (currentPosition) {
@@ -178,7 +191,8 @@ export const CreateDescriptionManually: FC<
       typeof data.hiring_priority === "string" &&
       data.hiring_priority.trim() !== "" &&
       typeof data.recruiter_user_id === "string" &&
-      data.recruiter_user_id.trim() !== ""
+      data.recruiter_user_id.trim() !== "" &&
+      business?.description?.trim() !== ""
     );
   }
   useEffect(() => {
@@ -228,57 +242,75 @@ export const CreateDescriptionManually: FC<
             }
           />
         </div>
+        {/* #1 - Reclutador responsable */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>📍 {i18n.locationLabel}</h2>
+            <h2> 👨🏻‍💼 Reclutador responsable</h2>{" "}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Recomendamos que sea la persona experta en talento humano
+                responsable de esta vacante.
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <LocationSelector
-            fullWidth={true}
-            dictionary={dictionary}
-            defaultCity={positionData.city}
-            defaultCountry={positionData.country_code}
-            onCountryChange={(country) =>
-              setPositionData({
-                ...positionData,
-                country_code: country.toUpperCase(),
-              })
-            }
-            onCityChange={(city) =>
-              setPositionData({ ...positionData, city: city })
-            }
+          <Search
+            setExistingUser={setRecruiter}
+            placeholder="Buscar usuario"
+            users={users}
           />
         </div>
+        {/* #2 - Solicitante de la vacante */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💻 Modo de trabajo</h2>
+            <h2> 👨🏻‍💼 Solicitante de la vacante</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Recomendamos que sea quien pidió la vacante. Si no está en la
+                lista,{" "}
+                <Link
+                  target="_blank"
+                  href={`/${lang}/dashboard/companies/${id}?tab=users`}
+                  className="text-blue-500"
+                >
+                  envíele invitación
+                </Link>{" "}
+                para que se una a Talent Connect.
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <Select
-            name="work_mode"
-            onValueChange={(value: string) => {
-              setPositionData({ ...positionData, work_mode: value });
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Modo de trabajo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {[
-                  { value: "REMOTE", label: "Remoto" },
-                  { value: "ON_SITE", label: "Presencial" },
-                  { value: "HYBRID", label: "Híbrido" },
-                ].map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <Search
+            setExistingUser={setOwnerPositionUser}
+            placeholder="Buscar usuario"
+            users={users}
+          />
         </div>
+        {/* #3 - Prioridad de contratación */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
             <h2> ⚡️ Prioridad de contratación</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Define si la vacante es prioridad alta, media o baja.
+              </TooltipContent>
+            </Tooltip>
           </div>
           <Select
             name="hiring_priority"
@@ -304,9 +336,10 @@ export const CreateDescriptionManually: FC<
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col space-y-3">
+        {/* #4 - Descripción de la empresa */}
+        <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Reclutador responsable</h2>{" "}
+            <h2> 🌍 {i18n.aboutUsLabel}</h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -315,42 +348,36 @@ export const CreateDescriptionManually: FC<
                 side="bottom"
                 className="max-w-[260px] text-sm font-normal"
               >
-                Recomendamos que sea la persona experta en talento humano
-                responsable de esta vacante.
+                Use la descripción de la empresa. Si no está, complétela en{" "}
+                <Link
+                  target="_blank"
+                  href={`/${lang}/dashboard/companies/${id}`}
+                  className="text-blue-500"
+                >
+                  Configuración de la empresa
+                </Link>
               </TooltipContent>
             </Tooltip>
-          </div>
-          <Search
-            setExistingUser={setRecruiter}
-            placeholder="Buscar usuario"
-            users={users}
-          />
-        </div>
-        <div className="flex flex-col space-y-3">
-          <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Encargado de la posición</h2>
-            <p className="text-sm text-gray-500">
-              Lo ideal es que sea la persona de la empresa que necesita cubrir
-              este cargo.
-            </p>
-          </div>
-          <Search
-            setExistingUser={setOwnerPositionUser}
-            placeholder="Buscar usuario"
-            users={users}
-          />
-        </div>
-        <section className="w-full space-y-3">
-          <div className="flex items-center gap-2 font-semibold">
-            <h2> 🌍 {i18n.aboutUsLabel}</h2>
           </div>
           <p className="cursor-text leading-relaxed text-gray-600">
             {business?.description}
           </p>
         </section>
+        {/* #5 - Descripción de la vacante */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
             <h2> 💻 {i18n.jobDescriptionLabel} </h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Describa la vacante de forma clara y persuasiva.
+              </TooltipContent>
+            </Tooltip>
           </div>
           <Textarea
             placeholder="Enter your description here"
@@ -361,9 +388,94 @@ export const CreateDescriptionManually: FC<
             }
           />
         </section>
+        {/* #6 - Ubicación */}
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-center gap-2 font-semibold">
+            <h2>📍 {i18n.locationLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                País y ciudad donde debe estar ubicado el candidato.{" "}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <LocationSelector
+            fullWidth={true}
+            dictionary={dictionary}
+            defaultCity={positionData.city}
+            defaultCountry={positionData.country_code}
+            onCountryChange={(country) =>
+              setPositionData({
+                ...positionData,
+                country_code: country.toUpperCase(),
+              })
+            }
+            onCityChange={(city) =>
+              setPositionData({ ...positionData, city: city })
+            }
+          />
+        </div>
+        {/* #7 - Modo de trabajo */}
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-center gap-2 font-semibold">
+            <h2> 💻 Modo de trabajo</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Seleccione presencial, remoto o híbrido.{" "}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <Select
+            name="work_mode"
+            onValueChange={(value: string) => {
+              setPositionData({ ...positionData, work_mode: value });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Modo de trabajo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {[
+                  { value: "REMOTE", label: "Remoto" },
+                  { value: "ON_SITE", label: "Presencial" },
+                  { value: "HYBRID", label: "Híbrido" },
+                ].map((role) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        {/* #8 - Experiencia requerida */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
             <h2>🧑‍💻 Experiencia requerida </h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Tiempo y tipo de experiencia requerida. Si aplica, incluya el
+                sector. Ej: <strong>3 años como KAM en Real Estate. </strong>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <Input
             placeholder="Ejemplo: 5 años de experiencia en ventas"
@@ -374,9 +486,21 @@ export const CreateDescriptionManually: FC<
             }
           />
         </section>{" "}
+        {/* #9 - Responsabilidades */}
         <div className="w-full space-y-3">
-          <div className="flex flex-col gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-semibold">
             <h2>🚀 {i18n.responsabilitiesLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Liste responsabilidades una a una. Enter para agregar otra.
+              </TooltipContent>
+            </Tooltip>
           </div>
           <EditableList
             items={positionData.responsabilities || []}
@@ -385,20 +509,21 @@ export const CreateDescriptionManually: FC<
             }
           />
         </div>
+        {/* #10 - Habilidades */}
         <div className="w-full space-y-3">
-          <div className="flex flex-col gap-2 font-semibold">
-            <h2>🎓 {i18n.educationLabel}</h2>
-          </div>
-          <EditableList
-            items={positionData.education ?? []}
-            onItemsChange={(items) =>
-              setPositionData({ ...positionData, education: items })
-            }
-          />
-        </div>
-        <div className="w-full space-y-3">
-          <div className="flex flex-col gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-semibold">
             <h2>🎯 {i18n.skillsLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Liste habilidades clave. Enter para agregar otra.{" "}
+              </TooltipContent>
+            </Tooltip>
           </div>
           <EditableList
             items={positionData.skills?.map((skill) => skill.name) || []}
@@ -410,57 +535,138 @@ export const CreateDescriptionManually: FC<
             }
           />
         </div>
-        {/* Idioma y Nivel */}
+        {/* #11 - Educación */}
         <div className="w-full space-y-3">
-          <div className="flex flex-col gap-2 font-semibold">
-            <h2>🌐 Idioma requerido</h2>
+          <div className="flex items-center gap-2 font-semibold">
+            <h2>🎓 {i18n.educationLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Liste estudios requeridos. Enter para agregar otro.
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <Label htmlFor="language">Idioma</Label>
-              <Input
-                id="language"
-                placeholder="Ingresa el idioma que requiere la vacante (Inglés, Francés, Italiano…)"
-                value={positionData.languages?.[0]?.name || ""}
-                onChange={(e) => {
-                  const newLang = e.target.value;
-                  setPositionData({
-                    ...positionData,
-                    languages: [
-                      {
-                        name: newLang,
-                        level: positionData.languages?.[0]?.level || "",
-                      },
-                    ],
-                  });
-                }}
-              />
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="level">Nivel</Label>
-              <Input
-                id="level"
-                placeholder="Ingresa el nivel del idioma (principiante, intermedio, avanzado…)"
-                value={positionData.languages?.[0]?.level || ""}
-                onChange={(e) => {
-                  const newLevel = e.target.value;
-                  setPositionData({
-                    ...positionData,
-                    languages: [
-                      {
-                        name: positionData.languages?.[0]?.name || "",
-                        level: newLevel,
-                      },
-                    ],
-                  });
-                }}
-              />
-            </div>
+          <EditableList
+            items={positionData.education ?? []}
+            onItemsChange={(items) =>
+              setPositionData({ ...positionData, education: items })
+            }
+          />
+        </div>
+        {/* #12 - Idioma y Nivel */}
+        <div className="w-full space-y-3">
+          <div className="flex items-center gap-2 font-semibold">
+            <h2>🌐 Idioma requerido</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Idioma y nivel requerido. Puede agregar varios.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="flex flex-col gap-2">
+            {positionData.languages?.map((lang, idx) => (
+              <div key={idx} className="flex items-end gap-2">
+                <div className="flex-1">
+                  <Label htmlFor={`language-${idx}`}>Idioma</Label>
+                  <Input
+                    id={`language-${idx}`}
+                    placeholder="Ej: Inglés, Francés, Italiano…"
+                    value={lang.name}
+                    onChange={(e) => {
+                      const newLanguages = [...positionData.languages];
+                      newLanguages[idx] = {
+                        ...newLanguages[idx],
+                        name: e.target.value,
+                      };
+                      setPositionData({
+                        ...positionData,
+                        languages: newLanguages,
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor={`level-${idx}`}>Nivel</Label>
+                  <Input
+                    id={`level-${idx}`}
+                    placeholder="Ej: principiante, intermedio, avanzado…"
+                    value={lang.level}
+                    onChange={(e) => {
+                      const newLanguages = [...positionData.languages];
+                      newLanguages[idx] = {
+                        ...newLanguages[idx],
+                        level: e.target.value,
+                      };
+                      setPositionData({
+                        ...positionData,
+                        languages: newLanguages,
+                      });
+                    }}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="mb-1"
+                  disabled={positionData.languages.length === 1}
+                  onClick={() => {
+                    const newLanguages = positionData.languages.filter(
+                      (_, i) => i !== idx,
+                    );
+                    setPositionData({
+                      ...positionData,
+                      languages: newLanguages,
+                    });
+                  }}
+                >
+                  Eliminar
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setPositionData({
+                  ...positionData,
+                  languages: [
+                    ...(positionData.languages || []),
+                    { name: "", level: "" },
+                  ],
+                });
+              }}
+            >
+              Agregar idioma
+            </Button>
           </div>
         </div>
+        {/* #13 - Salario */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
             <h2> 💰{i18n.salaryRangeLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Ingrese un valor mensual, un rango o márquelo como confidencial
+                para compartirlo durante el proceso
+              </TooltipContent>
+            </Tooltip>
           </div>
           <>
             <Select
@@ -630,9 +836,21 @@ export const CreateDescriptionManually: FC<
             )}
           </>
         </div>
+        {/* #14 - Beneficios */}
         <div className="w-full space-y-3">
-          <div className="flex flex-col gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-semibold">
             <h2>🎁 {i18n.whatWeOfferLabel}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Liste beneficios uno a uno. Enter para agregar otro.
+              </TooltipContent>
+            </Tooltip>
           </div>
           <EditableList
             items={positionData.benefits || []}

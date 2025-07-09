@@ -1066,6 +1066,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           )}
         </div>
 
+        {/* #14 - Beneficios */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
             <h2>🎁 {i18n.whatWeOfferLabel}</h2>
