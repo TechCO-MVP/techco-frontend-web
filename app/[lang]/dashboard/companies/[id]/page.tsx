@@ -8,9 +8,11 @@ import { BackButton } from "@/components/BackButton/BackButton";
 // We use this server component as a wrapper to be able to receive the lang attribute since it's a promise
 export default async function CompaniesPage(props: {
   readonly params: Promise<{ lang: Locale }>;
+  readonly searchParams: Promise<{ tab?: string }>;
 }) {
   const { lang } = await props.params;
-
+  const { tab } = await props.searchParams;
+  const defaultTab = tab === "users" ? "user" : "about";
   const dictionary = await getDictionary(lang);
 
   return (
@@ -19,7 +21,7 @@ export default async function CompaniesPage(props: {
         <BackButton dictionary={dictionary} />
       </nav>
       <Tabs
-        defaultValue="about"
+        defaultValue={defaultTab}
         className="flex h-full w-full flex-col items-center justify-center bg-white"
       >
         <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
