@@ -236,6 +236,21 @@ export type HiringProcess = {
 
 export type HiringPositionData = {
   _id: string;
+  city: string;
+  country_code: string;
+  description: string;
+  responsabilities: string[];
+  education: string[];
+  skills: {
+    name: string;
+    required: boolean;
+  }[];
+  languages: {
+    name: string;
+    level: string;
+  }[];
+  benefits: string[];
+  work_mode: string;
   status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT"; // Adjust possible statuses if known
   owner_position_user_id: string;
   owner_position_user_name: string;

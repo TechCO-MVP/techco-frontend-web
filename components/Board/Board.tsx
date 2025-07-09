@@ -43,6 +43,8 @@ import { MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
 import { MovePhaseDialog } from "./MovePhaseDialog";
 import { MissingFieldsDialog } from "./MissingFieldsDialog";
 import { usePositionById } from "@/hooks/use-position-by-id";
+import { PositionSheet } from "../CreatePosition/PositionSheet";
+import { DraftPositionData, HiringPositionData } from "@/types";
 type BoardProps = {
   dictionary: Dictionary;
 };
@@ -69,9 +71,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   } = useProfileFilterStatus({
     positionId: id,
   });
-  const { rootBusiness } = useBusinesses();
+  const { rootBusiness, businesses } = useBusinesses();
   const { currentUser } = useCurrentUser();
-
+  const currentBusiness = useMemo(() => {
+    return businesses.find((business) => business._id === businessParam);
+  }, [businesses, businessParam]);
   const { users } = useUsers({
     businessId: rootBusiness?._id,
     all: true,
@@ -171,6 +175,49 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
       pendingPipes ||
       pendingProfiles);
 
+  const mapHiringToDraftPosition = (
+    selectedPosition: HiringPositionData,
+  ): DraftPositionData | null => {
+    try {
+      return {
+        business_id: "",
+        recruiter_user_id: selectedPosition.recruiter_user_id,
+        owner_position_user_id: selectedPosition.owner_position_user_id,
+        responsible_users: selectedPosition.responsible_users.map(
+          (u) => u.user_id,
+        ),
+        role: selectedPosition.role,
+        seniority: selectedPosition.seniority,
+        country_code: selectedPosition.country_code,
+        city: selectedPosition.city,
+        description: selectedPosition.description,
+        responsabilities: selectedPosition.responsabilities,
+        education: selectedPosition.education,
+        skills: selectedPosition.skills,
+        languages: selectedPosition.languages,
+        hiring_priority: selectedPosition.hiring_priority,
+        work_mode: selectedPosition.work_mode,
+        status: "DRAFT",
+        benefits: selectedPosition.benefits,
+        salary: selectedPosition.salary
+          ? {
+              currency: selectedPosition.salary.currency,
+              salary: selectedPosition.salary.salary ?? null,
+              salary_range: selectedPosition.salary.salary_range
+                ? {
+                    min: selectedPosition.salary.salary_range.min,
+                    max: selectedPosition.salary.salary_range.max,
+                  }
+                : null,
+            }
+          : undefined,
+      };
+    } catch (error) {
+      console.error("Error mapping hiring to draft position", error);
+      return null;
+    }
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-8 flex justify-between border-b pb-8">
@@ -227,6 +274,21 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                   <Share2 />
                   Compartir vacante
                 </Button>
+              )}
+              {selectedPosition && (
+                <PositionSheet
+                  business={currentBusiness}
+                  positionData={mapHiringToDraftPosition(selectedPosition)}
+                  dictionary={dictionary}
+                  customTrigger={
+                    <Button
+                      variant="outline"
+                      className="rounde-md border-talent-green-800 bg-transparent text-talent-green-800 hover:bg-talent-green-800 hover:text-white"
+                    >
+                      Ver detalles de la oferta
+                    </Button>
+                  }
+                />
               )}
             </div>
           </div>
