@@ -14,7 +14,6 @@ export const PreviewDescriptionContent: FC<Props> = ({
   positionData,
   business,
 }) => {
-  if (!positionData) return null;
   const { currentUser } = useCurrentUser();
   const { users } = useUsers({
     businessId: business?._id,
@@ -22,6 +21,26 @@ export const PreviewDescriptionContent: FC<Props> = ({
   });
   const [recruiter, setRecruiter] = useState<User>();
   const [ownerPositionUser, setOwnerPositionUser] = useState<User>();
+  useEffect(() => {
+    if (recruiter) return;
+    if (positionData?.recruiter_user_id) {
+      setRecruiter(
+        users.find((user) => user._id === positionData.recruiter_user_id),
+      );
+    }
+  }, [positionData, recruiter, users]);
+
+  useEffect(() => {
+    if (ownerPositionUser) return;
+    if (positionData?.owner_position_user_id) {
+      setOwnerPositionUser(
+        users.find((user) => user._id === positionData.owner_position_user_id),
+      );
+    }
+  }, [positionData, ownerPositionUser, users]);
+
+  if (!positionData) return null;
+
   const formatSalaryRange = () => {
     try {
       const lowRange = new Intl.NumberFormat("en-US", {
@@ -52,23 +71,6 @@ export const PreviewDescriptionContent: FC<Props> = ({
       return ` ${positionData.salary?.salary} ${positionData.salary?.currency} `;
     }
   };
-  useEffect(() => {
-    if (recruiter) return;
-    if (positionData?.recruiter_user_id) {
-      setRecruiter(
-        users.find((user) => user._id === positionData.recruiter_user_id),
-      );
-    }
-  }, [positionData, recruiter, users]);
-
-  useEffect(() => {
-    if (ownerPositionUser) return;
-    if (positionData?.owner_position_user_id) {
-      setOwnerPositionUser(
-        users.find((user) => user._id === positionData.owner_position_user_id),
-      );
-    }
-  }, [positionData, ownerPositionUser, users]);
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
