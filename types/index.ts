@@ -136,6 +136,10 @@ export type PositionData = {
   position_work_mode: string;
   position_description: string;
   position_responsabilities: string[];
+  position_languages: {
+    name: string;
+    level: string;
+  }[];
   position_education: string[];
   position_seniority: string;
   position_skills: PositionSkill[];

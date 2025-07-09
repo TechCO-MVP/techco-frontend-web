@@ -44,12 +44,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
       <h1 className="text-4xl font-bold">{positionData.position_role} </h1>
-      <div className="flex items-center gap-2 text-gray-600">
-        <span>
-          📍 Ubicación: {positionData.position_city} /{" "}
-          {countryNameLookup(positionData.position_country || "CO")}
-        </span>
-      </div>
+      {/* #1 - Descripción de la empresa */}
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 🌍 Sobre nosotros</h2>
@@ -58,6 +53,8 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           {positionData.business_description}
         </p>
       </section>
+
+      {/* #2 - Descripción del puesto */}
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 💻 Descripción del puesto </h2>
@@ -66,6 +63,26 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           {positionData.position_description}
         </p>
       </section>
+      {/* #3 - Ubicación */}
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 📍 Ubicación </h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.position_city} /{" "}
+          {countryNameLookup(positionData.position_country || "CO")}
+        </p>
+      </section>
+      {/* #4 - Modo de trabajo */}
+      <section className="w-full space-y-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <h2> 💻 Modo de trabajo </h2>
+        </div>
+        <p className="cursor-text leading-relaxed text-gray-600">
+          {positionData.position_work_mode}
+        </p>
+      </section>
+      {/* #5 - Experiencia requerida */}
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2>🧑‍💻 Experiencia requerida </h2>
@@ -74,6 +91,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           {positionData.position_seniority}
         </p>
       </section>
+      {/* #6 - Responsabilidades */}
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🚀 Responsabilidades</h2>
@@ -87,6 +105,20 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         </ul>
       </div>
 
+      {/* #7 - Habilidades clave */}
+      <div className="w-full space-y-3">
+        <div className="flex flex-col gap-2 font-semibold">
+          <h2>🎯 Habilidades clave</h2>
+        </div>
+        <ul className="list-disc space-y-1 pl-6 text-gray-600">
+          {positionData.position_skills?.map((item, idx) => (
+            <li key={idx} className="text-sm">
+              {item.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {/* #8 - Educación */}
       {positionData.position_education &&
         positionData.position_education.length > 0 && (
           <div className="w-full space-y-3">
@@ -102,20 +134,23 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
             </ul>
           </div>
         )}
-
-      <div className="w-full space-y-3">
-        <div className="flex flex-col gap-2 font-semibold">
-          <h2>🎯 Habilidades clave</h2>
-        </div>
-        <ul className="list-disc space-y-1 pl-6 text-gray-600">
-          {positionData.position_skills?.map((item, idx) => (
-            <li key={idx} className="text-sm">
-              {item.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      {/* #9 - Idioma y Nivel */}
+      {positionData.position_languages &&
+        positionData.position_languages.length > 0 && (
+          <div className="w-full space-y-3">
+            <div className="flex flex-col gap-2 font-semibold">
+              <h2> 🌐 Idioma requerido</h2>
+            </div>
+            <ul className="list-disc space-y-1 pl-6 text-gray-600">
+              {positionData.position_languages?.map((lang, idx) => (
+                <li key={idx} className="text-sm">
+                  {lang.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      {/* #10 - Rango Salarial */}
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
           <h2> 💰 Rango Salarial</h2>
@@ -146,7 +181,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
             </div>
           )}
       </div>
-
+      {/* #11 - Lo que ofrecemos */}
       <div className="w-full space-y-3">
         <div className="flex flex-col gap-2 font-semibold">
           <h2>🎁 Lo que ofrecemos</h2>
