@@ -63,13 +63,16 @@ export function SoftSkillsResults({
     : 0;
 
   let salaryScore = 5;
+  let shouldIncludeSalary = false;
   if (position?.salary?.salary) {
+    shouldIncludeSalary = true;
     salaryScore = calculateSalaryScore(
       Number(expectedSalary),
       Number(position?.salary?.salary),
     );
   }
   if (position?.salary?.salary_range) {
+    shouldIncludeSalary = true;
     salaryScore = calculateSalaryRangeScore(
       {
         min: Number(position.salary.salary_range.min),
@@ -80,8 +83,9 @@ export function SoftSkillsResults({
   }
 
   const seniorityScore = phaseData.custom_fields.has_seniority ? 5 : 1;
-  const overallScore =
-    (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) / 4;
+  const overallScore = shouldIncludeSalary
+    ? (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) / 4
+    : (skillsScore + responsibilitiesScore + seniorityScore) / 3;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-CO", {

@@ -152,14 +152,17 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       if (hasSeniority === false) {
         return discardProcess();
       }
+      let shouldIncludeSalary = false;
       let salaryScore = 5;
       if (positionData.position_salary_range?.salary) {
+        shouldIncludeSalary = true;
         salaryScore = calculateSalaryScore(
           Number(expectedSalary),
           Number(position?.position_salary_range?.salary),
         );
       }
       if (positionData.position_salary_range?.salary_range) {
+        shouldIncludeSalary = true;
         salaryScore = calculateSalaryRangeScore(
           {
             min: Number(positionData.position_salary_range.salary_range.min),
@@ -169,9 +172,10 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
         );
       }
       const seniorityScore = hasSeniority ? 5 : 0;
-      const overallScore =
-        (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) /
-        4;
+      const overallScore = shouldIncludeSalary
+        ? (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) /
+          4
+        : (skillsScore + responsibilitiesScore + seniorityScore) / 3;
 
       const canAdvance = overallScore >= INITIAL_FILTER_SCORE_THRESHOLD;
       const nextPhase = card?.pipe.phases.find((phase) =>
