@@ -331,13 +331,34 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           {mode === "preview" ? (
             <h1 className="text-4xl font-bold">{positionData.role}</h1>
           ) : (
-            <Input
-              className="text-4xl font-bold"
-              value={positionData.role}
-              onChange={(e) =>
-                setPositionData({ ...positionData, role: e.target.value })
-              }
-            />
+            <div className="flex w-full flex-col space-y-3">
+              <div className="flex items-center gap-2 font-semibold">
+                <h2>
+                  Nombre del cargo
+                  <span className="text-xs text-red-500">&nbsp;*</span>
+                </h2>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <BadgeInfo className="h-4 w-4 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="max-w-[260px] text-sm font-normal"
+                  >
+                    Para mejores resultados, usa el nombre genérico del cargo,
+                    no la versión interna de tu empresa.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Input
+                placeholder="Ejemplo: Gerente de ventas"
+                className="w-full text-4xl"
+                value={positionData.role || ""}
+                onChange={(e) =>
+                  setPositionData({ ...positionData, role: e.target.value })
+                }
+              />
+            </div>
           )}
           <div className="flex gap-2">
             {mode === "preview" && (
@@ -364,7 +385,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #1 - Reclutador responsable */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👩🏼‍💼 Reclutador responsable</h2>
+            <h2>
+              👩🏼‍💼 Reclutador responsable
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -395,7 +421,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #2 - Solicitante de la vacante */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Solicitante de la vacante</h2>
+            <h2>
+              👨🏻‍💼 Solicitante de la vacante
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -434,7 +465,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #3 - Prioridad de contratación */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> ⚡️ Prioridad de contratación</h2>
+            <h2>
+              ⚡️ Prioridad de contratación
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -483,7 +519,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #4 - Descripción de la empresa */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 🌍 {i18n.aboutUsLabel}</h2>
+            <h2>
+              🌍 {i18n.aboutUsLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -513,7 +554,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #5 - Descripción de la vacante */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💻 {i18n.jobDescriptionLabel} </h2>
+            <h2>
+              💻 {i18n.jobDescriptionLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -549,7 +595,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #6 - Ubicación */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 📍 {i18n.locationLabel} </h2>{" "}
+            <h2>
+              📍 {i18n.locationLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>{" "}
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -587,7 +638,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #7 - Modo de trabajo */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💻 Modo de trabajo</h2>
+            <h2>
+              💻 Modo de trabajo
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -637,7 +693,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #8 - Experiencia requerida */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🧑‍💻 Experiencia requerida </h2>
+            <h2>
+              🧑‍💻 Experiencia requerida
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -660,7 +721,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #9 - Responsabilidades */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🚀 {i18n.responsabilitiesLabel}</h2>
+            <h2>
+              🚀 {i18n.responsabilitiesLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -696,7 +762,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #10 - Habilidades */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎯 {i18n.skillsLabel}</h2>
+            <h2>
+              🎯 {i18n.skillsLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -738,7 +809,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #11 - Educación */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎓 {i18n.educationLabel}</h2>
+            <h2>
+              🎓 {i18n.educationLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -774,7 +850,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #12 - Idioma y Nivel */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🌐 Idioma requerido</h2>
+            <h2>
+              🌐 Idioma requerido
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -900,7 +981,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #13 - Salario */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💰{i18n.salaryRangeLabel}</h2>
+            <h2>
+              💰{i18n.salaryRangeLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -1069,7 +1155,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
         {/* #14 - Beneficios */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎁 {i18n.whatWeOfferLabel}</h2>
+            <h2>
+              🎁 {i18n.whatWeOfferLabel}
+              {mode === "edit" && (
+                <span className="text-xs text-red-500">&nbsp;*</span>
+              )}
+            </h2>
             {mode === "edit" && (
               <Tooltip>
                 <TooltipTrigger asChild>

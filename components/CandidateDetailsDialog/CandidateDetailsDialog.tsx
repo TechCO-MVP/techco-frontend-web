@@ -31,7 +31,7 @@ import {
   sanitizeHtml,
 } from "@/lib/utils";
 import { Linkedin } from "@/icons";
-import { Mail } from "lucide-react";
+import { Copy, Mail, Phone } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhaseComment from "./PhaseComment";
 import { PipefyFieldValues, PipefyNode, PipefyPipe } from "@/types/pipefy";
@@ -70,8 +70,15 @@ import {
 } from "./TechnicalAssessmentResults";
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
-import { STATEMENT_BUTTON_TEXT } from "@/constants";
+import { CANDIDATE_PHONE_FIELD_ID, STATEMENT_BUTTON_TEXT } from "@/constants";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { toast } from "@/hooks/use-toast";
 
 interface PhaseData {
   id: string;
@@ -113,6 +120,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const { userCard: i18n } = dictionary;
   const { rootBusiness } = useBusinesses();
   const fieldMap = PipefyBoardTransformer.mapFields(card.fields);
+
   const candidateBio = fieldMap[PipefyFieldValues.CandidateBio];
   const timeInPosition = fieldMap[PipefyFieldValues.TimeInPosition];
   const recomendation = fieldMap[PipefyFieldValues.Recomendation];
@@ -123,6 +131,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const avatarUrl =
     fieldMap[PipefyFieldValues.Avatar] || "https://picsum.photos/200/200";
   const candidateCountry = fieldMap[PipefyFieldValues.CandidateCountry] || "CO";
+  const candidatePhone = card.fields.find(
+    (field) => field.name === CANDIDATE_PHONE_FIELD_ID,
+  )?.value;
+
   const candidateCity =
     fieldMap[PipefyFieldValues.CandidateCityA] ||
     fieldMap[PipefyFieldValues.CandidateCityB] ||
@@ -139,7 +151,8 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const finalInterviewFeedback =
     fieldMap[PipefyFieldValues.FinalInterviewFeedback];
   const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
-  const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
+  const email =
+    fieldMap[PipefyFieldValues.CandidateEmail] || "jesus740@gmail.com";
   const params = useParams<{ id: string }>();
   const { id } = params;
   const { currentUser } = useCurrentUser();
@@ -714,319 +727,382 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
         )
       : resultsPhases;
 
-  return (
-    <Dialog modal open={open} onOpenChange={handleOpenChange}>
-      <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
-      <DialogDescription className="hidden">
-        {i18n.candidateDetails}
-      </DialogDescription>
-      <DialogContent
-        onInteractOutside={(event) => event.preventDefault()}
-        className="flex max-h-[80vh] min-h-[80vh] max-w-[1350px]"
-      >
-        <div className="flex flex-col border-r-4">
-          <div className="flex flex-col gap-2 pt-2">
-            <div className="mb-2 flex gap-4">
-              <div className="flex flex-col items-center justify-center gap-1.5">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={avatarUrl} alt="Profile picture" />
-                  <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <Badge
-                  variant="outline"
-                  className="rounded-md text-[#34C759] hover:bg-green-50"
-                >
-                  Activa
-                </Badge>
-              </div>
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs">
-                      {candidateCity} &nbsp; -
-                      <CountryLabel
-                        code={candidateCountry}
-                        label={countryLabelLookup(candidateCountry)}
-                      />
-                    </span>
-                  </div>
-                  <Heading level={3} className="text-base">
-                    {candidateName}
-                  </Heading>
-                </div>
+  const [isEmailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [isPhoneTooltipOpen, setPhoneTooltipOpen] = useState(false);
 
-                <div className="space-y-1">
-                  <Text type="p" className="text-xs text-gray-600">
-                    {currentPosition} {i18n.inLabel} {currentCompany}
-                  </Text>
-                  <Text size="xxs">{timeInPosition}</Text>
+  return (
+    <TooltipProvider>
+      <Dialog modal open={open} onOpenChange={handleOpenChange}>
+        <DialogTitle className="hidden">{i18n.candidateDetails}</DialogTitle>
+        <DialogDescription className="hidden">
+          {i18n.candidateDetails}
+        </DialogDescription>
+        <DialogContent
+          onInteractOutside={(event) => event.preventDefault()}
+          className="flex max-h-[80vh] min-h-[80vh] max-w-[1350px]"
+        >
+          <div className="flex flex-col border-r-4">
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="mb-2 flex gap-4">
+                <div className="flex flex-col items-center justify-center gap-1.5">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={avatarUrl} alt="Profile picture" />
+                    <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <Badge
+                    variant="outline"
+                    className="rounded-md text-[#34C759] hover:bg-green-50"
+                  >
+                    Activa
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs">
+                        {candidateCity} &nbsp; -
+                        <CountryLabel
+                          code={candidateCountry}
+                          label={countryLabelLookup(candidateCountry)}
+                        />
+                      </span>
+                    </div>
+                    <Heading level={3} className="text-base">
+                      {candidateName}
+                    </Heading>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Text type="p" className="text-xs text-gray-600">
+                      {currentPosition} {i18n.inLabel} {currentCompany}
+                    </Text>
+                    <Text size="xxs">{timeInPosition}</Text>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <Tabs
-            defaultValue={showCandidateDetails?.defaultTab || "about"}
-            className="flex h-full w-full max-w-[540px] flex-col items-center justify-start overflow-hidden pr-10"
-          >
-            <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
-              <TabsTrigger
-                className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-                value="about"
-              >
-                {i18n.profileTabTitle}
-              </TabsTrigger>
+            <Tabs
+              defaultValue={showCandidateDetails?.defaultTab || "about"}
+              className="flex h-full w-full max-w-[540px] flex-col items-center justify-start overflow-hidden pr-10"
+            >
+              <TabsList className="min-w-full justify-start rounded-none border-b-[1px] bg-white">
+                <TabsTrigger
+                  className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+                  value="about"
+                >
+                  {i18n.profileTabTitle}
+                </TabsTrigger>
 
-              <TabsTrigger
-                className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-                value="comments"
-              >
-                {i18n.commentsTabTitle}
-              </TabsTrigger>
-              {/* <TabsTrigger
+                <TabsTrigger
+                  className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+                  value="comments"
+                >
+                  {i18n.commentsTabTitle}
+                </TabsTrigger>
+                {/* <TabsTrigger
                 className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
                 value="history"
               >
                 {i18n.historyTabTitle}
               </TabsTrigger> */}
-              <TabsTrigger
-                className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-                value="results"
+                <TabsTrigger
+                  className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+                  value="results"
+                >
+                  {i18n.resultsTabTitle}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent
+                value="about"
+                className="h-fit w-full max-w-screen-lg overflow-y-auto text-clip"
               >
-                {i18n.resultsTabTitle}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent
-              value="about"
-              className="h-fit w-full max-w-screen-lg overflow-y-auto text-clip"
-            >
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">
-                    {i18n.contactLabel}:
-                  </span>
-                  <a
-                    href={linkedinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Linkedin />
-                  </a>
-                  <a
-                    href={`mailto:${email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-              {/* <div className="h-[1px] w-full bg-gray-200"></div> */}
-              <div className="flex flex-col gap-2 pt-4">
-                <Text className="text-xs text-muted-foreground">
-                  <b>{i18n.candidateSource}:</b> {candidateSource}
-                </Text>
-                <Text className="mb-4 text-xs text-muted-foreground">
-                  <b>{i18n.processStartDate}:</b>
-                  {formatDate(processStartDate)}
-                </Text>
-                <Heading className="text-sm" level={2}>
-                  {i18n.candidateMatchLabel}
-                </Heading>
-                <Text className="mb-4 text-sm text-muted-foreground" type="p">
-                  {positionMatch}
-                </Text>
-              </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">
+                      {i18n.contactLabel}:
+                    </span>
 
-              <div className="flex flex-col gap-2">
-                <Heading className="text-sm" level={2}>
-                  {i18n.missingSkillsLabel}
-                </Heading>
-                <Text className="mb-4 text-sm text-muted-foreground" type="p">
-                  {aspectsNotDemostrated}
-                </Text>
-              </div>
-              <div className="mb-8 flex flex-col gap-2">
-                <Heading className="text-sm" level={2}>
-                  {i18n.recommendationLabel}:
-                </Heading>
-                <Text className="text-sm text-muted-foreground" type="p">
-                  {recomendation}
-                </Text>
-              </div>
-              <div className="h-[1px] w-full bg-gray-200"></div>
-              {candidateBio && (
-                <>
-                  <div className="mt-8 flex flex-col gap-2">
-                    <Heading className="text-sm" level={2}>
-                      {currentPosition}
-                    </Heading>
-                  </div>
-                  <div className="mt-4 flex flex-col gap-2">
-                    <Heading className="text-base font-bold" level={1}>
-                      {i18n.aboutLabel}:
-                    </Heading>
-                    <Text
-                      className="mb-8 text-sm text-muted-foreground"
-                      type="p"
+                    <a
+                      href={linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      {candidateBio}
-                    </Text>
+                      <Linkedin />
+                    </a>
+                    {/* Refactored: Email Tooltip only onClick */}
+                    {email && (
+                      <Tooltip
+                        open={isEmailTooltipOpen}
+                        onOpenChange={setEmailTooltipOpen}
+                      >
+                        <TooltipTrigger asChild>
+                          <Mail
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() => setEmailTooltipOpen((open) => !open)}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="flex max-w-[260px] items-center gap-2 text-sm font-normal"
+                          onClick={() => setEmailTooltipOpen(false)}
+                        >
+                          {email}{" "}
+                          <Copy
+                            onClick={() => {
+                              navigator.clipboard.writeText(email);
+                              toast({
+                                title: "Correo copiado",
+                                description: "Correo copiado al portapapeles",
+                              });
+                              setEmailTooltipOpen(false);
+                            }}
+                            className="h-4 w-4 cursor-pointer hover:text-talent-green-500"
+                          />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {/* Refactored: Phone Tooltip only onClick */}
+                    {candidatePhone && (
+                      <Tooltip
+                        open={isPhoneTooltipOpen}
+                        onOpenChange={setPhoneTooltipOpen}
+                      >
+                        <TooltipTrigger asChild>
+                          <Phone
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() => setPhoneTooltipOpen((open) => !open)}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="flex max-w-[260px] items-center gap-2 text-sm font-normal"
+                          onClick={() => setPhoneTooltipOpen(false)}
+                        >
+                          {candidatePhone}{" "}
+                          <Copy
+                            onClick={() => {
+                              navigator.clipboard.writeText(candidatePhone);
+                              toast({
+                                title: "Teléfono copiado",
+                                description: "Teléfono copiado al portapapeles",
+                              });
+                              setPhoneTooltipOpen(false);
+                            }}
+                            className="h-4 w-4 cursor-pointer hover:text-talent-green-500"
+                          />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                   </div>
-                </>
-              )}
-              <div className="h-[1px] w-full bg-gray-200"></div>
-              <div className="mt-4 flex flex-col gap-8">
-                <Heading className="text-base font-bold" level={1}>
-                  {i18n.experienceLabel}
-                </Heading>
-                {hiringProcess?.profile.experience?.map((experience, idx) => {
-                  return (
-                    <div className="mb-4 flex items-center gap-4" key={idx}>
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage
-                          src={experience.company_logo_url}
-                          alt="Profile picture"
-                        />
-                        <AvatarFallback>
-                          {experience.company.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <Text className="text-sm font-bold text-foreground">
-                          {experience.company}
-                        </Text>
-                        <Text className="text-sm text-muted-foreground">
-                          {experience.start_date} - {experience.end_date}
-                        </Text>
-                      </div>
+                </div>
+                {/* <div className="h-[1px] w-full bg-gray-200"></div> */}
+                <div className="flex flex-col gap-2 pt-4">
+                  <Text className="text-xs text-muted-foreground">
+                    <b>{i18n.candidateSource}:</b> {candidateSource}
+                  </Text>
+                  <Text className="mb-4 text-xs text-muted-foreground">
+                    <b>{i18n.processStartDate}:</b>
+                    {formatDate(processStartDate)}
+                  </Text>
+                  <Heading className="text-sm" level={2}>
+                    {i18n.candidateMatchLabel}
+                  </Heading>
+                  <Text className="mb-4 text-sm text-muted-foreground" type="p">
+                    {positionMatch}
+                  </Text>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Heading className="text-sm" level={2}>
+                    {i18n.missingSkillsLabel}
+                  </Heading>
+                  <Text className="mb-4 text-sm text-muted-foreground" type="p">
+                    {aspectsNotDemostrated}
+                  </Text>
+                </div>
+                <div className="mb-8 flex flex-col gap-2">
+                  <Heading className="text-sm" level={2}>
+                    {i18n.recommendationLabel}:
+                  </Heading>
+                  <Text className="text-sm text-muted-foreground" type="p">
+                    {recomendation}
+                  </Text>
+                </div>
+                <div className="h-[1px] w-full bg-gray-200"></div>
+                {candidateBio && (
+                  <>
+                    <div className="mt-8 flex flex-col gap-2">
+                      <Heading className="text-sm" level={2}>
+                        {currentPosition}
+                      </Heading>
                     </div>
-                  );
-                })}
-              </div>
-              <div className="h-[1px] w-full bg-gray-200"></div>
-              <div className="mt-4 flex flex-col gap-8">
-                <Heading className="text-base font-bold" level={1}>
-                  {i18n.educationLabel}
-                </Heading>
-                {hiringProcess?.profile.education?.map((education, idx) => {
-                  return (
-                    <div className="flex items-center gap-4" key={idx}>
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage
-                          src={education.institute_logo_url}
-                          alt="Profile picture"
-                        />
-                        <AvatarFallback>
-                          {education.title?.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <Text className="text-sm font-bold text-foreground">
-                          {education.title}
-                        </Text>
-                        <Text className="text-sm text-muted-foreground">
-                          {education.description}
-                        </Text>
-                        <Text className="text-sm text-muted-foreground">
-                          {education.start_year} - {education.end_year}
-                        </Text>
-                      </div>
+                    <div className="mt-4 flex flex-col gap-2">
+                      <Heading className="text-base font-bold" level={1}>
+                        {i18n.aboutLabel}:
+                      </Heading>
+                      <Text
+                        className="mb-8 text-sm text-muted-foreground"
+                        type="p"
+                      >
+                        {candidateBio}
+                      </Text>
                     </div>
-                  );
-                })}
-              </div>
-            </TabsContent>
-            <TabsContent
-              value="comments"
-              className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
-            >
-              <div className="flex flex-col-reverse gap-6 p-6">
-                {card.comments?.map((comment) => {
-                  return (
-                    <Fragment key={comment.id}>
-                      <div className="h-[1px] w-full bg-gray-200"></div>
-                      <PhaseComment
-                        phaseLabel={i18n.phaseLabel}
-                        stakeHolders={stakeHolders}
-                        date={comment.created_at}
-                        comment={comment.text}
-                      />
-                    </Fragment>
-                  );
-                })}
-              </div>
-              <div className="flex flex-col gap-6 p-6">
-                <CommentBox
-                  position={selectedPosition}
-                  stakeHolders={stakeHolders}
-                  pipeId={pipe.id}
-                  card={card}
-                />
-              </div>
-            </TabsContent>
-            {/* <TabsContent
+                  </>
+                )}
+                <div className="h-[1px] w-full bg-gray-200"></div>
+                <div className="mt-4 flex flex-col gap-8">
+                  <Heading className="text-base font-bold" level={1}>
+                    {i18n.experienceLabel}
+                  </Heading>
+                  {hiringProcess?.profile.experience?.map((experience, idx) => {
+                    return (
+                      <div className="mb-4 flex items-center gap-4" key={idx}>
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage
+                            src={experience.company_logo_url}
+                            alt="Profile picture"
+                          />
+                          <AvatarFallback>
+                            {experience.company.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <Text className="text-sm font-bold text-foreground">
+                            {experience.company}
+                          </Text>
+                          <Text className="text-sm text-muted-foreground">
+                            {experience.start_date} - {experience.end_date}
+                          </Text>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="h-[1px] w-full bg-gray-200"></div>
+                <div className="mt-4 flex flex-col gap-8">
+                  <Heading className="text-base font-bold" level={1}>
+                    {i18n.educationLabel}
+                  </Heading>
+                  {hiringProcess?.profile.education?.map((education, idx) => {
+                    return (
+                      <div className="flex items-center gap-4" key={idx}>
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage
+                            src={education.institute_logo_url}
+                            alt="Profile picture"
+                          />
+                          <AvatarFallback>
+                            {education.title?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <Text className="text-sm font-bold text-foreground">
+                            {education.title}
+                          </Text>
+                          <Text className="text-sm text-muted-foreground">
+                            {education.description}
+                          </Text>
+                          <Text className="text-sm text-muted-foreground">
+                            {education.start_year} - {education.end_year}
+                          </Text>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+              <TabsContent
+                value="comments"
+                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+              >
+                <div className="flex flex-col-reverse gap-6 p-6">
+                  {card.comments?.map((comment) => {
+                    return (
+                      <Fragment key={comment.id}>
+                        <div className="h-[1px] w-full bg-gray-200"></div>
+                        <PhaseComment
+                          phaseLabel={i18n.phaseLabel}
+                          stakeHolders={stakeHolders}
+                          date={comment.created_at}
+                          comment={comment.text}
+                        />
+                      </Fragment>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-col gap-6 p-6">
+                  <CommentBox
+                    position={selectedPosition}
+                    stakeHolders={stakeHolders}
+                    pipeId={pipe.id}
+                    card={card}
+                  />
+                </div>
+              </TabsContent>
+              {/* <TabsContent
               value="history"
               className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
             >
               <PhaseHistory dictionary={dictionary} pipe={pipe} card={card} />
             </TabsContent> */}
-            <TabsContent
-              style={{ scrollbarGutter: "stable" }}
-              value="results"
-              className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
-            >
-              <ResultsTabContent
-                phases={filteredPhases}
-                totalWeightedScore={getTotalWeightedScore()}
-                maxTotalScore={5}
-                candidateName={candidateName}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
+              <TabsContent
+                style={{ scrollbarGutter: "stable" }}
+                value="results"
+                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+              >
+                <ResultsTabContent
+                  phases={filteredPhases}
+                  totalWeightedScore={getTotalWeightedScore()}
+                  maxTotalScore={5}
+                  candidateName={candidateName}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
 
-        {currentPhase &&
-          currentPhase.phase.phase_classification === "INFORMATIVE" && (
-            <div className="max-h-[75vh] w-[650px] max-w-[650px] overflow-auto">
-              {currentPhase.interviewerData?.sections.map((section) => {
-                return (
-                  <div key={section.title} className="flex flex-col gap-2">
-                    <Heading className="text-base font-bold" level={2}>
-                      {getGroupTitle(currentPhase.groupName)}
-                    </Heading>
-                    <Heading className="text-sm font-bold" level={2}>
-                      {section.title}
-                    </Heading>
-                    <Text className="text-sm text-[#090909]">
-                      {section.subtitle}
-                    </Text>
-                    <Text className="text-sm text-[#090909]">
-                      {section.description}
-                    </Text>
-                    {renderButtonText(section.button_text)}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        {currentPhase &&
-          currentPhase.phase.phase_classification === "CALL_TO_ACTION" && (
-            <>
-              <div className="flex max-h-[75vh] w-full max-w-[550px] flex-col gap-4 overflow-auto">
-                {renderCallToActionContent(currentPhase.phase.name)}
+          {currentPhase &&
+            currentPhase.phase.phase_classification === "INFORMATIVE" && (
+              <div className="max-h-[75vh] w-[650px] max-w-[650px] overflow-auto">
+                {currentPhase.interviewerData?.sections.map((section) => {
+                  return (
+                    <div key={section.title} className="flex flex-col gap-2">
+                      <Heading className="text-base font-bold" level={2}>
+                        {getGroupTitle(currentPhase.groupName)}
+                      </Heading>
+                      <Heading className="text-sm font-bold" level={2}>
+                        {section.title}
+                      </Heading>
+                      <Text className="text-sm text-[#090909]">
+                        {section.subtitle}
+                      </Text>
+                      <Text className="text-sm text-[#090909]">
+                        {section.description}
+                      </Text>
+                      {renderButtonText(section.button_text)}
+                    </div>
+                  );
+                })}
               </div>
-              <div className="flex w-full flex-col gap-4">
-                {!isPending && publicFormUrl && (
-                  <iframe
-                    className="h-full w-full"
-                    src={publicFormUrl}
-                  ></iframe>
-                )}
-              </div>
-            </>
-          )}
-      </DialogContent>
-    </Dialog>
+            )}
+          {currentPhase &&
+            currentPhase.phase.phase_classification === "CALL_TO_ACTION" && (
+              <>
+                <div className="flex max-h-[75vh] w-full max-w-[550px] flex-col gap-4 overflow-auto">
+                  {renderCallToActionContent(currentPhase.phase.name)}
+                </div>
+                <div className="flex w-full flex-col gap-4">
+                  {!isPending && publicFormUrl && (
+                    <iframe
+                      className="h-full w-full"
+                      src={publicFormUrl}
+                    ></iframe>
+                  )}
+                </div>
+              </>
+            )}
+        </DialogContent>
+      </Dialog>
+    </TooltipProvider>
   );
 };
 /**

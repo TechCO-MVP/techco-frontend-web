@@ -231,7 +231,22 @@ export const CreateDescriptionManually: FC<
         </div>
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> Nombre del cargo</h2>
+            <h2>
+              Nombre del cargo
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <BadgeInfo className="h-4 w-4 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="max-w-[260px] text-sm font-normal"
+              >
+                Para mejores resultados, usa el nombre genérico del cargo, no la
+                versión interna de tu empresa.
+              </TooltipContent>
+            </Tooltip>
           </div>
           <Input
             placeholder="Ejemplo: Gerente de ventas"
@@ -245,7 +260,10 @@ export const CreateDescriptionManually: FC<
         {/* #1 - Reclutador responsable */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👩🏼‍💼 Reclutador responsable</h2>{" "}
+            <h2>
+              👩🏼‍💼 Reclutador responsable
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -268,7 +286,10 @@ export const CreateDescriptionManually: FC<
         {/* #2 - Solicitante de la vacante */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 👨🏻‍💼 Solicitante de la vacante</h2>
+            <h2>
+              👨🏻‍💼 Solicitante de la vacante
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -299,7 +320,11 @@ export const CreateDescriptionManually: FC<
         {/* #3 - Prioridad de contratación */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> ⚡️ Prioridad de contratación</h2>
+            <h2>
+              {" "}
+              ⚡️ Prioridad de contratación{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -339,7 +364,11 @@ export const CreateDescriptionManually: FC<
         {/* #4 - Descripción de la empresa */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 🌍 {i18n.aboutUsLabel}</h2>
+            <h2>
+              {" "}
+              🌍 {i18n.aboutUsLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -366,7 +395,11 @@ export const CreateDescriptionManually: FC<
         {/* #5 - Descripción de la vacante */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💻 {i18n.jobDescriptionLabel} </h2>
+            <h2>
+              {" "}
+              💻 {i18n.jobDescriptionLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -391,7 +424,10 @@ export const CreateDescriptionManually: FC<
         {/* #6 - Ubicación */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>📍 {i18n.locationLabel}</h2>
+            <h2>
+              📍 {i18n.locationLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -423,7 +459,8 @@ export const CreateDescriptionManually: FC<
         {/* #7 - Modo de trabajo */}
         <div className="flex flex-col space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💻 Modo de trabajo</h2>
+            <h2> 💻 Modo de trabajo</h2>{" "}
+            <span className="text-xs text-red-500">&nbsp;*</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -463,7 +500,10 @@ export const CreateDescriptionManually: FC<
         {/* #8 - Experiencia requerida */}
         <section className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🧑‍💻 Experiencia requerida </h2>
+            <h2>
+              🧑‍💻 Experiencia requerida{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -489,7 +529,10 @@ export const CreateDescriptionManually: FC<
         {/* #9 - Responsabilidades */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🚀 {i18n.responsabilitiesLabel}</h2>
+            <h2>
+              🚀 {i18n.responsabilitiesLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -512,7 +555,10 @@ export const CreateDescriptionManually: FC<
         {/* #10 - Habilidades */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎯 {i18n.skillsLabel}</h2>
+            <h2>
+              🎯 {i18n.skillsLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -538,7 +584,10 @@ export const CreateDescriptionManually: FC<
         {/* #11 - Educación */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎓 {i18n.educationLabel}</h2>
+            <h2>
+              🎓 {i18n.educationLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -561,7 +610,10 @@ export const CreateDescriptionManually: FC<
         {/* #12 - Idioma y Nivel */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🌐 Idioma requerido</h2>
+            <h2>
+              🌐 Idioma requerido{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -654,7 +706,11 @@ export const CreateDescriptionManually: FC<
         {/* #13 - Salario */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2> 💰{i18n.salaryRangeLabel}</h2>
+            <h2>
+              {" "}
+              💰{i18n.salaryRangeLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />
@@ -839,7 +895,10 @@ export const CreateDescriptionManually: FC<
         {/* #14 - Beneficios */}
         <div className="w-full space-y-3">
           <div className="flex items-center gap-2 font-semibold">
-            <h2>🎁 {i18n.whatWeOfferLabel}</h2>
+            <h2>
+              🎁 {i18n.whatWeOfferLabel}{" "}
+              <span className="text-xs text-red-500">&nbsp;*</span>
+            </h2>
             <Tooltip>
               <TooltipTrigger asChild>
                 <BadgeInfo className="h-4 w-4 cursor-help" />

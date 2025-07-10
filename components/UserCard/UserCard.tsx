@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MoreHorizontal } from "lucide-react";
+import { Copy, Mail, MoreHorizontal, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Linkedin } from "@/icons";
 import { Card } from "@/components/ui/card";
@@ -34,6 +34,14 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "@/lib/store/hooks";
 import { selectNotificationsState } from "@/lib/store/features/notifications/notifications";
 import { HiringPositionData, PositionFlow } from "@/types";
+import { CANDIDATE_PHONE_FIELD_ID } from "@/constants";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { toast } from "@/hooks/use-toast";
 
 interface CardProps {
   dictionary: Dictionary;
@@ -79,8 +87,12 @@ export const UserCard: React.FC<CardProps> = ({
   const candidateStatus =
     fieldMap[PipefyFieldValues.CandidateStatus] || "Activo";
   const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
-  const email = fieldMap[PipefyFieldValues.CandidateEmail] || "#";
-
+  const email = fieldMap[PipefyFieldValues.CandidateEmail] || "";
+  const candidatePhone =
+    card.fields.find((field) => field.name === CANDIDATE_PHONE_FIELD_ID)
+      ?.value || "";
+  const [isEmailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [isPhoneTooltipOpen, setPhoneTooltipOpen] = useState(false);
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData(
       "text/plain",
@@ -119,126 +131,195 @@ export const UserCard: React.FC<CardProps> = ({
   }, [showCandidateDetails]);
 
   return (
-    <Card
-      ref={cardRef}
-      onClick={(event: MouseEvent<HTMLDivElement>) => {
-        const target = event.target as HTMLElement;
-        if (target.closest("#dialog-close")) return;
-        if (open) return;
-        setOpen(true);
-      }}
-      id={`details-${column.id}-${card.id}`}
-      // draggable
-      onDragEnd={handleDragEnd}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      className="mb-6 w-[19rem] cursor-pointer p-6"
-    >
-      <div>
-        <div className="mb-4 flex h-8 items-center justify-between">
-          <Badge className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary">
-            {i18n.roleAlignment}: {roleAlignment}
-          </Badge>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-2 w-2">
-                <MoreHorizontal className="h-2 w-2" />
-                <span className="sr-only hidden">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  {i18n.movePhase}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {column.cards_can_be_moved_to_phases.map((phase) => (
-                      <DropdownMenuItem key={phase.id}>
-                        {phase.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="mb-2 flex gap-4">
-          <div className="flex flex-col items-center justify-center gap-1.5">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={avatarUrl} alt="Profile picture" />
-              <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <Badge
-              variant="outline"
-              className="rounded-md text-[#34C759] hover:bg-green-50"
-            >
-              {candidateStatus}
+    <TooltipProvider>
+      <Card
+        ref={cardRef}
+        onClick={(event: MouseEvent<HTMLDivElement>) => {
+          const target = event.target as HTMLElement;
+          if (target.closest("#dialog-close")) return;
+          if (open) return;
+          setOpen(true);
+        }}
+        id={`details-${column.id}-${card.id}`}
+        // draggable
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        className="mb-6 w-[19rem] cursor-pointer p-6"
+      >
+        <div>
+          <div className="mb-4 flex h-8 items-center justify-between">
+            <Badge className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary">
+              {i18n.roleAlignment}: {roleAlignment}
             </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-2 w-2">
+                  <MoreHorizontal className="h-2 w-2" />
+                  <span className="sr-only hidden">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    {i18n.movePhase}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      {column.cards_can_be_moved_to_phases.map((phase) => (
+                        <DropdownMenuItem key={phase.id}>
+                          {phase.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs">
-                  {candidateCity}
-                  &nbsp; -
-                  <CountryLabel
-                    code={candidateCountry}
-                    label={countryLabelLookup(candidateCountry)}
-                  />
-                </span>
-              </div>
-              <Heading level={3} className="text-base">
-                {candidateName}
-              </Heading>
+
+          <div className="mb-2 flex gap-4">
+            <div className="flex flex-col items-center justify-center gap-1.5">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={avatarUrl} alt="Profile picture" />
+                <AvatarFallback>{candidateName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <Badge
+                variant="outline"
+                className="rounded-md text-[#34C759] hover:bg-green-50"
+              >
+                {candidateStatus}
+              </Badge>
             </div>
-            {currentPosition && (
+            <div className="space-y-2">
               <div className="space-y-1">
-                <Text type="p" className="text-xs text-gray-600">
-                  {currentPosition} {i18n.inLabel} {currentCompany}
-                </Text>
-                <Text size="xxs">{yearsOfExperience}</Text>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs">
+                    {candidateCity}
+                    &nbsp; -
+                    <CountryLabel
+                      code={candidateCountry}
+                      label={countryLabelLookup(candidateCountry)}
+                    />
+                  </span>
+                </div>
+                <Heading level={3} className="text-base">
+                  {candidateName}
+                </Heading>
               </div>
-            )}
+              {currentPosition && (
+                <div className="space-y-1">
+                  <Text type="p" className="text-xs text-gray-600">
+                    {currentPosition} {i18n.inLabel} {currentCompany}
+                  </Text>
+                  <Text size="xxs">{yearsOfExperience}</Text>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <AnimatePresence>
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="space-y-2 overflow-hidden"
-        >
-          <div className="mb-2 flex items-center gap-2">
-            <span className="text-muted-foreground">{i18n.contactLabel}:</span>
-            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-              <Linkedin />
-            </a>
-            <a
-              href={`mailto:${email}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Mail className="h-4 w-4" />
-            </a>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+        <AnimatePresence>
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-2 overflow-hidden"
+          >
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-muted-foreground">
+                {i18n.contactLabel}:
+              </span>
+              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
+                <Linkedin />
+              </a>
+              {/* Refactored: Email Tooltip only onClick */}
+              {email && (
+                <Tooltip
+                  open={isEmailTooltipOpen}
+                  onOpenChange={setEmailTooltipOpen}
+                >
+                  <TooltipTrigger asChild>
+                    <Mail
+                      className="h-4 w-4 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEmailTooltipOpen((open) => !open);
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="flex max-w-[260px] items-center gap-2 text-sm font-normal"
+                    onClick={() => setEmailTooltipOpen(false)}
+                  >
+                    {email}{" "}
+                    <Copy
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(email);
+                        toast({
+                          title: "Correo copiado",
+                          description: "Correo copiado al portapapeles",
+                        });
+                        setEmailTooltipOpen(false);
+                      }}
+                      className="h-4 w-4 cursor-pointer hover:text-talent-green-500"
+                    />
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {/* Refactored: Phone Tooltip only onClick */}
+              {candidatePhone && (
+                <Tooltip
+                  open={isPhoneTooltipOpen}
+                  onOpenChange={setPhoneTooltipOpen}
+                >
+                  <TooltipTrigger asChild>
+                    <Phone
+                      className="h-4 w-4 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPhoneTooltipOpen((open) => !open);
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="flex max-w-[260px] items-center gap-2 text-sm font-normal"
+                    onClick={() => setPhoneTooltipOpen(false)}
+                  >
+                    {candidatePhone}{" "}
+                    <Copy
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(candidatePhone);
+                        toast({
+                          title: "Teléfono copiado",
+                          description: "Teléfono copiado al portapapeles",
+                        });
+                        setPhoneTooltipOpen(false);
+                      }}
+                      className="h-4 w-4 cursor-pointer hover:text-talent-green-500"
+                    />
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
-      <CandidateDetailsDialog
-        open={open}
-        setOpen={setOpen}
-        dictionary={dictionary}
-        pipe={pipe}
-        card={card}
-        position={position}
-        positionFlow={positionFlow}
-      />
-    </Card>
+        <CandidateDetailsDialog
+          open={open}
+          setOpen={setOpen}
+          dictionary={dictionary}
+          pipe={pipe}
+          card={card}
+          position={position}
+          positionFlow={positionFlow}
+        />
+      </Card>
+    </TooltipProvider>
   );
 };

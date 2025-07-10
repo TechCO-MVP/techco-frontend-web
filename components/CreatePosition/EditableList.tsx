@@ -69,7 +69,7 @@ export const EditableList: FC<Props> = ({ items, onItemsChange }) => {
           onKeyDown={(e) => {
             if (e.key === "Enter") handleAddItem();
           }}
-          placeholder="Agrega un nuevo elemento aquí"
+          placeholder="Esto es una lista, escribe un dato, presiona Enter para guardarlo y habilitar otro."
           className="w-full border-b border-gray-300 focus:outline-none"
         />
       </div>
