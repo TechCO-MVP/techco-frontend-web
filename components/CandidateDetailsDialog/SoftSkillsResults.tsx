@@ -240,16 +240,6 @@ export function SoftSkillsResults({
                     {salaryScore.toFixed(2)} de 5
                   </span>
                 )}
-                {isAboveRange && (
-                  <Badge variant="destructive" className="text-xs">
-                    Fuera del rango (+{salaryPercentageAbove}%)
-                  </Badge>
-                )}
-                {isBelowRange && (
-                  <Badge variant="destructive" className="text-xs">
-                    Fuera del rango (-{salaryPercentageBelow}%)
-                  </Badge>
-                )}
               </div>
             </AccordionTrigger>
             <AccordionContent>
@@ -280,6 +270,11 @@ export function SoftSkillsResults({
                   {isAboveRange && (
                     <p className="text-sm font-medium text-red-600">
                       Está un {salaryPercentageAbove}% por encima del rango.
+                    </p>
+                  )}
+                  {isBelowRange && (
+                    <p className="text-sm font-medium text-red-600">
+                      Está un {salaryPercentageBelow}% por debajo del rango.
                     </p>
                   )}
                 </div>
