@@ -151,8 +151,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const finalInterviewFeedback =
     fieldMap[PipefyFieldValues.FinalInterviewFeedback];
   const linkedinUrl = fieldMap[PipefyFieldValues.LinkedInURL] || "#";
-  const email =
-    fieldMap[PipefyFieldValues.CandidateEmail] || "jesus740@gmail.com";
+  const email = fieldMap[PipefyFieldValues.CandidateEmail] || "";
   const params = useParams<{ id: string }>();
   const { id } = params;
   const { currentUser } = useCurrentUser();
