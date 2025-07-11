@@ -70,8 +70,8 @@ export default async function Page({
               <Image
                 src="/assets/talent_connect.svg"
                 alt={positionData.business_name}
-                width={64}
-                height={64}
+                width={152}
+                height={36}
                 className="mx-auto"
               />
             </div>

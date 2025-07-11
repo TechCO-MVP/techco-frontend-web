@@ -102,7 +102,7 @@ export default async function Page({
                 <h2> 🌍 {i18n.aboutUsLabel}</h2>
               </div>
               <p className="leading-relaxed text-gray-600">
-                {positionData.position_entity.description}
+                {positionData.business_description}
               </p>
             </section>
 
