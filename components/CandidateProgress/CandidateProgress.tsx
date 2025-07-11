@@ -72,7 +72,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   const currentPhase = findPhaseByName(
     // PHASE_NAMES.FINALISTS,
     card.current_phase.name,
-    position.position_flow,
+    position.position_entity.position_flow,
   );
   console.log(
     "%c[Debug] currentPhase",
@@ -86,7 +86,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   );
 
   const renderSoftSkillAssessment = () => {
-    const assessment = position.position_assessments.find(
+    const assessment = position.position_entity.assessments.find(
       (assessment) =>
         assessment.type === PositionConfigurationPhaseTypes.SOFT_SKILLS,
     )?.data as Assessment;
@@ -114,7 +114,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   };
 
   const renderTechnicalAssessment = () => {
-    const assessment = position.position_assessments.find(
+    const assessment = position.position_entity.assessments.find(
       (assessment) =>
         assessment.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST,
     )?.data as TechnicalAssessmentType;
@@ -182,7 +182,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
           <div className="mx-auto flex w-full max-w-[1280px] flex-col bg-white px-4 py-8 text-center">
             <CandidateStepper
               currentPhase={currentPhase}
-              positionFlow={position.position_flow}
+              positionFlow={position.position_entity.position_flow}
             />
 
             <div className="mx-auto mt-[140px] max-w-2xl px-4 md:mt-0 md:px-0">
