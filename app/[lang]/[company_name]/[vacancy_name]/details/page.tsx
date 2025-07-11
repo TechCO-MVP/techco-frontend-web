@@ -39,10 +39,10 @@ export default async function Page({
     positionData,
   );
   const formatSalaryRange = () => {
-    if (!positionData.position_salary_range) return "";
+    if (!positionData.position_entity.salary?.salary_range) return "";
     try {
-      const range = positionData.position_salary_range.salary_range;
-      const currency = positionData.position_salary_range.currency;
+      const range = positionData.position_entity.salary?.salary_range;
+      const currency = positionData.position_entity.salary?.currency;
       const lowRange = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency,
@@ -54,7 +54,7 @@ export default async function Page({
       return ` ${lowRange} - ${highRange} ${currency} `;
     } catch (error) {
       console.error("Error formatting salary range", error);
-      return ` ${positionData.position_salary_range?.salary_range?.min} - ${positionData.position_salary_range?.salary_range?.max} ${positionData.position_salary_range?.currency} `;
+      return ` ${positionData.position_entity.salary?.salary_range?.min} - ${positionData.position_entity.salary?.salary_range?.max} ${positionData.position_entity.salary?.currency} `;
     }
   };
 
@@ -62,13 +62,13 @@ export default async function Page({
     try {
       const salary = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: positionData.position_salary_range?.currency || "USD",
-      }).format(Number(positionData.position_salary_range?.salary));
+        currency: positionData.position_entity.salary?.currency || "USD",
+      }).format(Number(positionData.position_entity.salary?.salary));
 
       return `${salary} `;
     } catch (error) {
       console.error("Error formatting fixed salary", error);
-      return ` ${positionData.position_salary_range?.salary} ${positionData.position_salary_range?.currency} `;
+      return ` ${positionData.position_entity.salary?.salary} ${positionData.position_entity.salary?.currency} `;
     }
   };
   return (
@@ -83,12 +83,14 @@ export default async function Page({
       >
         <div className="mx-auto flex h-[85vh] w-[85vw] flex-col items-center justify-start overflow-y-auto overflow-x-hidden bg-white px-4 py-12">
           <div className="mx-auto max-w-3xl space-y-8 p-6">
-            <h1 className="text-4xl font-bold">{positionData.position_role}</h1>
+            <h1 className="text-4xl font-bold">
+              {positionData.position_entity.role}
+            </h1>
 
             <div className="flex items-center gap-2 text-gray-600">
               <span>
-                📍 {i18n.locationLabel}: {positionData.position_city} /{" "}
-                {countryNameLookup(positionData.position_country)}
+                📍 {i18n.locationLabel}: {positionData.position_entity.city} /{" "}
+                {countryNameLookup(positionData.position_entity.country_code)}
               </span>
             </div>
 
@@ -97,7 +99,7 @@ export default async function Page({
                 <h2> 🌍 {i18n.aboutUsLabel}</h2>
               </div>
               <p className="leading-relaxed text-gray-600">
-                {positionData.business_description}
+                {positionData.position_entity.description}
               </p>
             </section>
 
@@ -106,7 +108,7 @@ export default async function Page({
                 <h2> 💻 {i18n.jobDescriptionLabel}</h2>
               </div>
               <div className="space-y-4 text-gray-600">
-                <p>{positionData.position_description}</p>
+                <p>{positionData.position_entity.description}</p>
               </div>
             </section>
 
@@ -115,14 +117,16 @@ export default async function Page({
                 <h2>🚀 {i18n.responsabilitiesLabel}</h2>
               </div>
               <ul className="space-y-2">
-                {positionData.position_responsabilities.map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-gray-600"
-                  >
-                    <span>✅ {item}</span>
-                  </li>
-                ))}
+                {positionData.position_entity.responsabilities.map(
+                  (item, index) => (
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-gray-600"
+                    >
+                      <span>✅ {item}</span>
+                    </li>
+                  ),
+                )}
               </ul>
             </section>
 
@@ -131,7 +135,7 @@ export default async function Page({
                 <h2>🎯{i18n.requirementsLabel}</h2>
               </div>
               <ul className="space-y-2 text-gray-600">
-                {positionData.position_skills.map((item, index) => (
+                {positionData.position_entity.skills.map((item, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <span>📌 {item.name}</span>
                   </li>
@@ -139,7 +143,7 @@ export default async function Page({
               </ul>
             </section>
 
-            {positionData.position_salary_range?.salary_range && (
+            {positionData.position_entity.salary?.salary_range && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 font-semibold">
                   <h2> 💰 {i18n.salaryRangeLabel}</h2>
@@ -153,7 +157,7 @@ export default async function Page({
               </section>
             )}
 
-            {positionData.position_salary_range?.salary && (
+            {positionData.position_entity.salary?.salary && (
               <div className="space-y-4 text-gray-600">
                 <p>
                   📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
@@ -165,9 +169,9 @@ export default async function Page({
               <div className="flex items-center gap-2 font-semibold">
                 <h2> 🎁 {i18n.whatWeOfferLabel}</h2>
               </div>
-              {positionData.position_benefits && (
+              {positionData.position_entity.benefits && (
                 <ul className="space-y-2">
-                  {positionData.position_benefits.map((item, index) => (
+                  {positionData.position_entity.benefits.map((item, index) => (
                     <li
                       key={index}
                       className="flex items-start gap-2 text-gray-600"

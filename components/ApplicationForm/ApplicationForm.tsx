@@ -108,7 +108,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     });
 
   const { data: position, isLoading: isPositionLoading } = usePositionById({
-    id: positionData.position_id,
+    id: positionData.position_entity._id,
   });
 
   const { mutate: moveCardToPhase, isPending: isMovingCardToPhase } =
@@ -154,19 +154,19 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
       }
       let shouldIncludeSalary = false;
       let salaryScore = 5;
-      if (positionData.position_salary_range?.salary) {
+      if (positionData.position_entity.salary?.salary) {
         shouldIncludeSalary = true;
         salaryScore = calculateSalaryScore(
           Number(expectedSalary),
-          Number(position?.position_salary_range?.salary),
+          Number(positionData.position_entity.salary?.salary),
         );
       }
-      if (positionData.position_salary_range?.salary_range) {
+      if (positionData.position_entity.salary?.salary_range) {
         shouldIncludeSalary = true;
         salaryScore = calculateSalaryRangeScore(
           {
-            min: Number(positionData.position_salary_range.salary_range.min),
-            max: Number(positionData.position_salary_range.salary_range.max),
+            min: Number(positionData.position_entity.salary.salary_range.min),
+            max: Number(positionData.position_entity.salary.salary_range.max),
           },
           Number(expectedSalary),
         );
@@ -325,11 +325,11 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     position.position_flow,
   );
   // Compute if all checkboxes are selected (no undefined values)
-  const allSkillsAnswered = positionData.position_skills.every(
+  const allSkillsAnswered = positionData.position_entity.skills.every(
     (skill) => typeof skillAnswers[skill.name] === "boolean",
   );
   const allResponsibilitiesAnswered =
-    positionData.position_responsabilities.every(
+    positionData.position_entity.responsabilities.every(
       (resp) => typeof responsibilityAnswers[resp] === "boolean",
     );
 
@@ -398,7 +398,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           <div className="mx-auto flex w-full flex-col bg-white px-4 py-8 text-center">
             <CandidateStepper
               currentPhase={currentPhase}
-              positionFlow={position.position_flow}
+              positionFlow={position.position_entity.position_flow}
             />
           </div>
           <div className="mb-12 h-[1px] w-full bg-gray-200"></div>
@@ -594,7 +594,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               para cada habilidad)
             </h3>
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
-              {positionData.position_skills.map((skill) => (
+              {positionData.position_entity.skills.map((skill) => (
                 <div key={skill.name} className="space-y-1">
                   <p className="mb-1 text-sm">
                     {skill.name}
@@ -651,7 +651,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               cada habilidad)
             </h3>
             <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
-              {positionData.position_responsabilities.map((resp) => (
+              {positionData.position_entity.responsabilities.map((resp) => (
                 <div key={resp} className="space-y-1">
                   <p className="mb-1 text-sm">{resp}</p>
                   <div className="flex gap-4">

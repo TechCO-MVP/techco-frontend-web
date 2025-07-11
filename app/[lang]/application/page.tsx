@@ -78,24 +78,26 @@ export default async function Page({
 
             <div className="mb-6 space-y-1 text-sm text-muted-foreground">
               <p className="flex flex-wrap items-center justify-center uppercase tracking-wide">
-                <span>{positionData.position_city}</span>
+                <span>{positionData.position_entity.city}</span>
                 <span className="mx-2">•</span>
-                <span>{countryNameLookup(positionData.position_country)}</span>
+                <span>
+                  {countryNameLookup(positionData.position_entity.country_code)}
+                </span>
                 <span className="mx-2">•</span>
-                <span>{positionData.position_work_mode}</span>
+                <span>{positionData.position_entity.work_mode}</span>
                 <span className="mx-2">•</span>
                 <span>{positionData.business_name}</span>
               </p>
             </div>
 
             <h1 className="mb-6 text-4xl font-bold capitalize text-talent-green-500 md:text-5xl">
-              {positionData.position_role}
+              {positionData.position_entity.role}
             </h1>
 
             <p className="mb-6 text-xl">¡{i18n.joinOurTeam}!</p>
 
             <p className="mb-8 max-w-prose text-muted-foreground">
-              {positionData.position_description}
+              {positionData.position_entity.description}
             </p>
             <Button
               className="mb-4 w-full max-w-md"

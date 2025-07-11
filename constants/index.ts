@@ -47,6 +47,9 @@ export const CANDIDATE_EMAIL_FIELD_ID = "305713420_334105217_candidateemail";
 export const CANDIDATE_PHONE_FIELD_ID =
   "305713420_334105217_candidatesphonenumber";
 
+export const INVITATION_URL_FIELD_ID =
+  "305713420_334105217_urloftheinvitationtotheprocess";
+
 export const CANDIDATE_BIRTHDAY_FIELD_ID = "306495670_339242211_birthdate";
 
 export const CANDIDATE_DNI_FIELD_ID = "306495670_339242211_dni";

@@ -47,7 +47,7 @@ export const SendPublicApplicationDialog: FC<Readonly<Props>> = ({
   const [open, setOpen] = useState(false);
   const startProfileFilter = () => {
     mutate({
-      position_id: positionData.position_id,
+      position_id: positionData.position_entity._id,
       business_id: positionData.business_id,
       url_profiles: [
         {
@@ -69,9 +69,10 @@ export const SendPublicApplicationDialog: FC<Readonly<Props>> = ({
         <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-white">
           {complete ? (
             <h1 className="text-center text-xl font-bold text-talent-green-500">
-              Gracias por tu interés en el rol {positionData.position_role}. En
-              breve recibirás un correo con los siguientes pasos para continuar
-              con tu postulación. Te deseamos muchos éxitos.
+              Gracias por tu interés en el rol{" "}
+              {positionData.position_entity.role}. En breve recibirás un correo
+              con los siguientes pasos para continuar con tu postulación. Te
+              deseamos muchos éxitos.
             </h1>
           ) : (
             <>
@@ -96,6 +97,12 @@ export const SendPublicApplicationDialog: FC<Readonly<Props>> = ({
                   type="text"
                   placeholder="LinkedIn"
                 />
+                <p className="text-sm text-gray-500">
+                  Por favor, asegúrate de que tu URL siga esta estructura:{" "}
+                  <b className="text-talent-green-500">
+                    https://www.linkedin.com/...
+                  </b>
+                </p>
                 <Button
                   disabled={isPending || !formData.email || !formData.linkedin}
                   variant="talentGreen"

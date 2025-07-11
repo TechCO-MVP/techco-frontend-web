@@ -31,7 +31,7 @@ import {
   sanitizeHtml,
 } from "@/lib/utils";
 import { Linkedin } from "@/icons";
-import { Copy, Mail, Phone } from "lucide-react";
+import { Copy, InfoIcon, Link, Mail, Phone } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhaseComment from "./PhaseComment";
 import { PipefyFieldValues, PipefyNode, PipefyPipe } from "@/types/pipefy";
@@ -70,7 +70,11 @@ import {
 } from "./TechnicalAssessmentResults";
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
-import { CANDIDATE_PHONE_FIELD_ID, STATEMENT_BUTTON_TEXT } from "@/constants";
+import {
+  CANDIDATE_PHONE_FIELD_ID,
+  INVITATION_URL_FIELD_ID,
+  STATEMENT_BUTTON_TEXT,
+} from "@/constants";
 import { usePipefyCard } from "@/hooks/use-pipefy-card";
 import {
   Tooltip,
@@ -133,6 +137,9 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const candidateCountry = fieldMap[PipefyFieldValues.CandidateCountry] || "CO";
   const candidatePhone = card.fields.find(
     (field) => field.name === CANDIDATE_PHONE_FIELD_ID,
+  )?.value;
+  const invitationUrl = card.fields.find(
+    (field) => field.name === INVITATION_URL_FIELD_ID,
   )?.value;
 
   const candidateCity =
@@ -899,10 +906,38 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   <Text className="text-xs text-muted-foreground">
                     <b>{i18n.candidateSource}:</b> {candidateSource}
                   </Text>
-                  <Text className="mb-4 text-xs text-muted-foreground">
+                  <Text className="text-xs text-muted-foreground">
                     <b>{i18n.processStartDate}:</b>
                     {formatDate(processStartDate)}
                   </Text>
+                  {invitationUrl && (
+                    <Text className="mb-4 flex gap-1 text-xs text-muted-foreground">
+                      <b>Enlace personalizado del proceso del candidato:</b>
+                      <Link
+                        onClick={() => {
+                          navigator.clipboard.writeText(invitationUrl);
+                          toast({
+                            title: "Enlace copiado",
+                            description: "Enlace copiado al portapapeles",
+                          });
+                        }}
+                        className="h-4 w-4 cursor-pointer hover:text-talent-green-500"
+                      />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-4 w-4 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="flex max-w-[260px] items-center gap-2 text-sm font-normal"
+                        >
+                          Este enlace fue enviado al candidato cuando inició su
+                          proceso; lo incluimos aquí como medida excepcional, en
+                          caso de que no le haya llegado o lo solicite de nuevo.
+                        </TooltipContent>
+                      </Tooltip>
+                    </Text>
+                  )}
                   <Heading className="text-sm" level={2}>
                     {i18n.candidateMatchLabel}
                   </Heading>

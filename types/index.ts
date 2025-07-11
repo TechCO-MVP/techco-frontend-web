@@ -155,6 +155,41 @@ export type PositionData = {
       | PositionConfigurationPhaseTypes.TECHNICAL_TEST;
     data: Assessment | TechnicalAssessment;
   }[];
+  position_entity: {
+    position_flow: PositionFlow;
+    _id: string;
+    city: string;
+    country_code: string;
+    business_id: string;
+    description: string;
+    education: string[];
+    benefits: string[] | null;
+    flow_type: PositionConfigurationFlowTypes;
+    hiring_priority: "high" | "medium" | "low";
+    languages: {
+      name: string;
+      level: string;
+    }[];
+    owner_position_user_id: string;
+    pipe_id: string;
+    recruiter_user_id: string;
+    role: string;
+    salary: PositionSalaryRange;
+    responsabilities: string[];
+    seniority: string;
+    skills: {
+      name: string;
+      required: boolean;
+    }[];
+    work_mode: string;
+    status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT";
+    assessments: {
+      type:
+        | PositionConfigurationPhaseTypes.SOFT_SKILLS
+        | PositionConfigurationPhaseTypes.TECHNICAL_TEST;
+      data: Assessment | TechnicalAssessment;
+    }[];
+  };
 };
 
 export type PositionResponseBody = {
@@ -396,6 +431,7 @@ export interface PositionDTO {
   hiring_priority: "high" | "medium" | "low";
   work_mode: "REMOTE" | "ON_SITE" | "HYBRID";
   benefits?: string[] | null;
+
   salary?: {
     currency: string;
     salary?: string;

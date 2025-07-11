@@ -63,7 +63,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
   });
 
   const { data: position, isLoading: isPositionLoading } = usePositionById({
-    id: positionData.position_id,
+    id: positionData.position_entity._id,
   });
 
   if (isLoading || !card || isPositionLoading || !position)

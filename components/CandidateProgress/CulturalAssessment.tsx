@@ -99,12 +99,12 @@ export const CulturalAssessment = ({
       // const totalDimensions = totalSoftSkills * 3;
       if (assistantName === AssistantName.CULTURAL_FIT_ASSESSMENT) {
         if (!culturalFitAssessment) return UPLOAD_FILE_PROMPT;
-        return `Inicia la evaluación del documento **"cultural-assessment.pdf"**, que está ubicado en el tool **"File search"** de tu configuración. Este documento contiene **15 preguntas**.
-        **Recuerda y aplica tus System instructions** para evaluar el documento **"cultural-assessment.pdf"**y realiza el siguiente proceso:
-        **Evalúa las 3 preguntas** (pregunta Situacional, pregunta experiencial y pregunta reflexiva) que están asociadas al comportamiento "Asegura responsabilidad". Una vez hayas terminado, **haz lo mismo** con el comportamiento "Enfoque en el cliente". Una vez hayas terminado, **haz lo mismo** con el comportamiento** "Cultiva la Innovación". Una vez hayas terminado, **haz lo mismo** con el comportamiento "Desarrolla talento". Una vez hayas terminado, **finaliza haciendo lo mismo** con el comportamiento "Maneja la complejidad".
-        Debes responder en el **Json Schema** configurado en tu **Response format**.
-        El nombre del comportamiento, el nombre de la dimensión y la respuesta del candidato, **déjalos exactamente igual** a como está en el documento "cultural-assessment.pdf". Lo único que debes agregar es tu calificación y la justificación de tu calificación de cada pregunta y al finalizar el feedback general.
-        **Adopta una postura crítica y profesional**. Estás evaluando la idoneidad de un candidato para un cargo específico. Considera esta prueba como una instancia formal para **valorar sus competencias, razonamiento y capacidad** para generar valor en el rol. Sé riguroso y objetivo en tu análisis.`;
+        return `Inicia la evaluación del documento *"cultural-assessment.pdf", que está ubicado en el tool *"File search"* de tu configuración. Este documento contiene **15 respuestas del candidato. **Debes tener en cuenta que el seniority del candidato* que es *mínimo 3 años de experiencia en el rol Key Account Manager en el sector de Consumo Masivo.* 
+        *Recuerda y aplica tus System instructions* para evaluar el documento *"cultural-assessment.pdf"*y realiza el siguiente proceso:
+        *Evalúa las 3 respuestas del candidato* (respuesta Situacional, respuesta experiencial y respuesta reflexiva) que están asociadas al comportamiento "Asegura responsabilidad". Una vez hayas terminado, *haz lo mismo* con el comportamiento "Enfoque en el cliente". Una vez hayas terminado, *haz lo mismo* con el comportamiento** "Cultiva la Innovación". Una vez hayas terminado, *haz lo mismo* con el comportamiento "Desarrolla talento". Una vez hayas terminado, *finaliza haciendo lo mismo* con el comportamiento "Maneja la complejidad".
+        Debes responder en el *Json Schema* configurado en tu *Response format*.
+        El nombre del comportamiento, el nombre de la dimensión y la respuesta del candidato, *déjalos exactamente igual* a como está en el documento "cultural-assessment.pdf". Lo único que debes agregar es tu calificación y la justificación de tu calificación de cada pregunta y al finalizar el feedback general.
+        *Adopta una postura crítica y profesional. Estás evaluando la idoneidad de un candidato para un cargo específico. Considera esta prueba como una instancia formal para **valorar sus competencias, razonamiento y capacidad* para generar valor en el rol. Sé riguroso y objetivo en tu análisis.`;
       }
       if (assistantName === AssistantName.TECHNICAL_ASSESSMENT) {
         if (!technicalAssessment) return UPLOAD_FILE_PROMPT;

@@ -14,16 +14,16 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
     try {
       const lowRange = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: positionData.position_salary_range?.currency || "USD",
-      }).format(Number(positionData.position_salary_range?.salary_range?.min));
+        currency: positionData.position_entity.salary?.currency || "USD",
+      }).format(Number(positionData.position_entity.salary?.salary_range?.min));
       const highRange = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: positionData.position_salary_range?.currency || "USD",
-      }).format(Number(positionData.position_salary_range?.salary_range?.max));
-      return ` ${lowRange} - ${highRange} ${positionData.position_salary_range?.currency} `;
+        currency: positionData.position_entity.salary?.currency || "USD",
+      }).format(Number(positionData.position_entity.salary?.salary_range?.max));
+      return ` ${lowRange} - ${highRange} ${positionData.position_entity.salary?.currency} `;
     } catch (error) {
       console.error("Error formatting salary range", error);
-      return ` ${positionData.position_salary_range?.salary_range?.min} - ${positionData.position_salary_range?.salary_range?.max} ${positionData.position_salary_range?.currency} `;
+      return ` ${positionData.position_entity.salary?.salary_range?.min} - ${positionData.position_entity.salary?.salary_range?.max} ${positionData.position_entity.salary?.currency} `;
     }
   };
 
@@ -31,19 +31,21 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
     try {
       const salary = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: positionData.position_salary_range?.currency || "USD",
-      }).format(Number(positionData.position_salary_range?.salary));
+        currency: positionData.position_entity.salary?.currency || "USD",
+      }).format(Number(positionData.position_entity.salary?.salary));
 
       return `${salary}`;
     } catch (error) {
       console.error("Error formatting fixed salary", error);
-      return ` ${positionData.position_salary_range?.salary} ${positionData.position_salary_range?.currency} `;
+      return ` ${positionData.position_entity.salary?.salary} ${positionData.position_entity.salary?.currency} `;
     }
   };
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 p-6">
-      <h1 className="text-4xl font-bold">{positionData.position_role} </h1>
+      <h1 className="text-4xl font-bold">
+        {positionData.position_entity.role}{" "}
+      </h1>
       {/* #1 - Descripción de la empresa */}
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
@@ -60,7 +62,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💻 Descripción del puesto </h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.position_description}
+          {positionData.position_entity.description}
         </p>
       </section>
       {/* #3 - Ubicación */}
@@ -69,8 +71,8 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 📍 Ubicación </h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.position_city} /{" "}
-          {countryNameLookup(positionData.position_country || "CO")}
+          {positionData.position_entity.city} /{" "}
+          {countryNameLookup(positionData.position_entity.country_code || "CO")}
         </p>
       </section>
       {/* #4 - Modo de trabajo */}
@@ -79,7 +81,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💻 Modo de trabajo </h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.position_work_mode}
+          {positionData.position_entity.work_mode}
         </p>
       </section>
       {/* #5 - Experiencia requerida */}
@@ -88,7 +90,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2>🧑‍💻 Experiencia requerida </h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.position_seniority}
+          {positionData.position_entity.seniority}
         </p>
       </section>
       {/* #6 - Responsabilidades */}
@@ -97,7 +99,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2>🚀 Responsabilidades</h2>
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
-          {positionData.position_responsabilities?.map((item, idx) => (
+          {positionData.position_entity.responsabilities?.map((item, idx) => (
             <li key={idx} className="text-sm">
               {item}
             </li>
@@ -111,7 +113,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2>🎯 Habilidades clave</h2>
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
-          {positionData.position_skills?.map((item, idx) => (
+          {positionData.position_entity.skills?.map((item, idx) => (
             <li key={idx} className="text-sm">
               {item.name}
             </li>
@@ -119,14 +121,14 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
         </ul>
       </div>
       {/* #8 - Educación */}
-      {positionData.position_education &&
-        positionData.position_education.length > 0 && (
+      {positionData.position_entity.education &&
+        positionData.position_entity.education.length > 0 && (
           <div className="w-full space-y-3">
             <div className="flex flex-col gap-2 font-semibold">
               <h2> 🎓 Educación</h2>
             </div>
             <ul className="list-disc space-y-1 pl-6 text-gray-600">
-              {positionData.position_education?.map((item, idx) => (
+              {positionData.position_entity.education?.map((item, idx) => (
                 <li key={idx} className="text-sm">
                   {item}
                 </li>
@@ -135,14 +137,14 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           </div>
         )}
       {/* #9 - Idioma y Nivel */}
-      {positionData.position_languages &&
-        positionData.position_languages.length > 0 && (
+      {positionData.position_entity.languages &&
+        positionData.position_entity.languages.length > 0 && (
           <div className="w-full space-y-3">
             <div className="flex flex-col gap-2 font-semibold">
               <h2> 🌐 Idioma requerido</h2>
             </div>
             <ul className="list-disc space-y-1 pl-6 text-gray-600">
-              {positionData.position_languages?.map((lang, idx) => (
+              {positionData.position_entity.languages?.map((lang, idx) => (
                 <li key={idx} className="text-sm">
                   {lang.name}
                 </li>
@@ -156,12 +158,12 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💰 Rango Salarial</h2>
         </div>
 
-        {!positionData.position_salary_range && (
+        {!positionData.position_entity.salary.salary && (
           <div className="space-y-4 text-gray-600">
             <p>📌 La compensación salarial se compartirá durante el proceso.</p>
           </div>
         )}
-        {positionData.position_salary_range?.salary_range && (
+        {positionData.position_entity.salary?.salary_range && (
           <div className="space-y-4 text-gray-600">
             <p>
               📌 La compensación para este rol está dentro del rango de{" "}
@@ -171,8 +173,8 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           </div>
         )}
 
-        {positionData.position_salary_range?.salary &&
-          Number(positionData.position_salary_range?.salary) > 0 && (
+        {positionData.position_entity.salary?.salary &&
+          Number(positionData.position_entity.salary?.salary) > 0 && (
             <div className="space-y-4 text-gray-600">
               <p>
                 📌 La compensación para este rol es de {formatFixedSalary()}{" "}
@@ -187,7 +189,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2>🎁 Lo que ofrecemos</h2>
         </div>
         <ul className="list-disc space-y-1 pl-6 text-gray-600">
-          {positionData.position_benefits?.map((item, idx) => (
+          {positionData.position_entity.benefits?.map((item, idx) => (
             <li key={idx} className="text-sm">
               {item}
             </li>
