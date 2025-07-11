@@ -55,6 +55,9 @@ export const apiEndpoints = {
   refreshTokens() {
     return `${BASE_URL}/auth/refresh_tokens`;
   },
+  positionsByBusiness({ businessId }: { businessId: string }) {
+    return `${BASE_URL}/position/list/${businessId}`;
+  },
   positionDetails({
     token,
     positionId,
