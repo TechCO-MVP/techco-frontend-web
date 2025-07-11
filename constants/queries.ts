@@ -19,6 +19,7 @@ export const QUERIES = {
   POSITION_CONFIG_LIST_ALL: () => ["position-config-list"] as const,
   PIPE_DATA_ALL: ["pipefy-pipe"] as const,
   POSITION_BY_ID: (id: string) => ["position-by-id", id] as const,
+  POSITIONS_BY_BUSINESS: (id: string) => ["positions-by-business", id] as const,
   FILE_PROCESSING_STATUS: (id: string) =>
     ["file-processing-status", id] as const,
 };
