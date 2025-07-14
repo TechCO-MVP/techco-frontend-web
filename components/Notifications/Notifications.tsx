@@ -68,14 +68,14 @@ export function Notifications({
   });
 
   const [open, setOpen] = useState(false);
-  const count = useMemo(
-    () =>
-      filteredNotifications?.reduce(
-        (acc, n) => (n.status === "NEW" || n.status === "READ" ? acc + 1 : acc),
-        0,
-      ) ?? 0,
-    [filteredNotifications],
-  );
+  // const count = useMemo(
+  //   () =>
+  //     filteredNotifications?.reduce(
+  //       (acc, n) => (n.status === "NEW" || n.status === "READ" ? acc + 1 : acc),
+  //       0,
+  //     ) ?? 0,
+  //   [filteredNotifications],
+  // );
 
   useEffect(() => {
     if (open) return;
