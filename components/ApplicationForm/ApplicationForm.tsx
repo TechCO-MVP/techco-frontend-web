@@ -322,7 +322,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const currentPhase = findPhaseByName(
     // PHASE_NAMES.FINALISTS,
     card.current_phase.name,
-    position.position_flow,
+    position.position_entity.position_flow,
   );
   // Compute if all checkboxes are selected (no undefined values)
   const allSkillsAnswered = positionData.position_entity.skills.every(
@@ -393,9 +393,9 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           backgroundColor: "rgba(255,255,255,0.8)",
         }}
       >
-        <div className="mx-auto flex w-[75vw] flex-col overflow-y-auto overflow-x-hidden border-b-[5px] border-b-talent-orange-500 bg-white px-4 py-12 shadow-talent-green">
+        <div className="mx-auto flex w-[90vw] flex-col overflow-y-auto overflow-x-hidden border-b-[5px] border-b-talent-orange-500 bg-white px-4 py-4 shadow-talent-green md:w-[75vw] md:py-12">
           {/* Progress Tracker */}
-          <div className="mx-auto flex w-full flex-col bg-white px-4 py-8 text-center">
+          <div className="md-py-8 mx-auto flex w-full flex-col bg-white px-4 py-2 text-center">
             <CandidateStepper
               currentPhase={currentPhase}
               positionFlow={position.position_entity.position_flow}
@@ -437,7 +437,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   defaultValue="+51"
                   onValueChange={(value) => setSelectedDialCode(value)}
                 >
-                  <SelectTrigger className="focus:ring-none w-[140px] rounded-r-none border-r-0 focus:ring-0">
+                  <SelectTrigger className="focus:ring-none max-w-[80px] rounded-r-none border-r-0 focus:ring-0 md:max-w-[140px]">
                     <SelectValue placeholder="Código" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px]">
@@ -759,7 +759,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                 </a>
               </label>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
               <Button
                 variant="ghost"
                 className="hover: bg-secondary px-8 text-talent-green-500"
