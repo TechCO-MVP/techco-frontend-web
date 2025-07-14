@@ -68,14 +68,13 @@ export function Notifications({
   });
 
   const [open, setOpen] = useState(false);
-  // const count = useMemo(
-  //   () =>
-  //     filteredNotifications?.reduce(
-  //       (acc, n) => (n.status === "NEW" || n.status === "READ" ? acc + 1 : acc),
-  //       0,
-  //     ) ?? 0,
-  //   [filteredNotifications],
-  // );
+  const notificationsToShow = useMemo(
+    () =>
+      filteredNotifications?.filter(
+        (n) => n.status === "NEW" || n.status === "READ",
+      ),
+    [filteredNotifications],
+  );
 
   useEffect(() => {
     if (open) return;
@@ -127,6 +126,23 @@ export function Notifications({
     };
   }, [filteredNotifications]);
 
+  const notificationsCount = useMemo(() => {
+    return {
+      action_required: notificationsToShow?.filter(
+        (n) => n.phase_type === PhaseType.ACTION_CALL,
+      ).length,
+      informative: notificationsToShow?.filter(
+        (n) =>
+          (n.notification_type !== NotificationType.TAGGED_IN_COMMENT &&
+            !n.phase_type) ||
+          n.phase_type === PhaseType.INFORMATIVE,
+      ).length,
+      mention: notificationsToShow?.filter(
+        (n) => n.notification_type === NotificationType.TAGGED_IN_COMMENT,
+      ).length,
+    };
+  }, [notificationsToShow]);
+
   if (isLoading)
     return (
       <div className="flex gap-1">
@@ -140,12 +156,12 @@ export function Notifications({
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
           {i18n.label}
-          <Badge className="flex items-center gap-1 bg-white text-black">
-            {categorizedNotifications.action_required.length}
+          <Badge className="flex items-center gap-1 bg-white text-black hover:bg-talent-green-500 hover:text-white">
+            {notificationsCount.action_required}
             <OctagonAlert className="h-4 w-4" />
-            {categorizedNotifications.informative.length}
+            {notificationsCount.informative}
             <Info className="h-4 w-4" />
-            {categorizedNotifications.mention.length}
+            {notificationsCount.mention}
             <MessageCircleMore className="h-4 w-4" />
           </Badge>
         </span>
