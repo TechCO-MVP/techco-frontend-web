@@ -354,7 +354,7 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="assessment" className="border-0">
-                      <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 font-bold">
+                      <AccordionTrigger className="bg-[#F5F5F5] px-6 py-4 text-left font-bold">
                         Haz click acá para iniciar tu prueba
                       </AccordionTrigger>
                       <AccordionContent className="flex flex-col gap-4 text-balance">
