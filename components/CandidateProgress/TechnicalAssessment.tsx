@@ -210,7 +210,7 @@ export const TechnicalAssessment: React.FC<{
         </AccordionItem>
         <AccordionItem value="challenge">
           <AccordionTrigger className="bg-gray-50 px-6 py-4 hover:bg-gray-100">
-            El Reto
+            Contexto de tu caso de negocio
           </AccordionTrigger>
           <AccordionContent className="flex items-center px-6 py-4">
             <p>{assessment.challenge}</p>

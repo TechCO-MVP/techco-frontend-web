@@ -345,7 +345,7 @@ export const CreateTechnicalTestManually: FC<
 
       <section className="w-full space-y-3">
         <div className="flex items-center gap-2 font-semibold">
-          <h2> El Reto</h2>
+          <h2> Contexto de tu caso de negocio</h2>
         </div>
         {mode === "preview" ? (
           <p className="cursor-text leading-relaxed text-gray-600">
@@ -353,7 +353,7 @@ export const CreateTechnicalTestManually: FC<
           </p>
         ) : (
           <Textarea
-            placeholder="El Reto"
+            placeholder="Contexto de tu caso de negocio"
             className="w-full"
             value={progress?.challenge}
             onChange={(e) => {
