@@ -1,5 +1,5 @@
 "use client";
-import { Bell } from "lucide-react";
+import { Bell, Info, MessageCircleMore, OctagonAlert } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -140,8 +140,13 @@ export function Notifications({
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
           {i18n.label}
-          <Badge className="bg-talent-green-500 hover:bg-talent-green-700">
-            {count}
+          <Badge className="flex items-center gap-1 bg-white text-black">
+            {categorizedNotifications.action_required.length}
+            <OctagonAlert className="h-4 w-4" />
+            {categorizedNotifications.informative.length}
+            <Info className="h-4 w-4" />
+            {categorizedNotifications.mention.length}
+            <MessageCircleMore className="h-4 w-4" />
           </Badge>
         </span>
       </SheetTrigger>

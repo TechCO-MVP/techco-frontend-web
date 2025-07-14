@@ -222,15 +222,18 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     <div className="flex w-full flex-col">
       <div className="mb-8 flex justify-between border-b pb-8">
         <div className="flex w-full flex-col items-start gap-2">
-          <Link
-            href={`/${lang}/dashboard/positions?business_id=${businessParam || rootBusiness?._id}`}
-            replace
-          >
-            <Button variant="ghost" className="-mx-8 text-sm">
-              <ChevronLeft className="h-4 w-4" />
-              {i18n.goBack}
-            </Button>
-          </Link>
+          <div className="flex w-full justify-between">
+            <Link
+              href={`/${lang}/dashboard/positions?business_id=${businessParam || rootBusiness?._id}`}
+              replace
+            >
+              <Button variant="ghost" className="-mx-8 text-sm">
+                <ChevronLeft className="h-4 w-4" />
+                {i18n.goBack}
+              </Button>
+            </Link>
+            <Notifications positions={positions} dictionary={dictionary} />
+          </div>
 
           <div className="flex w-full items-center justify-between gap-1">
             <div className="flex items-center justify-center gap-1">
@@ -263,8 +266,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             </div>
 
             <div className="flex items-center gap-8">
-              <Notifications positions={positions} dictionary={dictionary} />
-
               {filterStatus?.body.status === "completed" && (
                 <Button
                   className="place-self-center"
