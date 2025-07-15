@@ -56,7 +56,7 @@ export const apiEndpoints = {
     return `${BASE_URL}/auth/refresh_tokens`;
   },
   positionsByBusiness({ businessId }: { businessId: string }) {
-    return `${BASE_URL}/position/list/${businessId}`;
+    return `${BASE_URL}/position_configuration/list/${businessId}`;
   },
   positionDetails({
     token,

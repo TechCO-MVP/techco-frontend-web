@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
-import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import {
   Assessment,
   DraftPositionData,
@@ -33,6 +32,7 @@ import { SoftSkillsSheet } from "./SoftSkillsSheet";
 import { Input } from "../ui/input";
 import { useNextPhase } from "@/hooks/use-next-phase";
 import React from "react";
+import { usePositionsByBusiness } from "@/hooks/use-position-by-business";
 
 type CopySoftSkillsProps = {
   dictionary: Dictionary;
@@ -54,9 +54,8 @@ export const CopySoftSkills: FC<Readonly<CopySoftSkillsProps>> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const { data: positionConfiguration } = usePositionConfigurations({
-    all: true,
-    businessId: id,
+  const { data: positionConfiguration } = usePositionsByBusiness({
+    id,
   });
 
   const { mutate: nextPhase, isPending: isNextPhasePending } = useNextPhase({
@@ -117,7 +116,11 @@ export const CopySoftSkills: FC<Readonly<CopySoftSkillsProps>> = ({
       ),
     );
   }, [positionConfiguration]);
-
+  console.log(
+    "%c[Debug] completedSoftSkills",
+    "background-color: teal; font-size: 20px; color: white",
+    completedSoftSkills,
+  );
   const filteredSoftSkills = useMemo(() => {
     if (!searchQuery.trim()) return completedSoftSkills;
     return completedSoftSkills?.filter((position) => {

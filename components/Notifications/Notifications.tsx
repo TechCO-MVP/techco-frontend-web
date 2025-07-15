@@ -155,8 +155,7 @@ export function Notifications({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <span className="flex cursor-pointer items-center justify-center gap-1">
-          {i18n.label}
-          <Badge className="flex items-center gap-1 bg-white text-black hover:bg-talent-green-500 hover:text-white">
+          <Badge className="flex items-center gap-1 bg-talent-green-500 text-white hover:bg-talent-green-500">
             {notificationsCount.action_required}
             <OctagonAlert className="h-4 w-4" />
             {notificationsCount.informative}

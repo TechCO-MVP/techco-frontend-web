@@ -10,7 +10,6 @@ import { ChevronLeft, Loader2 } from "lucide-react";
 import { Heading } from "../Typography/Heading";
 import { Text } from "../Typography/Text";
 
-import { usePositionConfigurations } from "@/hooks/use-position-configurations";
 import {
   DraftPositionData,
   PositionConfigurationPhaseTypes,
@@ -35,6 +34,7 @@ import { useUpdatePositionConfiguration } from "@/hooks/use-update-position-conf
 import { TechnicalSkillsSheet } from "./TechnicalSkillsSheet";
 import { Input } from "../ui/input";
 import { useNextPhase } from "@/hooks/use-next-phase";
+import { usePositionsByBusiness } from "@/hooks/use-position-by-business";
 
 type CopyTechnicalSkillsProps = {
   dictionary: Dictionary;
@@ -56,9 +56,8 @@ export const CopyTechnicalSkills: FC<Readonly<CopyTechnicalSkillsProps>> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const { data: positionConfiguration } = usePositionConfigurations({
-    all: true,
-    businessId: id,
+  const { data: positionConfiguration } = usePositionsByBusiness({
+    id,
   });
 
   const { mutate: nextPhase, isPending: isNextPhasePending } = useNextPhase({

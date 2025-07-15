@@ -22,6 +22,7 @@ import { useNextPhase } from "@/hooks/use-next-phase";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERIES } from "@/constants/queries";
 import ModeSelectionSkeleton from "./ModeSelectionSkeleton";
+import { usePositionsByBusiness } from "@/hooks/use-position-by-business";
 type ModeSelectionProps = {
   dictionary: Dictionary;
 };
@@ -127,6 +128,9 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
     all: true,
     businessId: businessId,
   });
+
+  const { data: positionsByBusiness, isLoading: isLoadingPositionsByBusiness } =
+    usePositionsByBusiness({ id: businessId });
 
   const currentPosition = useMemo(() => {
     return positionConfiguration?.body?.data?.find(
@@ -259,7 +263,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
   };
 
   const canCopy = () => {
-    const configs = positionConfiguration?.body?.data;
+    const configs = positionsByBusiness?.body?.data;
 
     if (!configs || configs.length === 0) return false;
     switch (activePhase?.type) {
@@ -282,6 +286,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
                 phase.status === "COMPLETED",
             ).length > 0,
         );
+
         return completedSoftSkills.length > 0;
       case PositionConfigurationPhaseTypes.TECHNICAL_TEST:
         const completedTechnicalTests = configs.filter(
@@ -367,6 +372,7 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
 
   if (
     isLoading ||
+    isLoadingPositionsByBusiness ||
     activePhase?.type === PositionConfigurationPhaseTypes.READY_TO_PUBLISH
   )
     return <ModeSelectionSkeleton />;
