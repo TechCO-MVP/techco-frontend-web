@@ -95,7 +95,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
     }
   };
 
-  const getColumnColor = (columnName: string) => {
+  const getColumnBorder = (columnName: string) => {
     switch (columnName) {
       case "Resultado Fit Cultural":
       case "Primera entrevista programada":
@@ -104,21 +104,19 @@ export const BoardColumn: React.FC<ColumnProps> = ({
       case "Entrevista final programada":
       case "Resultado entrevista final":
       case "Finalistas":
-        return "bg-[#f9c00733]";
+        return "border border-t-8 border-[#f9c00733]";
 
       default:
-        return "bg-[#17594738]";
+        return "border border-t-8 border-[#17594738]";
     }
   };
 
   return (
     <div
       className={cn(
-        "flex h-full w-[21.5rem] min-w-[21.5rem] flex-col overflow-hidden rounded-lg bg-gray-100 shadow-md",
+        "flex h-full w-[21.5rem] min-w-[21.5rem] flex-col overflow-hidden rounded-lg bg-white shadow-md",
         {
-          "border border-green-200 bg-green-200": draggedCard && canDrop,
-          "border border-red-500 bg-red-200": draggedCard && !canDrop,
-          [getColumnColor(column.name)]: true,
+          [getColumnBorder(column.name)]: true,
         },
       )}
       onDragOver={handleDragOver}
