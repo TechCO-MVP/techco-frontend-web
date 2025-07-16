@@ -559,7 +559,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               cumples con este requisito, lamentablemente no podremos tener en
               cuenta tu postulación.
             </h3>
-            <span>{position.position_seniority}</span>
+            <span>{position.position_entity.seniority}</span>
             <div className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <Checkbox

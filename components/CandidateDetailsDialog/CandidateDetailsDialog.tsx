@@ -83,6 +83,13 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 interface PhaseData {
   id: string;
@@ -176,7 +183,11 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const { card: userCard } = usePipefyCard({
     cardId: card.id,
   });
-
+  console.log(
+    "%c[Debug] userCard",
+    "background-color: teal; font-size: 20px; color: white",
+    userCard,
+  );
   // const { fileProcessingStatus } = useFileProcessingStatus(fetchProcessId);
 
   // const { mutate: getAssistantResponse } = useAssistantResponse({
@@ -354,11 +365,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     const offerSentPhase = pipe.phases.find(
       (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
     );
-    console.log(
-      "%c[Debug] offerSentPhase",
-      "background-color: teal; font-size: 20px; color: white",
-      offerSentPhase,
-    );
     if (!offerSentPhase) return null;
     const initialFilterPhase = findPhaseByName(
       PHASE_NAMES.INITIAL_FILTER,
@@ -408,11 +414,6 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
       case PHASE_NAMES.INITIAL_FILTER:
         const offerSentPhase = pipe.phases.find(
           (phase) => phase.name === PHASE_NAMES.OFFER_SENT,
-        );
-        console.log(
-          "%c[Debug] offerSentPhase",
-          "background-color: teal; font-size: 20px; color: white",
-          offerSentPhase,
         );
         if (!offerSentPhase) return null;
         return (
@@ -736,6 +737,93 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const [isEmailTooltipOpen, setEmailTooltipOpen] = useState(false);
   const [isPhoneTooltipOpen, setPhoneTooltipOpen] = useState(false);
 
+  const renderDocuments = (attachments: { url: string }[]) => {
+    // Group attachments by category
+    const grouped: Record<string, { url: string }[]> = {
+      technical: [],
+      cultural: [],
+      other: [],
+    };
+
+    attachments.forEach((attachment) => {
+      const { url } = attachment;
+      const fileName = new URL(url).pathname.split("/").pop();
+      if (fileName?.includes("technical-assessment")) {
+        grouped.technical.push(attachment);
+      } else if (fileName?.includes("cultural-assessment")) {
+        grouped.cultural.push(attachment);
+      } else {
+        grouped.other.push(attachment);
+      }
+    });
+
+    return (
+      <Accordion type="multiple" className="flex flex-col gap-4">
+        {grouped.technical.length > 0 && (
+          <AccordionItem value="technical">
+            <AccordionTrigger>Caso de Negocio</AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">
+                {grouped.technical.map(({ url }) => {
+                  const fileName = new URL(url).pathname.split("/").pop();
+                  return (
+                    <Button key={url} variant="outline" asChild>
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        {fileName}
+                      </a>
+                    </Button>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+        {grouped.cultural.length > 0 && (
+          <AccordionItem value="cultural">
+            <AccordionTrigger>
+              Prueba de Retos y Comportamientos
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">
+                {grouped.cultural.map(({ url }) => {
+                  const fileName = new URL(url).pathname.split("/").pop();
+                  return (
+                    <Button key={url} variant="outline" asChild>
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        {fileName}
+                      </a>
+                    </Button>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+        {grouped.other.length > 0 && (
+          <AccordionItem value="other">
+            <AccordionTrigger>
+              Documentos suministrados por el candidato
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">
+                {grouped.other.map(({ url }) => {
+                  const fileName = new URL(url).pathname.split("/").pop();
+                  return (
+                    <Button key={url} variant="outline" asChild>
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        {fileName}
+                      </a>
+                    </Button>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+      </Accordion>
+    );
+  };
+
   return (
     <TooltipProvider>
       <Dialog modal open={open} onOpenChange={handleOpenChange}>
@@ -773,7 +861,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                         />
                       </span>
                     </div>
-                    <Heading level={3} className="text-base">
+                    <Heading level={4} className="text-base">
                       {candidateName}
                     </Heading>
                   </div>
@@ -805,12 +893,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                 >
                   {i18n.commentsTabTitle}
                 </TabsTrigger>
-                {/* <TabsTrigger
-                className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
-                value="history"
-              >
-                {i18n.historyTabTitle}
-              </TabsTrigger> */}
+                <TabsTrigger
+                  className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
+                  value="documents"
+                >
+                  {i18n.documentsTabTitle}
+                </TabsTrigger>
                 <TabsTrigger
                   className="border-spacing-4 rounded-none border-black shadow-none data-[state=active]:border-b-2 data-[state=active]:shadow-none"
                   value="results"
@@ -1073,12 +1161,12 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                   />
                 </div>
               </TabsContent>
-              {/* <TabsContent
-              value="history"
-              className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
-            >
-              <PhaseHistory dictionary={dictionary} pipe={pipe} card={card} />
-            </TabsContent> */}
+              <TabsContent
+                value="documents"
+                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+              >
+                {renderDocuments(card.attachments)}
+              </TabsContent>
               <TabsContent
                 style={{ scrollbarGutter: "stable" }}
                 value="results"

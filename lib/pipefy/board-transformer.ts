@@ -22,6 +22,7 @@ export class PipefyBoardTransformer {
         cards_count: phase.cards_count,
         cards: {
           nodes: phase.cards.nodes.map((node) => ({
+            attachments: node.attachments,
             phases_history: node.phases_history,
             current_phase: node.current_phase,
             comments: node.comments,

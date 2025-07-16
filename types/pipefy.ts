@@ -43,6 +43,10 @@ export type PipefyNode = {
   fields: PipefyField[];
   comments?: PipefyComment[];
   current_phase: PipefyPhase;
+  attachments: {
+    url: string;
+    createdAt: string;
+  }[];
   phases_history: {
     duration: number;
     lastTimeIn: string;

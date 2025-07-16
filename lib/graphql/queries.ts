@@ -5,6 +5,7 @@ export const GET_CARD = gql`
     card(id: $cardId) {
       attachments {
         url
+        createdAt
         field {
           id
           index_name
@@ -84,6 +85,7 @@ export const GET_PIPE = gql`
           nodes {
             attachments {
               url
+              createdAt
             }
             phases_history {
               duration

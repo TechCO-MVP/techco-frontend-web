@@ -7,6 +7,7 @@ import { type BoardState } from "@/types/pipefy";
 import { Text } from "@/components/Typography/Text";
 import { Button } from "@/components/ui/button";
 import {
+  BadgeInfo,
   ChevronLeft,
   Share2,
   SlidersHorizontal,
@@ -45,6 +46,12 @@ import { MissingFieldsDialog } from "./MissingFieldsDialog";
 import { usePositionById } from "@/hooks/use-position-by-id";
 import { PositionSheet } from "../CreatePosition/PositionSheet";
 import { DraftPositionData, HiringPositionData } from "@/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 type BoardProps = {
   dictionary: Dictionary;
 };
@@ -218,11 +225,22 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     }
   };
 
+  const getFilterColor = (label: string) => {
+    switch (label) {
+      case "Retos y Comportamientos":
+      case "Primer entrevista":
+      case "Caso de Negocio":
+      case "Entrevista final":
+        return "bg-[#f9c00733]";
+      default:
+        return "bg-[#17594738]";
+    }
+  };
   return (
     <div className="flex w-full flex-col">
       <div className="mb-8 flex justify-between border-b pb-8">
         <div className="flex w-full flex-col items-start gap-2">
-          <div className="flex w-full justify-between">
+          <div className="mt-2 flex w-full justify-between">
             <Link
               href={`/${lang}/dashboard/positions?business_id=${businessParam || rootBusiness?._id}`}
               replace
@@ -306,76 +324,112 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
           />
           {searchTerm && <span className="text-sm">({resultCount})</span>}
         </div>
-        <div className="flex gap-6">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                className="border border-dashed shadow-sm"
-              >
-                <SlidersHorizontal /> {i18n.filterLabel}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="text-base font-bold">Filtrar</h4>
-                </div>
-                <Separator />
-
-                <div className="grid gap-2">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-bold">
-                      {dictionary.userCard.roleAlignment}
-                    </h4>
-                  </div>
-
-                  {MATCH_OPTIONS.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option}
-                        checked={matchFilter === option}
-                        onCheckedChange={() => handleMatchChange(option)}
-                      />
-                      <label
-                        htmlFor={option}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {option}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                <Separator />
-
-                <div className="grid gap-2">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-bold">
-                      {dictionary.userCard.candidateSource}
-                    </h4>
-                  </div>
-
-                  {SOURCE_OPTIONS.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option}
-                        checked={sourceFilter === option}
-                        onCheckedChange={() => handleSourceChange(option)}
-                      />
-                      <label
-                        htmlFor={option}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {option}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+        <TooltipProvider delayDuration={0}>
+          <div className="flex gap-6">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 rounded-full bg-[#17594738] px-4 py-1 text-sm">
+                Fase Automática
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <BadgeInfo className="h-4 w-4 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="max-w-[260px] text-sm font-normal"
+                  >
+                    Esta fase es automática. Talent Connect se encarga por ti,
+                    sin tareas pendientes.
+                  </TooltipContent>
+                </Tooltip>
               </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 rounded-full bg-[#f9c00733] px-4 py-1 text-sm">
+                Fase de Gestión
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <BadgeInfo className="h-4 w-4 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="max-w-[260px] text-sm font-normal"
+                  >
+                    Esta fase necesita tu acción. Tu misión: dejarla en cero.
+                    Revisa resultados, programa entrevistas y avanza candidatos.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="border border-dashed shadow-sm"
+                >
+                  <SlidersHorizontal /> {i18n.filterLabel}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="text-base font-bold">Filtrar</h4>
+                  </div>
+                  <Separator />
+
+                  <div className="grid gap-2">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">
+                        {dictionary.userCard.roleAlignment}
+                      </h4>
+                    </div>
+
+                    {MATCH_OPTIONS.map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={option}
+                          checked={matchFilter === option}
+                          onCheckedChange={() => handleMatchChange(option)}
+                        />
+                        <label
+                          htmlFor={option}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+
+                  <div className="grid gap-2">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">
+                        {dictionary.userCard.candidateSource}
+                      </h4>
+                    </div>
+
+                    {SOURCE_OPTIONS.map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={option}
+                          checked={sourceFilter === option}
+                          onCheckedChange={() => handleSourceChange(option)}
+                        />
+                        <label
+                          htmlFor={option}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </TooltipProvider>
       </div>
       <div className="mb-4 flex gap-4">
         {quickFilters.map((label) => (
@@ -386,6 +440,9 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
               "h-6 bg-talent-orange-500 hover:bg-talent-orange-600",
               !activeQuickFilters.includes(label) &&
                 "bg-secondary text-black hover:bg-primary/20",
+              {
+                [getFilterColor(label)]: true,
+              },
             )}
           >
             {label} ({quickFilterCounts[label] ?? 0})
