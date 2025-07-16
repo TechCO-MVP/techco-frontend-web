@@ -48,6 +48,7 @@ import {
   Business,
   DraftPositionData,
   PositionConfiguration,
+  PositionConfigurationFlowTypes,
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
   TechnicalAssessment,
@@ -76,6 +77,8 @@ import AnimatedModal from "../ChatBot/AnimatedModal";
 import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
 import { Input } from "../ui/input";
 import { Locale } from "@/i18n-config";
+import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
+import { Loader2 } from "lucide-react";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -96,7 +99,21 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     tabParam === "actives" || tabParam === "drafts" ? tabParam : "actives";
   const [positionToDelete, setPositionToDelete] = useState<string>();
   const [priorityFilter, setPriorityFilter] = useState<string | null>();
-
+  const { mutate, isPending } = useCreatePositionConfiguration({
+    onSuccess(data) {
+      const { body } = data;
+      const { data: positionData } = body;
+      queryClient.invalidateQueries({
+        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
+      });
+      router.push(
+        `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${positionData._id}`,
+      );
+    },
+    onError(error) {
+      console.log("[Error]", error);
+    },
+  });
   const priorityOptions = ["high", "medium", "low"];
 
   // const [_, startTransition] = useTransition();
@@ -560,6 +577,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     setDateFilter((prev) => (prev === value ? null : value));
   };
 
+  const onCreatePosition = () => {
+    if (!selectedCompany?._id) return;
+    mutate({
+      flow_type: PositionConfigurationFlowTypes.HIGH_PROFILE_FLOW,
+      business_id: selectedCompany?._id,
+    });
+  };
+
   return (
     <div className="flex w-full flex-col px-8 py-6">
       {/* Top Section */}
@@ -647,13 +672,19 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             dictionary={dictionary}
             type="first_time_onboarding"
           />
-          <Link
+          {/* <Link
             href={`companies/${selectedCompany?._id}/position-configuration/create`}
+          > */}
+          <Button
+            disabled={isPending}
+            onClick={onCreatePosition}
+            variant="talentGreen"
+            className="flex items-center"
           >
-            <Button variant="talentGreen" className="flex items-center">
-              <Plus /> {i18n.createPosition}
-            </Button>
-          </Link>
+            {isPending ? <Loader2 className="animate-spin" /> : <Plus />}{" "}
+            {i18n.createPosition}
+          </Button>
+          {/* </Link> */}
         </div>
       </div>
 
