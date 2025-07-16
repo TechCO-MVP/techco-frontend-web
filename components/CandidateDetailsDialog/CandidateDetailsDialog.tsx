@@ -835,7 +835,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
           onInteractOutside={(event) => event.preventDefault()}
           className="flex max-h-[80vh] min-h-[80vh] max-w-[1350px]"
         >
-          <div className="flex flex-col border-r-4">
+          <div className="flex w-[450px] min-w-[450px] flex-col border-r-4">
             <div className="flex flex-col gap-2 pt-2">
               <div className="mb-2 flex gap-4">
                 <div className="flex flex-col items-center justify-center gap-1.5">
@@ -1135,23 +1135,25 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               </TabsContent>
               <TabsContent
                 value="comments"
-                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+                className="max-h-[70vh] w-full min-w-[380px] max-w-screen-lg overflow-y-auto"
               >
-                <div className="flex flex-col-reverse gap-6 p-6">
-                  {card.comments?.map((comment) => {
-                    return (
-                      <Fragment key={comment.id}>
-                        <div className="h-[1px] w-full bg-gray-200"></div>
-                        <PhaseComment
-                          phaseLabel={i18n.phaseLabel}
-                          stakeHolders={stakeHolders}
-                          date={comment.created_at}
-                          comment={comment.text}
-                        />
-                      </Fragment>
-                    );
-                  })}
-                </div>
+                {card.comments && card.comments.length > 0 && (
+                  <div className="flex flex-col-reverse gap-6 p-6">
+                    {card.comments.map((comment) => {
+                      return (
+                        <Fragment key={comment.id}>
+                          <div className="h-[1px] w-full bg-gray-200"></div>
+                          <PhaseComment
+                            phaseLabel={i18n.phaseLabel}
+                            stakeHolders={stakeHolders}
+                            date={comment.created_at}
+                            comment={comment.text}
+                          />
+                        </Fragment>
+                      );
+                    })}
+                  </div>
+                )}
                 <div className="flex flex-col gap-6 p-6">
                   <CommentBox
                     position={selectedPosition}
@@ -1163,14 +1165,14 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
               </TabsContent>
               <TabsContent
                 value="documents"
-                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+                className="max-h-[70vh] w-full min-w-[380px] max-w-screen-lg overflow-y-auto"
               >
                 {renderDocuments(card.attachments)}
               </TabsContent>
               <TabsContent
                 style={{ scrollbarGutter: "stable" }}
                 value="results"
-                className="max-h-[70vh] w-full min-w-[410px] max-w-screen-lg overflow-y-auto"
+                className="max-h-[70vh] w-full min-w-[380px] max-w-screen-lg overflow-y-auto"
               >
                 <ResultsTabContent
                   phases={filteredPhases}

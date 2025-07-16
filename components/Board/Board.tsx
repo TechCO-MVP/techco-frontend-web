@@ -231,9 +231,9 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
       case "Primer entrevista":
       case "Caso de Negocio":
       case "Entrevista final":
-        return "bg-[#f9c00733]";
+        return "border-l-[5px] border-[#f9c00733]";
       default:
-        return "bg-[#17594738]";
+        return "border-l-[5px] border-[#17594738]";
     }
   };
   return (
