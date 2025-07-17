@@ -114,7 +114,7 @@ export const BoardColumn: React.FC<ColumnProps> = ({
   return (
     <div
       className={cn(
-        "flex h-full w-[21.5rem] min-w-[21.5rem] flex-col overflow-hidden rounded-lg bg-white shadow-md",
+        "flex h-full min-h-[350px] w-[21.5rem] min-w-[21.5rem] flex-col overflow-hidden rounded-lg bg-white shadow-md",
         {
           [getColumnBorder(column.name)]: true,
         },

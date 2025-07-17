@@ -57,6 +57,12 @@ export const CANDIDATE_DNI_FIELD_ID = "306495670_339242211_dni";
 export const CANDIDATE_FATHERS_FULLNAME_FIELD_ID =
   "306495670_339242211_fathersfullname";
 
+export const CANDIDATE_FATHERS_LASTNAME_FIELD_ID =
+  "305713420_334105217_apellidoscompletosdelpadre";
+
+export const CANDIDATE_MOTHERS_LASTNAME_FIELD_ID =
+  "305713420_334105217_apellidoscompletosdelamadre";
+
 export const CANDIDATE_MOTHERS_FULLNAME_FIELD_ID =
   "306495670_339242211_mothersfullname";
 
@@ -72,6 +78,7 @@ export const INITIAL_FILTER_SCORE_THRESHOLD = 4;
 
 export const GLORIA_BUSINESSES_ID = [
   "685b1e10e6cc8b62bd5c3082",
+  "687894f9a1a5b4328f29ee5d",
   "685dacc01c0b92f2b7120140",
   "685c113b7d122deeabcd0f50",
 ];

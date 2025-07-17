@@ -37,7 +37,7 @@ export function useProfileFilterStatus({
 
       if (!cachedData) return false;
 
-      return cachedData.body.status === "completed" ? false : 10000;
+      return cachedData.body.pipe_id ? false : 5000;
     },
     ...options,
   });

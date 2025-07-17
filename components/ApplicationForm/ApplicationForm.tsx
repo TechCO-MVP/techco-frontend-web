@@ -35,7 +35,9 @@ import {
   CANDIDATE_DNI_FIELD_ID,
   CANDIDATE_EMAIL_FIELD_ID,
   CANDIDATE_FATHERS_FULLNAME_FIELD_ID,
+  CANDIDATE_FATHERS_LASTNAME_FIELD_ID,
   CANDIDATE_MOTHERS_FULLNAME_FIELD_ID,
+  CANDIDATE_MOTHERS_LASTNAME_FIELD_ID,
   CANDIDATE_PHONE_FIELD_ID,
   INITIAL_FILTER_SCORE_THRESHOLD,
   REJECTED_PHASE_NAME,
@@ -85,6 +87,12 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     useState<string>("");
   const [candidateMothersFullname, setCandidateMothersFullname] =
     useState<string>("");
+
+  const [candidateFathersLastname, setCandidateFathersLastname] =
+    useState<string>("");
+  const [candidateMothersLastname, setCandidateMothersLastname] =
+    useState<string>("");
+
   const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
     cardId: positionData.hiring_card_id,
@@ -297,10 +305,22 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
           value: candidateFathersFullname,
         });
       }
+      if (candidateFathersLastname) {
+        values.push({
+          fieldId: CANDIDATE_FATHERS_LASTNAME_FIELD_ID,
+          value: candidateFathersLastname,
+        });
+      }
       if (candidateMothersFullname) {
         values.push({
           fieldId: CANDIDATE_MOTHERS_FULLNAME_FIELD_ID,
           value: candidateMothersFullname,
+        });
+      }
+      if (candidateMothersLastname) {
+        values.push({
+          fieldId: CANDIDATE_MOTHERS_LASTNAME_FIELD_ID,
+          value: candidateMothersLastname,
         });
       }
     }
@@ -340,8 +360,14 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const fathersFullnameCompleted = isGloriaBusiness
     ? candidateFathersFullname
     : true;
+  const fathersLastnameCompleted = isGloriaBusiness
+    ? candidateFathersLastname
+    : true;
   const mothersFullnameCompleted = isGloriaBusiness
     ? candidateMothersFullname
+    : true;
+  const mothersLastnameCompleted = isGloriaBusiness
+    ? candidateMothersLastname
     : true;
   const canSubmit =
     allSkillsAnswered &&
@@ -352,7 +378,9 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     birthdayCompleted &&
     dniCompleted &&
     fathersFullnameCompleted &&
+    fathersLastnameCompleted &&
     mothersFullnameCompleted &&
+    mothersLastnameCompleted &&
     acceptedTerms;
 
   return (
@@ -515,19 +543,32 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label
-                    className="text-sm"
-                    htmlFor="candidate-fathers-fullname"
-                  >
-                    Nombre completo del padre
+                  <Label className="text-sm" htmlFor="candidate-fathers-name">
+                    Nombres completos del padre
                   </Label>
                   <Input
-                    id="candidate-fathers-fullname"
+                    id="candidate-fathers-name"
                     value={candidateFathersFullname}
                     onChange={(e) =>
                       setCandidateFathersFullname(e.target.value)
                     }
-                    placeholder="Juan Pérez"
+                    placeholder="Juan"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label
+                    className="text-sm"
+                    htmlFor="candidate-fathers-fullname"
+                  >
+                    Apellidos completos del padre
+                  </Label>
+                  <Input
+                    id="candidate-fathers-lastname"
+                    value={candidateFathersLastname}
+                    onChange={(e) =>
+                      setCandidateFathersLastname(e.target.value)
+                    }
+                    placeholder="Pérez"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -535,7 +576,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                     className="text-sm"
                     htmlFor="candidate-mothers-fullname"
                   >
-                    Nombre completo de la madre
+                    Nombres completos de la madre
                   </Label>
                   <Input
                     id="candidate-mothers-fullname"
@@ -543,7 +584,23 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                     onChange={(e) =>
                       setCandidateMothersFullname(e.target.value)
                     }
-                    placeholder="María López"
+                    placeholder="María"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label
+                    className="text-sm"
+                    htmlFor="candidate-mothers-lastname"
+                  >
+                    Apellidos completos de la madre
+                  </Label>
+                  <Input
+                    id="candidate-mothers-lastname"
+                    value={candidateMothersLastname}
+                    onChange={(e) =>
+                      setCandidateMothersLastname(e.target.value)
+                    }
+                    placeholder="García"
                   />
                 </div>
               </div>

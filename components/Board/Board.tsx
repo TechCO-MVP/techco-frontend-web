@@ -110,11 +110,13 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
     isPending: pendingPipes,
     refetch: refetchPipe,
   } = usePipefyPipe({
-    pipeId:
-      filterStatus?.body.status === "completed"
-        ? filterStatus?.body.pipe_id
-        : undefined,
+    pipeId: filterStatus?.body.pipe_id || undefined,
   });
+  console.log(
+    "%c[Debug] filterStatus",
+    "background-color: teal; font-size: 20px; color: white",
+    filterStatus,
+  );
 
   const [board, setBoard] = useState<BoardState | undefined>(data);
 
@@ -169,9 +171,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   };
 
   const showInProgress =
-    !loadingPipe &&
-    !loadingProfiles &&
-    filterStatus?.body.status !== "completed";
+    !pendingProfiles && !loadingProfiles && !filterStatus?.body.pipe_id;
 
   const showSkeleton =
     !showInProgress &&
@@ -284,7 +284,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
             </div>
 
             <div className="flex items-center gap-8">
-              {filterStatus?.body.status === "completed" && (
+              {filterStatus?.body.pipe_id && (
                 <Button
                   className="place-self-center"
                   variant="outline"
