@@ -627,7 +627,10 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               defaultCity={positionData.city}
               defaultCountry={positionData.country_code}
               onCountryChange={(country) =>
-                setPositionData({ ...positionData, country_code: country })
+                setPositionData({
+                  ...positionData,
+                  country_code: country.toUpperCase(),
+                })
               }
               onCityChange={(city) =>
                 setPositionData({ ...positionData, city: city })
