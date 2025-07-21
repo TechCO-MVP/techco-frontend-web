@@ -240,11 +240,6 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                         </>
                       )}
                       <div className="flex gap-2">
-                        <AbandonProcessDialog
-                          setShouldRefetch={setShouldRefetch}
-                          dictionary={dictionary}
-                          cardId={positionData.hiring_card_id}
-                        />
                         {section.button_text &&
                           section.button_text !== STATEMENT_BUTTON_TEXT &&
                           card.current_phase.name !==
@@ -364,6 +359,13 @@ export const CandidateProgress: FC<CandidateProgressProps> = ({
                   </Accordion>
                 </div>
               )}
+              <div className="flex gap-2">
+                <AbandonProcessDialog
+                  setShouldRefetch={setShouldRefetch}
+                  dictionary={dictionary}
+                  cardId={positionData.hiring_card_id}
+                />
+              </div>
             </div>
           </div>
         </div>
