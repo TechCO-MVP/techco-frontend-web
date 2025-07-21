@@ -130,7 +130,12 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
     businessId: id,
     email: currentUser?.email,
   });
-
+  const fallBackLanguages = [
+    {
+      name: "Español",
+      level: "Nativo o Avanzado",
+    },
+  ];
   const currentPosition = useMemo(() => {
     return positionConfiguration?.body.data.find(
       (position) => position._id === position_id,
@@ -178,6 +183,10 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       data.work_mode.trim() !== "" &&
       typeof data.seniority === "string" &&
       data.seniority.trim() !== "" &&
+      typeof data.recruiter_user_id === "string" &&
+      data.recruiter_user_id.trim() !== "" &&
+      typeof data.owner_position_user_id === "string" &&
+      data.owner_position_user_id.trim() !== "" &&
       business?.description?.trim() !== ""
     );
   }
@@ -297,7 +306,14 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           phase.name === currentPhase?.name
             ? {
                 ...phase,
-                data: positionData,
+                data: {
+                  ...positionData,
+                  recruiter_user_id:
+                    positionData.recruiter_user_id || localUser?._id || "",
+                  owner_position_user_id:
+                    positionData.owner_position_user_id || localUser?._id || "",
+                  languages: positionData.languages || fallBackLanguages,
+                },
               }
             : phase,
         ) ?? [],
@@ -1226,7 +1242,16 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                 } else {
                   completePhase({
                     position_configuration_id: position_id,
-                    data: positionData,
+                    data: {
+                      ...positionData,
+                      recruiter_user_id:
+                        positionData.recruiter_user_id || localUser?._id || "",
+                      owner_position_user_id:
+                        positionData.owner_position_user_id ||
+                        localUser?._id ||
+                        "",
+                      languages: positionData.languages || fallBackLanguages,
+                    },
                   });
                 }
               }}

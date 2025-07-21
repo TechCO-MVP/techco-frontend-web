@@ -39,6 +39,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type CreateDescriptionManuallyProps = {
   dictionary: Dictionary;
@@ -60,15 +61,24 @@ export const CreateDescriptionManually: FC<
   >("fixed");
   const [positionData, setPositionData] = useState<DraftPositionData>();
   const [isCompleted, setIsCompleted] = useState(false);
+  const fallBackLanguages = [
+    {
+      name: "Español",
+      level: "Nativo o Avanzado",
+    },
+  ];
 
   const { data: positionConfiguration } = usePositionConfigurations({
     id: position_id,
     businessId: id,
   });
 
-  const { users } = useUsers({
+  const { currentUser } = useCurrentUser();
+
+  const { users, localUser } = useUsers({
     businessId: id,
     all: true,
+    email: currentUser?.email,
   });
 
   const { mutate: completePhase, isPending: isCompletePhasePending } =
@@ -192,6 +202,8 @@ export const CreateDescriptionManually: FC<
       data.hiring_priority.trim() !== "" &&
       typeof data.recruiter_user_id === "string" &&
       data.recruiter_user_id.trim() !== "" &&
+      typeof data.owner_position_user_id === "string" &&
+      data.owner_position_user_id.trim() !== "" &&
       business?.description?.trim() !== ""
     );
   }
@@ -928,7 +940,15 @@ export const CreateDescriptionManually: FC<
           onSave={() => {
             completePhase({
               position_configuration_id: position_id,
-              data: { ...positionData, responsible_users: [] },
+              data: {
+                ...positionData,
+                responsible_users: [],
+                languages: positionData.languages || fallBackLanguages,
+                recruiter_user_id:
+                  positionData.recruiter_user_id || localUser?._id || "",
+                owner_position_user_id:
+                  positionData.owner_position_user_id || localUser?._id || "",
+              },
             });
           }}
           saveButtonIcon={<ChevronRight className="h-4 w-4" />}
