@@ -383,6 +383,19 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     mothersLastnameCompleted &&
     acceptedTerms;
 
+  const getCurrency = () => {
+    switch (position.position_entity.salary.currency) {
+      case "PEN":
+        return "(Sol Peruano)";
+      case "COP":
+        return "(Peso Colombiano)";
+      case "MXN":
+        return "(Peso Mexicano)";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="relative flex h-full min-h-screen flex-col items-center justify-center bg-gray-50">
       <header className="w-full px-20 py-8">
@@ -751,7 +764,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               ¿Cuál es tu aspiración salarial para este cargo?
             </p>
             <Input
-              placeholder="Escribe aquí tu expectativa salarial"
+              placeholder={`Escribe aquí tu expectativa salarial ${getCurrency()}`}
               className="max-w-md"
               value={expectedSalary}
               onChange={(e) => {
