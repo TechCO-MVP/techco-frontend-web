@@ -64,7 +64,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [salaryOption, setSalaryOption] = useState<
     "fixed" | "range" | "not-specified"
-  >("fixed");
+  >("not-specified");
   const [steps, setSteps] = useState<Step[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<PositionPhase>();

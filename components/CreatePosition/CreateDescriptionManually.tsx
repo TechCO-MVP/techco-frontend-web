@@ -58,7 +58,7 @@ export const CreateDescriptionManually: FC<
   const { createPositionPage: i18n } = dictionary;
   const [salaryOption, setSalaryOption] = useState<
     "fixed" | "range" | "not-specified"
-  >("fixed");
+  >("not-specified");
   const [positionData, setPositionData] = useState<DraftPositionData>();
   const [isCompleted, setIsCompleted] = useState(false);
   const fallBackLanguages = [
