@@ -2,7 +2,7 @@
 
 import { FC, useEffect, useState } from "react";
 import { Business, DraftPositionData, User } from "@/types";
-import { countryNameLookup } from "@/lib/utils";
+import { countryNameLookup, getWorkMode } from "@/lib/utils";
 import { useUsers } from "@/hooks/use-users";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
@@ -137,7 +137,7 @@ export const PreviewDescriptionContent: FC<Props> = ({
           <h2> 💻 Modo de trabajo</h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.work_mode}
+          {getWorkMode(positionData.work_mode)}
         </p>
       </div>
 

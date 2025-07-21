@@ -2,7 +2,7 @@
 
 import { FC } from "react";
 import { PositionData } from "@/types";
-import { countryNameLookup } from "@/lib/utils";
+import { countryNameLookup, getWorkMode } from "@/lib/utils";
 
 type Props = {
   positionData: PositionData;
@@ -81,7 +81,7 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💻 Modo de trabajo </h2>
         </div>
         <p className="cursor-text leading-relaxed text-gray-600">
-          {positionData.position_entity.work_mode}
+          {getWorkMode(positionData.position_entity.work_mode)}
         </p>
       </section>
       {/* #5 - Experiencia requerida */}

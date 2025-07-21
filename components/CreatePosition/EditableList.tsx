@@ -1,5 +1,6 @@
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import React, { FC, useState } from "react";
+import { Button } from "../ui/button";
 
 type Props = {
   items: string[];
@@ -51,18 +52,19 @@ export const EditableList: FC<Props> = ({ items, onItemsChange }) => {
               {text}
             </span>
           )}
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={(e) => {
               e.stopPropagation();
               handleDelete(index);
             }}
-            className="opacity-0 group-hover:opacity-100"
           >
             <Trash2 className="w-3" />
-          </button>
+          </Button>
         </div>
       ))}
-      <div className="py-2">
+      <div className="flex items-center gap-2 py-2">
         <input
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
@@ -72,6 +74,9 @@ export const EditableList: FC<Props> = ({ items, onItemsChange }) => {
           placeholder="Esto es una lista, escribe un dato, presiona Enter para guardarlo y habilitar otro."
           className="w-full border-b border-gray-300 focus:outline-none"
         />
+        <Button variant="outline" size="icon" onClick={handleAddItem}>
+          <Plus className="w-4" />
+        </Button>
       </div>
     </div>
   );

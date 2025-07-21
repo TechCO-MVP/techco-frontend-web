@@ -2,7 +2,7 @@
 import { PositionData } from "@/types";
 import { Dictionary } from "@/types/i18n";
 import Image from "next/image";
-import { countryNameLookup } from "@/lib/utils";
+import { countryNameLookup, getWorkMode } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { CancelApplicationDialog } from "../CancelApplicationDialog/CancelApplicationDialog";
@@ -63,7 +63,7 @@ export const PositionDetailsPage = ({
                 {countryNameLookup(positionData.position_entity.country_code)}
               </span>
               <span className="mx-2">•</span>
-              <span>{positionData.position_entity.work_mode}</span>
+              <span>{getWorkMode(positionData.position_entity.work_mode)}</span>
               <span className="mx-2">•</span>
               <span>{positionData.business_name}</span>
             </p>

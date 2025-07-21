@@ -372,3 +372,15 @@ export function getTechnicalAssessmentScore(
     allCalificaciones.reduce((sum, v) => sum + v, 0) / allCalificaciones.length;
   return Number(avg.toFixed(1));
 }
+export function getWorkMode(workMode: string) {
+  switch (workMode) {
+    case "REMOTE":
+      return "Remoto";
+    case "HYBRYD":
+      return "Híbrido";
+    case "ON_SITE":
+      return "Presencial";
+    default:
+      return workMode;
+  }
+}

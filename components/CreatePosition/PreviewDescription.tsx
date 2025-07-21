@@ -56,7 +56,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import Link from "next/link";
-
+import { getWorkMode } from "@/lib/utils";
 type Props = {
   dictionary: Dictionary;
 };
@@ -679,7 +679,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
           </div>
           {mode === "preview" ? (
             <p className="cursor-text leading-relaxed text-gray-600">
-              {positionData.work_mode}
+              {getWorkMode(positionData.work_mode)}
             </p>
           ) : (
             <Select

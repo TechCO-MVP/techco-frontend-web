@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { apiEndpoints } from "@/lib/api-endpoints";
-import { countryNameLookup } from "@/lib/utils";
+import { countryNameLookup, getWorkMode } from "@/lib/utils";
 import Link from "next/link";
 import { PositionResponse } from "@/types";
 import { getDictionary } from "@/get-dictionary";
@@ -84,7 +84,9 @@ export default async function Page({
                   {countryNameLookup(positionData.position_entity.country_code)}
                 </span>
                 <span className="mx-2">•</span>
-                <span>{positionData.position_entity.work_mode}</span>
+                <span>
+                  {getWorkMode(positionData.position_entity.work_mode)}
+                </span>
                 <span className="mx-2">•</span>
                 <span>{positionData.business_name}</span>
               </p>
