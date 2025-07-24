@@ -57,6 +57,7 @@ import {
 } from "../ui/tooltip";
 import Link from "next/link";
 import { getWorkMode } from "@/lib/utils";
+import { Checkbox } from "../ui/checkbox";
 type Props = {
   dictionary: Dictionary;
 };
@@ -318,6 +319,59 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
             : phase,
         ) ?? [],
     });
+  };
+  const renderSalaryDisclosed = () => {
+    if (!positionData) return null;
+    return (
+      <div className="flex gap-4">
+        <p className="mb-1 text-sm">Salario Confidencial</p>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+            id={`disclosed-yes`}
+            checked={positionData?.salary?.disclosed === false}
+            onCheckedChange={() =>
+              setPositionData({
+                ...positionData,
+                salary: {
+                  ...positionData.salary,
+                  currency: positionData?.salary?.currency ?? "USD",
+                  salary: positionData?.salary?.salary ?? null,
+                  salary_range: positionData?.salary?.salary_range ?? null,
+                  disclosed: false,
+                },
+              })
+            }
+          />
+          <label htmlFor={`disclosed-yes`} className="text-sm">
+            Si
+          </label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+            id={`disclosed-no`}
+            checked={positionData?.salary?.disclosed === true}
+            onCheckedChange={() =>
+              setPositionData({
+                ...positionData,
+                salary: {
+                  ...positionData.salary,
+                  currency: positionData?.salary?.currency ?? "USD",
+                  salary: positionData?.salary?.salary ?? null,
+                  salary_range: positionData?.salary?.salary_range ?? null,
+                  disclosed: true,
+                },
+              })
+            }
+          />
+          <label htmlFor={`disclosed-no`} className="text-sm">
+            No
+          </label>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -1026,6 +1080,10 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               {salaryOption === "range" && (
                 <div className="space-y-4 text-gray-600">
                   <p>
+                    Salario Confidencial:{" "}
+                    {!positionData?.salary?.disclosed ? "Si" : "No"}
+                  </p>
+                  <p>
                     📌 {i18n.salaryDescriptionStart}
                     {formatSalaryRange()} {i18n.salaryDescriptionEnd}
                   </p>
@@ -1034,6 +1092,11 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
 
               {salaryOption === "fixed" && (
                 <div className="space-y-4 text-gray-600">
+                  <p>
+                    Salario Confidencial:{" "}
+                    {!positionData?.salary?.disclosed ? "Si" : "No"}
+                  </p>
+
                   <p>
                     📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
                     {i18n.salaryDescriptionEnd}.
@@ -1056,6 +1119,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                     setPositionData({
                       ...positionData,
                       salary: {
+                        disclosed: positionData?.salary?.disclosed ?? true,
                         currency: positionData?.salary?.currency ?? "USD",
                         salary: null,
                         salary_range: null,
@@ -1082,7 +1146,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
               </RadioGroup>
               {salaryOption === "range" && (
                 <div className="space-y-4 text-gray-600">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <Input
                       value={positionData?.salary?.salary_range?.min ?? "0"}
                       placeholder="Mínimo"
@@ -1094,6 +1158,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                         setPositionData({
                           ...positionData,
                           salary: {
+                            disclosed: positionData?.salary?.disclosed,
                             currency: positionData?.salary?.currency ?? "USD",
                             salary: null,
                             salary_range: {
@@ -1115,6 +1180,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                         setPositionData({
                           ...positionData,
                           salary: {
+                            disclosed: positionData?.salary?.disclosed,
                             currency: positionData?.salary?.currency ?? "USD",
                             salary: null,
                             salary_range: {
@@ -1125,6 +1191,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                         });
                       }}
                     />
+                    {renderSalaryDisclosed()}
                   </div>
                   <p>
                     📌 {i18n.salaryDescriptionStart}
@@ -1135,7 +1202,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
 
               {salaryOption === "fixed" && (
                 <div className="space-y-4 text-gray-600">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <Input
                       value={positionData?.salary?.salary ?? "0"}
                       placeholder="Salario"
@@ -1147,6 +1214,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                         setPositionData({
                           ...positionData,
                           salary: {
+                            disclosed: positionData?.salary?.disclosed,
                             currency: positionData?.salary?.currency ?? "USD",
                             salary: value,
                             salary_range: undefined,
@@ -1154,6 +1222,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
                         });
                       }}
                     />
+                    {renderSalaryDisclosed()}
                   </div>
                   <p>
                     📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}

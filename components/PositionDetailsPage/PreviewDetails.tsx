@@ -158,22 +158,25 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💰 Rango Salarial</h2>
         </div>
 
-        {!positionData.position_entity.salary.salary && (
+        {(!positionData.position_entity.salary.disclosed ||
+          !positionData.position_entity.salary.salary) && (
           <div className="space-y-4 text-gray-600">
             <p>📌 La compensación salarial se compartirá durante el proceso.</p>
           </div>
         )}
-        {positionData.position_entity.salary?.salary_range && (
-          <div className="space-y-4 text-gray-600">
-            <p>
-              📌 La compensación para este rol está dentro del rango de{" "}
-              {formatSalaryRange()} mensuales, según experiencia y habilidades
-              del candidato.
-            </p>
-          </div>
-        )}
+        {positionData.position_entity.salary?.disclosed &&
+          positionData.position_entity.salary?.salary_range && (
+            <div className="space-y-4 text-gray-600">
+              <p>
+                📌 La compensación para este rol está dentro del rango de{" "}
+                {formatSalaryRange()} mensuales, según experiencia y habilidades
+                del candidato.
+              </p>
+            </div>
+          )}
 
-        {positionData.position_entity.salary?.salary &&
+        {positionData.position_entity.salary?.disclosed &&
+          positionData.position_entity.salary?.salary &&
           Number(positionData.position_entity.salary?.salary) > 0 && (
             <div className="space-y-4 text-gray-600">
               <p>

@@ -118,6 +118,7 @@ export type PositionSkill = {
 export type PositionSalaryRange = {
   currency: string;
   salary: string;
+  disclosed?: boolean;
   salary_range: {
     min: string;
     max: string;
@@ -309,6 +310,7 @@ export type HiringPositionData = {
   }[];
   salary?: {
     currency: string;
+    disclosed?: boolean;
     salary?: string;
     salary_range?: {
       min: string;
@@ -434,6 +436,7 @@ export interface PositionDTO {
 
   salary?: {
     currency: string;
+    disclosed?: boolean;
     salary?: string;
     salary_range?: {
       min: string;
@@ -710,6 +713,7 @@ export interface DraftPositionData {
   status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
   benefits: string[];
   salary?: {
+    disclosed?: boolean;
     currency: string;
     salary: string | null;
     salary_range?: {

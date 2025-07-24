@@ -226,6 +226,10 @@ export const PreviewDescriptionContent: FC<Props> = ({
         {positionData.salary?.salary_range && (
           <div className="space-y-4 text-gray-600">
             <p>
+              Salario Confidencial:{" "}
+              {!positionData.salary?.disclosed ? "Si" : "No"}
+            </p>
+            <p>
               📌 La compensación para este rol está dentro del rango de{" "}
               {formatSalaryRange()} mensuales, según experiencia y habilidades
               del candidato.
@@ -236,6 +240,11 @@ export const PreviewDescriptionContent: FC<Props> = ({
         {positionData.salary?.salary &&
           Number(positionData.salary?.salary) > 0 && (
             <div className="space-y-4 text-gray-600">
+              <p>
+                Salario Confidencial:{" "}
+                {!positionData.salary?.disclosed ? "Si" : "No"}
+              </p>
+
               <p>
                 📌 La compensación para este rol es de {formatFixedSalary()}{" "}
                 mensuales, según experiencia y habilidades del candidato.

@@ -40,6 +40,7 @@ import {
 } from "../ui/tooltip";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { Checkbox } from "../ui/checkbox";
 
 type CreateDescriptionManuallyProps = {
   dictionary: Dictionary;
@@ -217,6 +218,60 @@ export const CreateDescriptionManually: FC<
     "background-color: teal; font-size: 20px; color: white",
     positionData,
   );
+
+  const renderSalaryDisclosed = () => {
+    if (!positionData) return null;
+    return (
+      <div className="flex gap-4">
+        <p className="mb-1 text-sm">Salario Confidencial</p>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+            id={`disclosed-yes`}
+            checked={positionData?.salary?.disclosed === false}
+            onCheckedChange={() =>
+              setPositionData({
+                ...positionData,
+                salary: {
+                  ...positionData.salary,
+                  currency: positionData?.salary?.currency ?? "USD",
+                  salary: positionData?.salary?.salary ?? null,
+                  salary_range: positionData?.salary?.salary_range ?? null,
+                  disclosed: false,
+                },
+              })
+            }
+          />
+          <label htmlFor={`disclosed-yes`} className="text-sm">
+            Si
+          </label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="border-talent-green-500 data-[state=checked]:bg-talent-green-500"
+            id={`disclosed-no`}
+            checked={positionData?.salary?.disclosed === true}
+            onCheckedChange={() =>
+              setPositionData({
+                ...positionData,
+                salary: {
+                  ...positionData.salary,
+                  currency: positionData?.salary?.currency ?? "USD",
+                  salary: positionData?.salary?.salary ?? null,
+                  salary_range: positionData?.salary?.salary_range ?? null,
+                  disclosed: true,
+                },
+              })
+            }
+          />
+          <label htmlFor={`disclosed-no`} className="text-sm">
+            No
+          </label>
+        </div>
+      </div>
+    );
+  };
   if (!positionData) return null;
 
   return (
@@ -499,7 +554,7 @@ export const CreateDescriptionManually: FC<
                 {[
                   { value: "REMOTE", label: "Remoto" },
                   { value: "ON_SITE", label: "Presencial" },
-                  { value: "HYBRID", label: "Híbrido" },
+                  { value: "HYBRYD", label: "Híbrido" },
                 ].map((role) => (
                   <SelectItem key={role.value} value={role.value}>
                     {role.label}
@@ -743,6 +798,7 @@ export const CreateDescriptionManually: FC<
                 setPositionData({
                   ...positionData,
                   salary: {
+                    disclosed: positionData?.salary?.disclosed,
                     salary: positionData?.salary?.salary ?? null,
                     currency: value,
                     salary_range: positionData?.salary?.salary_range ?? null,
@@ -791,6 +847,7 @@ export const CreateDescriptionManually: FC<
                   setPositionData({
                     ...positionData,
                     salary: {
+                      disclosed: positionData?.salary?.disclosed,
                       currency: positionData?.salary?.currency ?? "USD",
                       salary: null,
                       salary_range: null,
@@ -817,7 +874,7 @@ export const CreateDescriptionManually: FC<
             </RadioGroup>
             {salaryOption === "range" && (
               <div className="space-y-4 text-gray-600">
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <Input
                     value={positionData?.salary?.salary_range?.min ?? "0"}
                     placeholder="Mínimo"
@@ -829,6 +886,7 @@ export const CreateDescriptionManually: FC<
                       setPositionData({
                         ...positionData,
                         salary: {
+                          disclosed: positionData?.salary?.disclosed,
                           currency: positionData?.salary?.currency ?? "USD",
                           salary: null,
                           salary_range: {
@@ -850,6 +908,7 @@ export const CreateDescriptionManually: FC<
                       setPositionData({
                         ...positionData,
                         salary: {
+                          disclosed: positionData?.salary?.disclosed,
                           currency: positionData?.salary?.currency ?? "USD",
                           salary: null,
                           salary_range: {
@@ -860,6 +919,7 @@ export const CreateDescriptionManually: FC<
                       });
                     }}
                   />
+                  {renderSalaryDisclosed()}
                 </div>
                 <p>
                   📌 {i18n.salaryDescriptionStart}
@@ -870,7 +930,7 @@ export const CreateDescriptionManually: FC<
 
             {salaryOption === "fixed" && (
               <div className="space-y-4 text-gray-600">
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <Input
                     value={positionData?.salary?.salary ?? "0"}
                     placeholder="Salario"
@@ -882,6 +942,7 @@ export const CreateDescriptionManually: FC<
                       setPositionData({
                         ...positionData,
                         salary: {
+                          disclosed: positionData?.salary?.disclosed,
                           currency: positionData?.salary?.currency ?? "USD",
                           salary: value,
                           salary_range: undefined,
@@ -889,6 +950,7 @@ export const CreateDescriptionManually: FC<
                       });
                     }}
                   />
+                  {renderSalaryDisclosed()}
                 </div>
                 <p>
                   📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}

@@ -174,28 +174,30 @@ export default async function Page({
               </ul>
             </section>
 
-            {positionData.position_entity.salary?.salary_range && (
-              <section className="space-y-3">
-                <div className="flex items-center gap-2 font-semibold">
-                  <h2> 💰 {i18n.salaryRangeLabel}</h2>
-                </div>
+            {positionData.position_entity.salary?.disclosed &&
+              positionData.position_entity.salary?.salary_range && (
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 font-semibold">
+                    <h2> 💰 {i18n.salaryRangeLabel}</h2>
+                  </div>
+                  <div className="space-y-4 text-gray-600">
+                    <p>
+                      📌 {i18n.salaryDescriptionStart} {formatSalaryRange()}{" "}
+                      {i18n.salaryDescriptionEnd}
+                    </p>
+                  </div>
+                </section>
+              )}
+
+            {positionData.position_entity.salary?.disclosed &&
+              positionData.position_entity.salary?.salary && (
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    📌 {i18n.salaryDescriptionStart} {formatSalaryRange()}{" "}
-                    {i18n.salaryDescriptionEnd}
+                    📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
+                    {i18n.salaryDescriptionEnd}.
                   </p>
                 </div>
-              </section>
-            )}
-
-            {positionData.position_entity.salary?.salary && (
-              <div className="space-y-4 text-gray-600">
-                <p>
-                  📌 {i18n.fixedsalaryDescriptionStart} {formatFixedSalary()}
-                  {i18n.salaryDescriptionEnd}.
-                </p>
-              </div>
-            )}
+              )}
             <section className="space-y-3 pb-16">
               <div className="flex items-center gap-2 font-semibold">
                 <h2> 🎁 {i18n.whatWeOfferLabel}</h2>
