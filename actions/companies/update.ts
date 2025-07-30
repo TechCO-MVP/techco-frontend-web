@@ -38,6 +38,7 @@ export async function updateCompanyAction(
         linkedin_url: data.linkedin,
         company_size: data.companySize,
         logo: data.logo,
+        business_configuration: data.business_configuration,
       }),
     });
 

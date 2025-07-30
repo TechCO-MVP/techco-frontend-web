@@ -609,45 +609,109 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   // - final interview score
 
   const getTotalWeightedScore = () => {
-    const scores: number[] = [];
+    // Obtener los pesos configurados del negocio
+    const evaluationWeights =
+      position?.business_configuration?.evaluation_weights;
 
-    if (getSoftSkillsStatus() === "completed") {
-      scores.push(getSoftSkillsScore());
-    }
+    // Si no hay pesos configurados, usar el cálculo original (promedio simple)
+    if (!evaluationWeights || evaluationWeights.length === 0) {
+      const scores: number[] = [];
 
-    if (getCulturalAssessmentStatus() === "completed") {
-      scores.push(getCulturalAssessmentScoreForResults());
-    }
-
-    const isLowProfile =
-      position?.flow_type === PositionConfigurationFlowTypes.LOW_PROFILE_FLOW;
-
-    if (!isLowProfile) {
-      if (getTechnicalAssessmentStatus() === "completed") {
-        scores.push(getTechnicalAssessmentScoreForResults());
+      if (getSoftSkillsStatus() === "completed") {
+        scores.push(getSoftSkillsScore());
       }
 
-      if (firstInterviewScore != null && firstInterviewScore.trim() !== "") {
-        const score = Number(firstInterviewScore);
+      if (getCulturalAssessmentStatus() === "completed") {
+        scores.push(getCulturalAssessmentScoreForResults());
+      }
+
+      const isLowProfile =
+        position?.flow_type === PositionConfigurationFlowTypes.LOW_PROFILE_FLOW;
+
+      if (!isLowProfile) {
+        if (getTechnicalAssessmentStatus() === "completed") {
+          scores.push(getTechnicalAssessmentScoreForResults());
+        }
+
+        if (firstInterviewScore != null && firstInterviewScore.trim() !== "") {
+          const score = Number(firstInterviewScore);
+          if (!isNaN(score)) {
+            scores.push(score);
+          }
+        }
+      }
+
+      if (finalInterviewScore != null && finalInterviewScore.trim() !== "") {
+        const score = Number(finalInterviewScore);
         if (!isNaN(score)) {
           scores.push(score);
         }
       }
-    }
 
-    if (finalInterviewScore != null && finalInterviewScore.trim() !== "") {
-      const score = Number(finalInterviewScore);
-      if (!isNaN(score)) {
-        scores.push(score);
+      if (scores.length === 0) {
+        return 0;
       }
+
+      const totalScore = scores.reduce((acc, score) => acc + score, 0);
+      return totalScore / scores.length;
     }
 
-    if (scores.length === 0) {
+    // Calcular promedio ponderado basado en los pesos configurados
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    // Mapeo de criterios a funciones de score
+    const scoreMappings = {
+      TALENT_DNA: () =>
+        getSoftSkillsStatus() === "completed" ? getSoftSkillsScore() : null,
+      CHALLENGES_AND_BEHAVIORS_RESULT: () =>
+        getCulturalAssessmentStatus() === "completed"
+          ? getCulturalAssessmentScoreForResults()
+          : null,
+      FIRST_INTERVIEW: () => {
+        if (firstInterviewScore != null && firstInterviewScore.trim() !== "") {
+          const score = Number(firstInterviewScore);
+          return !isNaN(score) ? score : null;
+        }
+        return null;
+      },
+      BUSINESS_CASE_RESULT: () => {
+        const isLowProfile =
+          position?.flow_type ===
+          PositionConfigurationFlowTypes.LOW_PROFILE_FLOW;
+        if (!isLowProfile && getTechnicalAssessmentStatus() === "completed") {
+          return getTechnicalAssessmentScoreForResults();
+        }
+        return null;
+      },
+      FINAL_INTERVIEW: () => {
+        if (finalInterviewScore != null && finalInterviewScore.trim() !== "") {
+          const score = Number(finalInterviewScore);
+          return !isNaN(score) ? score : null;
+        }
+        return null;
+      },
+    };
+
+    // Calcular score ponderado para cada criterio
+    evaluationWeights.forEach((weight) => {
+      const getScore = scoreMappings[weight.criterion_type];
+      if (getScore) {
+        const score = getScore();
+        if (score !== null) {
+          totalWeightedScore += score * (weight.weight / 100);
+          totalWeight += weight.weight / 100;
+        }
+      }
+    });
+
+    // Si no hay scores válidos, retornar 0
+    if (totalWeight === 0) {
       return 0;
     }
 
-    const totalScore = scores.reduce((acc, score) => acc + score, 0);
-    return totalScore / scores.length;
+    // Retornar el promedio ponderado
+    return totalWeightedScore / totalWeight;
   };
 
   const resultsPhases: PhaseData[] = [

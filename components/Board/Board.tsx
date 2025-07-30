@@ -52,6 +52,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { WeightsSheet } from "../Openings/WeightsSheet";
+import { EvaluationWeight } from "@/types";
+
 type BoardProps = {
   dictionary: Dictionary;
 };
@@ -67,6 +70,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   ];
   const searchParams = useSearchParams();
   const businessParam = searchParams.get("business_id");
+  const [isWeightsSheetOpen, setIsWeightsSheetOpen] = useState(false);
 
   const { positionDetailsPage: i18n } = dictionary;
   const params = useParams<{ id: string; lang: Locale }>();
@@ -103,6 +107,28 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
   });
 
   const { toast } = useToast();
+
+  const handleSaveWeights = async (criteria: EvaluationWeight[]) => {
+    try {
+      // TODO: Implement API call for saving weights in Board context
+      // Example: await savePositionWeightsAPI({ positionId: id, criteria });
+      console.log("Saving weights for Board position:", id, criteria);
+
+      toast({
+        title: "Pesos actualizados",
+        description:
+          "Los pesos han sido guardados correctamente para esta posición",
+      });
+    } catch (error) {
+      console.error("Error saving weights:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar los pesos",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
 
   const {
     data,
@@ -428,6 +454,13 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
                 </div>
               </PopoverContent>
             </Popover>
+            <Button
+              onClick={() => setIsWeightsSheetOpen(true)}
+              variant="ghost"
+              className="border border-dashed shadow-sm"
+            >
+              <SlidersHorizontal /> Pesos
+            </Button>
           </div>
         </TooltipProvider>
       </div>
@@ -519,6 +552,17 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         onCancel={cancelMove}
         pendingMove={pendingMove}
         i18n={i18n}
+      />
+      <WeightsSheet
+        open={isWeightsSheetOpen}
+        onOpenChange={setIsWeightsSheetOpen}
+        onSave={handleSaveWeights}
+        title="Configurar pesos para esta posición"
+        description="Define qué aspectos tienen más relevancia al evaluar candidatos para esta posición específica. Estos valores se aplicarán solo a esta vacante."
+        saveButtonText="Guardar pesos"
+        initialWeights={
+          selectedPosition?.business_configuration?.evaluation_weights
+        }
       />
     </div>
   );

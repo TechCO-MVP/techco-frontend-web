@@ -79,6 +79,10 @@ import { Input } from "../ui/input";
 import { Locale } from "@/i18n-config";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
 import { Loader2 } from "lucide-react";
+import { WeightsSheet } from "./WeightsSheet";
+import { EvaluationWeight } from "@/types";
+import { updateCompanyAction } from "@/actions/companies/update";
+import { useTransition } from "react";
 
 type OpeningsProps = {
   dictionary: Dictionary;
@@ -99,6 +103,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     tabParam === "actives" || tabParam === "drafts" ? tabParam : "actives";
   const [positionToDelete, setPositionToDelete] = useState<string>();
   const [priorityFilter, setPriorityFilter] = useState<string | null>();
+  const [isWeightsSheetOpen, setIsWeightsSheetOpen] = useState(false);
+  const [, startTransition] = useTransition();
   const { mutate, isPending } = useCreatePositionConfiguration({
     onSuccess(data) {
       const { body } = data;
@@ -585,6 +591,70 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     });
   };
 
+  const handleSaveWeights = async (criteria: EvaluationWeight[]) => {
+    if (!selectedCompany?._id) return;
+
+    try {
+      startTransition(async () => {
+        // Mapear los datos del negocio al formato esperado por updateCompanyAction
+        const businessData = {
+          name: selectedCompany.name,
+          countryCode: selectedCompany.country_code,
+          description: selectedCompany.description || "",
+          website: selectedCompany.url || "",
+          linkedin: selectedCompany.linkedin_url || "",
+          companySize: selectedCompany.company_size,
+          industry: selectedCompany.industry || "",
+          segment: selectedCompany.segment || "",
+          logo: selectedCompany.logo,
+          // Incluir la nueva configuración del negocio
+          business_configuration: {
+            ...selectedCompany.business_configuration,
+            evaluation_weights: criteria,
+          },
+        };
+        console.log(
+          "%c[Debug] businessData",
+          "background-color: teal; font-size: 20px; color: white",
+          businessData,
+          selectedCompany,
+        );
+
+        const updateResponse = await updateCompanyAction(
+          businessData,
+          selectedCompany._id,
+        );
+
+        if (updateResponse.success) {
+          toast({
+            title: "Pesos actualizados",
+            description: "Los pesos han sido guardados correctamente",
+          });
+
+          // Invalidar las queries para refrescar los datos
+          queryClient.invalidateQueries({
+            queryKey: QUERIES.COMPANY_LIST,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description:
+              updateResponse.message || "No se pudieron guardar los pesos",
+            variant: "destructive",
+          });
+        }
+      });
+    } catch (error: unknown) {
+      console.error("Error saving weights:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar los pesos",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return (
     <div className="flex w-full flex-col px-8 py-6">
       {/* Top Section */}
@@ -725,6 +795,13 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                 )}
               >
                 <ArrowUpDown /> {i18n.stateLabel}
+              </Button>
+              <Button
+                onClick={() => setIsWeightsSheetOpen(true)}
+                variant="ghost"
+                className="border border-dashed shadow-sm"
+              >
+                <SlidersHorizontal /> Pesos
               </Button>
               {/* <Button variant="ghost" className="border border-dashed shadow-sm">
             <SlidersHorizontal /> {i18n.filterLabel}
@@ -1188,6 +1265,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
         }}
         onCancel={() => setIsConfirmDeleteDialogOpen(false)}
         dictionary={dictionary}
+      />
+      <WeightsSheet
+        open={isWeightsSheetOpen}
+        onOpenChange={setIsWeightsSheetOpen}
+        onSave={handleSaveWeights}
+        initialWeights={
+          selectedCompany?.business_configuration?.evaluation_weights
+        }
       />
     </div>
   );

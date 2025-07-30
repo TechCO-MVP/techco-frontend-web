@@ -59,7 +59,27 @@ export type Business = {
   segment: string | null;
   industry: string | null;
   parent_business_id: string | null;
+  business_configuration: BusinessConfiguration;
 };
+
+// --- Business Configuration Types ---
+
+export type EvaluationCriterionType =
+  | "TALENT_DNA"
+  | "CHALLENGES_AND_BEHAVIORS_RESULT"
+  | "FIRST_INTERVIEW"
+  | "BUSINESS_CASE_RESULT"
+  | "FINAL_INTERVIEW";
+
+export interface EvaluationWeight {
+  name: string;
+  criterion_type: EvaluationCriterionType;
+  weight: number;
+}
+
+export interface BusinessConfiguration {
+  evaluation_weights: EvaluationWeight[];
+}
 
 export type ListBusinessApiResponse = {
   message: string;
@@ -285,6 +305,7 @@ export type HiringPositionData = {
     name: string;
     level: string;
   }[];
+  business_configuration: BusinessConfiguration;
   benefits: string[];
   work_mode: string;
   status: "CANCELED" | "ACTIVE" | "FINISHED" | "INACTIVE" | "DRAFT"; // Adjust possible statuses if known
