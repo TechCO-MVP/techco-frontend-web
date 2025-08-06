@@ -24,8 +24,9 @@ const getScoreColor = (score: number) => {
 type Props = {
   phase: PositionPhaseSearchResult | null;
   data?: HiringProcess["phases"][number];
+  fullWidth?: boolean;
 };
-export function TechnicalAssessmentResults({ phase, data }: Props) {
+export function TechnicalAssessmentResults({ phase, data, fullWidth }: Props) {
   if (!data || !data.custom_fields?.assistant_response?.assesment_result)
     return null;
   const resultsData = data.custom_fields.assistant_response
@@ -48,7 +49,9 @@ export function TechnicalAssessmentResults({ phase, data }: Props) {
     }
   };
   return (
-    <div className="mx-auto max-w-4xl bg-white p-6">
+    <div
+      className={`mx-auto bg-white p-6 ${fullWidth ? "w-full" : "max-w-4xl"}`}
+    >
       {/* Header Section */}
       <div className="mb-8">
         {phase?.interviewerData?.sections.map((section) => {

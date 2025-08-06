@@ -245,10 +245,12 @@ export type CulturalAssessmentResultType = {
 };
 export type HiringProcess = {
   _id: string;
+  created_at: string;
   business_id: string;
   card_id: string;
   phase_id: string;
   position_id: string;
+
   phases: {
     [key: string]: {
       phase_id: number;
@@ -270,6 +272,13 @@ export type HiringProcess = {
     };
   };
   profile: {
+    source: string;
+    url: string;
+    country_code: string;
+    city: string;
+    current_company_name: string;
+    avatar: string;
+    name: string;
     education: {
       description: string | null;
       description_html: string | null;
@@ -878,3 +887,27 @@ export const PHASE_NAMES = {
   REJECTED: "Descartados",
   ABBANDONED_PROCESS: "Abandonaron el proceso",
 } as const;
+
+export interface EvaluationMetric {
+  id: string;
+  title: string;
+  score?: number;
+  icon: "user" | "target" | "message-circle" | "clock" | "bar-chart";
+  maxScore?: number;
+}
+
+export interface PhaseData {
+  id: string;
+  name: string;
+  score?: number;
+  maxScore: number;
+  component?: React.ReactNode;
+  status: "completed" | "pending" | "in-progress";
+  details?: {
+    description?: string;
+    completedDate?: string;
+    duration?: string;
+    evaluator?: string;
+    notes?: string;
+  };
+}

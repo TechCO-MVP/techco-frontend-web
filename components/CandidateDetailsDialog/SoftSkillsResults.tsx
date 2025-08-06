@@ -24,6 +24,7 @@ interface SoftSkillsResultsProps {
   candidateName?: string;
   position?: HiringPositionData;
   phase: PositionPhaseSearchResult | null;
+  fullWidth?: boolean;
 }
 
 export function SoftSkillsResults({
@@ -31,6 +32,7 @@ export function SoftSkillsResults({
   candidateName = "El candidato",
   phase,
   position,
+  fullWidth,
 }: SoftSkillsResultsProps) {
   // Get the first (and likely only) phase data
 
@@ -151,7 +153,9 @@ export function SoftSkillsResults({
   };
 
   return (
-    <div className="mx-auto max-w-4xl bg-white p-6">
+    <div
+      className={`mx-auto bg-white p-6 ${fullWidth ? "w-full" : "max-w-4xl"}`}
+    >
       <div className="mb-8">
         {phase?.interviewerData?.sections.map((section) => {
           return (
@@ -188,7 +192,15 @@ export function SoftSkillsResults({
         </div>
 
         {/* Accordion for detailed breakdown */}
-        <Accordion type="multiple" className="w-full">
+        <Accordion
+          defaultValue={
+            fullWidth
+              ? ["seniority", "skills", "responsibilities", "salary"]
+              : []
+          }
+          type="multiple"
+          className="w-full"
+        >
           <AccordionItem value="seniority">
             <AccordionTrigger className="text-left hover:no-underline">
               <div className="flex w-full items-center justify-between pr-4">

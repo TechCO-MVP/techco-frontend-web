@@ -23,8 +23,13 @@ const getScoreColor = (score: number) => {
 type Props = {
   phase: PositionPhaseSearchResult | null;
   data?: HiringProcess["phases"][number];
+  fullWidth?: boolean;
 };
-export function CulturalAssessmentResults({ phase, data: phaseData }: Props) {
+export function CulturalAssessmentResults({
+  phase,
+  data: phaseData,
+  fullWidth,
+}: Props) {
   if (
     !phaseData ||
     !phaseData.custom_fields?.assistant_response?.assesment_result
@@ -104,8 +109,9 @@ export function CulturalAssessmentResults({ phase, data: phaseData }: Props) {
         return groupName;
     }
   };
+
   return (
-    <div className="mx-auto max-w-4xl bg-white p-6">
+    <div className={`mx-auto bg-white p-6 ${fullWidth ? "w-full" : ""}`}>
       {/* Header Section */}
       <div className="mb-8">
         {phase?.interviewerData?.sections.map((section) => {
@@ -192,7 +198,15 @@ export function CulturalAssessmentResults({ phase, data: phaseData }: Props) {
               </div>
             </div>
 
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion
+              defaultValue={
+                fullWidth
+                  ? dimensions.map((dimension, index) => `${category}-${index}`)
+                  : []
+              }
+              type="multiple"
+              className="w-full"
+            >
               {dimensions.map((dimension, index) => (
                 <AccordionItem
                   key={index}

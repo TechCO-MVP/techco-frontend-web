@@ -27,6 +27,11 @@ export function useHiringProcess({ hiringProcessId }: HiringProcessParams) {
       }
 
       const data = await response.json();
+      console.log(
+        "%c[Debug] data",
+        "background-color: teal; font-size: 20px; color: white",
+        data,
+      );
 
       if (!data.body.data) {
         throw new Error("Unexpected API response format");

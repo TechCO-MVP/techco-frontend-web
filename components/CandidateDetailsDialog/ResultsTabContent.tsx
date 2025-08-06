@@ -28,12 +28,14 @@ interface ProcessOverviewProps {
   totalWeightedScore?: number;
   maxTotalScore?: number;
   candidateName?: string;
+  fullWidth?: boolean;
 }
 
 export default function ProcessOverview({
   phases,
   totalWeightedScore = 3.15,
   maxTotalScore = 5,
+  fullWidth = false,
 }: ProcessOverviewProps) {
   const getScoreColor = (score: number, maxScore: number) => {
     const percentage = (score / maxScore) * 100;
@@ -46,14 +48,27 @@ export default function ProcessOverview({
     return `${score.toFixed(score % 1 === 0 ? 0 : 1)} de ${maxScore}`;
   };
 
-  const PhaseRow = ({ phase }: { phase: PhaseData }) => {
+  const PhaseRow = ({
+    phase,
+    fullWidth,
+  }: {
+    phase: PhaseData;
+    fullWidth: boolean;
+  }) => {
+    const getPhaseId = (phaseName: string) => {
+      return phaseName.toLowerCase().replace(/\s+/g, "-");
+    };
+
     const hasDetails =
       phase.component ||
       (phase.details && Object.keys(phase.details).length > 0);
 
     if (!hasDetails) {
       return (
-        <div className="flex items-center justify-between border-b px-6 py-4 last:border-b-0">
+        <div
+          id={getPhaseId(phase.name)}
+          className="flex scroll-mt-20 items-center justify-between border-b px-6 py-4 last:border-b-0"
+        >
           <span
             className={`text-left font-medium ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
           >
@@ -76,8 +91,9 @@ export default function ProcessOverview({
 
     return (
       <AccordionItem
+        id={getPhaseId(phase.name)}
         value={phase.id}
-        className="border-b last:border-b-0"
+        className="scroll-mt-20 border-b last:border-b-0"
         disabled={phase.status === "pending"}
       >
         <AccordionTrigger className="px-6 py-4 hover:no-underline">
@@ -102,14 +118,14 @@ export default function ProcessOverview({
         </AccordionTrigger>
         <AccordionContent
           style={{ scrollbarGutter: "stable" }}
-          className="w-fit max-w-[400px] px-2 pb-4"
+          className={`w-fit px-2 pb-4 ${fullWidth ? "w-full" : "max-w-[400px]"}`}
         >
           {phase.component ? (
             phase.component
           ) : (
             <div className="space-y-3 text-sm">
               {phase.details?.notes && (
-                <div>
+                <div className="px-4">
                   <span className="font-medium text-gray-700">Feedback: </span>
                   <span className="text-gray-600">{phase.details.notes}</span>
                 </div>
@@ -124,28 +140,40 @@ export default function ProcessOverview({
   return (
     <Card
       style={{ scrollbarGutter: "stable" }}
-      className="mx-auto w-[410px] p-0"
+      className={`mx-auto w-[410px] p-0 ${fullWidth ? "w-full" : ""}`}
     >
       <CardContent className="p-0">
         <div className="space-y-6 p-8">
           <div>
-            <CardTitle className="mb-6 text-xl font-bold">
-              Resultado general del proceso
-            </CardTitle>
+            {!fullWidth && (
+              <CardTitle className="mb-6 text-xl font-bold">
+                Resultado general del proceso
+              </CardTitle>
+            )}
 
             <div className="overflow-hidden rounded-lg bg-gray-50">
               {/* Header */}
-              <div className="flex items-center justify-between border-b bg-gray-100 px-6 py-3">
-                <span className="font-semibold text-gray-700">
-                  Nombre de la fase
-                </span>
-                <span className="font-semibold text-gray-700">Puntaje</span>
-              </div>
+              {!fullWidth && (
+                <div className="flex items-center justify-between border-b bg-gray-100 px-6 py-3">
+                  <span className="font-semibold text-gray-700">
+                    Nombre de la fase
+                  </span>
+                  <span className="font-semibold text-gray-700">Puntaje</span>
+                </div>
+              )}
 
               {/* Phases */}
-              <Accordion type="multiple" className="w-full">
+              <Accordion
+                defaultValue={fullWidth ? phases.map((phase) => phase.id) : []}
+                type="multiple"
+                className="w-full"
+              >
                 {phases.map((phase) => (
-                  <PhaseRow key={phase.id} phase={phase} />
+                  <PhaseRow
+                    fullWidth={fullWidth}
+                    key={phase.id}
+                    phase={phase}
+                  />
                 ))}
               </Accordion>
 

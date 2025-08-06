@@ -31,7 +31,7 @@ import {
   sanitizeHtml,
 } from "@/lib/utils";
 import { Linkedin } from "@/icons";
-import { Copy, InfoIcon, Link, Mail, Phone } from "lucide-react";
+import { Copy, Eye, InfoIcon, Link, Mail, Phone } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhaseComment from "./PhaseComment";
 import { PipefyFieldValues, PipefyNode, PipefyPipe } from "@/types/pipefy";
@@ -58,6 +58,7 @@ import {
   CulturalAssessmentResultType,
   HiringPositionData,
   PHASE_NAMES,
+  PhaseData,
   PositionConfigurationFlowTypes,
   PositionFlow,
 } from "@/types";
@@ -90,23 +91,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-
-interface PhaseData {
-  id: string;
-  name: string;
-  score?: number;
-  maxScore: number;
-  component?: React.ReactNode;
-  status: "completed" | "pending" | "in-progress";
-  details?: {
-    description?: string;
-    completedDate?: string;
-    duration?: string;
-    evaluator?: string;
-    notes?: string;
-  };
-}
-
+import NextLink from "next/link";
 interface CandidateDetailsDialogProps {
   card: PipefyNode;
   pipe: PipefyPipe;
@@ -925,8 +910,18 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                         />
                       </span>
                     </div>
-                    <Heading level={4} className="text-base">
+                    <Heading
+                      level={4}
+                      className="flex items-center gap-2 text-base"
+                    >
                       {candidateName}
+                      <NextLink
+                        target="_blank"
+                        href={`/dashboard/positions/${position?._id}/candidates/${hiringProcess?._id}`}
+                        className="flex items-center gap-2 text-sm hover:text-talent-green-500"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </NextLink>
                     </Heading>
                   </div>
 
