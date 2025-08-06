@@ -82,3 +82,7 @@ export const GLORIA_BUSINESSES_ID = [
   "685dacc01c0b92f2b7120140",
   "685c113b7d122deeabcd0f50",
 ];
+
+export const CANDIDATE_SOURCE_FIELD_ID = "305713420_334220463_candidatesource2";
+export const CANDIDATE_OTHER_SOURCE_FIELD_ID =
+  "305713420_334220463_othercandidatesource";

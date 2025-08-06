@@ -148,6 +148,16 @@ export type UpdateFieldResponse = {
 export enum CandidateSources {
   LinkedIn = "LinkedIn",
   TalentConnect = "TalentConnect",
+  Computrabajo = "Computrabajo",
+  Bumeran = "Bumeran",
+  CompanyWebsite = "Página web de la empresa",
+  CompanySocialMedia = "Redes sociales de la empresa (Instagram, Facebook, etc.)",
+  UniversityPortal = "Portal universitario o bolsa de empleo académica",
+  EmployeeReferral = "Referido por alguien que trabaja en la empresa",
+  FriendRecommendation = "Recomendación de un amigo o familiar",
+  JobFair = "Evento o feria laboral",
+  DirectEmail = "Correo directo de la empresa / headhunter",
+  Other = "Otros",
 }
 export type PipefyFieldType =
   | "assignee_select"

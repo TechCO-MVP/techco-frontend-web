@@ -39,6 +39,8 @@ import {
   CANDIDATE_MOTHERS_FULLNAME_FIELD_ID,
   CANDIDATE_MOTHERS_LASTNAME_FIELD_ID,
   CANDIDATE_PHONE_FIELD_ID,
+  CANDIDATE_SOURCE_FIELD_ID,
+  CANDIDATE_OTHER_SOURCE_FIELD_ID,
   INITIAL_FILTER_SCORE_THRESHOLD,
   REJECTED_PHASE_NAME,
 } from "@/constants";
@@ -92,6 +94,10 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     useState<string>("");
   const [candidateMothersLastname, setCandidateMothersLastname] =
     useState<string>("");
+
+  const [selectedCandidateSource, setSelectedCandidateSource] =
+    useState<string>("");
+  const [candidateOtherSource, setCandidateOtherSource] = useState<string>("");
 
   const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
@@ -286,6 +292,18 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
         value: candidatePhone,
       });
     }
+    if (selectedCandidateSource) {
+      values.push({
+        fieldId: CANDIDATE_SOURCE_FIELD_ID,
+        value: selectedCandidateSource,
+      });
+    }
+    if (candidateOtherSource) {
+      values.push({
+        fieldId: CANDIDATE_OTHER_SOURCE_FIELD_ID,
+        value: candidateOtherSource,
+      });
+    }
     if (isGloriaBusiness) {
       if (candidateBirthday) {
         values.push({
@@ -369,6 +387,11 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const mothersLastnameCompleted = isGloriaBusiness
     ? candidateMothersLastname
     : true;
+  const candidateSourceCompleted = selectedCandidateSource;
+  const candidateOtherSourceCompleted =
+    selectedCandidateSource === CandidateSources.Other
+      ? candidateOtherSource
+      : true;
   const canSubmit =
     allSkillsAnswered &&
     allResponsibilitiesAnswered &&
@@ -381,6 +404,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     fathersLastnameCompleted &&
     mothersFullnameCompleted &&
     mothersLastnameCompleted &&
+    candidateSourceCompleted &&
+    candidateOtherSourceCompleted &&
     acceptedTerms;
 
   const getCurrency = () => {
@@ -498,6 +523,78 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
               </div>
             </div>
           </div>
+
+          {/* ADN del talento Section */}
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
+            <h2 className="mb-2 text-lg font-medium">
+              ¿A través de qué canal conociste esta oportunidad?
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm" htmlFor="candidate-source">
+                  Canal de origen
+                </Label>
+                <Select
+                  value={selectedCandidateSource}
+                  onValueChange={(value) => setSelectedCandidateSource(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona un canal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={CandidateSources.LinkedIn}>
+                      LinkedIn
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.Computrabajo}>
+                      Computrabajo
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.Bumeran}>
+                      Bumeran
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.CompanyWebsite}>
+                      Página web de la empresa
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.CompanySocialMedia}>
+                      Redes sociales de la empresa (Instagram, Facebook, etc.)
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.UniversityPortal}>
+                      Portal universitario o bolsa de empleo académica
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.EmployeeReferral}>
+                      Referido por alguien que trabaja en la empresa
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.FriendRecommendation}>
+                      Recomendación de un amigo o familiar
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.JobFair}>
+                      Evento o feria laboral
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.DirectEmail}>
+                      Correo directo de la empresa / headhunter
+                    </SelectItem>
+                    <SelectItem value={CandidateSources.Other}>
+                      Otros
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {selectedCandidateSource === CandidateSources.Other && (
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm" htmlFor="candidate-other-source">
+                    Especifica el canal
+                  </Label>
+                  <Input
+                    id="candidate-other-source"
+                    value={candidateOtherSource}
+                    onChange={(e) => setCandidateOtherSource(e.target.value)}
+                    placeholder="Escribe aquí el canal específico"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
           {isGloriaBusiness && (
             <div className="mb-8 border-t px-4 pt-6 md:px-28">
               <h2 className="mb-2 text-lg font-medium">Datos personales</h2>
