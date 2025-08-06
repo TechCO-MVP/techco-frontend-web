@@ -384,3 +384,10 @@ export function getWorkMode(workMode: string) {
       return workMode;
   }
 }
+
+export const getScoreColor = (score: number, maxScore: number) => {
+  const percentage = (score / maxScore) * 100;
+  if (percentage >= 80) return "text-green-600";
+  if (percentage >= 60) return "text-orange-500";
+  return "text-red-500";
+};

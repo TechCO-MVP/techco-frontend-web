@@ -25,6 +25,7 @@ import {
   findPhaseByName,
   formatDate,
   getCulturalAssessmentScore,
+  getScoreColor,
   getTechnicalAssessmentScore,
   timeAgo,
 } from "@/lib/utils";
@@ -193,11 +194,11 @@ export const CandidateProfile = ({
 
     html2pdf()
       .set({
-        margin: 0,
+        margin: [0.5, 0.5, 0.5, 0.5], // Add some margin to prevent content from being cut off
         filename: `${candidateName?.replace(/\s+/g, "-")}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 1, useCORS: true },
-        jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: [25, 20 * 4], orientation: "portrait" }, // A4 width with much larger height
       })
       .from(element)
       .save();
@@ -725,7 +726,12 @@ export const CandidateProfile = ({
 
                   {/* Score */}
                   <div className="text-right">
-                    <div className="text-5xl font-bold text-gray-900">
+                    <div
+                      className={`text-5xl font-bold text-gray-900 ${getScoreColor(
+                        getTotalWeightedScore(),
+                        5,
+                      )}`}
+                    >
                       {getTotalWeightedScore()}
                     </div>
                     <div className="text-sm text-gray-600">

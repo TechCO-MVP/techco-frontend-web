@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { getScoreColor } from "@/lib/utils";
 
 interface PhaseData {
   id: string;
@@ -37,13 +38,6 @@ export default function ProcessOverview({
   maxTotalScore = 5,
   fullWidth = false,
 }: ProcessOverviewProps) {
-  const getScoreColor = (score: number, maxScore: number) => {
-    const percentage = (score / maxScore) * 100;
-    if (percentage >= 80) return "text-green-600";
-    if (percentage >= 60) return "text-orange-500";
-    return "text-red-500";
-  };
-
   const formatScore = (score: number, maxScore: number) => {
     return `${score.toFixed(score % 1 === 0 ? 0 : 1)} de ${maxScore}`;
   };

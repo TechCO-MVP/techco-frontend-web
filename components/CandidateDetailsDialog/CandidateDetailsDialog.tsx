@@ -917,7 +917,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                       {candidateName}
                       <NextLink
                         target="_blank"
-                        href={`/dashboard/positions/${position?._id}/candidates/${hiringProcess?._id}`}
+                        href={`/dashboard/positions/${position?._id}/candidates/${hiringProcess?._id}?business_id=${businessParam}`}
                         className="flex items-center gap-2 text-sm hover:text-talent-green-500"
                       >
                         <Eye className="h-4 w-4" />

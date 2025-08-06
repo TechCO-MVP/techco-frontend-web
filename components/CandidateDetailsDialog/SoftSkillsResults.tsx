@@ -85,8 +85,14 @@ export function SoftSkillsResults({
 
   const seniorityScore = phaseData.custom_fields.has_seniority ? 5 : 1;
   const overallScore = shouldIncludeSalary
-    ? (skillsScore + responsibilitiesScore + salaryScore + seniorityScore) / 4
-    : (skillsScore + responsibilitiesScore + seniorityScore) / 3;
+    ? Math.round(
+        ((skillsScore + responsibilitiesScore + salaryScore + seniorityScore) /
+          4) *
+          10,
+      ) / 10
+    : Math.round(
+        ((skillsScore + responsibilitiesScore + seniorityScore) / 3) * 10,
+      ) / 10;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-CO", {
@@ -157,22 +163,25 @@ export function SoftSkillsResults({
       className={`mx-auto bg-white p-6 ${fullWidth ? "w-full" : "max-w-4xl"}`}
     >
       <div className="mb-8">
-        {phase?.interviewerData?.sections.map((section) => {
-          return (
-            <div key={section.title} className="mb-4 flex flex-col gap-2">
-              <Heading className="text-base font-bold" level={2}>
-                {getGroupTitle(phase.groupName)}
-              </Heading>
-              <Heading className="text-sm font-bold" level={2}>
-                {section.title}
-              </Heading>
-              <Text className="text-sm text-[#090909]">{section.subtitle}</Text>
-              <Text className="text-sm text-[#090909]">
-                {section.description}
-              </Text>
-            </div>
-          );
-        })}
+        {false &&
+          phase?.interviewerData?.sections.map((section) => {
+            return (
+              <div key={section.title} className="mb-4 flex flex-col gap-2">
+                <Heading className="text-base font-bold" level={2}>
+                  {getGroupTitle(phase?.groupName || "")}
+                </Heading>
+                <Heading className="text-sm font-bold" level={2}>
+                  {section.title}
+                </Heading>
+                <Text className="text-sm text-[#090909]">
+                  {section.subtitle}
+                </Text>
+                <Text className="text-sm text-[#090909]">
+                  {section.description}
+                </Text>
+              </div>
+            );
+          })}
       </div>
 
       <div className="space-y-4">
@@ -183,6 +192,9 @@ export function SoftSkillsResults({
               Esta fue su calificación inicial:
             </p>
             <ScoreDisplay />
+            <p className="mb-2 text-2xl font-bold text-green-600">
+              {overallScore} de 5
+            </p>
           </div>
 
           <p className="text-sm text-[#090909]">

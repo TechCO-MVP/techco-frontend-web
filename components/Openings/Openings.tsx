@@ -977,17 +977,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 router.push(
-                                  `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=edit`,
-                                );
-                              }}
-                            >
-                              {i18n.editLabel}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                router.push(
                                   `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${position.position_configuration_id}?mode=duplicate`,
                                 );
                               }}

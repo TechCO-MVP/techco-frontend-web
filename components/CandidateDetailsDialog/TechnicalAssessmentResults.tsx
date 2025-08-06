@@ -54,31 +54,25 @@ export function TechnicalAssessmentResults({ phase, data, fullWidth }: Props) {
     >
       {/* Header Section */}
       <div className="mb-8">
-        {phase?.interviewerData?.sections.map((section) => {
-          return (
-            <div key={section.title} className="mb-4 flex flex-col gap-2">
-              <Heading className="text-base font-bold" level={2}>
-                {getGroupTitle(phase.groupName)}
-              </Heading>
-              <Heading className="text-sm font-bold" level={2}>
-                {section.title}
-              </Heading>
-              <Text className="text-sm text-[#090909]">{section.subtitle}</Text>
-              <Text className="text-sm text-[#090909]">
-                {section.description}
-              </Text>
-            </div>
-          );
-        })}
-
-        {resultsData.feedback_general && (
-          <div className="mb-4 mt-6 rounded-lg bg-blue-50 p-4">
-            <h3 className="mb-2 font-semibold text-gray-900">
-              Feedback General
-            </h3>
-            <p className="text-gray-700">{resultsData.feedback_general}</p>
-          </div>
-        )}
+        {false &&
+          phase?.interviewerData?.sections.map((section) => {
+            return (
+              <div key={section.title} className="mb-4 flex flex-col gap-2">
+                <Heading className="text-base font-bold" level={2}>
+                  {getGroupTitle(phase?.groupName || "")}
+                </Heading>
+                <Heading className="text-sm font-bold" level={2}>
+                  {section.title}
+                </Heading>
+                <Text className="text-sm text-[#090909]">
+                  {section.subtitle}
+                </Text>
+                <Text className="text-sm text-[#090909]">
+                  {section.description}
+                </Text>
+              </div>
+            );
+          })}
 
         {/* Overall Score */}
         <div className="mb-6">
@@ -104,6 +98,14 @@ export function TechnicalAssessmentResults({ phase, data, fullWidth }: Props) {
           <p className="mb-2 text-2xl font-bold text-green-600">
             {overallScore} de 5
           </p>
+          {resultsData.feedback_general && (
+            <div className="mb-4 mt-6 rounded-lg bg-blue-50 p-4">
+              <h3 className="mb-2 font-semibold text-gray-900">
+                Feedback General
+              </h3>
+              <p className="text-gray-700">{resultsData.feedback_general}</p>
+            </div>
+          )}
           <p className="text-[#090909]">
             A continuación, puedes ver el detalle de cómo se construyó ese
             puntaje.

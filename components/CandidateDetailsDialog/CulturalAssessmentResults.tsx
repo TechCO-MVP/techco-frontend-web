@@ -80,19 +80,6 @@ export function CulturalAssessmentResults({
     ).toFixed(1),
   );
 
-  // Calculate total weighted: average of all calificacion values (on 5-point scale)
-  const allCalificaciones = allDimensions.map((d) => d.calificacion);
-  console.log(
-    "%c[Debug] categoryScores",
-    "background-color: teal; font-size: 20px; color: white",
-    { categoryScores },
-  );
-  const totalWeighted = Number(
-    (
-      allCalificaciones.reduce((sum, v) => sum + v, 0) /
-      allCalificaciones.length
-    ).toFixed(1),
-  );
   const getGroupTitle = (groupName: string) => {
     switch (groupName) {
       case "Filtro inicial":
@@ -114,41 +101,27 @@ export function CulturalAssessmentResults({
     <div className={`mx-auto bg-white p-6 ${fullWidth ? "w-full" : ""}`}>
       {/* Header Section */}
       <div className="mb-8">
-        {phase?.interviewerData?.sections.map((section) => {
-          return (
-            <div key={section.title} className="mb-4 flex flex-col gap-2">
-              <Heading className="text-base font-bold" level={2}>
-                {getGroupTitle(phase.groupName)}
-              </Heading>
-              <Heading className="text-sm font-bold" level={2}>
-                {section.title}
-              </Heading>
-              <Text className="text-sm text-[#090909]">{section.subtitle}</Text>
-              <Text className="text-sm text-[#090909]">
-                {section.description}
-              </Text>
-            </div>
-          );
-        })}
-
-        <div className="mt-6 rounded-lg bg-blue-50 p-4">
-          <h3 className="mb-2 font-semibold text-gray-900">Feedback General</h3>
-          <p className="text-gray-700">{resultsData.feedback_general}</p>
-        </div>
+        {false &&
+          phase?.interviewerData?.sections.map((section) => {
+            return (
+              <div key={section.title} className="mb-4 flex flex-col gap-2">
+                <Heading className="text-base font-bold" level={2}>
+                  {getGroupTitle(phase?.groupName || "")}
+                </Heading>
+                <Heading className="text-sm font-bold" level={2}>
+                  {section.title}
+                </Heading>
+                <Text className="text-sm text-[#090909]">
+                  {section.subtitle}
+                </Text>
+                <Text className="text-sm text-[#090909]">
+                  {section.description}
+                </Text>
+              </div>
+            );
+          })}
 
         {/* Total Weighted Score */}
-        <div className="my-8 rounded-lg bg-gray-50 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-gray-900">
-              Total ponderado
-            </span>
-            <span
-              className={`text-lg font-semibold ${getScoreColor(totalWeighted)}`}
-            >
-              {totalWeighted} de 5
-            </span>
-          </div>
-        </div>
 
         {/* Overall Score */}
         <div className="mb-6">
@@ -174,6 +147,13 @@ export function CulturalAssessmentResults({
           <p className="mb-2 text-2xl font-bold text-green-600">
             {overallScore} de 5
           </p>
+
+          <div className="mb-4 mt-6 rounded-lg bg-blue-50 p-4">
+            <h3 className="mb-2 font-semibold text-gray-900">
+              Feedback General
+            </h3>
+            <p className="text-gray-700">{resultsData.feedback_general}</p>
+          </div>
           <p className="text-sm text-[#090909]">
             A continuación, puedes ver el detalle de cómo se construyó ese
             puntaje.
