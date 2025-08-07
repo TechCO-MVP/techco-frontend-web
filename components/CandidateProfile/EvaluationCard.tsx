@@ -8,7 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { EvaluationMetric } from "@/types";
-import { getScoreColor } from "@/lib/utils";
+import { cn, getScoreColor } from "@/lib/utils";
 
 interface EvaluationCardProps {
   metric: EvaluationMetric;
@@ -44,12 +44,16 @@ export function EvaluationCard({ metric }: EvaluationCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div
-              className={`mb-1 text-3xl font-bold text-gray-900 ${getScoreColor(
-                metric.score || 0,
-                maxScore,
-              )}`}
+              className={cn(
+                `mb-1 text-3xl font-bold text-gray-900 ${
+                  (getScoreColor(metric.score || 0, maxScore),
+                  metric.score === 0 && "text-sm font-normal text-gray-400")
+                }`,
+              )}
             >
-              {metric.score !== undefined ? metric.score.toFixed(1) : "-"}
+              {metric.score !== undefined && metric.score > 0
+                ? metric.score.toFixed(1)
+                : "Pendiente"}
             </div>
             <div className="text-sm leading-tight text-gray-600">
               {metric.title}
