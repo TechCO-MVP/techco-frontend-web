@@ -64,8 +64,8 @@ type Props = {
 export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [salaryOption, setSalaryOption] = useState<
-    "fixed" | "range" | "not-specified"
-  >("not-specified");
+    "fixed" | "range" | "not-specified" | undefined
+  >(undefined);
   const [steps, setSteps] = useState<Step[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<PositionPhase>();
@@ -243,7 +243,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
   }, [positionData]);
 
   useEffect(() => {
-    if (isDirty) return;
+    if (!positionData?.salary || salaryOption !== undefined) return;
 
     if (positionData?.salary?.salary_range?.min) {
       setSalaryOption("range");
@@ -252,7 +252,7 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
     } else {
       setSalaryOption("not-specified");
     }
-  }, [positionData, isDirty]);
+  }, [positionData, salaryOption]);
 
   if (!positionData) return null;
 
