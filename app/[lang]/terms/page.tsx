@@ -10,11 +10,12 @@ export default function TermsPage() {
 
       <section className="space-y-6 text-gray-700">
         <p>
-          Bienvenido a Techco S.A.C. ("Techco", "nosotros", "nuestro" o "la
-          Plataforma"), una plataforma SaaS que permite a empresas gestionar sus
-          procesos de contratación, y a los candidatos, participar en ellos. Al
-          acceder, registrarse o utilizar nuestros servicios, usted acepta estar
-          sujeto a los siguientes Términos y Condiciones.
+          Bienvenido a Techco S.A.C. (&quot;Techco&quot;, &quot;nosotros&quot;,
+          &quot;nuestro&quot; o &quot;la Plataforma&quot;), una plataforma SaaS
+          que permite a empresas gestionar sus procesos de contratación, y a los
+          candidatos, participar en ellos. Al acceder, registrarse o utilizar
+          nuestros servicios, usted acepta estar sujeto a los siguientes
+          Términos y Condiciones.
         </p>
 
         <div>
