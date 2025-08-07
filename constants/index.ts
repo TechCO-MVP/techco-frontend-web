@@ -84,5 +84,9 @@ export const GLORIA_BUSINESSES_ID = [
 ];
 
 export const CANDIDATE_SOURCE_FIELD_ID = "305713420_334220463_candidatesource2";
+
 export const CANDIDATE_OTHER_SOURCE_FIELD_ID =
   "305713420_334220463_othercandidatesource";
+
+export const CANDIDATE_INTERVIEW_PREFERENCE_FIELD_ID =
+  "305713420_334220463_interviewpreferences";

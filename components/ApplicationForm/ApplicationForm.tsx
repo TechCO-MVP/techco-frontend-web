@@ -41,6 +41,7 @@ import {
   CANDIDATE_PHONE_FIELD_ID,
   CANDIDATE_SOURCE_FIELD_ID,
   CANDIDATE_OTHER_SOURCE_FIELD_ID,
+  CANDIDATE_INTERVIEW_PREFERENCE_FIELD_ID,
   INITIAL_FILTER_SCORE_THRESHOLD,
   REJECTED_PHASE_NAME,
 } from "@/constants";
@@ -98,6 +99,8 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
   const [selectedCandidateSource, setSelectedCandidateSource] =
     useState<string>("");
   const [candidateOtherSource, setCandidateOtherSource] = useState<string>("");
+  const [candidateInterviewPreference, setCandidateInterviewPreference] =
+    useState<string>("");
 
   const router = useRouter();
   const { card, isLoading: isLoadingCard } = usePipefyCard({
@@ -304,6 +307,12 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
         value: candidateOtherSource,
       });
     }
+    if (candidateInterviewPreference) {
+      values.push({
+        fieldId: CANDIDATE_INTERVIEW_PREFERENCE_FIELD_ID,
+        value: candidateInterviewPreference,
+      });
+    }
     if (isGloriaBusiness) {
       if (candidateBirthday) {
         values.push({
@@ -406,6 +415,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     mothersLastnameCompleted &&
     candidateSourceCompleted &&
     candidateOtherSourceCompleted &&
+    candidateInterviewPreference &&
     acceptedTerms;
 
   const getCurrency = () => {
@@ -592,6 +602,38 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
                   />
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Interview Preferences Section */}
+          <div className="mb-8 border-t px-4 pt-6 md:px-28">
+            <h2 className="mb-2 text-lg font-medium">
+              ¿En qué momento del día te resulta más fácil asistir a una
+              entrevista?
+            </h2>
+            <p className="mb-4 text-sm text-gray-600">
+              Queremos conocer tu disponibilidad para coordinar mejor el
+              encuentro. Aunque la programación final dependerá de la agenda del
+              reclutador, haremos lo posible por tener en cuenta tus
+              preferencias.
+            </p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <Label
+                  className="text-sm"
+                  htmlFor="candidate-interview-preference"
+                >
+                  Preferencia de horario
+                </Label>
+                <Input
+                  id="candidate-interview-preference"
+                  value={candidateInterviewPreference}
+                  onChange={(e) =>
+                    setCandidateInterviewPreference(e.target.value)
+                  }
+                  placeholder="Ej: Mañanas entre 9:00 AM y 12:00 PM"
+                />
+              </div>
             </div>
           </div>
 
