@@ -186,8 +186,6 @@ export const PreviewDescription: FC<Props> = ({ dictionary }) => {
       data.seniority.trim() !== "" &&
       typeof data.recruiter_user_id === "string" &&
       data.recruiter_user_id.trim() !== "" &&
-      typeof data.owner_position_user_id === "string" &&
-      data.owner_position_user_id.trim() !== "" &&
       business?.description?.trim() !== ""
     );
   }
