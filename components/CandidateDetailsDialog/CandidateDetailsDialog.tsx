@@ -34,7 +34,12 @@ import { Linkedin } from "@/icons";
 import { Copy, Eye, InfoIcon, Link, Mail, Phone } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhaseComment from "./PhaseComment";
-import { PipefyFieldValues, PipefyNode, PipefyPipe } from "@/types/pipefy";
+import {
+  CandidateSources,
+  PipefyFieldValues,
+  PipefyNode,
+  PipefyPipe,
+} from "@/types/pipefy";
 import { usePublicPhaseFormLink } from "@/hooks/use-public-phase-form-link";
 
 import { CommentBox } from "../CommentBox/CommentBox";
@@ -72,7 +77,9 @@ import {
 // import { useFileProcessingStatus } from "@/hooks/use-file-processing-status";
 // import { useAssistantResponse } from "@/hooks/use-assistant-response";
 import {
+  CANDIDATE_OTHER_SOURCE_FIELD_ID,
   CANDIDATE_PHONE_FIELD_ID,
+  CANDIDATE_SOURCE_FIELD_ID,
   INVITATION_URL_FIELD_ID,
   STATEMENT_BUTTON_TEXT,
 } from "@/constants";
@@ -132,6 +139,13 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   )?.value;
   const invitationUrl = card.fields.find(
     (field) => field.name === INVITATION_URL_FIELD_ID,
+  )?.value;
+
+  const candidateSourceField = card.fields.find(
+    (field) => field.name === CANDIDATE_SOURCE_FIELD_ID,
+  )?.value;
+  const candidateOtherSourceField = card.fields.find(
+    (field) => field.name === CANDIDATE_OTHER_SOURCE_FIELD_ID,
   )?.value;
 
   const candidateCity =
@@ -1052,6 +1066,14 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                 <div className="flex flex-col gap-2 pt-4">
                   <Text className="text-xs text-muted-foreground">
                     <b>{i18n.candidateSource}:</b> {candidateSource}
+                    {candidateSourceField === CandidateSources.Other &&
+                      candidateOtherSourceField && (
+                        <span> / {candidateOtherSourceField}</span>
+                      )}
+                    {candidateSourceField &&
+                      candidateSourceField !== CandidateSources.Other && (
+                        <span> / {candidateSourceField}</span>
+                      )}
                   </Text>
                   <Text className="text-xs text-muted-foreground">
                     <b>{i18n.processStartDate}:</b>
