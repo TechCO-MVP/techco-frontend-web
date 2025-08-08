@@ -29,6 +29,8 @@ export interface EmptyTableStateProps {
    * Optional className for root
    */
   className?: string;
+
+  disabled?: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ export const EmptyTableState: React.FC<EmptyTableStateProps> = ({
   buttonLabel,
   onClick,
   className,
+  disabled,
 }) => {
   // Render icon: if string, treat as image path; else render as ReactNode
   const renderIcon = () => {
@@ -88,10 +91,11 @@ export const EmptyTableState: React.FC<EmptyTableStateProps> = ({
         </p>
       </div>
       <Button
-        className="hover:bg-talent-green-600 mt-6 h-8 rounded-md bg-talent-green-500 px-6 py-2 text-xs font-medium shadow"
+        className="mt-6 h-8 rounded-md bg-talent-green-500 px-6 py-2 text-xs font-medium shadow hover:bg-talent-green-600"
         onClick={onClick}
         type="button"
         aria-label={buttonLabel}
+        disabled={disabled}
       >
         {buttonLabel}
       </Button>

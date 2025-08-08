@@ -1056,11 +1056,8 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
               title="Aún no has creado vacantes"
               description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
               buttonLabel="Crear vacante"
-              onClick={() =>
-                router.push(
-                  `companies/${selectedCompany?._id}/position-configuration/create`,
-                )
-              }
+              onClick={onCreatePosition}
+              disabled={isPending}
             />
           )}
         </TabsContent>
@@ -1232,14 +1229,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </>
           ) : (
             <EmptyTableState
+              disabled={isPending}
               title="Aún no has creado vacantes"
               description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
               buttonLabel="Crear vacante"
-              onClick={() =>
-                router.push(
-                  `companies/${selectedCompany?._id}/position-configuration/create`,
-                )
-              }
+              onClick={onCreatePosition}
             />
           )}
         </TabsContent>
