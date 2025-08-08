@@ -1010,6 +1010,12 @@ export const CreateDescriptionManually: FC<
                   positionData.recruiter_user_id || localUser?._id || "",
                 owner_position_user_id:
                   positionData.owner_position_user_id || localUser?._id || "",
+                salary: {
+                  currency: positionData?.salary?.currency ?? "COP",
+                  disclosed: positionData?.salary?.disclosed,
+                  salary: positionData?.salary?.salary ?? null,
+                  salary_range: positionData?.salary?.salary_range ?? null,
+                },
               },
             });
           }}

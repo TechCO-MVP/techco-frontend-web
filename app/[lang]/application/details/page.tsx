@@ -3,7 +3,7 @@ import { SendPublicApplicationDialog } from "@/components/SendPublicApplicationD
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 import { apiEndpoints } from "@/lib/api-endpoints";
-import { countryNameLookup } from "@/lib/utils";
+import { countryNameLookup, getWorkMode } from "@/lib/utils";
 import { PositionResponse } from "@/types";
 
 export default async function Page({
@@ -97,6 +97,16 @@ export default async function Page({
               </span>
             </div>
 
+            {/* #4 - Modo de trabajo */}
+            <section className="w-full space-y-3">
+              <div className="flex items-center gap-2 font-semibold">
+                <h2> 💻 Modo de trabajo </h2>
+              </div>
+              <p className="cursor-text leading-relaxed text-gray-600">
+                {getWorkMode(positionData.position_entity.work_mode)}
+              </p>
+            </section>
+
             <section className="space-y-3">
               <div className="flex items-center gap-2 font-semibold">
                 <h2> 🌍 {i18n.aboutUsLabel}</h2>
@@ -142,23 +152,43 @@ export default async function Page({
               </ul>
             </section>
 
-            {positionData.position_education &&
-              positionData.position_education.length > 0 && (
+            {positionData.position_entity.education &&
+              positionData.position_entity.education.length > 0 && (
                 <section className="space-y-3">
                   <div className="flex items-center gap-2 font-semibold">
                     <h2> 🎓 Educación</h2>
                   </div>
                   <ul className="space-y-2">
-                    {positionData.position_education?.map((item, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start gap-2 text-gray-600"
-                      >
-                        {item}
-                      </li>
-                    ))}
+                    {positionData.position_entity.education?.map(
+                      (item, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 text-gray-600"
+                        >
+                          {item}
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </section>
+              )}
+
+            {positionData.position_entity.languages &&
+              positionData.position_entity.languages.length > 0 && (
+                <div className="w-full space-y-3">
+                  <div className="flex flex-col gap-2 font-semibold">
+                    <h2> 🌐 Idioma requerido</h2>
+                  </div>
+                  <ul className="list-disc space-y-1 pl-6 text-gray-600">
+                    {positionData.position_entity.languages?.map(
+                      (lang, idx) => (
+                        <li key={idx} className="text-sm">
+                          {lang.name}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                </div>
               )}
 
             <section className="space-y-3">
@@ -173,6 +203,19 @@ export default async function Page({
                 ))}
               </ul>
             </section>
+            {!positionData.position_entity.salary && (
+              <div className="w-full space-y-3">
+                <div className="flex items-center gap-2 font-semibold">
+                  <h2> 💰 Rango Salarial</h2>
+                </div>
+                <div className="space-y-4 text-gray-600">
+                  <p>
+                    📌 La compensación salarial se compartirá durante el
+                    proceso.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {positionData.position_entity.salary?.disclosed &&
               positionData.position_entity.salary?.salary_range && (
