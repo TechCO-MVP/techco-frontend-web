@@ -419,7 +419,7 @@ export const ApplicationForm: FC<Readonly<ApplicationFormProps>> = ({
     acceptedTerms;
 
   const getCurrency = () => {
-    switch (position.position_entity.salary.currency) {
+    switch (position.position_entity?.salary?.currency) {
       case "PEN":
         return "(Sol Peruano)";
       case "COP":
