@@ -158,7 +158,8 @@ export const PreviewDetails: FC<Props> = ({ positionData }) => {
           <h2> 💰 Rango Salarial</h2>
         </div>
 
-        {(!positionData.position_entity.salary.disclosed ||
+        {(!positionData.position_entity.salary ||
+          !positionData.position_entity.salary.disclosed ||
           !positionData.position_entity.salary.salary) && (
           <div className="space-y-4 text-gray-600">
             <p>📌 La compensación salarial se compartirá durante el proceso.</p>
