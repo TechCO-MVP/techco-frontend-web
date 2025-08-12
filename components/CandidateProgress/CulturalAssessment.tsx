@@ -99,6 +99,31 @@ export const CulturalAssessment = ({
       // const totalDimensions = totalSoftSkills * 3;
       if (assistantName === AssistantName.CULTURAL_FIT_ASSESSMENT) {
         if (!culturalFitAssessment) return UPLOAD_FILE_PROMPT;
+        const totalAnswers = softSkills.reduce(
+          (acc, skill) => acc + skill.dimensions.length,
+          0,
+        );
+
+        // Extract behavior names dynamically from softSkills
+        const behaviorNames = softSkills.map((skill) => skill.name);
+        // Build the complete assessment content with soft skills and responses
+        const assessmentContent = softSkills
+          .map((skill) => {
+            const skillResponses = responses[skill.name] || {};
+            const dimensionsContent = skill.dimensions
+              .map((dimension) => {
+                const response = skillResponses[dimension.name] || "";
+                return `${dimension.name}
+Pregunta: ${dimension.question}
+Respuesta: ${response}`;
+              })
+              .join("\n\n");
+
+            return `Competencia: ${skill.name}
+${dimensionsContent}`;
+          })
+          .join("\n\n");
+
         return `
         # Identidad
     - Eres TICI, un agente de IA para Techco, una empresa de reclutamiento.
@@ -109,17 +134,17 @@ export const CulturalAssessment = ({
 # Objetivos
     - Objetivo Principal: Evaluar objetivamente el texto con la prueba de un candidato con seniority "Junior" para determinar su idoneidad para un cargo en Techco.
     - Objetivos Secundarios:
-        - Calificar y justificar cada una de las 9 respuestas del candidato, asociadas a los comportamientos de "Resolución de problemas”, “Liderazgo” y “Negociación avanzada”. 
+        - Calificar y justificar cada una de las ${totalAnswers} respuestas del candidato, asociadas a los comportamientos de ${behaviorNames.map((name) => `"${name}"`).join(", ")}. 
         - Mantener el nombre del comportamiento, el nombre de la dimensión y la respuesta del candidato exactamente como aparecen en el texto original.
         - Proporcionar un feedback general y profesional al finalizar la evaluación de todos los comportamientos.
         - Asegurar que todas las calificaciones y justificaciones se realicen considerando explícitamente el seniority "Junior" del candidato.
 
 # Contexto
     ## Información de la Empresa
-        - Techco es una empresa especializada en reclutamiento, cuya función principal es programar entrevistas de trabajo.
+        - ${position.business_description}
     ## Información de la Tarea
         - Esta tarea implica la evaluación de la prueba del candidato.
-        - La prueba contiene 9 respuestas de un candidato.
+        - La prueba contiene ${totalAnswers} respuestas de un candidato.
         - La evaluación debe ser objetiva y rigurosa, enfocada en la idoneidad del candidato para un cargo específico.
 
 # Guías de Estilo
@@ -139,38 +164,32 @@ export const CulturalAssessment = ({
         - No debes realizar ninguna acción que no sea la evaluación del documento y la generación del feedback.
     ## Límites de Manejo de Datos
         - Nunca debes alterar el nombre del comportamiento, el nombre de la dimensión o la respuesta del candidato del documento original.
-        - Nunca pronuncies nombres de variables vacías/nulas/marcadores de posición como 'contact_name'.
+        - Nunca pronuncies nombres de variables vacías/nulas/marcadores de lugar como 'contact_name'.
     ## Límites de Estilo de Comunicación
         - No debes utilizar jerga innecesaria o lenguaje informal.
         - No debes repetir información ya proporcionada o evaluada.
 
 # Flujo de Evaluación
     1.  **Inicio de la Evaluación del Documento**
-        - Instrucción: Ten en cuenta que el seniority del candidato es "Junior" para todas las calificaciones y justificaciones.
-    2.  **Evaluación del Comportamiento: Resolución de problemas**
-        - Instrucción: Identifica las 3 preguntas (Pregunta Situacional, Pregunta Experiencial, Pregunta Reflexiva) asociadas al comportamiento “Resolución de problemas” en la prueba.
-        - Instrucción: Para cada una de estas 3 preguntas:
-            - Extrae el "nombre del comportamiento" (Resolución de problemas), la "dimensión" (ej. Pregunta Situacional) y la "respuesta del candidato" *exactamente como están en el documento*.
-            - Califica objetivamente la respuesta del candidato, considerando su seniority "Junior".
-            - Justifica detalladamente tu calificación, explicando por qué la respuesta demuestra o no el nivel esperado de resiliencia para un perfil Junior.
-            - Prepara esta información para la salida final en el formato JSON especificado.
-    3.  **Evaluación del Comportamiento: Liderazgo**
-        - Instrucción: Repite el proceso del paso 2 para el comportamiento “Liderazgo”.
-        - Instrucción: Para cada una de las 3 preguntas asociadas a este comportamiento:
-            - Extrae el "nombre del comportamiento" (Liderazgo), la "dimensión" y la "respuesta del candidato" *exactamente como están en el documento*.
-            - Califica y justifica la respuesta, considerando el seniority "Junior".
-            - Prepara esta información para la salida final en el formato JSON especificado.
-    4.  **Evaluación del Comportamiento: Negociación avanzada**
-        - Instrucción: Repite el proceso del paso 2 para el comportamiento “Negociación avanzada”.
-        - Instrucción: Para cada una de las 3 preguntas asociadas a este comportamiento:
-            - Extrae el "nombre del comportamiento" (Negociación avanzada), la "dimensión" y la "respuesta del candidato" *exactamente como están en el documento*.
-            - Califica y justifica la respuesta, considerando el seniority "Junior".
-            - Prepara esta información para la salida final en el formato JSON especificado.
-    5.  **Generación de Feedback General**
-        - Instrucción: Una vez que hayas completado la calificación y justificación de las 9 preguntas para los 3 comportamientos, genera un feedback general y profesional de toda la prueba.
+        - Instrucción: Ten en cuenta que el seniority del candidato es ${position.position_entity.seniority} para todas las calificaciones y justificaciones.
+    ${softSkills
+      .map(
+        (skill, index) => `
+    ${index + 2}.  **Evaluación del Comportamiento: ${skill.name}**
+        ${index > 0 ? `- Instrucción:  Repite el proceso del paso 2 para el comportamiento ${skill.name}` : ""}
+        - Instrucción: Identifica las ${skill.dimensions.length} preguntas asociadas al comportamiento "${skill.name}" en la prueba.
+        - Instrucción: Para cada una de estas ${skill.dimensions.length} preguntas:
+            - Extrae el "nombre del comportamiento" (${skill.name}), la "dimensión" y la "respuesta del candidato" *exactamente como están en el documento*.
+            - Califica objetivamente la respuesta del candidato, considerando su seniority ${position.position_entity.seniority}.
+            - Justifica detalladamente tu calificación, explicando por qué la respuesta demuestra o no el nivel esperado de ${skill.name.toLowerCase()} para un perfil ${position.position_entity.seniority}.
+            - Prepara esta información para la salida final en el formato JSON especificado.`,
+      )
+      .join("\n")}
+    ${softSkills.length + 2}.  **Generación de Feedback General**
+        - Instrucción: Una vez que hayas completado la calificación y justificación de las ${totalAnswers} preguntas para los ${softSkills.length} comportamientos, genera un feedback general y profesional de toda la prueba.
         - Instrucción: Este feedback debe ser crítico y objetivo, valorando las competencias, el razonamiento y la capacidad del candidato para generar valor en un rol Junior, basándote en el conjunto de sus respuestas.
         - Instrucción: Incluye este feedback en la salida final en el formato JSON especificado.
-    7.  **Finalización de la Evaluación**
+    ${softSkills.length + 3}.  **Finalización de la Evaluación**
         - Instrucción: Presenta toda la evaluación estructurada en el formato JSON descrito en la sección "Formato de Salida de Evaluación".
 
 # Formato de Salida de Evaluación
@@ -179,41 +198,19 @@ export const CulturalAssessment = ({
     - Dentro de "evaluacion_cultural", incluye:
         - "comportamientos": Un array de objetos, cada uno representando un comportamiento evaluado.
             - Cada objeto de comportamiento debe tener:
-                - "nombre_comportamiento": El nombre del comportamiento (ej. "Resiliencia"), *exactamente como en el documento*.
+                - "nombre_comportamiento": El nombre del comportamiento (ej. "${softSkills[0]?.name || "Ejemplo"}"), *exactamente como en el documento*.
                 - "preguntas": Un array de objetos, cada uno para una pregunta evaluada.
                     - Cada objeto de pregunta debe tener:
                         - "dimension": El nombre de la dimensión de la pregunta (ej. "Pregunta Situacional"), *exactamente como en el documento*.
                         - "respuesta_candidato": La respuesta completa del candidato, *exactamente como en el documento*.
                         - "calificacion": Tu calificación objetiva para la respuesta (ej. "Excelente", "Bueno", "Necesita mejorar", o una escala numérica si es aplicable).
-                        - "justificacion": Tu justificación detallada para la calificación, considerando el seniority "Junior".
+                        - "justificacion": Tu justificación detallada para la calificación, considerando el seniority ${position.position_entity.seniority}.
         - "feedback_general": Un string con el feedback general de toda la prueba, crítico y profesional. Debes de decir de la forma más objetiva, el porcentaje de probabilidad de que el prompt haya sido hecho por una inteligencia artificial. 
-    - Asegúrate de que todos los nombres de claves en el JSON sean en "snake_case" y en español.# Prueba del candidato:Competencia: Resolución de Problemas
+    - Asegúrate de que todos los nombres de claves en el JSON sean en "snake_case" y en español.
 
-        # Prueba del candidato:
-
-        Competencia: Resolución de Problemas
-        Reflexiva
-        Pregunta: ¿Qué métodos consideras más efectivos para identificar la causa raíz de un problema?Respuesta:Considero que los métodos más efectivos para identificar la causa raíz de un problema son el análisis de los datos disponibles, el uso de herramientas como los “5 porqués” y el diagrama de Ishikawa. También creo que escuchar a los involucrados es clave, ya que muchas veces quienes están más cerca del problema tienen insights valiosos. Combinar datos con la experiencia del equipo ayuda a evitar suposiciones y llegar al fondo del asunto con precisión.
-        Experiencial
-        Pregunta: Cuéntame sobre un momento en el que enfrentaste un gran desafío en tu carrera. ¿Cómo lo resolviste y qué aprendiste de esa experiencia?Respuesta:En una ocasión, durante el lanzamiento de una funcionalidad clave, notamos una caída significativa en el uso de la app. El equipo estaba confundido, y había presión de los stakeholders. Organicé una revisión cruzada entre Producto, Diseño y Tech para identificar puntos de fricción. Descubrimos que la navegación no era intuitiva y generaba abandono. Hicimos ajustes rápidos y lanzamos una actualización. Aprendí que involucrar a diferentes áreas desde el análisis inicial permite encontrar soluciones más completas y rápidas.
-        Situacional
-        Pregunta: Imagínate que uno de tus productos estrella está presentando una baja inesperada en ventas. ¿Cómo abordarías esta situación para identificar y solucionar el problema?Respuesta:Primero, analizaría los datos de comportamiento de los usuarios para detectar cambios en el uso o el abandono. Paralelamente, activaría entrevistas con clientes recientes y perdidos para entender causas cualitativas. Revisaría también el contexto externo: competidores, cambios en el mercado o estacionalidad. Luego, priorizaría hipótesis y testearía soluciones: puede ser un cambio en el pricing, mejoras en UX o campañas de reactivación. Todo con ciclos cortos de validación y aprendizaje.
-
-        Competencia: Liderazgo
-        Reflexiva
-        Pregunta: ¿Qué crees que distingue a un buen líder de un gran líder y cómo te ves en ese contexto?Respuesta:Un buen líder guía, pero un gran líder inspira. La diferencia está en la capacidad de generar visión, compromiso y crecimiento en su equipo. Un gran líder no solo da instrucciones, sino que genera confianza y empodera a otros. Me esfuerzo por estar en ese segundo grupo: me enfoco en crear entornos seguros, promover la autonomía y dar feedback claro, aunque desafiante. Me veo en evolución, aprendiendo constantemente de mi equipo y de mis errores.
-        Experiencial
-        Pregunta: Describe un momento en tu carrera en el que tuviste que liderar a un equipo en un momento de crisis. ¿Qué hiciste y cuál fue el resultado?Respuesta:Durante una caída crítica de nuestra plataforma justo antes de un demo con inversionistas, el equipo entró en pánico. Organicé una reunión rápida para repartir tareas de forma clara y calmada. Mientras algunos resolvían el backend, otros preparaban un entorno alterno para el demo. Yo mantuve la comunicación con los stakeholders, asegurando transparencia. El demo salió bien y el equipo se sintió respaldado. Aprendí que en la crisis, el tono del líder define la energía del equipo.
-        Situacional
-        Pregunta: Supongamos que tu equipo pierde motivación tras un descenso en las ventas. ¿Qué harías para inspirarlos nuevamente y alinear sus esfuerzos hacia objetivos comunes?Respuesta:Primero me sentaría a escuchar, entender qué están sintiendo y cómo están viviendo la situación. Luego, reforzaría la visión del producto, celebrando pequeños logros y mostrando el impacto real del trabajo. Reestructuraría los objetivos en metas más alcanzables y visibles a corto plazo. Además, involucraría al equipo en la identificación de oportunidades para revertir la situación, haciendo que se sientan parte activa de la solución, no solo ejecutores.
-
-        Competencia: Negociación Avanzada
-        Reflexiva
-        Pregunta: ¿Qué principios consideras indispensables para una negociación exitosa y por qué?Respuesta:Transparencia, preparación y escucha activa. Transparencia para generar confianza, preparación para tener claridad en tus objetivos y límites, y escucha para entender realmente las necesidades de la otra parte. Negociar no es ganar/perder, es buscar un punto de equilibrio donde ambos vean valor. Creo que ceder en cosas pequeñas puede ayudarte a ganar en las importantes.
-        Experiencial
-        Pregunta: Háblame sobre una negociación difícil que enfrentaste. ¿Cuál fue tu estrategia para resolverla y qué aprendiste de esa experiencia?Respuesta:Tuve que negociar una extensión de contrato con un cliente que sentía que los resultados no justificaban la inversión. En lugar de entrar a defendernos, pedí una reunión de diagnóstico conjunto. Mostramos resultados cualitativos que no estaban siendo considerados y propusimos una prueba A/B con mejoras específicas. El cliente aceptó y los nuevos resultados superaron expectativas. Aprendí que validar la perspectiva del otro sin entrar en defensiva abre la puerta a nuevas oportunidades.
-        Situacional
-        Pregunta: Imagínate que estás renegociando un contrato importante con un cliente desconfiado sobre un nuevo producto. ¿Cómo abordarías la negociación para asegurar su satisfacción y la rentabilidad?Respuesta:Primero, escucharía sus preocupaciones en profundidad, para identificar si la desconfianza viene por falta de resultados, desconocimiento o experiencias pasadas. Luego, usaría datos, demos o casos reales para generar confianza en el nuevo producto. Propondría una fase piloto con métricas claras para que el cliente perciba bajo riesgo y alto valor. Además, negociaría términos escalonados que protejan la rentabilidad si el producto demuestra impacto. Siempre buscando construir una relación de largo plazo.`;
+# Prueba del candidato:
+${assessmentContent}
+       `;
       }
       if (assistantName === AssistantName.TECHNICAL_ASSESSMENT) {
         if (!technicalAssessment) return UPLOAD_FILE_PROMPT;
@@ -287,7 +284,11 @@ export const CulturalAssessment = ({
     if (!file) return;
     setSelectedFile(file);
     const prompt = buildPrompt(assistantName);
-    console.log("uploading pdf to serverless");
+    console.log("uploading pdf to serverless", {
+      prompt,
+      assistantName,
+      hiringProcessId,
+    });
     uploadPdf({
       file,
       hiringProcessId,
