@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     notification_type?: string;
     hiring_process_id?: string;
     phase_id?: string;
+    position_id?: string;
   };
 
   try {
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
     notification_type,
     hiring_process_id,
     phase_id,
+    position_id,
   } = body;
 
   if (!user_id || !business_id || !message || !notification_type) {
@@ -62,6 +64,7 @@ export async function POST(req: Request) {
         notification_type,
         hiring_process_id,
         phase_id,
+        position_id,
       }),
     });
 
