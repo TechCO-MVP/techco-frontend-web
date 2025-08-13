@@ -93,7 +93,7 @@ export default function ProcessOverview({
         <AccordionTrigger className="px-6 py-4 hover:no-underline">
           <div className="flex w-full items-center justify-between pr-4">
             <span
-              className={`${fullWidth ? "text-2xl font-bold" : "text-lg"} tracking-tight ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
+              className={`${fullWidth ? "text-2xl font-bold" : "text-lg"} text-left tracking-tight ${phase.status === "pending" ? "text-gray-400" : "text-gray-900"}`}
             >
               {phase.name}
             </span>
