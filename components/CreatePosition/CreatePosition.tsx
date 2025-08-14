@@ -6,8 +6,6 @@ import { useParams, useRouter } from "next/navigation";
 import { FC, useMemo } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
-import { Heading } from "../Typography/Heading";
-import { Text } from "../Typography/Text";
 import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
 import { PositionConfigurationFlowTypes } from "@/types";
 import TemplateSelectionTable from "../TemplateSelectionTable/TemplateSelectionTable";
@@ -85,13 +83,8 @@ export const CreatePosition: FC<Readonly<CreatePositionProps>> = ({
             {i18n.goBack}
           </Button>
         </Link>
-        <Heading className="text-2xl" level={1}>
-          {i18n.selectTemplateTitle}
-        </Heading>
-        <Text className="max-w-[49rem] text-sm text-muted-foreground" type="p">
-          {i18n.selectTemplateDescription}
-        </Text>
-        <div className="mt-8 h-[1px] w-full bg-gray-200"></div>
+
+        <div className="mt-4 h-[1px] w-full bg-gray-200"></div>
       </div>
       <TemplateSelectionTable
         isPending={isPending}

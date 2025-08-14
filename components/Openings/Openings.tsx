@@ -28,7 +28,6 @@ import {
 import {
   ArrowUpDown,
   ChevronDown,
-  Plus,
   SlidersHorizontal,
   Settings,
   BadgeInfo,
@@ -48,7 +47,6 @@ import {
   Business,
   DraftPositionData,
   PositionConfiguration,
-  PositionConfigurationFlowTypes,
   PositionConfigurationPhaseTypes,
   PositionConfigurationTypes,
   TechnicalAssessment,
@@ -77,8 +75,6 @@ import AnimatedModal from "../ChatBot/AnimatedModal";
 import { MODE_SELECTION_ONBOARDING_HIDE_KEY } from "../ChatBot/OnboardingStepper";
 import { Input } from "../ui/input";
 import { Locale } from "@/i18n-config";
-import { useCreatePositionConfiguration } from "@/hooks/use-create-position-configuration";
-import { Loader2 } from "lucide-react";
 import { WeightsSheet } from "./WeightsSheet";
 import { EvaluationWeight } from "@/types";
 import { updateCompanyAction } from "@/actions/companies/update";
@@ -105,21 +101,7 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
   const [priorityFilter, setPriorityFilter] = useState<string | null>();
   const [isWeightsSheetOpen, setIsWeightsSheetOpen] = useState(false);
   const [, startTransition] = useTransition();
-  const { mutate, isPending } = useCreatePositionConfiguration({
-    onSuccess(data) {
-      const { body } = data;
-      const { data: positionData } = body;
-      queryClient.invalidateQueries({
-        queryKey: QUERIES.POSITION_CONFIG_LIST_ALL,
-      });
-      router.push(
-        `/${lang}/dashboard/companies/${selectedCompany?._id}/position-configuration/${positionData._id}`,
-      );
-    },
-    onError(error) {
-      console.log("[Error]", error);
-    },
-  });
+
   const priorityOptions = ["high", "medium", "low"];
 
   // const [_, startTransition] = useTransition();
@@ -583,14 +565,6 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     setDateFilter((prev) => (prev === value ? null : value));
   };
 
-  const onCreatePosition = () => {
-    if (!selectedCompany?._id) return;
-    mutate({
-      flow_type: PositionConfigurationFlowTypes.HIGH_PROFILE_FLOW,
-      business_id: selectedCompany?._id,
-    });
-  };
-
   const handleSaveWeights = async (criteria: EvaluationWeight[]) => {
     if (!selectedCompany?._id) return;
 
@@ -742,19 +716,13 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             dictionary={dictionary}
             type="first_time_onboarding"
           />
-          {/* <Link
+          <Link
             href={`companies/${selectedCompany?._id}/position-configuration/create`}
-          > */}
-          <Button
-            disabled={isPending}
-            onClick={onCreatePosition}
-            variant="talentGreen"
-            className="flex items-center"
           >
-            {isPending ? <Loader2 className="animate-spin" /> : <Plus />}{" "}
-            {i18n.createPosition}
-          </Button>
-          {/* </Link> */}
+            <Button variant="talentGreen" className="flex items-center">
+              {i18n.createPosition}
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -1056,8 +1024,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
               title="Aún no has creado vacantes"
               description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
               buttonLabel="Crear vacante"
-              onClick={onCreatePosition}
-              disabled={isPending}
+              onClick={() =>
+                router.push(
+                  `companies/${selectedCompany?._id}/position-configuration/create`,
+                )
+              }
             />
           )}
         </TabsContent>
@@ -1229,11 +1200,14 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
             </>
           ) : (
             <EmptyTableState
-              disabled={isPending}
               title="Aún no has creado vacantes"
               description={`Crea tu primera vacante y comienza a recibir postulaciones.\nNuestra plataforma te acompaña paso a paso para que el proceso sea ágil y claro.`}
               buttonLabel="Crear vacante"
-              onClick={onCreatePosition}
+              onClick={() =>
+                router.push(
+                  `companies/${selectedCompany?._id}/position-configuration/create`,
+                )
+              }
             />
           )}
         </TabsContent>
