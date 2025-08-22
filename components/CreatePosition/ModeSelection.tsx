@@ -347,8 +347,10 @@ export const ModeSelection: FC<Readonly<ModeSelectionProps>> = ({
       );
     }
     if (
-      currentPosition?.flow_type ===
-        PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW &&
+      (currentPosition?.flow_type ===
+        PositionConfigurationFlowTypes.HIGH_PROFILE_FLOW ||
+        currentPosition?.flow_type ===
+          PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW) &&
       activePhase?.type === PositionConfigurationPhaseTypes.TECHNICAL_TEST
     ) {
       return (
