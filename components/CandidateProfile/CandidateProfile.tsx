@@ -218,7 +218,9 @@ export const CandidateProfile = ({
   const getTotalWeightedScore = () => {
     // Obtener los pesos configurados del negocio
     const evaluationWeights =
-      selectedPosition?.business_configuration?.evaluation_weights;
+      selectedPosition?.business_configuration?.evaluation_weights[
+        selectedPosition.flow_type
+      ];
 
     // Si no hay pesos configurados, usar el cálculo original (promedio simple)
     if (!evaluationWeights || evaluationWeights.length === 0) {
@@ -517,15 +519,15 @@ export const CandidateProfile = ({
     },
     {
       id: "4",
-      title: "Entrevista Final",
-      icon: "clock",
-      score: Number(finalInterviewScore) || 0,
-    },
-    {
-      id: "5",
       title: "Caso de Negocio",
       score: getTechnicalAssessmentScoreForResults(),
       icon: "bar-chart",
+    },
+    {
+      id: "5",
+      title: "Entrevista Final",
+      icon: "clock",
+      score: Number(finalInterviewScore) || 0,
     },
   ];
   return (

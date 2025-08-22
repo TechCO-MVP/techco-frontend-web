@@ -610,7 +610,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
   const getTotalWeightedScore = () => {
     // Obtener los pesos configurados del negocio
     const evaluationWeights =
-      position?.business_configuration?.evaluation_weights;
+      position?.business_configuration?.evaluation_weights[position.flow_type];
 
     // Si no hay pesos configurados, usar el cálculo original (promedio simple)
     if (!evaluationWeights || evaluationWeights.length === 0) {

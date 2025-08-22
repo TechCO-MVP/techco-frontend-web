@@ -90,3 +90,34 @@ export const CANDIDATE_OTHER_SOURCE_FIELD_ID =
 
 export const CANDIDATE_INTERVIEW_PREFERENCE_FIELD_ID =
   "305713420_334220463_interviewpreferences";
+
+export const QUICK_FILTERS = [
+  "ADN del Talento",
+  "Retos y Comportamientos",
+  "Primer entrevista",
+  "Caso de Negocio",
+  "Entrevista final",
+  "Talento sin sesgos",
+  "Descartados",
+];
+
+export const QUICK_FILTER_MAP: Record<string, string[]> = {
+  "ADN del Talento": ["Oferta enviada", "Filtro inicial"],
+  "Retos y Comportamientos": [
+    "Assessment fit Cultural",
+    "Resultado Fit Cultural",
+  ],
+  "Primer entrevista": [
+    "Primera entrevista solicitada",
+    "Primera entrevista programada",
+    "Resultado primer entrevista",
+  ],
+  "Caso de Negocio": ["Assessment técnico", "Resultado Assessment técnico"],
+  "Entrevista final": [
+    "Entrevista final solicitada",
+    "Entrevista final programada",
+    "Resultado entrevista final",
+  ],
+  "Talento sin sesgos": ["Finalistas", "Candidato seleccionado"],
+  Descartados: ["Descartados", "Abandonaron el proceso"],
+};

@@ -565,7 +565,11 @@ export const Openings: FC<Readonly<OpeningsProps>> = ({ dictionary }) => {
     setDateFilter((prev) => (prev === value ? null : value));
   };
 
-  const handleSaveWeights = async (criteria: EvaluationWeight[]) => {
+  const handleSaveWeights = async (criteria: {
+    HIGH_PROFILE_FLOW: EvaluationWeight[];
+    MEDIUM_PROFILE_FLOW: EvaluationWeight[];
+    LOW_PROFILE_FLOW: EvaluationWeight[];
+  }) => {
     if (!selectedCompany?._id) return;
 
     try {

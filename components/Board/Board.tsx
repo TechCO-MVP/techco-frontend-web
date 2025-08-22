@@ -27,6 +27,7 @@ import {
   cn,
   countryLabelLookup,
   getPriority,
+  mapHiringToDraftPosition,
 } from "@/lib/utils";
 import { useOpenPositions } from "@/hooks/use-open-positions";
 import { Notifications } from "@/components/Notifications/Notifications";
@@ -40,12 +41,12 @@ import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
 import { useBoardFilters } from "@/hooks/use-board-filters";
 import { useBoardActions } from "@/hooks/use-board-actions";
-import { MATCH_OPTIONS, SOURCE_OPTIONS } from "@/constants";
+import { MATCH_OPTIONS, QUICK_FILTERS, SOURCE_OPTIONS } from "@/constants";
 import { MovePhaseDialog } from "./MovePhaseDialog";
 import { MissingFieldsDialog } from "./MissingFieldsDialog";
 import { usePositionById } from "@/hooks/use-position-by-id";
 import { PositionSheet } from "../CreatePosition/PositionSheet";
-import { DraftPositionData, HiringPositionData } from "@/types";
+
 import {
   Tooltip,
   TooltipContent,
@@ -59,15 +60,6 @@ type BoardProps = {
   dictionary: Dictionary;
 };
 export const Board: React.FC<BoardProps> = ({ dictionary }) => {
-  const quickFilters = [
-    "ADN del Talento",
-    "Retos y Comportamientos",
-    "Primer entrevista",
-    "Caso de Negocio",
-    "Entrevista final",
-    "Talento sin sesgos",
-    "Descartados",
-  ];
   const searchParams = useSearchParams();
   const businessParam = searchParams.get("business_id");
   const [isWeightsSheetOpen, setIsWeightsSheetOpen] = useState(false);
@@ -108,7 +100,11 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
 
   const { toast } = useToast();
 
-  const handleSaveWeights = async (criteria: EvaluationWeight[]) => {
+  const handleSaveWeights = async (criteria: {
+    HIGH_PROFILE_FLOW: EvaluationWeight[];
+    MEDIUM_PROFILE_FLOW: EvaluationWeight[];
+    LOW_PROFILE_FLOW: EvaluationWeight[];
+  }) => {
     try {
       // TODO: Implement API call for saving weights in Board context
       // Example: await savePositionWeightsAPI({ positionId: id, criteria });
@@ -207,49 +203,6 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
       loadingProfiles ||
       pendingPipes ||
       pendingProfiles);
-
-  const mapHiringToDraftPosition = (
-    selectedPosition: HiringPositionData,
-  ): DraftPositionData | null => {
-    try {
-      return {
-        business_id: "",
-        recruiter_user_id: selectedPosition.recruiter_user_id,
-        owner_position_user_id: selectedPosition.owner_position_user_id,
-        responsible_users: selectedPosition.responsible_users.map(
-          (u) => u.user_id,
-        ),
-        role: selectedPosition.role,
-        seniority: selectedPosition.seniority,
-        country_code: selectedPosition.country_code,
-        city: selectedPosition.city,
-        description: selectedPosition.description,
-        responsabilities: selectedPosition.responsabilities,
-        education: selectedPosition.education,
-        skills: selectedPosition.skills,
-        languages: selectedPosition.languages,
-        hiring_priority: selectedPosition.hiring_priority,
-        work_mode: selectedPosition.work_mode,
-        status: "DRAFT",
-        benefits: selectedPosition.benefits,
-        salary: selectedPosition.salary
-          ? {
-              currency: selectedPosition.salary.currency,
-              salary: selectedPosition.salary.salary ?? null,
-              salary_range: selectedPosition.salary.salary_range
-                ? {
-                    min: selectedPosition.salary.salary_range.min,
-                    max: selectedPosition.salary.salary_range.max,
-                  }
-                : null,
-            }
-          : undefined,
-      };
-    } catch (error) {
-      console.error("Error mapping hiring to draft position", error);
-      return null;
-    }
-  };
 
   const getFilterColor = (label: string) => {
     switch (label) {
@@ -465,7 +418,7 @@ export const Board: React.FC<BoardProps> = ({ dictionary }) => {
         </TooltipProvider>
       </div>
       <div className="mb-4 flex gap-4">
-        {quickFilters.map((label) => (
+        {QUICK_FILTERS.map((label) => (
           <Button
             key={label}
             onClick={() => toggleQuickFilter(label)}

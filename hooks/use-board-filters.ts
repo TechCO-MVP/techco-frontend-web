@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { BoardState, PipefyFieldValues } from "@/types/pipefy";
+import { QUICK_FILTER_MAP } from "@/constants";
 
 export function useBoardFilters(board?: BoardState) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,29 +30,8 @@ export function useBoardFilters(board?: BoardState) {
   const clearQuickFilters = () => setActiveQuickFilters([]);
   const phases = board?.pipe.phases ?? [];
 
-  const quickFilterMap: Record<string, string[]> = {
-    "ADN del Talento": ["Oferta enviada", "Filtro inicial"],
-    "Retos y Comportamientos": [
-      "Assessment fit Cultural",
-      "Resultado Fit Cultural",
-    ],
-    "Primer entrevista": [
-      "Primera entrevista solicitada",
-      "Primera entrevista programada",
-      "Resultado primer entrevista",
-    ],
-    "Caso de Negocio": ["Assessment técnico", "Resultado Assessment técnico"],
-    "Entrevista final": [
-      "Entrevista final solicitada",
-      "Entrevista final programada",
-      "Resultado entrevista final",
-    ],
-    "Talento sin sesgos": ["Finalistas", "Candidato seleccionado"],
-    Descartados: ["Descartados"],
-  };
-
   const activePhaseNames = activeQuickFilters.length
-    ? activeQuickFilters.flatMap((filter) => quickFilterMap[filter] || [])
+    ? activeQuickFilters.flatMap((filter) => QUICK_FILTER_MAP[filter] || [])
     : [];
 
   const quickFilterCounts = useMemo(() => {
@@ -59,7 +39,7 @@ export function useBoardFilters(board?: BoardState) {
 
     const counts: Record<string, number> = {};
 
-    Object.entries(quickFilterMap).forEach(([label, phaseNames]) => {
+    Object.entries(QUICK_FILTER_MAP).forEach(([label, phaseNames]) => {
       let count = 0;
 
       board.pipe.phases.forEach((phase) => {

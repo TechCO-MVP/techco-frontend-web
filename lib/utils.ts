@@ -10,6 +10,7 @@ import {
   PositionPhaseSearchResult,
   CulturalAssessmentResultType,
   TechnicalAssesmentResult,
+  HiringPositionData,
 } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -390,4 +391,47 @@ export const getScoreColor = (score: number, maxScore: number) => {
   if (percentage >= 80) return "text-green-600";
   if (percentage >= 60) return "text-orange-500";
   return "text-red-500";
+};
+
+export const mapHiringToDraftPosition = (
+  selectedPosition: HiringPositionData,
+): DraftPositionData | null => {
+  try {
+    return {
+      business_id: "",
+      recruiter_user_id: selectedPosition.recruiter_user_id,
+      owner_position_user_id: selectedPosition.owner_position_user_id,
+      responsible_users: selectedPosition.responsible_users.map(
+        (u) => u.user_id,
+      ),
+      role: selectedPosition.role,
+      seniority: selectedPosition.seniority,
+      country_code: selectedPosition.country_code,
+      city: selectedPosition.city,
+      description: selectedPosition.description,
+      responsabilities: selectedPosition.responsabilities,
+      education: selectedPosition.education,
+      skills: selectedPosition.skills,
+      languages: selectedPosition.languages,
+      hiring_priority: selectedPosition.hiring_priority,
+      work_mode: selectedPosition.work_mode,
+      status: "DRAFT",
+      benefits: selectedPosition.benefits,
+      salary: selectedPosition.salary
+        ? {
+            currency: selectedPosition.salary.currency,
+            salary: selectedPosition.salary.salary ?? null,
+            salary_range: selectedPosition.salary.salary_range
+              ? {
+                  min: selectedPosition.salary.salary_range.min,
+                  max: selectedPosition.salary.salary_range.max,
+                }
+              : null,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    console.error("Error mapping hiring to draft position", error);
+    return null;
+  }
 };

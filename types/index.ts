@@ -78,7 +78,11 @@ export interface EvaluationWeight {
 }
 
 export interface BusinessConfiguration {
-  evaluation_weights: EvaluationWeight[];
+  evaluation_weights: {
+    HIGH_PROFILE_FLOW: EvaluationWeight[];
+    MEDIUM_PROFILE_FLOW: EvaluationWeight[];
+    LOW_PROFILE_FLOW: EvaluationWeight[];
+  };
 }
 
 export type ListBusinessApiResponse = {
