@@ -118,6 +118,9 @@ export const apiEndpoints = {
   profileFilterStartUrl() {
     return `${BASE_URL}/profile/filter/start/url`;
   },
+  profileFilterStartCv() {
+    return `${BASE_URL}/profile/filter/start/cv`;
+  },
   deletePositionConfiguration(id: string) {
     return `${BASE_URL}/position_configuration/${id}`;
   },

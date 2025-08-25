@@ -592,6 +592,13 @@ export type ProfileFilterStartUrlInput = {
   }[];
 };
 
+export type ProfileFilterStartCvInput = {
+  position_id: string;
+  business_id: string;
+  file: File;
+  email: string;
+};
+
 export type CompletePhaseInput = {
   position_configuration_id: string;
   data:
@@ -642,7 +649,7 @@ export type PostPositionConfigurationResponse = {
   };
   message: string;
 };
-export type ProfileFilterStartUrlResponse = {
+export type ProfileFilterStartResponse = {
   message: string;
   body: {
     profile_filter: {

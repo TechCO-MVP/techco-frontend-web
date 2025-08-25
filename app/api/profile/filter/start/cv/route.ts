@@ -3,15 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const formData = await req.formData();
 
-    const response = await fetch(`${apiEndpoints.profileFilterStartUrl()}`, {
+    const response = await fetch(`${apiEndpoints.profileFilterStartCv()}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY ?? "",
       },
-      body: JSON.stringify(body),
+      body: formData,
     });
 
     const json = await response.json();
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(json);
   } catch (error) {
-    console.error("POST /profile/filter/start/url error:", error);
+    console.error("POST /profile/filter/start/cv:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

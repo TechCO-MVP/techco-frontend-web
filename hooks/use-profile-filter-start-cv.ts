@@ -1,26 +1,31 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import {
-  ProfileFilterStartUrlInput,
+  ProfileFilterStartCvInput,
   ProfileFilterStartResponse,
 } from "@/types";
 
-export function useProfileFilterStartUrl(
+export function useProfileFilterStartCv(
   options?: UseMutationOptions<
     ProfileFilterStartResponse,
     Error,
-    ProfileFilterStartUrlInput
+    ProfileFilterStartCvInput
   >,
 ) {
   return useMutation<
     ProfileFilterStartResponse,
     Error,
-    ProfileFilterStartUrlInput
+    ProfileFilterStartCvInput
   >({
     mutationFn: async (payload) => {
-      const response = await fetch("/api/profile/filter/start/url", {
+      const formData = new FormData();
+      formData.append("business_id", payload.business_id);
+      formData.append("position_id", payload.position_id);
+      formData.append("file", payload.file);
+      formData.append("email", payload.email);
+
+      const response = await fetch("/api/profile/filter/start/cv", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!response.ok) {
