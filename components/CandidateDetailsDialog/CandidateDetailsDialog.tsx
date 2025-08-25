@@ -713,6 +713,13 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
     return totalWeightedScore / totalWeight;
   };
 
+  const renderInvitationUrl = () => {
+    if (currentPhase?.phase.name === PHASE_NAMES.SUGGESTED_CANDIDATES) {
+      return false;
+    }
+    return true;
+  };
+
   const resultsPhases: PhaseData[] = [
     {
       id: "revision-inicial",
@@ -1082,7 +1089,7 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
                     <b>{i18n.processStartDate}:</b>
                     {formatDate(processStartDate)}
                   </Text>
-                  {invitationUrl && (
+                  {invitationUrl && renderInvitationUrl() && (
                     <Text className="mb-4 flex gap-1 text-xs text-muted-foreground">
                       <b>Enlace personalizado del proceso del candidato:</b>
                       <Link
