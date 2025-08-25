@@ -899,6 +899,9 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
           className="flex max-h-[80vh] min-h-[80vh] max-w-[1350px]"
         >
           <div className="flex w-[450px] min-w-[450px] flex-col border-r-4">
+            <Heading className="mb-2 text-sm font-bold" level={2}>
+              Información del candidato
+            </Heading>
             <div className="flex flex-col gap-2 pt-2">
               <div className="mb-2 flex gap-4">
                 <div className="flex flex-col items-center justify-center gap-1.5">
@@ -1267,7 +1270,10 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
 
           {currentPhase &&
             currentPhase.phase.phase_classification === "INFORMATIVE" && (
-              <div className="max-h-[75vh] w-[650px] max-w-[650px] overflow-auto">
+              <div className="flex max-h-[75vh] w-[650px] max-w-[650px] flex-col overflow-auto">
+                <Heading className="mb-2 text-sm font-bold" level={2}>
+                  Información de la etapa
+                </Heading>
                 {currentPhase.interviewerData?.sections.map((section) => {
                   return (
                     <div key={section.title} className="flex flex-col gap-2">
@@ -1293,6 +1299,9 @@ export const CandidateDetailsDialog: FC<CandidateDetailsDialogProps> = ({
             currentPhase.phase.phase_classification === "CALL_TO_ACTION" && (
               <>
                 <div className="flex max-h-[75vh] w-full max-w-[550px] flex-col gap-4 overflow-auto">
+                  <Heading className="text-sm font-bold" level={2}>
+                    Formulario de gestión
+                  </Heading>
                   {renderCallToActionContent(currentPhase.phase.name)}
                 </div>
                 <div className="flex w-full flex-col gap-4">
