@@ -30,7 +30,7 @@ export const ProcessCard = ({
 
   return (
     <div
-      className={`${cardClasses} animate-fade-in group flex h-full flex-col items-center rounded-xl p-4 text-center transition-all duration-500 hover:scale-105 hover:shadow-lg`}
+      className={`${cardClasses} animate-fade-in group flex h-full max-w-md flex-col items-center rounded-xl p-4 text-center transition-all duration-500 hover:scale-105 hover:shadow-lg`}
       style={{ animationDelay: `${delay}ms` }}
     >
       {variant === "featured" && (
@@ -39,11 +39,13 @@ export const ProcessCard = ({
         </div>
       )}
 
-      <div className="group-hover:animate-float mb-8 flex h-20 w-20 items-center justify-center text-talent-green-500 transition-all duration-300 group-hover:scale-110">
-        {icon}
-      </div>
+      {true && (
+        <div className="group-hover:animate-float mb-8 flex h-10 w-10 items-center justify-center text-talent-green-500 transition-all duration-300 group-hover:scale-110">
+          {icon}
+        </div>
+      )}
 
-      <h3 className="mb-6 text-xl font-bold leading-tight text-muted-foreground transition-colors duration-300 group-hover:text-talent-green-500">
+      <h3 className="mb-6 text-[18px] font-bold leading-tight transition-colors duration-300 group-hover:text-talent-green-500">
         {title}
       </h3>
 

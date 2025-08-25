@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Brain, Heart, Target } from "lucide-react";
+import { Heart, Target } from "lucide-react";
 
 import { PositionConfigurationFlowTypes } from "@/types";
 import { Dictionary } from "@/types/i18n";
@@ -16,19 +16,19 @@ interface TemplateSelectionTableProps {
 }
 
 const processes = [
-  {
-    id: PositionConfigurationFlowTypes.LOW_PROFILE_FLOW,
-    icon: <Brain className="h-full w-full" />,
-    title: "Mente Estratégica",
-    description:
-      "Descubre cómo tus candidatos enfrentarían desafíos reales de tu negocio, evaluando pensamiento crítico, resolución de problemas y visión estratégica.",
-    disclaimer:
-      "El proceso es automático y concluye con una única entrevista final para revisar la prueba.",
-  },
+  // {
+  //   id: PositionConfigurationFlowTypes.LOW_PROFILE_FLOW,
+  //   icon: <Brain className="h-full w-full" />,
+  //   title: "Mente Estratégica",
+  //   description:
+  //     "Descubre cómo tus candidatos enfrentarían desafíos reales de tu negocio, evaluando pensamiento crítico, resolución de problemas y visión estratégica.",
+  //   disclaimer:
+  //     "El proceso es automático y concluye con una única entrevista final para revisar la prueba.",
+  // },
   {
     id: PositionConfigurationFlowTypes.MEDIUM_PROFILE_FLOW,
     icon: <Heart className="h-full w-full" />,
-    title: "Match Cultural",
+    title: "Proceso Retos y Comportamientos",
     description:
       "Asegura el encaje perfecto evaluando los comportamientos que esperas de tu candidato alineados a tu cultura organizacional.",
     disclaimer:
@@ -37,7 +37,7 @@ const processes = [
   {
     id: PositionConfigurationFlowTypes.HIGH_PROFILE_FLOW,
     icon: <Target className="h-full w-full" />,
-    title: "Talento 360°",
+    title: "Proceso Talento 360°",
     description:
       "Elige lel proceso más completo para conocer a fondo a tus candidatos: Realiza nuestras dos pruebas por separado —'Mente Estratégica' y 'Match Cultural'— para una visión 360°.",
     disclaimer:
@@ -63,7 +63,7 @@ export const TemplateSelectionTable: React.FC<TemplateSelectionTableProps> = ({
         </h1>
 
         <div className="mx-auto max-w-5xl">
-          <div className="from-surface-elevated via-surface-subtle to-surface-elevated rounded-2xl border-2 border-talent-green-500 bg-gradient-to-r px-10 py-8 shadow-lg">
+          <div className="rounded-2xl border-talent-green-500 bg-gradient-to-r text-justify">
             <p className="text-base leading-relaxed text-muted-foreground">
               Hemos diseñado 3 tipos de evaluaciones para adaptarnos a lo que
               buscas. Desde procesos ágiles para vacantes operativas, hasta
@@ -74,7 +74,7 @@ export const TemplateSelectionTable: React.FC<TemplateSelectionTableProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-6">
         {processes.map((process, index) => (
           <ProcessCard
             key={process.id}
